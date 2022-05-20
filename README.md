@@ -24,7 +24,11 @@
 
 ## Contribution
 ### Do you use gitflow?
-Yes
+Yes. 
+- `master` contains our production product, 
+- `develop` contains features & bug fixes for the current sprint
+    - Changes are merged in `master` at the end of each sprint
+- `feat`/`bug` branches will be merged into `develop` as their PRs are approved
 
 ### What do you name your branches?
 Branches will use the following convention where `XXX` is the associated Jira ticket number:
