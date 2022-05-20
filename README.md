@@ -4,7 +4,7 @@
 
 ## Installation
 1. Install [Node.js v18.20 (npm 8.9.0)](https://nodejs.org/en/)
-2. Install required dependencies (start from root directory then run the following):
+2. Install required dependencies (start from `/vectre/` directory then run the following):
     ```powershell
     cd backend
     npm install
@@ -24,10 +24,10 @@
 
 ## Contribution
 ### Do you use gitflow?
-Yes. 
-- `master` contains our production product, 
-- `develop` contains features & bug fixes for the current sprint
-    - Changes are merged in `master` at the end of each sprint
+Yes.
+- `master` contains production app
+- `develop` contains new features & bug fixes
+    - Changes are merged into `master` at the end of each sprint
 - `feat`/`bug` branches will be merged into `develop` as their PRs are approved
 
 ### What do you name your branches?
@@ -39,4 +39,4 @@ Branches will use the following convention where `XXX` is the associated Jira ti
 We use Jira for our tickets
 
 ### Do you use pull requests?
-Yes
+Yes. All branches must have their pull request approved before merging.
