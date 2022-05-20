@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+/vectre/backend/node_modules
+/vectre/frontend/node_modules
 /.pnp
 .pnp.js
 
