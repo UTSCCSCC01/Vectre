@@ -29,8 +29,8 @@ Branches will use the following convention where `XXX` is the associated Jira ti
 - `VL-XXX/feat/{feat_name}`
 - `VL-XXX/bug/{bug_name}`
 
-### Do you use github issues or another ticketing website?
-We will use Jira.
+### Do you use Github issues or another ticketing website?
+We use Jira for our tickets
 
 ### Do you use pull requests?
 Yes
