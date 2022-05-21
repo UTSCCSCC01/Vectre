@@ -3,7 +3,7 @@ var router = express.Router();
 
 /* GET */
 router.get('/', (req, res, next) => {
-  res.send('GOT a GET request')
+  res.send('Got a GET request')
 });
 
 /* POST */

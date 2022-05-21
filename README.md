@@ -14,12 +14,17 @@
 3. Start backend (runs on port 8080)
     ```powershell
     cd backend
-    npm run
+   
+    # production environment
+    npm run start 
+   
+    # dev environment
+    npm run dev
     ```
-4. Start frontend in seperate terminal (runs on port 3000)
+5. Start frontend in seperate terminal (runs on port 3000)
     ```powershell
     cd frontend
-    npm run
+    npm run start
     ```
 
 ## Contribution
