@@ -1,6 +1,6 @@
 import React from 'react';
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
-import LandingPage from '../pages/LandingPage';
+import HomePage from '../pages/HomePage';
 import Feed from '../pages/Feed';
 import Login from '../pages/Login';
 import Profile from '../pages/Profile';
@@ -10,7 +10,7 @@ export default function Routes() {
     return (
         <Router>
             <Switch>
-                <Route exact path="/" component={LandingPage} />
+                <Route exact path="/" component={HomePage} />
                 <Route path="/feed" component={Feed}/>
                 <Route path="/login" component={Login}/>
                 <Route path="/profile" component={Profile}/>
