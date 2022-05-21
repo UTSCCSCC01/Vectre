@@ -4,7 +4,8 @@ import {
     Box,
     Heading,
     Text,
-    Button
+    Button,
+    Link
 } from '@chakra-ui/react';
 
 import { ReactComponent as UserTickIcon } from '../../assets/icons/user-icon-tick.svg'
@@ -44,33 +45,41 @@ const LandingPageTopComponent = ({
                         <Stack
                             spacing={{ base: 4, sm: 6 }}
                             direction={{ base: 'column', sm: 'row' }}>
-                            <Button
-                                rounded={'6px'}
-                                size={'lg'}
-                                fontWeight={700}
-                                px={8}
-                                py={8}
-                                fontSize={'sm'}
-                                textColor={'white'}
-                                bg={'#3B82F6'}
-                                leftIcon={<UserTickIcon h={4} w={4} mr={2} color={'white'} />}
-                                boxShadow={'0px 30px 60px rgba(59, 130, 246, 0.25)'}
-                                _hover={{ bg: '#5290F5' }}>
-                                Join Vectre Now
-                            </Button>
-                            <Button
-                                rounded={'6px'}
-                                size={'lg'}
-                                fontWeight={700}
-                                px={8}
-                                py={8}
-                                fontSize={'sm'}
-                                textColor={'#3B82F6'}
-                                bg={'#C6DBFF'}
-                                leftIcon={<PlayCircleIcon h={4} w={4} mr={2} color={'#3B82F6'} />}
-                                _hover={{ bg: '#DDE9FF' }}>
-                                Learn More
-                            </Button>
+                            <Link
+                                href='#'
+                                _hover={{ textDecoration: "none" }}>
+                                <Button
+                                    rounded={'6px'}
+                                    size={'lg'}
+                                    fontWeight={700}
+                                    px={8}
+                                    py={8}
+                                    fontSize={'sm'}
+                                    textColor={'white'}
+                                    bg={'#3B82F6'}
+                                    leftIcon={<UserTickIcon h={4} w={4} mr={2} color={'white'} />}
+                                    boxShadow={'0px 30px 60px rgba(59, 130, 246, 0.25)'}
+                                    _hover={{ bg: '#5290F5' }}>
+                                    Join Vectre Now
+                                </Button>
+                            </Link>
+                            <Link
+                                href='#'
+                                _hover={{ textDecoration: "none" }}>
+                                <Button
+                                    rounded={'6px'}
+                                    size={'lg'}
+                                    fontWeight={700}
+                                    px={8}
+                                    py={8}
+                                    fontSize={'sm'}
+                                    textColor={'#3B82F6'}
+                                    bg={'#C6DBFF'}
+                                    leftIcon={<PlayCircleIcon h={4} w={4} mr={2} color={'#3B82F6'} />}
+                                    _hover={{ bg: '#DDE9FF' }}>
+                                    Learn More
+                                </Button>
+                            </Link>
                         </Stack>
                     </Stack>
                     <LandingPageTopImageGrid />

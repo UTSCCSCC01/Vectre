@@ -72,19 +72,22 @@ export default function WithSubnavigation() {
                     direction={'row'}
                     spacing={6}
                     display={{ base: 'none', md: 'flex' }}>
-                    <Button
-                        display={{ base: 'none', md: 'inline-flex' }}
-                        px={'28px'}
-                        fontSize={'18px'}
-                        fontWeight={700}
-                        color={'blue.400'}
-                        bg={'white'}
-                        href={'#'}
-                        _hover={{
-                            bg: 'WhiteAlpha.900',
-                        }}>
-                        Enter the App
-                    </Button>
+                    <Link
+                        href='/test'
+                        _hover={{ textDecoration: "none" }}>
+                        <Button
+                            display={{ base: 'none', md: 'inline-flex' }}
+                            px={'28px'}
+                            fontSize={'18px'}
+                            fontWeight={700}
+                            color={'blue.400'}
+                            bg={'white'}
+                            _hover={{
+                                bg: 'WhiteAlpha.900',
+                            }}>
+                            Enter the App
+                        </Button>
+                    </Link>
                 </Stack>
             </Flex>
 
