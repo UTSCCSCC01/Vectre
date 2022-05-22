@@ -21,14 +21,14 @@ const LandingPageTopComponent = ({
             <Container maxW={'8xl'}>
                 <Stack
                     align={'center'}
-                    spacing={{ base: 8, md: 10 }}
-                    pt={{ base: 12, md: 20 }}
-                    direction={{ base: 'column', md: 'row' }}>
+                    spacing={{ base: 8, lg: 10 }}
+                    pt={{ base: 12, lg: 20 }}
+                    direction={{ base: 'column', lg: 'row' }}>
                     <Stack flex={1} spacing={{ base: 5, md: 10 }} pr={"50px"}>
                         <Heading
                             fontWeight={600}
                             letterSpacing={'1.5px'}
-                            lineHeight={0.8}
+                            lineHeight={{ sm: 1.1, lg: 0.8 }}
                             fontSize={{ base: '3xl', sm: '4xl', lg: '6xl' }}>
                             <Text
                                 as={'span'} color={'brand.400'}>
@@ -59,7 +59,8 @@ const LandingPageTopComponent = ({
                                     bg={'#3B82F6'}
                                     leftIcon={<UserTickIcon h={4} w={4} mr={2} color={'white'} />}
                                     boxShadow={'0px 30px 60px rgba(59, 130, 246, 0.25)'}
-                                    _hover={{ bg: '#5290F5' }}>
+                                    _hover={{ bg: '#5290F5' }}
+                                    _focus={{ outline: 0 }}>
                                     Join Vectre Now
                                 </Button>
                             </Link>
@@ -76,7 +77,8 @@ const LandingPageTopComponent = ({
                                     textColor={'#3B82F6'}
                                     bg={'#C6DBFF'}
                                     leftIcon={<PlayCircleIcon h={4} w={4} mr={2} color={'#3B82F6'} />}
-                                    _hover={{ bg: '#DDE9FF' }}>
+                                    _hover={{ bg: '#DDE9FF' }}
+                                    _focus={{ outline: 0 }}>
                                     Learn More
                                 </Button>
                             </Link>
