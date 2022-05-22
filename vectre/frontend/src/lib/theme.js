@@ -9,7 +9,7 @@ const config = {
 const styles = {
   global: props => ({
     body: {
-      bg: mode('linear-gradient(180deg, #E4EFFF 0%, rgba(228, 239, 255, 0.6) 92.51%, rgba(228, 239, 255, 0) 100%);', 'inherit')(props)
+      bg: mode('white', 'inherit')(props)
     }
   })
 }

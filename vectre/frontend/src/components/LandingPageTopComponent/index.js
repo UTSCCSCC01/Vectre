@@ -16,7 +16,7 @@ const LandingPageTopComponent = ({
     ...otherProps
 }) => {
     return (
-        <Box height={'100vh'}>
+        <Box height={{ base: 'fit-content', lg: '100vh' }}>
             {otherProps.children}
             <Container maxW={'8xl'}>
                 <Stack
@@ -59,7 +59,7 @@ const LandingPageTopComponent = ({
                                     bg={'#3B82F6'}
                                     leftIcon={<UserTickIcon h={4} w={4} mr={2} color={'white'} />}
                                     boxShadow={'0px 30px 60px rgba(59, 130, 246, 0.25)'}
-                                    _hover={{ bg: '#5290F5' }}
+                                    _hover={{ bg: '#3B82F6dd' }}
                                     _focus={{ outline: 0 }}>
                                     Join Vectre Now
                                 </Button>
@@ -77,7 +77,7 @@ const LandingPageTopComponent = ({
                                     textColor={'#3B82F6'}
                                     bg={'#C6DBFF'}
                                     leftIcon={<PlayCircleIcon h={4} w={4} mr={2} color={'#3B82F6'} />}
-                                    _hover={{ bg: '#DDE9FF' }}
+                                    _hover={{ bg: '#C6DBFFdd' }}
                                     _focus={{ outline: 0 }}>
                                     Learn More
                                 </Button>

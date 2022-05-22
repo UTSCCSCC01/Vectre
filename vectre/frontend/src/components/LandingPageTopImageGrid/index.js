@@ -77,6 +77,7 @@ const LandingPageTopImageGrid = () => {
             flex={1}
             w={'full'}
             height={'fit-content'}
+            display={{ base: 'none', lg: 'block' }}
         >
             <Grid
                 gridTemplateColumns={"1% 25% 25% 15% 15% 2%"}

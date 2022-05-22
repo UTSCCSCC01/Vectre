@@ -27,7 +27,7 @@ export default function WithSubnavigation() {
             <Flex
                 color={useColorModeValue('gray.600', 'white')}
                 minH={'60px'}
-                pt={{ base: 20 }}
+                pt={{ base: 10, lg: 20 }}
                 align={'center'}
                 justifyContent="space-between">
                 <Flex
@@ -41,6 +41,7 @@ export default function WithSubnavigation() {
                         }
                         variant={'ghost'}
                         aria-label={'Toggle Navigation'}
+                        _focus={{ outline: 0 }}
                     />
                 </Flex>
                 <Flex alignItems="center" display={{ base: 'none', lg: 'flex' }}>
@@ -76,8 +77,10 @@ export default function WithSubnavigation() {
                             fontWeight={700}
                             color={'blue.400'}
                             bg={'white'}
+                            transition={'all .2s ease-in-out'}
                             _hover={{
-                                bg: 'WhiteAlpha.900',
+                                bg: 'blue.400',
+                                color: 'white'
                             }}
                             _focus={{ outline: 0 }}>
                             Enter the App
@@ -95,7 +98,7 @@ export default function WithSubnavigation() {
 
 const DesktopNav = () => {
     const linkColor = useColorModeValue('sub.400', 'sub.200');
-    const linkHoverColor = useColorModeValue('sub.800', 'white');
+    const linkHoverColor = useColorModeValue('#697B98dd', 'white');
 
     return (
         <Stack direction={'row'} spacing="50px">
@@ -149,7 +152,7 @@ const MobileNavItem = ({ label, href }) => {
                 }}>
                 <Text
                     fontWeight={600}
-                    color={useColorModeValue('gray.600', 'gray.200')}>
+                    color={useColorModeValue('brand.400', 'gray.200')}>
                     {label}
                 </Text>
             </Flex>
@@ -160,7 +163,7 @@ const MobileNavItem = ({ label, href }) => {
                     pl={4}
                     borderLeft={1}
                     borderStyle={'solid'}
-                    borderColor={useColorModeValue('gray.200', 'gray.700')}
+                    borderColor={useColorModeValue('brand.400', 'gray.700')}
                     align={'start'}>
                 </Stack>
             </Collapse>
