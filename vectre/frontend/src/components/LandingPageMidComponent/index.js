@@ -11,6 +11,7 @@ import {
 } from '@chakra-ui/react';
 import { FiPenTool } from 'react-icons/fi';
 import { BiCode } from 'react-icons/bi';
+import { ReactComponent as LandingRectMid } from '../../assets/icons/landing-rect-mid.svg'
 
 const CardInfos = [
     {
@@ -91,26 +92,25 @@ const Card = (props) => {
 
 const LandingPageMidComponent = () => {
     return (
-        <Container maxW={'8xl'} pt={16} pb={52}>
-            <Flex justifyContent={"center"} textAlign={"center"} my={{ base: 8, md: 16 }}>
-                <Text
-                    maxW={'xl'}
-                    fontWeight={500}
-                    fontSize={'32px'}
-                    lineHeight={'44px'}
-                    color={useColorModeValue("brand.400", "white")}
-                >
-                    Vectre was designed with the community in mind, providing founders with community management tools.
-                </Text>
-            </Flex>
-            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={10}>
-                {/* <Flex>
-                    <Card />
-                </Flex> */}
-                {CardInfos.map((cardInfo, i) => (
-                    <Card key={i} cardInfo={cardInfo} />
-                ))}
-            </SimpleGrid>
+        <Container maxW={'8xl'}>
+            <Stack py={36}>
+                <Flex justifyContent={"center"} textAlign={"center"} my={{ base: 8, md: 16 }}>
+                    <Text
+                        maxW={'xl'}
+                        fontWeight={500}
+                        fontSize={'32px'}
+                        lineHeight={'44px'}
+                        color={useColorModeValue("brand.400", "white")}
+                    >
+                        Vectre was designed with the community in mind, providing founders with community management tools.
+                    </Text>
+                </Flex>
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={10}>
+                    {CardInfos.map((cardInfo, i) => (
+                        <Card key={i} cardInfo={cardInfo} />
+                    ))}
+                </SimpleGrid>
+            </Stack>
         </Container>
     );
 };

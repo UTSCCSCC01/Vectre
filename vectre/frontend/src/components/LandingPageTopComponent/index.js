@@ -24,22 +24,22 @@ const LandingPageTopComponent = ({
                     spacing={{ base: 8, lg: 10 }}
                     pt={{ base: 12, lg: 20 }}
                     direction={{ base: 'column', lg: 'row' }}>
-                    <Stack flex={1} spacing={{ base: 5, md: 10 }} pr={"50px"}>
+                    <Stack flex={1} spacing={{ base: 5, md: 10 }} pr={{ base: "0px", md: "50px" }}>
                         <Heading
                             fontWeight={600}
                             letterSpacing={'1.5px'}
                             lineHeight={{ sm: 1.1, lg: 0.8 }}
-                            fontSize={{ base: '3xl', sm: '4xl', lg: '6xl' }}>
+                            fontSize={{ base: '4xl', lg: '6xl' }}>
                             <Text
                                 as={'span'} color={'brand.400'}>
                                 Vectre.
                             </Text>
                             <br />
-                            <Text as={'span'} color={'brand.400'} fontWeight={'400'} fontSize={'40px'}>
+                            <Text as={'span'} color={'brand.400'} fontWeight={'400'} fontSize={{ base: "25px", md: '40px' }}>
                                 a web3 social platform for creators, by creators.
                             </Text>
                         </Heading>
-                        <Text color={'sub.500'} fontSize={"22px"}>
+                        <Text color={'sub.500'} fontSize={{ base: "18px", md: '22px' }}>
                             Connect with your favourite communities, showcase your NFTs, earn community badges and decide the direction for your favourite projects!
                         </Text>
                         <Stack
