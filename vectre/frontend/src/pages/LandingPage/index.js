@@ -2,6 +2,7 @@ import LandingPageNavBar from '../../components/LandingPageNavBar'
 import LandingPageTopComponent from '../../components/LandingPageTopComponent'
 import LandingPageMidComponent from '../../components/LandingPageMidComponent'
 import LandingPageBotComponent from '../../components/LandingPageBotComponent'
+import LandingPageFooter from '../../components/LandingPageFooter'
 import { ReactComponent as LandingRect } from '../../assets/icons/landing-rect.svg'
 import { Box } from '@chakra-ui/react'
 
@@ -20,6 +21,7 @@ const LandingPage = () => {
         <LandingPageMidComponent />
       </Box>
       <LandingPageBotComponent />
+      <LandingPageFooter />
     </Box>
 
   );
