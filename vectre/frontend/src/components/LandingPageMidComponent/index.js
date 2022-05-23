@@ -1,7 +1,6 @@
 import {
     Container,
     SimpleGrid,
-    IconButton,
     Flex,
     Heading,
     Text,
@@ -11,7 +10,6 @@ import {
 } from '@chakra-ui/react';
 import { FiPenTool } from 'react-icons/fi';
 import { BiCode } from 'react-icons/bi';
-import { ReactComponent as LandingRectMid } from '../../assets/icons/landing-rect-mid.svg'
 
 const CardInfos = [
     {
