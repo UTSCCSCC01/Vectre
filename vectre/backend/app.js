@@ -39,4 +39,15 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+// close neo4j-driver when node.js app exits
+app.use(function neo4jSessionCleanup(req, res, next) {
+  res.on('finish', function () {
+    if(req.neo4jSession) {
+      req.neo4jSession.close();
+      delete req.neo4jSession;
+    }
+  });
+  next();
+});
+
 module.exports = app;
