@@ -33,12 +33,12 @@ Yes.
 - `master` contains production app
 - `develop` contains new features & bug fixes
     - Changes are merged into `master` at the end of each sprint
-- `feat`/`bug` branches will be merged into `develop` as their PRs are approved
+- `task`/`bug` branches will be merged into `develop` as their PRs are approved
 
 ### What do you name your branches?
 Branches will use the following convention where `XXX` is the associated Jira ticket number:
-- `VL-XXX/feat/{feat_name}`
-- `VL-XXX/bug/{bug_name}`
+- `VEC-XXX/task/{feat_name}`
+- `VEC-XXX/bug/{bug_name}`
 
 ### Do you use Github issues or another ticketing website?
 We use Jira for our tickets
