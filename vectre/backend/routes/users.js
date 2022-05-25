@@ -1,9 +1,33 @@
 var express = require('express');
 var router = express.Router();
 
+const dbUtils = require('../neo4j/dbUtils');
+
 /* GET */
 router.get('/', (req, res, next) => {
-  res.send('Got a GET request')
+  const query =
+    `
+  MATCH (p:Person) RETURN p LIMIT 25
+    `;
+
+  console.log(query);
+
+  const session = dbUtils.getSession(req);
+
+  // console.log(session);
+  const users = [];
+
+  session.run(query)
+    .then((result) => {
+      result.records.forEach((record) => {
+        users.push(record._fields);
+      });
+      res.send(users);
+    })
+    .catch((error) => {
+      console.error(error);
+      res.send("get request failed. Error: ", error);
+    });
 });
 
 /* POST */
