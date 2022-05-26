@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from 'prop-types';
 import {Button} from "@chakra-ui/react";
-import {getUsers} from "../../redux/actions/users";
+import {createUser, getUsers} from "../../redux/actions/users";
 import {connect} from "react-redux";
 import {usersSelector} from "../../redux/selectors/users";
 
@@ -17,6 +17,14 @@ class UsersTest extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
+    }
+
+    handleCreateUser = () => {
+        let user = {
+            name: "Test User",
+            wallet_address: "1234567890"
+        }
+        this.props.createUser(user)
     }
 
     render () {
@@ -35,6 +43,7 @@ class UsersTest extends React.Component {
                         colorScheme="teal"
                         variant="solid"
                         style={{margin: 10}}
+                        onClick={this.handleCreateUser}
                     >
                         Create test user
                     </Button>
@@ -50,7 +59,8 @@ class UsersTest extends React.Component {
 }
 
 const actionCreators = {
-    getUsers
+    getUsers,
+    createUser
 }
 const mapStateToProps = (state, ownProps) => ({
     users: usersSelector(state)
