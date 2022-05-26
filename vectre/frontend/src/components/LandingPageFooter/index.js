@@ -59,8 +59,10 @@ export default function LargeWithLogoLeft() {
                             <Text
                                 fontSize={'16px'}
                                 lineHeight={'28px'}
-                                fontWeight={400}>
-                                Wumbo is a team of creative developers who have an interest in design. We create design templates, UI kits and other products that make people's work easier and faster.
+                                fontWeight={400}
+                                width={{ base: '100%', md: '75%' }}>
+                                Vectre Labs are a team of builders and software engineers building and
+                                spearheading products for web3. The new age of the internet is here.
                             </Text>
                         </Stack>
                         <Flex
@@ -69,25 +71,14 @@ export default function LargeWithLogoLeft() {
                             columnGap={'25px'}
                             my={'15px'}>
                             <Stack align={'flex-start'} px={{ base: '0px', md: '25px' }} width={'max-content'}>
-                                <ListHeader>Products</ListHeader>
-                                <Link href={'#'}>Social Feeds</Link>
-                                <Link href={'#'}>React UI Kit</Link>
-                                <Link href={'#'}>Stisla Design</Link>
-                                <Link href={'#'}>More Products</Link>
-                            </Stack>
-                            <Stack align={'flex-start'} px={{ base: '0px', md: '25px' }} width={'max-content'}>
-                                <ListHeader>Company</ListHeader>
-                                <Link href={'#'}>About Us</Link>
-                                <Link href={'#'}>Contact</Link>
-                                <Link href={'#'}>Privacy Policy</Link>
-                                <Link href={'#'}>Terms of Service</Link>
-                                <Link href={'#'}>Help</Link>
+                                <ListHeader>Vectre</ListHeader>
+                                <Link href={'#'}>Sign Up</Link>
+                                <Link href={'#'}>Enter the App</Link>
                             </Stack>
                             <Stack align={'flex-start'} px={{ base: '0px', md: '25px' }} width={'max-content'}>
                                 <ListHeader>Get in touch</ListHeader>
                                 <Link href={'#'}>Twitter</Link>
-                                <Link href={'#'}>Facebook</Link>
-                                <Link href={'#'}>Dribble</Link>
+                                <Link href={'#'}>Medium</Link>
                             </Stack>
                         </Flex>
                     </Flex>
