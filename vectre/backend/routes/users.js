@@ -5,7 +5,7 @@ const dbUtils = require('../neo4j/dbUtils');
 
 /* GET */
 router.get('/', (req, res, next) => {
-    const query = `MATCH (p:Person) RETURN p`;
+    const query = "MATCH (p:Person) RETURN p";
     const session = dbUtils.getSession(req);
     const users = [];
 
@@ -18,14 +18,23 @@ router.get('/', (req, res, next) => {
         })
         .catch((error) => {
             console.error(error);
-            res.send("get request failed. Error: ", error);
+            res.send("Failed to get users. Error: " + error);
         });
 });
 
 /* POST */
-router.post('/', (req, res) => {
-    res.send('Got a POST request')
-    console.log(req.body)
+router.post('/create', (req, res) => {
+    const query = `CREATE (p:Person {name: '${req.body.name}', wallet_address: '${req.body.wallet_address}'})`
+    const session = dbUtils.getSession(req);
+
+    session.run(query)
+        .then((result) => {
+            res.send(result);
+        })
+        .catch((error) => {
+            console.error(error);
+            res.send("Failed to create user. Error: " + error);
+        });
 });
 
 /* PUT */
