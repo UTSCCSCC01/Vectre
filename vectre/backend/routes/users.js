@@ -5,47 +5,39 @@ const dbUtils = require('../neo4j/dbUtils');
 
 /* GET */
 router.get('/', (req, res, next) => {
-  const query =
-    `
-  MATCH (p:Person) RETURN p LIMIT 25
-    `;
+    const query = `MATCH (p:Person) RETURN p`;
+    const session = dbUtils.getSession(req);
+    const users = [];
 
-  console.log(query);
-
-  const session = dbUtils.getSession(req);
-
-  // console.log(session);
-  const users = [];
-
-  session.run(query)
-    .then((result) => {
-      result.records.forEach((record) => {
-        users.push(record._fields);
-      });
-      res.send(users);
-    })
-    .catch((error) => {
-      console.error(error);
-      res.send("get request failed. Error: ", error);
-    });
+    session.run(query)
+        .then((result) => {
+            result.records.forEach((record) => {
+                users.push(record._fields);
+            });
+            res.send(users);
+        })
+        .catch((error) => {
+            console.error(error);
+            res.send("get request failed. Error: ", error);
+        });
 });
 
 /* POST */
 router.post('/', (req, res) => {
-  res.send('Got a POST request')
-  console.log(req.body)
+    res.send('Got a POST request')
+    console.log(req.body)
 });
 
 /* PUT */
 router.put('/', (req, res) => {
-  res.send('Got a PUT request')
-  console.log(req.body)
+    res.send('Got a PUT request')
+    console.log(req.body)
 });
 
 /* DELETE */
 router.delete('/', (req, res) => {
-  res.send('Got a DELETE request')
-  console.log(req.body)
+    res.send('Got a DELETE request')
+    console.log(req.body)
 });
 
 module.exports = router;
