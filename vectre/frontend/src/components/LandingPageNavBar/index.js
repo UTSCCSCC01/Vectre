@@ -17,7 +17,26 @@ import {
     CloseIcon
 } from '@chakra-ui/icons';
 
-import { ReactComponent as LogoIcon } from '../../assets/icons/vectre-logo.svg'
+import { ReactComponent as LogoIcon } from '../../assets/icons/logo-V.svg'
+
+const Logo = () => {
+    return (
+        <Box>
+            <IconButton
+                size='lg'
+                background={'#F9FBFF'}
+                icon={<LogoIcon height="3rem" filter={"drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))"} />}
+                boxShadow={'0px 30px 60px rgba(59, 130, 246, 0.25)'}
+                aria-label={'logo'}
+                isRound={'true'}
+                cursor={'unset'}
+                _focus={{ outline: 0 }}
+                _hover={{ background: '#F9FBFF' }}
+                _active={{ background: '#F9FBFF' }}>
+            </IconButton>
+        </Box>
+    );
+}
 
 export default function WithSubnavigation() {
     const { isOpen, onToggle } = useDisclosure();
@@ -46,7 +65,7 @@ export default function WithSubnavigation() {
                 </Flex>
                 <Flex alignItems="center" display={{ base: 'none', lg: 'flex' }}>
                     <Flex mr={{ base: 'none', lg: '10vw' }} alignItems="center">
-                        <LogoIcon height="3rem" />
+                        <Logo />
                         <Text
                             textAlign={useBreakpointValue({ base: 'center', lg: 'left' })}
                             fontFamily={'heading'}
