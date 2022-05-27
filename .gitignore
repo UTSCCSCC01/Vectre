@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+/vectre/backend/node_modules
+/vectre/frontend/node_modules
 /.pnp
 .pnp.js
 
@@ -17,6 +19,8 @@
 .env.development.local
 .env.test.local
 .env.production.local
+/vectre/backend/.env
+/vectre/frontend/.env
 
 npm-debug.log*
 yarn-debug.log*
