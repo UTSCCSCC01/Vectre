@@ -1,6 +1,12 @@
 # Vectre
 
 ## Motivation
+Vectre is an all-in-one social platform for web3 communities. 
+
+Our vision is for users to connect their Metamask wallet within our platform, where they will be able to showcase their NFTs on a personal dashboard, communicate directly with holders of specific NFT collections, and leaders to foster productive community interactions with a fair set of guidelines. 
+Furthermore, Vectre ensures that the true ownership of digital assets is maintained and appropriately indicated to prevent fraud. 
+
+We hope that Vectre will allow web3 communities to thrive by providing a platform by which community guidelines can be set through a proposal voting system, where verified members vote to shape the direction of their community.
 
 ## Installation
 1. Install [Node.js v18.20 (npm 8.9.0)](https://nodejs.org/en/)
