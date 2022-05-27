@@ -50,7 +50,7 @@ class UsersTest extends React.Component {
                 </div>
                 <div>
                     <h2>Users:</h2>
-                    {this.props.users.map((user) => user.name + " | ")}
+                    {this.props.users.map((user) => `name: ${user.name}, wallet_address: ${user.wallet_address} |\n `)}
                 </div>
 
             </div>
