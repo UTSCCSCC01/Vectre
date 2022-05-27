@@ -2,17 +2,18 @@ var express = require('express');
 var router = express.Router();
 
 const dbUtils = require('../neo4j/dbUtils');
+const User = require('../models/neo4j/user');
 
 /* GET */
 router.get('/', (req, res, next) => {
-    const query = "MATCH (n:User) RETURN n";
+    const query = "MATCH (user:User) RETURN user";
     const session = dbUtils.getSession(req);
-    const users = [];
+    const users = []
 
     session.run(query)
-        .then((result) => {
-            result.records.forEach((record) => {
-                users.push(record._fields);
+        .then((results) => {
+            results.records.forEach((record) => {
+                users.push(new User(record.get('user')))
             });
             res.send(users);
         })
@@ -24,7 +25,7 @@ router.get('/', (req, res, next) => {
 
 /* POST */
 router.post('/create', (req, res) => {
-    const query = `CREATE (n:User {name: '${req.body.name}', walletId: '${req.body.wallet_address}'})`
+    const query = `CREATE (user:User {id: '${req.body.id}', name: '${req.body.name}', wallet_address: '${req.body.wallet_address}'})`
     const session = dbUtils.getSession(req);
 
     session.run(query)
