@@ -15,8 +15,8 @@ With the rise in popularity of his NFT project Sketchings, Jeffrey has also had 
 While Jeffrey tries to address misinformation such as this as soon as he comes across them, he is unable to 
 ## Key Principles
 
-Community: To connect members of different communities in a structured manner and is gated by token ownership, allowing members to connect to one another and verify true ownership. 
+Community: To connect community members into a single platform through verified digital assets (proving ownership and membership within the community), as well as to enable new members to explore different communities and find a community fit for them. 
 
-Accessibility: We want to ensure all information that the community leaders want to share can be easily found with ease and can prevent the spread of misinformation within the web3 community. 
+Accessibility: To ensure all information that the community leaders want to share can be found with ease and are able to prevent the spread of misinformation within the web3 community. 
 
-Design: The design of the app should be welcoming and intuitive in order to encourage the use of Vectre and onboard the web3 community onto the social platform.
+Design: To design a web application that is modern and intuitive to encourage the use of Vectre and onboard others onto the social platform with minimal to no resistance.
