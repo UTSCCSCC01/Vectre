@@ -1,4 +1,4 @@
-# Vectre Labs
+# Vectre
 
 ## Motivation
 
@@ -42,7 +42,7 @@ Yes.
 - `task`/`bug` branches will be merged into `develop` as their PRs are approved
 
 ### What do you name your branches?
-Branches will use the following convention where `XXX` is the associated Jira ticket number:
+Branches will use the following convention where `VEC-XXX` is the associated Jira ticket number:
 - `VEC-XXX/task/{feat_name}`
 - `VEC-XXX/bug/{bug_name}`
 
