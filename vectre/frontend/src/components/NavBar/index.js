@@ -18,26 +18,7 @@ import { HiTrendingUp, HiSearch } from 'react-icons/hi'
 import { MdNotificationsActive } from 'react-icons/md'
 import { FaWallet } from 'react-icons/fa'
 
-import { ReactComponent as LogoIcon } from '../../assets/icons/logo-V.svg'
-
-const Logo = () => {
-    return (
-        <Box>
-            <IconButton
-                size='lg'
-                background={'#F9FBFF'}
-                icon={<LogoIcon height="3rem" filter={"drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))"} />}
-                boxShadow={'0px 30px 60px rgba(59, 130, 246, 0.25)'}
-                aria-label={'logo'}
-                isRound={'true'}
-                cursor={'unset'}
-                _focus={{ outline: 0 }}
-                _hover={{ background: '#F9FBFF' }}
-                _active={{ background: '#F9FBFF' }}>
-            </IconButton>
-        </Box>
-    );
-}
+import VectreIcon from '../Icons/VectreIcon'
 
 export default function NavBar() {
     return (
@@ -103,7 +84,7 @@ export default function NavBar() {
                 <GridItem
                     justifySelf={'center'}>
                     <Flex alignItems="center">
-                        <Logo />
+                        <VectreIcon />
                         <Text
                             textAlign={useBreakpointValue({ base: 'center', lg: 'left' })}
                             color={useColorModeValue('brand.400', 'white')}
