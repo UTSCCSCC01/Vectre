@@ -1,5 +1,7 @@
 # Vectre
 
+<img width="860" alt="vectre-image" src="https://user-images.githubusercontent.com/64259077/170800123-2a4079de-9c36-4e0a-8608-2e52e82897cc.png">
+
 ## Motivation
 Vectre is an all-in-one social platform for web3 communities. 
 
