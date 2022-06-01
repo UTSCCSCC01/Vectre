@@ -25,13 +25,9 @@ const LandingPageTopComponent = ({
                     pt={{ base: 12, lg: 20 }}
                     direction={{ base: 'column', lg: 'row' }}>
                     <Stack flex={1} spacing={{ base: 5, md: 10 }} pr={{ base: "0px", md: "50px" }}>
-                        <Heading
-                            fontWeight={600}
-                            letterSpacing={'1.5px'}
-                            lineHeight={{ sm: 1.1, lg: 0.8 }}
-                            fontSize={{ base: '4xl', lg: '6xl' }}>
+                        <Heading>
                             <Text
-                                as={'span'} color={'brand.400'}>
+                                as={'span'} color={'brand.400'} fontWeight={'700'} fontSize={{ base: "40px", md: '72px' }}>
                                 Vectre.
                             </Text>
                             <br />

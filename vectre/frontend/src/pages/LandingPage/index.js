@@ -11,7 +11,7 @@ const LandingPage = () => {
     <Box>
       <Box
         bg={"linear-gradient(180deg, #E4EFFF 0%, rgba(228, 239, 255, 0.6) 92.51%, rgba(228, 239, 255, 0) 100%)"}
-        height={'fit-content'}>
+        minHeight={'100vh'}>
         <Box position={"absolute !important"} zIndex={"0"} right={"0"} display={{ base: 'none', lg: 'block' }}>
           <LandingRect />
         </Box>

@@ -68,9 +68,8 @@ export default function WithSubnavigation() {
                         <Logo />
                         <Text
                             textAlign={useBreakpointValue({ base: 'center', lg: 'left' })}
-                            fontFamily={'heading'}
                             color={useColorModeValue('brand.400', 'white')}
-                            fontWeight={600}
+                            fontWeight={700}
                             fontSize="30px"
                             ml="15px">
                             Vectre
@@ -87,7 +86,7 @@ export default function WithSubnavigation() {
                     spacing={6}
                     display={{ base: 'none', lg: 'flex' }}>
                     <Link
-                        href='/test'
+                        href='/login'
                         _hover={{ textDecoration: "none" }}>
                         <Button
                             display={{ base: 'none', lg: 'inline-flex' }}
