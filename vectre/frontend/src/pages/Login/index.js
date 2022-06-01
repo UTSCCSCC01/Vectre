@@ -1,4 +1,5 @@
 import NavBar from '../../components/NavBar'
+import PreLogin from '../../components/PreLogin'
 import { ReactComponent as LandingRect } from '../../assets/icons/landing-rect.svg'
 import { Box } from '@chakra-ui/react'
 
@@ -12,9 +13,9 @@ const Login = () => {
           <LandingRect />
         </Box>
         <NavBar />
+        <PreLogin />
       </Box>
     </Box>
-
   );
 }
 
