@@ -1,5 +1,4 @@
 import {
-    Box,
     Flex,
     Text,
     IconButton,
@@ -23,12 +22,28 @@ import VectreIcon from '../Icons/VectreIcon'
 export default function NavBar() {
     return (
         <Container maxW={'8xl'}>
+            <Flex alignItems="center"
+                position={'fixed'}
+                top={'50px'}
+                left={'50%'}
+                text-align={'center'}
+                marginLeft={'-90px'}>
+                <VectreIcon />
+                <Text
+                    textAlign={useBreakpointValue({ base: 'center', lg: 'left' })}
+                    color={useColorModeValue('brand.400', 'white')}
+                    fontWeight={700}
+                    fontSize="30px"
+                    ml="15px">
+                    Vectre
+                </Text>
+            </Flex>
             <Grid
                 color={useColorModeValue('gray.600', 'white')}
                 pt={{ base: 10, lg: 12 }}
                 align={'center'}
                 alignItems={'center'}
-                gridTemplateColumns={'1fr 1fr 1fr'}>
+                gridTemplateColumns={'1fr 1fr'}>
                 <GridItem
                     justifySelf={'start'}>
                     <Stack
@@ -80,20 +95,6 @@ export default function NavBar() {
                             </Button>
                         </Link>
                     </Stack>
-                </GridItem>
-                <GridItem
-                    justifySelf={'center'}>
-                    <Flex alignItems="center">
-                        <VectreIcon />
-                        <Text
-                            textAlign={useBreakpointValue({ base: 'center', lg: 'left' })}
-                            color={useColorModeValue('brand.400', 'white')}
-                            fontWeight={700}
-                            fontSize="30px"
-                            ml="15px">
-                            Vectre
-                        </Text>
-                    </Flex>
                 </GridItem>
                 <GridItem
                     justifySelf={'end'}>
