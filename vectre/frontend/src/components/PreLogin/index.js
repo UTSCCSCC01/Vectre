@@ -66,7 +66,8 @@ const PreLogin = ({ ...otherProps }) => {
                                     bg={'rgba(255, 255, 255, 0.63)'}
                                     leftIcon={<MetamaskIcon transform={'scale(2)'} mr={'10px'} />}
                                     _focus={{ outline: 0 }}
-                                    border={'2px solid var(--chakra-colors-primary-400)'}>
+                                    border={'2px solid var(--chakra-colors-primary-400)'}
+                                    onClick={otherProps.connectAccount}>
                                     Connect with Metamask
                                 </Button>
                             </Link>
