@@ -4,8 +4,7 @@ import {
     Box,
     Flex,
     Text,
-    Button,
-    Link
+    Button
 } from '@chakra-ui/react';
 import MetamaskIcon from '../Icons/MetamaskIcon'
 import VectreIcon from '../Icons/VectreIcon'
@@ -39,7 +38,7 @@ const PreLogin = ({ ...otherProps }) => {
                                 Vectre
                             </Text>
                         </Flex>
-                        <Text color={'brand.400'} fontSize={{ base: "20px", md: '30px' }} mt={'60px !important'}>
+                        <Text color={'brand.400'} fontSize={{ base: "20px", md: '30px' }} mt={'53px !important'}>
                             To use Vectre,
                             <Text
                                 as={'span'} color={'brand.400'} fontWeight={'700'}> connect </Text>
@@ -52,25 +51,21 @@ const PreLogin = ({ ...otherProps }) => {
                             spacing={{ base: 4, sm: 6 }}
                             direction={'column'}
                             mt={'60px !important'}>
-                            <Link
-                                href='#'
-                                _hover={{ textDecoration: "none" }}>
-                                <Button
-                                    rounded={'6px'}
-                                    size={'lg'}
-                                    fontWeight={700}
-                                    px={'60px'}
-                                    py={'23px'}
-                                    fontSize={'sm'}
-                                    textColor={'primary.400'}
-                                    bg={'rgba(255, 255, 255, 0.63)'}
-                                    leftIcon={<MetamaskIcon transform={'scale(2)'} mr={'10px'} />}
-                                    _focus={{ outline: 0 }}
-                                    border={'2px solid var(--chakra-colors-primary-400)'}
-                                    onClick={otherProps.connectAccount}>
-                                    Connect with Metamask
-                                </Button>
-                            </Link>
+                            <Button
+                                rounded={'6px'}
+                                size={'lg'}
+                                fontWeight={700}
+                                px={'60px'}
+                                py={'23px'}
+                                fontSize={'sm'}
+                                textColor={'primary.400'}
+                                bg={'rgba(255, 255, 255, 0.63)'}
+                                leftIcon={<MetamaskIcon transform={'scale(2)'} mr={'10px'} />}
+                                _focus={{ outline: 0 }}
+                                border={'2px solid rgba(59, 130, 246, 0.54)'}
+                                onClick={otherProps.connectAccount}>
+                                Connect with Metamask
+                            </Button>
                         </Stack>
                     </Stack>
                 </Flex>

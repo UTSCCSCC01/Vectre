@@ -12,7 +12,7 @@ import {
     GridItem
 } from '@chakra-ui/react';
 
-import { BsGearWideConnected } from 'react-icons/bs'
+import { IoHome } from 'react-icons/io5'
 import { HiTrendingUp, HiSearch } from 'react-icons/hi'
 import { MdNotificationsActive } from 'react-icons/md'
 import { FaWallet } from 'react-icons/fa'
@@ -60,7 +60,7 @@ export default function NavBar() {
                                 color={'primary.400'}
                                 isRound={'true'}
                                 bg={'white'}
-                                icon={<BsGearWideConnected size="1.5rem" />}
+                                icon={<IoHome size="1.5rem" />}
                                 _focus={{ outline: 0 }}>
                             </IconButton>
                         </Link>
