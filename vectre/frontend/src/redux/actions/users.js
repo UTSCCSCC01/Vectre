@@ -1,8 +1,14 @@
 import {
+    GET_USER,
     GET_USERS,
     STORE_USERS,
     CREATE_USER,
 } from "../constants/users";
+
+export const getUser = (user) => ({
+    type: GET_USER,
+    user
+})
 
 export const getUsers = () => ({
     type: GET_USERS
