@@ -3,6 +3,7 @@ var router = express.Router();
 
 const dbUtils = require('../neo4j/dbUtils');
 const User = require('../models/neo4j/user');
+const Users = require('../models/users');
 
 /* GET */
 router.get('/', (req, res, next) => {
@@ -45,9 +46,17 @@ router.put('/', (req, res) => {
 });
 
 /* DELETE */
-router.delete('/', (req, res) => {
-    res.send('Got a DELETE request')
-    console.log(req.body)
-});
+router.delete('/delete', (req, res) => {
+    if (!req.body.wallet_address)
+        res.send({success: false, message: "Invalid wallet address"})
+    else {
+        Users.deleteUser(dbUtils.getSession(req), req.body.wallet_address)
+            .then(response => res.send({success: true, message: response}))
+            .catch((error) => {
+                console.error(error)
+                res.send({success: false, message: "Failed to delete user"})
+            })
+    }
+})
 
 module.exports = router;
