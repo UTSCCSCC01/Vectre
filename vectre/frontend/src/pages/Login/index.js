@@ -1,40 +1,47 @@
-import NavBar from '../../components/NavBar'
+import PreLoginNavBar from '../../components/PreLoginNavBar'
 import PreLogin from '../../components/PreLogin'
+import UserSetupForm from '../../components/UserSetupForm'
 import { ReactComponent as LandingRect } from '../../assets/icons/landing-rect.svg'
-import { Box, Text } from '@chakra-ui/react'
-import { createUser, getUser } from "../../redux/actions/users";
+import {
+  Box,
+  useDisclosure
+} from '@chakra-ui/react'
+import React, { useEffect, useState } from 'react'
+import { getUser } from "../../redux/actions/users";
 import { useDispatch, useSelector } from 'react-redux';
 
 const Login = () => {
+  const { isOpen, onClose, onOpen } = useDisclosure();
   const users = useSelector(state => state && state.users && state.users.users);
   const login = useSelector(state => state.login);
   const dispatch = useDispatch();
+
+  const [wallet, setWallet] = useState("");
 
   async function connectAccount() {
     if (window.ethereum) {
       const accounts = await window.ethereum.request({
         method: "eth_requestAccounts"
       });
-      // console.log(accounts);
       let user = {
         wallet_address: accounts[0]
       }
       dispatch(getUser(user))
+      setWallet(user.wallet_address)
     }
   }
 
-  if (login.response.success === false) {
-    // if success is false, show set up page
-    console.log('is false')
-  }
-  else if (login.response.success === true) {
-    // if success is true, setup cookies for auth, move to feed page
-    console.log('is true')
-  }
-  else {
-    // if success is undefined, 
-    console.log('is undefined')
-  }
+  useEffect(() => {
+    if (login.response.success === false) {
+      // if success is false, show set up page
+      onOpen()
+      console.log(wallet);
+    }
+    else if (login.response.success === true) {
+      // if success is true, setup cookies for auth, move to feed page
+      window.location = '/feed'
+    }
+  }, [login, onOpen, wallet])
 
   return (
     <Box>
@@ -45,10 +52,10 @@ const Login = () => {
           <LandingRect />
         </Box>
         <Box>
-          <NavBar connectAccount={connectAccount} />
+          <PreLoginNavBar connectAccount={connectAccount} />
           <PreLogin connectAccount={connectAccount} />
         </Box>
-        <Text>{login.response.message}</Text>
+        <UserSetupForm isOpen={isOpen} onClose={onClose} onOpen={onOpen} walletAddress={wallet} />
       </Box>
     </Box>
   );
