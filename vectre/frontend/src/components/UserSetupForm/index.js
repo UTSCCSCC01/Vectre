@@ -17,7 +17,7 @@ import {
 
 import { FaUser } from 'react-icons/fa'
 
-const UserSetupForm = ({ isOpen, onClose, onOpen, walletAddress }) => {
+const UserSetupForm = ({ isOpen, onClose, onOpen, walletAddress, dispatch, createUser }) => {
     return (
         <>
             <Modal
@@ -62,11 +62,15 @@ const UserSetupForm = ({ isOpen, onClose, onOpen, walletAddress }) => {
                         px={{ base: '24px', md: '64px' }}>
                         <form
                             id="setup-form"
-                            // action="/"
-                            // method="POST"
                             onSubmit={(event) => {
                                 event.preventDefault();
-                                alert('hi');
+                                let new_user = {
+                                    name: event.target.name.value,
+                                    username: event.target.username.value,
+                                    bio: event.target.bio.value,
+                                    wallet_address: walletAddress
+                                }
+                                dispatch(createUser(new_user));
                                 onClose();
                             }}
                         >

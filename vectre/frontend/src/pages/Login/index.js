@@ -7,12 +7,11 @@ import {
   useDisclosure
 } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
-import { getUser } from "../../redux/actions/users";
+import { createUser, getUser } from "../../redux/actions/users";
 import { useDispatch, useSelector } from 'react-redux';
 
 const Login = () => {
   const { isOpen, onClose, onOpen } = useDisclosure();
-  const users = useSelector(state => state && state.users && state.users.users);
   const login = useSelector(state => state.login);
   const dispatch = useDispatch();
 
@@ -35,11 +34,11 @@ const Login = () => {
     if (login.response.success === false) {
       // if success is false, show set up page
       onOpen()
-      console.log(wallet);
     }
     else if (login.response.success === true) {
       // if success is true, setup cookies for auth, move to feed page
-      window.location = '/feed'
+      console.log("moving to feed. user_data: ", login.response.user_data)
+      // window.location = '/feed'
     }
   }, [login, onOpen, wallet])
 
@@ -55,7 +54,7 @@ const Login = () => {
           <PreLoginNavBar connectAccount={connectAccount} />
           <PreLogin connectAccount={connectAccount} />
         </Box>
-        <UserSetupForm isOpen={isOpen} onClose={onClose} onOpen={onOpen} walletAddress={wallet} />
+        <UserSetupForm isOpen={isOpen} onClose={onClose} onOpen={onOpen} walletAddress={wallet} dispatch={dispatch} createUser={createUser} />
       </Box>
     </Box>
   );

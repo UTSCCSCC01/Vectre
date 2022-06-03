@@ -63,8 +63,14 @@ function* getUsers() {
 function* createUser(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + USERS.CREATE_USER, action.user)
-        yield put(storeUsers(response))
-        console.log(response);
+        if (response.success) {
+            // if response was sucessful, show successful message
+            console.log(response);
+        }
+        else {
+            // if response was unsucessful, show faulure message
+            console.log(response);
+        }
     } catch (error) {
         console.log(`ERROR: ${error.message}`)
     }
