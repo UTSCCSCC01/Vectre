@@ -32,16 +32,16 @@ router.post('/create', (req, res) => {
         .then((results) => {
             const on_success_data = {
                 success: true,
-                message: "User created.",
+                message: "User created sucessfully.",
             }
             res.send(on_success_data);
         })
         .catch((error) => {
             const on_fail_data = {
                 success: false,
-                message: "Failed to create user. Error: " + error,
+                message: "Failed to create user",
+                error: error.message
             }
-            console.error(error);
             res.send(on_fail_data);
         });
 });
