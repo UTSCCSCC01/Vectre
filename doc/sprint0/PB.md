@@ -1,24 +1,24 @@
-# Product backlog
+# Product Backlog
 
-| User Story                                                                                                                                                                                                  |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| As a user or moderator, I want to be able to sign up on Vectre by connecting my Metamask wallet so that I can have my own personalized account.                                                             |
-| As a user or moderator, I want to be able to edit my profile details so that I can customize the appearance and details of my profile such as: profile picture, bio, links, community badges.               |
-| As a user or moderator, I want to have a personal profile NFT dashboard so that I can share my NFTs and posts for others to see.                                                                            |
-| As a user or moderator, I want to be able to show that my NFTs are verified so that other users can see that I own it.                                                                                      |
-| As a user or moderator, I want to be able to join a community so that I can interact with others with similar NFT collections and similar interests.                                                        |
-| As a user or moderator, I want to be able to create a post so that I can contribute to the community and share information to other users and community members.                                            |
-| As a user or moderator, I want to be able to like and comment on other user's post so that I can express my appreciation or opinion for a particular post.                                                  |
-| As a user or moderator, I want to be able to bookmark/save other users' posts so that I can keep particular post for future reference and ease of access.                                                   |
-| As a user or moderator, I want to be able to repost another user/communitie's post so that I can spread awareness of the post.                                                                              |
-| As a user or moderator, I want to have a personal feed that shows posts of the communities I joined and posts from users that I follow so that I stay up to date with communities/users I am interested in. |
-| As a user or moderator, I want to be able to filter/sort my personal feed so that I can have more flexability and customization for the posts I would like to see.                                          |
-| As a user or moderator, I want to see notifications so that I can be alerted when interactions are performed from users/communities that I follow/joined.                                                   |
-| As a user or moderator, I want to be able to search for users/communities so that I can find users/communities that I am interested in or a part of.                                                        |
-| As a user or moderator, I want to be able to see trending communities so that I can explore different communities or join a community that is trending.                                                     |
-| As a user or moderator, I want to be able to see my wallet's funds so that I can keep note of my ability to keep track of my funds effectively and join communities.                                        |
-| As a moderator, I want to be able to create a proposal so that I can create guidelines for members of my community to vote on.                                                                              |
-| As a moderator, I want to be able to set moderator settings such as regulate/customize the community profile, set community guidelines, manage members of the community.                                    |
-| As a user or moderator, I want to be able to customize notifications settings so that I can filter through certain interactions or mute notifications.                                                      |
-| As a user or moderator, I want to be able to delete my account so that I can remove myself from the app and communities I am a part of entirely.                                                            |
-| As a user, I want to be able to vote on community proposals so that I can voice my opinion and shape the structure and guidelines of the communities I joined.                                              |
+| User Story                                                                                                                                                                                                  | Priority  |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| As a user or moderator, I want to be able to sign up on Vectre by connecting my Metamask wallet so that I can have my own personalized account.                                                             | Very High |
+| As a user or moderator, I want to be able to edit my profile details so that I can customize the appearance and details of my profile such as: profile picture, bio, links, community badges.               | High      |
+| As a user or moderator, I want to have a personal profile NFT dashboard so that I can share my NFTs and posts for others to see.                                                                            | Medium    |
+| As a user or moderator, I want to be able to show that my NFTs are verified so that other users can see that I own it.                                                                                      | High      |
+| As a user or moderator, I want to be able to join a community so that I can interact with others with similar NFT collections and similar interests.                                                        | Very High |
+| As a user or moderator, I want to be able to create a post so that I can contribute to the community and share information to other users and community members.                                            | Very High |
+| As a user or moderator, I want to be able to like and comment on other user's post so that I can express my appreciation or opinion for a particular post.                                                  | Medium    |
+| As a user or moderator, I want to be able to bookmark/save other users' posts so that I can keep particular post for future reference and ease of access.                                                   | Low       |
+| As a user or moderator, I want to be able to repost another user/communitie's post so that I can spread awareness of the post.                                                                              | Low       |
+| As a user or moderator, I want to have a personal feed that shows posts of the communities I joined and posts from users that I follow so that I stay up to date with communities/users I am interested in. | High      |
+| As a user or moderator, I want to be able to filter/sort my personal feed so that I can have more flexability and customization for the posts I would like to see.                                          | Low       |
+| As a user or moderator, I want to see notifications so that I can be alerted when interactions are performed from users/communities that I follow/joined.                                                   | Medium    |
+| As a user or moderator, I want to be able to search for users/communities so that I can find users/communities that I am interested in or a part of.                                                        | Medium    |
+| As a user or moderator, I want to be able to see trending communities so that I can explore different communities or join a community that is trending.                                                     | Medium    |
+| As a user or moderator, I want to be able to see my wallet's funds so that I can keep note of my ability to keep track of my funds effectively and join communities.                                        | Medium    |
+| As a moderator, I want to be able to create a proposal so that I can create guidelines for members of my community to vote on.                                                                              | High      |
+| As a moderator, I want to be able to set moderator settings such as regulate/customize the community profile, set community guidelines, manage members of the community.                                    | High      |
+| As a user or moderator, I want to be able to customize notifications settings so that I can filter through certain interactions or mute notifications.                                                      | Medium    |
+| As a user or moderator, I want to be able to delete my account so that I can remove myself from the app and communities I am a part of entirely.                                                            | Medium    |
+| As a user, I want to be able to vote on community proposals so that I can voice my opinion and shape the structure and guidelines of the communities I joined.                                              | High      |
