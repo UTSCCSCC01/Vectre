@@ -12,6 +12,7 @@ import {
     USERS
 } from "../constants/endpoints";
 import { getLogin } from "../actions/login";
+import { getCreate } from "../actions/create";
 
 const getRequest = (url) => {
     return fetch(url, {
@@ -65,10 +66,12 @@ function* createUser(action) {
         const response = yield call(postRequest, BASE_API_URL + USERS.CREATE_USER, action.user)
         if (response.success) {
             // if response was sucessful, show successful message
+            yield put(getCreate(response))
             console.log(response);
         }
         else {
-            // if response was unsucessful, show faulure message
+            // if response was unsucessful, show failure message
+            yield put(getCreate(response))
             console.log(response);
         }
     } catch (error) {

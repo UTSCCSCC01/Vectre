@@ -16,8 +16,33 @@ import {
 } from "@chakra-ui/react";
 
 import { FaUser } from 'react-icons/fa'
+import React, { useEffect } from 'react'
+import { useToast } from '@chakra-ui/react'
 
-const UserSetupForm = ({ isOpen, onClose, onOpen, walletAddress, dispatch, createUser }) => {
+const UserSetupForm = ({ isOpen, onClose, onOpen, walletAddress, dispatch, createUser, create }) => {
+    const toast = useToast()
+
+    useEffect(() => {
+        if (create.response.success === false) {
+            console.log("create failed!")
+            toast({
+                title: create.response.error.includes("username") ? create.response.message + " (Username taken)" : create.response.error,
+                status: 'error',
+                position: 'bottom',
+                isClosable: true
+            })
+        }
+        else if (create.response.success === true) {
+            console.log("create success!")
+            toast({
+                title: create.response.message,
+                status: 'success',
+                position: 'bottom',
+                isClosable: true
+            })
+        }
+    }, [create, toast])
+
     return (
         <>
             <Modal
@@ -72,6 +97,11 @@ const UserSetupForm = ({ isOpen, onClose, onOpen, walletAddress, dispatch, creat
                                 }
                                 dispatch(createUser(new_user));
                                 onClose();
+                                // toast({
+                                //     title: `error toast`,
+                                //     status: create.response.message,
+                                //     isClosable: true,
+                                // })
                             }}
                         >
                             <FormControl

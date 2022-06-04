@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 const Login = () => {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const login = useSelector(state => state.login);
+  const create = useSelector(state => state.create);
   const dispatch = useDispatch();
 
   const [wallet, setWallet] = useState("");
@@ -54,7 +55,7 @@ const Login = () => {
           <PreLoginNavBar connectAccount={connectAccount} />
           <PreLogin connectAccount={connectAccount} />
         </Box>
-        <UserSetupForm isOpen={isOpen} onClose={onClose} onOpen={onOpen} walletAddress={wallet} dispatch={dispatch} createUser={createUser} />
+        <UserSetupForm isOpen={isOpen} onClose={onClose} onOpen={onOpen} walletAddress={wallet} dispatch={dispatch} createUser={createUser} create={create} />
       </Box>
     </Box>
   );
