@@ -27,13 +27,25 @@ router.get('/', (req, res, next) => {
 /* POST */
 router.post('/createUser', (req, res) => {
     const session = dbUtils.getSession(req);
-    createUser(res, session, req.body)
+    createUser(session, req.body)
+        .then((result) => {
+            res.send(result);
+        })
+        .catch((error) => {
+            res.send(error);
+        })
 });
 
 /* POST */
 router.post('/getUser', (req, res) => {
     const session = dbUtils.getSession(req);
-    getUser(res, session, req.body.wallet_address);
+    getUser(session, req.body.wallet_address)
+        .then((result) => {
+            res.send(result);
+        })
+        .catch((error) => {
+            res.send(error);
+        })
 });
 
 /* PUT */
