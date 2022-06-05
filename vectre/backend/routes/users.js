@@ -3,6 +3,7 @@ var router = express.Router();
 
 const dbUtils = require('../neo4j/dbUtils');
 const User = require('../models/neo4j/user');
+const { getUser, createUser } = require('../models/user');
 
 /* GET */
 router.get('/', (req, res, next) => {
@@ -24,60 +25,27 @@ router.get('/', (req, res, next) => {
 });
 
 /* POST */
-router.post('/create', (req, res) => {
-    const query = `CREATE (user:User {name: '${req.body.name}', username: '${req.body.username}', wallet_address: '${req.body.wallet_address}', bio: '${req.body.bio}'});`
+router.post('/createUser', (req, res) => {
     const session = dbUtils.getSession(req);
-
-    session.run(query)
-        .then((results) => {
-            const on_success_data = {
-                success: true,
-                message: "User created sucessfully.",
-            }
-            res.send(on_success_data);
+    createUser(session, req.body)
+        .then((result) => {
+            res.send(result);
         })
         .catch((error) => {
-            const on_fail_data = {
-                success: false,
-                message: "Failed to create user",
-                error: error.message
-            }
-            res.send(on_fail_data);
-        });
+            res.send(error);
+        })
 });
 
 /* POST */
 router.post('/getUser', (req, res) => {
-    const query = `MATCH (user:User {wallet_address:"${req.body.wallet_address}"}) RETURN user;`
     const session = dbUtils.getSession(req);
-    session.run(query)
-        .then((results) => {
-            let response_data = {}
-            results.records.forEach((record) => {
-                response_data = {
-                    success: true,
-                    message: "User wallet_address already exists.",
-                    user_data: new User(record.get('user'))
-                }
-            });
-            if (Object.keys(response_data).length === 0) {
-                response_data = {
-                    success: false,
-                    message: "User wallet_address doesn't exist. Please register your account.",
-                    user_data: null
-                }
-            }
-            res.send(response_data);
+    getUser(session, req.body.wallet_address)
+        .then((result) => {
+            res.send(result);
         })
         .catch((error) => {
-            console.error(error);
-            const response_data = {
-                success: false,
-                message: "User wallet_address doesn't exist. Please register your account.",
-                user_data: null
-            }
-            res.send(response_data);
-        });
+            res.send(error);
+        })
 });
 
 /* PUT */
