@@ -20,7 +20,10 @@
 .env.test.local
 .env.production.local
 /vectre/backend/.env
+/vectre/backend/.env.production
+/vectre/backend/.env.development
 /vectre/frontend/.env
+.idea
 
 npm-debug.log*
 yarn-debug.log*

@@ -25,7 +25,7 @@ router.get('/', (req, res, next) => {
 
 /* POST */
 router.post('/create', (req, res) => {
-    const query = `CREATE (user:User {id: '${req.body.id}', name: '${req.body.name}', wallet_address: '${req.body.wallet_address}'})`
+    const query = `CREATE (user:User {id: '${req.body.id}', name: '${req.body.name}', username: '${req.body.username}', wallet_address: '${req.body.wallet_address}'})`
     const session = dbUtils.getSession(req);
 
     session.run(query)
