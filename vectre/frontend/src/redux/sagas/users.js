@@ -13,69 +13,41 @@ import {
 } from "../constants/endpoints";
 import { getLogin } from "../actions/login";
 import { getCreate } from "../actions/create";
+import { getRequest, postRequest } from "./index";
 
-const getRequest = (url) => {
-    return fetch(url, {
-        method: "GET"
-    })
-        .then(response => response.json())
-        .catch(error => { throw error })
-}
-
-const postRequest = (url, data) => {
-    return fetch(url, {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-        .then(response => response.json())
-        .catch(error => { throw error })
-}
 
 // this function gets one user and sees if the user exists in db or not
-function* getUser(action) {
+function* getUser(action) { // Checks if a user exists in DB & returns associated user
     try {
-        const response = yield call(postRequest, BASE_API_URL + USERS.GET_USER, action.user)
-        yield put(getLogin(response))
-        if (response.success) {
-            // if response was sucessful, store user_data into storeUsers
-            yield put(storeUsers([response.user_data]))
-        }
-        else {
-            // if response was unsucessful, go to setup page
-            console.log(response.success);
-        }
+        const response = yield call(postRequest, BASE_API_URL + USERS.GET_USER, action.user), responseData = response[1]
+        yield put(getLogin(responseData))
+        if (responseData.success) // Store user
+            yield put(storeUsers([responseData.user_data]))
+        else // TODO: Redirect to setup page
+            console.log(responseData.success);
     } catch (error) {
-        console.log(`ERROR: ${error.message}`)
+        console.log(error)
     }
 }
 
 function* getUsers() {
     try {
-        const response = yield call(getRequest, BASE_API_URL + USERS.GET_USERS)
-        yield put(storeUsers(response))
+        const response = yield call(getRequest, BASE_API_URL + USERS.GET_USERS), responseData = response[1]
+        yield put(storeUsers(responseData))
     } catch (error) {
-        console.log(`ERROR: ${error.message}`)
+        console.log(error)
     }
 }
 
 function* createUser(action) {
     try {
-        const response = yield call(postRequest, BASE_API_URL + USERS.CREATE_USER, action.user)
-        if (response.success) {
-            // if response was sucessful, show successful message
-            yield put(getCreate(response))
-            console.log(response);
-        }
-        else {
-            // if response was unsucessful, show failure message
-            yield put(getCreate(response))
-            console.log(response);
+        const response = yield call(postRequest, BASE_API_URL + USERS.CREATE_USER, action.user), responseData = response[1]
+        if (responseData.success) { // TODO: Show success message
+            yield put(getCreate(responseData))
+        } else { // TODO: Show failure message
         }
     } catch (error) {
-        console.log(`ERROR: ${error.message}`)
+        console.log(error)
     }
 }
 
