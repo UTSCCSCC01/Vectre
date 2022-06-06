@@ -1,63 +1,28 @@
 var express = require('express');
 var router = express.Router();
 
-const dbUtils = require('../neo4j/dbUtils');
-const User = require('../models/neo4j/user');
-const { getUser, createUser } = require('../models/user');
+const User = require('../models/user');
+const dbUtils = require('../utils/neo4j/dbUtils');
 
-/* GET */
+// GET /users
 router.get('/', (req, res, next) => {
-    const query = "MATCH (user:User) RETURN user";
-    const session = dbUtils.getSession(req);
-    const users = []
+    User.getAll(dbUtils.getSession(req))
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
 
-    session.run(query)
-        .then((results) => {
-            results.records.forEach((record) => {
-                users.push(new User(record.get('user')))
-            });
-            res.send(users);
-        })
-        .catch((error) => {
-            console.error(error);
-            res.send("Failed to get users. Error: " + error);
-        });
-});
+// GET /users/{wallet_address}
+router.get('/:wallet_address', (req, res) => {
+    User.getByWalletAddress(dbUtils.getSession(req), req.params.wallet_address)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
 
-/* POST */
-router.post('/createUser', (req, res) => {
-    const session = dbUtils.getSession(req);
-    createUser(session, req.body)
-        .then((result) => {
-            res.send(result);
-        })
-        .catch((error) => {
-            res.send(error);
-        })
-});
-
-/* POST */
-router.post('/getUser', (req, res) => {
-    const session = dbUtils.getSession(req);
-    getUser(session, req.body.wallet_address)
-        .then((result) => {
-            res.send(result);
-        })
-        .catch((error) => {
-            res.send(error);
-        })
-});
-
-/* PUT */
-router.put('/', (req, res) => {
-    res.send('Got a PUT request')
-    console.log(req.body)
-});
-
-/* DELETE */
-router.delete('/', (req, res) => {
-    res.send('Got a DELETE request')
-    console.log(req.body)
-});
+// POST /users/register
+router.post('/register', (req, res) => {
+    User.register(dbUtils.getSession(req), req.body)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
 
 module.exports = router;

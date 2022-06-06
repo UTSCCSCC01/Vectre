@@ -1,47 +1,67 @@
 const _ = require('lodash')
 const User = require('./neo4j/user')
 
-// use auto commit transaction for simplicity.
+const getAll = (session) => { // Returns all Users
+    const query = "MATCH (user:User) RETURN user";
+    return session.run(query)
+        .then((results) => {
+            let users = []
+            results.records.forEach((record) => {
+                users.push(new User(record.get('user')))
+            })
+            return {success: true, users: users}
+        })
+        .catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to get Users"
+            }
+        });
+}
 
-const createUser = function (session, body) {
-    /* Creates the user with the following information from body
-    */
+const getByWalletAddress = (session, wallet_address) => { // Return the first User node w/ wallet_address
+    const query = `MATCH (user: User {wallet_address : '${wallet_address}'}) RETURN user`
+    return session.run(query)
+        .then((results) => {
+            if (_.isEmpty(results.records)) {
+                throw {
+                    success: false,
+                    message: `User with wallet address ${wallet_address} does not exist`
+                }
+            } else {
+                return {
+                    success: true,
+                    user: new User(results.records[0].get('user'))
+                }
+            }
+        }).catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to get User",
+                error: error.message
+            }
+        })
+}
+
+const create = (session, body) => { // Creates User from body data
     const query = `CREATE (user:User {name: '${body.name}', username: '${body.username}', wallet_address: '${body.wallet_address}', bio: '${body.bio}'});`
-
     return session.run(query)
         .then((results) => {
             return {
                 success: true,
-                message: "User created sucessfully.",
-            };
+                user: new User(results.records[0].get('user'))
+            }
         })
         .catch((error) => {
-            return {
+            throw {
                 success: false,
-                message: "Failed to create user",
+                message: "Failed to create User",
                 error: error.message
-            };
-        });
-}
-
-const getUser = function (session, wallet) {
-    /* Return the first user object with matching wallet.
-    */
-    const findQuery = `MATCH (user: User {wallet_address : '${wallet}'}) RETURN user`
-    return session.run(findQuery)
-        .then((results) => {
-            if (_.isEmpty(results.records)) {
-                return { success: false, user_data: null, message: "User wallet_address doesn't exist. Please register your account." }
             }
-            else {
-                return { success: true, message: "User wallet_address already exists.", user_data: new User(results.records[0].get('user')) }
-            }
-        }).catch((error) => {
-            return { success: false, error: error.message, user_data: null, message: "Error while searching. Please try again." }
         })
 }
 
-const updateUser = function (session, wallet, newUser) {
+const update = (session, wallet, newUser) => {
     /* Update the user profile of the wallet owner using newUser.
      * newUser must be a user object similar to how neo4j stores user.
     */
@@ -60,7 +80,8 @@ const updateUser = function (session, wallet, newUser) {
 }
 
 module.exports = {
-    createUser: createUser,
-    getUser: getUser,
-    updateUser: updateUser
+    getAll: getAll,
+    getByWalletAddress: getByWalletAddress,
+    register: create,
+    update: update
 }
