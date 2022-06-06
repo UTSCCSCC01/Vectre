@@ -15,8 +15,6 @@ import { getLogin } from "../actions/login";
 import { getCreate } from "../actions/create";
 import { getRequest, postRequest } from "./index";
 
-
-// this function gets one user and sees if the user exists in db or not
 function* getUser(action) { // Checks if a user exists in DB & returns associated user
     try {
         const response = yield call(postRequest, BASE_API_URL + USERS.GET_USER, action.user), responseData = response[1]

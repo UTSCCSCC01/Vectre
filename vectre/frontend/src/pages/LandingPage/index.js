@@ -1,8 +1,8 @@
-import LandingPageNavBar from '../../components/LandingPageNavBar'
-import LandingPageTopComponent from '../../components/LandingPageTopComponent'
-import LandingPageMidComponent from '../../components/LandingPageMidComponent'
-import LandingPageBotComponent from '../../components/LandingPageBotComponent'
-import LandingPageFooter from '../../components/LandingPageFooter'
+import LandingPageNavBar from '../../components/LandingPage/LandingPageNavBar'
+import LandingPageTopComponent from '../../components/LandingPage/LandingPageTopComponent'
+import LandingPageMidComponent from '../../components/LandingPage/LandingPageMidComponent'
+import LandingPageBotComponent from '../../components/LandingPage/LandingPageBotComponent'
+import LandingPageFooter from '../../components/LandingPage/LandingPageFooter'
 import { ReactComponent as LandingRect } from '../../assets/icons/landing-rect.svg'
 import { Box } from '@chakra-ui/react'
 

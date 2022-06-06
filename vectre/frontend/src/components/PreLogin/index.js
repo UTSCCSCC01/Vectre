@@ -4,7 +4,8 @@ import {
     Box,
     Flex,
     Text,
-    Button
+    Button,
+    Link
 } from '@chakra-ui/react';
 import MetamaskIcon from '../Icons/MetamaskIcon'
 import VectreIcon from '../Icons/VectreIcon'
@@ -66,6 +67,12 @@ const PreLogin = ({ ...otherProps }) => {
                                 onClick={otherProps.connectAccount}>
                                 Connect with Metamask
                             </Button>
+                            <Link
+                                fontSize={'sm'}
+                                align={'center'}
+                                href={"https://metamask.io/download/"}>
+                                Don't have a Metamask wallet?
+                            </Link>
                         </Stack>
                     </Stack>
                 </Flex>
