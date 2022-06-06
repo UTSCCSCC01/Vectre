@@ -1,5 +1,4 @@
 import NavBar from "../../components/NavBar";
-import { ReactComponent as EditIcon } from "../../assets/icons/edit-icon.svg";
 import {
   Container,
   Stack,
@@ -9,6 +8,9 @@ import {
   Button,
   Link,
 } from "@chakra-ui/react";
+import TextAreaComponent from "../../components/TextAreaComponent";
+import { ReactComponent as EditIcon } from "../../assets/icons/edit-icon.svg";
+import UserProfileTorso from "../../assets/icons/Alarm.svg";
 
 const Profile = () => {
   return (
@@ -40,19 +42,19 @@ const Profile = () => {
           justifyContent={"right"}
         >
           <Button
-            width={"25%"}
+            width={"18%"}
             rounded={"6px"}
             size={"lg"}
             fontWeight={700}
-            px={8}
-            py={8}
-            rightIcon={<EditIcon h={4} w={4} mr={2} color={"white"} />}
+            px={4}
+            py={4}
             fontSize={"sm"}
             textColor={"white"}
             bg={"#3B82F6"}
             boxShadow={"0px 30px 60px rgba(59, 130, 246, 0.25)"}
             _hover={{ bg: "#3B82F6dd" }}
             _focus={{ outline: 0 }}
+            rightIcon={<EditIcon h={4} w={4} mr={2} color={"white"} />}
           >
             Edit
           </Button>
@@ -71,6 +73,7 @@ const Profile = () => {
           >
             Name:{" "}
           </Text>
+          <TextAreaComponent></TextAreaComponent>
           <Text
             textAlign={"left"}
             textColor={"#3B82F6"}
@@ -96,12 +99,12 @@ const Profile = () => {
           justifyContent={"right"}
         >
           <Button
-            width={"25%"}
+            width={"18%"}
             rounded={"6px"}
             size={"lg"}
             fontWeight={700}
-            px={8}
-            py={8}
+            px={3}
+            py={3}
             fontSize={"sm"}
             textColor={"white"}
             bg={"#3B82F6"}
