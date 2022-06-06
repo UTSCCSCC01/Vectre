@@ -22,6 +22,7 @@ class UsersTest extends React.Component {
     handleCreateUser = () => {
         let user = {
             name: "Test User",
+            username: "test_user",
             wallet_address: "1234567890"
         }
         this.props.createUser(user)

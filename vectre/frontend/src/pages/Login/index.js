@@ -1,4 +1,4 @@
-import PreLoginNavBar from '../../components/PreLoginNavBar'
+import PreLoginNavBar from '../../components/PreLogin/PreLoginNavBar'
 import PreLogin from '../../components/PreLogin'
 import UserSetupForm from '../../components/UserSetupForm'
 import { ReactComponent as LandingRect } from '../../assets/icons/landing-rect.svg'
@@ -39,7 +39,7 @@ const Login = () => {
     else if (login.response.success === true) {
       // if success is true, setup cookies for auth, move to feed page
       console.log("moving to feed. user_data: ", login.response.user_data)
-      // window.location = '/feed'
+      window.location.href = "/feed"
     }
   }, [login, onOpen, wallet])
 

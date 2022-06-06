@@ -17,10 +17,10 @@ import { getRequest, postRequest } from "./index";
 
 function* getUser(action) { // Checks if a user exists in DB & returns associated user
     try {
-        const response = yield call(postRequest, BASE_API_URL + USERS.GET_USER, action.user), responseData = response[1]
+        const response = yield call(getRequest, BASE_API_URL + USERS.GET_USERS + `/${action.user.wallet_address}`), responseData = response[1]
         yield put(getLogin(responseData))
         if (responseData.success) // Store user
-            yield put(storeUsers([responseData.user_data]))
+            yield put(storeUsers([responseData.user]))
         else // TODO: Redirect to setup page
             console.log(responseData.success);
     } catch (error) {
@@ -31,7 +31,10 @@ function* getUser(action) { // Checks if a user exists in DB & returns associate
 function* getUsers() {
     try {
         const response = yield call(getRequest, BASE_API_URL + USERS.GET_USERS), responseData = response[1]
-        yield put(storeUsers(responseData))
+        if (responseData.success) {
+            yield put(storeUsers(responseData.users))
+        } else { // TODO: Show error message
+        }
     } catch (error) {
         console.log(error)
     }
@@ -42,7 +45,7 @@ function* createUser(action) {
         const response = yield call(postRequest, BASE_API_URL + USERS.CREATE_USER, action.user), responseData = response[1]
         if (responseData.success) { // TODO: Show success message
             yield put(getCreate(responseData))
-        } else { // TODO: Show failure message
+        } else { // TODO: Show error message
         }
     } catch (error) {
         console.log(error)
