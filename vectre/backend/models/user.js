@@ -83,6 +83,9 @@ const updateProfile = function (session, wallet, newProf) {
                     })
             }
         })
+        .catch(error => {
+            return { success: false, error: error.message, message: "Error while editing. Please try again." }
+        })
 }
 
 module.exports = {
