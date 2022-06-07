@@ -3,29 +3,49 @@ const User = require('./neo4j/user')
 
 // use auto commit transaction for simplicity.
 
+const createUser = function (session, body) {
+    /* Creates the user with the following information from body
+    */
+    const query = `CREATE (user:User {name: '${body.name}', username: '${body.username}', wallet_address: '${body.wallet_address}', bio: '${body.bio}'});`
+
+    return session.run(query)
+        .then((results) => {
+            return {
+                success: true,
+                message: "User created sucessfully.",
+            };
+        })
+        .catch((error) => {
+            return {
+                success: false,
+                message: "Failed to create user",
+                error: error.message
+            };
+        });
+}
+
 const getUser = function (session, wallet) {
     /**
      * Return the first user object with matching wallet.
      * 
      * @param neo4j session
      * @param wallet address of the user for searching
-     * @returns an object with a boolean field 'success', field 'user' that holds the user object, and field 'message' if success is false.
+     * @returns an object with a boolean field 'success', field 'user' that holds the user object, and field 'message'.
      */
 
-    const findQuery = `MATCH (u: User {wallet_address : \"${wallet}\"}) RETURN u`
+    const findQuery = `MATCH (user: User {wallet_address : \"${wallet}\"}) RETURN user`
     
     return session
         .run(findQuery)
         .then(results => {
             if (_.isEmpty(results.records)) {
-                return { success: false, user: null, message: "User does not exist"}
+                return { success: false, user_data: null, message: "User wallet_address doesn't exist. Please register your account." }
             }
             else {
-                return { success: true, user: new User(results.records[0].get('u')) }
+                return { success: true, message: "User wallet_address already exists.", user_data: new User(results.records[0].get('user')) }
             }
         }).catch((error) => {
-            console.log(error)
-            return { success: false, user: null, message: "Error while searching"}
+            return { success: false, error: error.message, user_data: null, message: "Error while searching. Please try again." }
         })
 }
 
@@ -66,6 +86,7 @@ const updateProfile = function (session, wallet, newProf) {
 }
 
 module.exports = {
-    getUser : getUser,
-    updateProfile : updateProfile,
+    createUser: createUser,
+    getUser: getUser,
+    updateProfile: updateProfile
 }
