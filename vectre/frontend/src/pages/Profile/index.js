@@ -1,122 +1,89 @@
-import NavBar from "../../components/NavBar";
 import {
-  Container,
-  Stack,
-  Box,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  FormControl,
+  FormLabel,
+  Input,
+  ModalFooter,
+  Button,
   Flex,
   Text,
-  Button,
-  Link,
+  Textarea,
+  Box,
 } from "@chakra-ui/react";
-import TextAreaComponent from "../../components/TextAreaComponent";
-import { ReactComponent as EditIcon } from "../../assets/icons/edit-icon.svg";
-import UserProfileTorso from "../../assets/icons/Alarm.svg";
+
+import { FaUser } from "react-icons/fa";
+import React, { useEffect } from "react";
+import { useToast } from "@chakra-ui/react";
 
 const Profile = () => {
   return (
-    <div>
-      <NavBar></NavBar>
-      <Container
-        maxW={"50%"}
-        alignItems={"center"}
-        justifyContent={"center"}
-        height={"inherit"}
-        display={"flex"}
-        flexDirection={"column"}
-        backgroundColor={"white"}
-        borderRadius={"5px"}
-        padding={"10px"}
+    <Box
+      id={"edit-user-profile-box"}
+      display={"flex"}
+      flexDirection={"column"}
+      width={"30%"}
+      alignContent={"center"}
+    >
+      <FormLabel
+        htmlFor="name"
+        color={"primary.400"}
+        fontWeight={700}
+        fontSize={"20px"}
+        mb={"3px"}
       >
-        <Text
-          textAlign={"center"}
-          textColor={"#3B82F6"}
-          fontWeight={700}
-          fontSize="20px"
-          ml="45px"
-        >
-          Edit Profile
-        </Text>
-        <Container
-          display={"flex"}
-          flexDirection={"row"}
-          justifyContent={"right"}
-        >
-          <Button
-            width={"18%"}
-            rounded={"6px"}
-            size={"lg"}
-            fontWeight={700}
-            px={4}
-            py={4}
-            fontSize={"sm"}
-            textColor={"white"}
-            bg={"#3B82F6"}
-            boxShadow={"0px 30px 60px rgba(59, 130, 246, 0.25)"}
-            _hover={{ bg: "#3B82F6dd" }}
-            _focus={{ outline: 0 }}
-            rightIcon={<EditIcon h={4} w={4} mr={2} color={"white"} />}
-          >
-            Edit
-          </Button>
-        </Container>
-        <Container
-          display={"flex"}
-          flexDirection={"column"}
-          justifyContent={"left"}
-        >
-          <Text
-            textAlign={"left"}
-            textColor={"#3B82F6"}
-            fontWeight={700}
-            fontSize="20px"
-            ml="45px"
-          >
-            Name:{" "}
-          </Text>
-          <TextAreaComponent></TextAreaComponent>
-          <Text
-            textAlign={"left"}
-            textColor={"#3B82F6"}
-            fontWeight={700}
-            fontSize="20px"
-            ml="45px"
-          >
-            Username:{" "}
-          </Text>
-          <Text
-            textAlign={"left"}
-            textColor={"#3B82F6"}
-            fontWeight={700}
-            fontSize="20px"
-            ml="45px"
-          >
-            Bio:{" "}
-          </Text>
-        </Container>
-        <Container
-          display={"flex"}
-          flexDirection={"row"}
-          justifyContent={"right"}
-        >
-          <Button
-            width={"18%"}
-            rounded={"6px"}
-            size={"lg"}
-            fontWeight={700}
-            px={3}
-            py={3}
-            fontSize={"sm"}
-            textColor={"white"}
-            bg={"#3B82F6"}
-            boxShadow={"0px 30px 60px rgba(59, 130, 246, 0.25)"}
-            _hover={{ bg: "#3B82F6dd" }}
-            _focus={{ outline: 0 }}
-          >
-            Save
-          </Button>
-        </Container>
-      </Container>
-    </div>
+        Name:
+      </FormLabel>
+      <Input
+        id="username"
+        placeholder="what is your name good ser?"
+        fontSize={"18px"}
+        bg={"rgba(198, 219, 255, 0.32)"}
+        border={"none"}
+        _placeholder={{ fontWeight: "700", color: "sub.400" }}
+      />
+      <FormLabel
+        htmlFor="name"
+        color={"primary.400"}
+        fontWeight={700}
+        fontSize={"20px"}
+        mb={"3px"}
+      >
+        Username:
+      </FormLabel>
+      <Input
+        id="username"
+        placeholder="what is your name good ser?"
+        fontSize={"18px"}
+        bg={"rgba(198, 219, 255, 0.32)"}
+        border={"none"}
+        _placeholder={{ fontWeight: "700", color: "sub.400" }}
+      />
+      <FormLabel
+        htmlFor="Bio"
+        color={"primary.400"}
+        fontWeight={700}
+        fontSize={"20px"}
+        mb={"3px"}
+      >
+        Bio:
+      </FormLabel>
+      <Textarea
+        id="bio"
+        placeholder="i love me a good bio.&#13;&#10;love any projects?&#13;&#10;part of any communities?"
+        fontSize={"18px"}
+        bg={"rgba(198, 219, 255, 0.32)"}
+        border={"none"}
+        resize={"none"}
+        size={"md"}
+        minHeight={"140px"}
+        _placeholder={{ fontWeight: "700", color: "sub.400" }}
+      />
+    </Box>
   );
 };
 
