@@ -1,5 +1,7 @@
 # Vectre
 
+<img width="860" alt="vectre-image" src="https://user-images.githubusercontent.com/64259077/170800123-2a4079de-9c36-4e0a-8608-2e52e82897cc.png">
+
 ## Motivation
 Vectre is an all-in-one social platform for web3 communities. 
 
@@ -17,9 +19,10 @@ We hope that Vectre will allow web3 communities to thrive by providing a platfor
    cd ../frontend
    npm install
    ```
-3. Create an `.env` file in the `vectre/backend` directory with the following config (contact Henry for credentials):
+3. Create `.env.production` and `.env.development` files in the `vectre/backend` directory, both with the following config 
+(credentials located in the Vectre Labs `#project-files` discord channel) 
    ```
-   NEO4J_DB_URI="your Neo4j URI"
+   NEO4J_DB_URL="your Neo4j URL"
    NEO4J_DB_USERNAME="your Neo4j username"
    NEO4J_DB_PASSWORD="your Neo4j password"
    ```

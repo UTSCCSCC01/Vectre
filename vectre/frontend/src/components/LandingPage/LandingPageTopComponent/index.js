@@ -8,8 +8,8 @@ import {
   Link,
 } from "@chakra-ui/react";
 
-import { ReactComponent as UserTickIcon } from "../../assets/icons/user-icon-tick.svg";
-import { ReactComponent as PlayCircleIcon } from "../../assets/icons/play-circle.svg";
+import { ReactComponent as UserTickIcon } from "../../../assets/icons/user-icon-tick.svg";
+import { ReactComponent as PlayCircleIcon } from "../../../assets/icons/play-circle.svg";
 import LandingPageTopImageGrid from "../LandingPageTopImageGrid";
 
 const LandingPageTopComponent = ({ ...otherProps }) => {

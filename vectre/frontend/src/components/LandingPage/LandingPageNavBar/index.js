@@ -17,7 +17,7 @@ import {
     CloseIcon
 } from '@chakra-ui/icons';
 
-import VectreIcon from '../Icons/VectreIcon'
+import VectreIcon from '../../Icons/VectreIcon'
 
 export default function WithSubnavigation() {
     const { isOpen, onToggle } = useDisclosure();
