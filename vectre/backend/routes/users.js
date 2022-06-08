@@ -3,6 +3,7 @@ var router = express.Router();
 
 const dbUtils = require('../neo4j/dbUtils');
 const User = require('../models/neo4j/user');
+const { getUser, createUser } = require('../models/user');
 
 /* GET */
 router.get('/', (req, res, next) => {
@@ -24,18 +25,27 @@ router.get('/', (req, res, next) => {
 });
 
 /* POST */
-router.post('/create', (req, res) => {
-    const query = `CREATE (user:User {id: '${req.body.id}', name: '${req.body.name}', username: '${req.body.username}', wallet_address: '${req.body.wallet_address}'})`
+router.post('/createUser', (req, res) => {
     const session = dbUtils.getSession(req);
-
-    session.run(query)
+    createUser(session, req.body)
         .then((result) => {
             res.send(result);
         })
         .catch((error) => {
-            console.error(error);
-            res.send("Failed to create user. Error: " + error);
-        });
+            res.send(error);
+        })
+});
+
+/* POST */
+router.post('/getUser', (req, res) => {
+    const session = dbUtils.getSession(req);
+    getUser(session, req.body.wallet_address)
+        .then((result) => {
+            res.send(result);
+        })
+        .catch((error) => {
+            res.send(error);
+        })
 });
 
 /* PUT */
