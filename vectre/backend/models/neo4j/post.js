@@ -1,6 +1,6 @@
 const _ = require('lodash');
 
-const Movie = module.exports = function (_node) {
+const Post = module.exports = function (_node) {
     _.extend(this, {
         "id": _node.properties["id"],
         "author": _node.properties["author"],
