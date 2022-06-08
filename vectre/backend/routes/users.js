@@ -25,4 +25,18 @@ router.post('/register', (req, res) => {
         .catch((error) => res.send(error))
 })
 
+// POST /users/login/nonce
+router.post('/login/nonce', (req, res) => {
+    User.getNonce(dbUtils.getSession(req), req.body.wallet_address)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
+
+// POST /users/login
+router.post('/login', (req, res) => {
+    User.login(dbUtils.getSession(req), req.body.wallet_address, req.body.signed_nonce)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
+
 module.exports = router;

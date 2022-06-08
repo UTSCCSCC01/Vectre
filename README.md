@@ -22,9 +22,10 @@ We hope that Vectre will allow web3 communities to thrive by providing a platfor
 3. Create `.env.production` and `.env.development` files in the `vectre/backend` directory, both with the following config 
 (credentials located in the Vectre Labs `#project-files` discord channel) 
    ```
-   NEO4J_DB_URL="your Neo4j URL"
-   NEO4J_DB_USERNAME="your Neo4j username"
-   NEO4J_DB_PASSWORD="your Neo4j password"
+   NEO4J_DB_URL=your Neo4j URL
+   NEO4J_DB_USERNAME=your Neo4j username
+   NEO4J_DB_PASSWORD=your Neo4j password
+   JWT_SECRET_TOKEN=your JWT secret token
    ```
 4. Start backend (runs on port 8080)
    ```powershell

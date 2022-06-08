@@ -1,5 +1,7 @@
 const _ = require('lodash')
 const User = require('./neo4j/user')
+const jwt = require('jsonwebtoken')
+const config = require('../config');
 
 const getAll = (session) => { // Returns all Users
     const query = "MATCH (user:User) RETURN user";
@@ -43,13 +45,14 @@ const getByWalletAddress = (session, wallet_address) => { // Return the first Us
         })
 }
 
-const create = (session, body) => { // Creates User from body data
-    const query = `CREATE (user:User {name: '${body.name}', username: '${body.username}', wallet_address: '${body.wallet_address}', bio: '${body.bio}'});`
+const register = (session, body) => { // Creates User from body data
+    const query = `CREATE (user:User {name: '${body.name}', username: '${body.username}', wallet_address: '${body.wallet_address}', bio: '${body.bio}', nonce: '${generateNonce()}'});`
     return session.run(query)
         .then((results) => {
             return {
                 success: true,
-                user: new User(results.records[0].get('user'))
+                // user: new User(results.records[0].get('user'))
+                message: "Created User"
             }
         })
         .catch((error) => {
@@ -58,6 +61,45 @@ const create = (session, body) => { // Creates User from body data
                 message: "Failed to create User",
                 error: error.message
             }
+        })
+}
+
+function generateNonce() {
+    return Math.floor(Math.random() * 1000000);
+}
+const getNonce = (session, wallet_address) => { // Login User & get JWT authentication
+    return getByWalletAddress(session, wallet_address)
+        .then((response) => {
+            if (response.success) {
+                return {
+                    success: true,
+                    nonce: response.user.nonce,
+                }
+            } else {
+                return response
+            }
+        })
+        .catch((error) => {
+            return error
+        })
+}
+const login = (session, wallet_address, signed_nonce) => { // Login User & get JWT authentication
+    return getByWalletAddress(session, wallet_address)
+        .then((response) => {
+            if (response.success) {
+                // TODO: Validate signed_nonce. Then update nonce
+
+                const accessToken = jwt.sign(wallet_address, config.jwt_secret_token)
+                return {
+                    success: true,
+                    authorization_token: accessToken
+                }
+            } else {
+                return response
+            }
+        })
+        .catch((error) => {
+            return response
         })
 }
 
@@ -80,8 +122,10 @@ const update = (session, wallet, newUser) => {
 }
 
 module.exports = {
-    getAll: getAll,
-    getByWalletAddress: getByWalletAddress,
-    register: create,
-    update: update
+    getAll,
+    getByWalletAddress,
+    register,
+    getNonce,
+    login,
+    update,
 }
