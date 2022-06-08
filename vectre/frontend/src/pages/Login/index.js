@@ -1,48 +1,9 @@
-import PreLoginNavBar from '../../components/PreLogin/PreLoginNavBar'
-import PreLogin from '../../components/PreLogin'
-import UserSetupForm from '../../components/UserSetupForm'
+import React from 'react'
 import { ReactComponent as LandingRect } from '../../assets/icons/landing-rect.svg'
-import {
-  Box,
-  useDisclosure
-} from '@chakra-ui/react'
-import React, { useEffect, useState } from 'react'
-import { createUser, getUser } from "../../redux/actions/users";
-import { useDispatch, useSelector } from 'react-redux';
+import { Box } from '@chakra-ui/react'
+import Login from "../../components/Login/Login"
 
-const Login = () => {
-  const { isOpen, onClose, onOpen } = useDisclosure();
-  const login = useSelector(state => state.login);
-  const create = useSelector(state => state.create);
-  const dispatch = useDispatch();
-
-  const [wallet, setWallet] = useState("");
-
-  async function connectAccount() {
-    if (window.ethereum) {
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts"
-      });
-      let user = {
-        wallet_address: accounts[0]
-      }
-      dispatch(getUser(user))
-      setWallet(user.wallet_address)
-    }
-  }
-
-  useEffect(() => {
-    if (login.response.success === false) {
-      // if success is false, show set up page
-      onOpen()
-    }
-    else if (login.response.success === true) {
-      // if success is true, setup cookies for auth, move to feed page
-      console.log("moving to feed. user_data: ", login.response.user_data)
-      window.location.href = "/feed"
-    }
-  }, [login, onOpen, wallet])
-
+const LoginPage = () => {
   return (
     <Box>
       <Box
@@ -52,13 +13,11 @@ const Login = () => {
           <LandingRect />
         </Box>
         <Box>
-          <PreLoginNavBar connectAccount={connectAccount} />
-          <PreLogin connectAccount={connectAccount} />
+          <Login />
         </Box>
-        <UserSetupForm isOpen={isOpen} onClose={onClose} onOpen={onOpen} walletAddress={wallet} dispatch={dispatch} createUser={createUser} create={create} />
       </Box>
     </Box>
   );
 }
 
-export default Login;
+export default LoginPage;
