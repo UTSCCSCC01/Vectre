@@ -1,7 +1,5 @@
-import NavBar from "../../components/NavBar";
+import AppWrapper from "../../components/AppWrapper/AppWrapper";
 import PostComponent from "../../components/PostComponent/PostComponent";
-
-import { ReactComponent as LandingRect } from '../../assets/icons/landing-rect.svg'
 import {
   Box,
   Stack
@@ -11,21 +9,42 @@ const samplePostData = [
   {
     timestamp: "12:47 AM · May 25, 2022",
     text: "Doodles are headed to NYC 🍎. June 21-23: Midtown Manhattan. RSVP for Doodles and Dooplicator holders will open next week.",
-    author: "0x15f209074682937c58ca031ebb43d64fa98d97b8",
-    imageURL: "https://ipfs.io/ipfs/QmfFyFzv3UPm1jRpBURZ87xFM4Nke6NkrQEKVRLKSuHWFk",
+    author: {
+      walletAddress: "0x15f209074682937c58ca031ebb43d64fa98d97b8",
+      username: "Evan Keast",
+      profilePic: "https://s3-alpha-sig.figma.com/img/a8fa/df5e/3d73d21b956a4ddcdd287a204b4ea1a0?Expires=1655683200&Signature=HU~fkoIdFxhBi0fN3DE0jROXrUgLrrcUANO7LV1MpiSGyHQntrmgUKuDu~tPHvKw2WaDY5cz0rBSg~UsSMzCGpZ4A38v4HF7~IdzHdvjBqgXkx2dDigRhMezfi6DH9p38YHJQnHJOz2eduoMR3vPZJQ4UIPm9uZOjczzZUnCx6O~CVKefcmHb8icodO0PiQcPbTUEsnSKf1U4Pu2dgT-tPqGAcPVKOpLOaa8MfyxYk4T8SfpxPjjZGKA9aeWrSdn-xt385i6xTMhR24XIqKxmc59DGbzS7H5U2Oo-g2xDDAj5YUddpKmrdHMhecdqemp3J1ObEDmp-Uv9svqFB0xhA__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA"
+    },
+    like: "942",
+    comment: "50",
+    community: "Doodles",
+    imageURL: "https://s3-alpha-sig.figma.com/img/8480/cbbd/2c3b477fd04e371685a1a428f77036c0?Expires=1655683200&Signature=XtRJtUk4kxmfht0yVjTZqaTt~0BqjWEwYsPa6VF0yw2X7krernxjkWP5Zp~fRdkBVIgydMJ1snfY8xAuXCoMogiQWG0cOF88eypSMEn9Mgm9FKhHvzVFGKffnTLiKJY3WhafIh2E5wMRan61TIkb14uut2u5OINSmUNJNVRmO0S1vgEVz~LS~ynNa8s8t7bIrTa3c327HqtKeAx7LSox8I4cJs94MD8XeoDl8FRLgGWQSyE4yZFfGHyMuGj7BbXMX84zFnNgYh5sG-4oJ5xZKY98MUpHhyikzcUXaE6rDFot9SDx68ohBWc6o20o6dwKbvw6LcdYODFmg9KA0XyrFg__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
     edited: false
   },
   {
     timestamp: "2:43 PM · May 26, 2022",
     text: `I listened to the Doom soundtrack while designing these. Mainly the song "BFG Division". Look at the demon sneaker while listening to it, trust me. You will get the vibe. 👹`,
-    author: "0x15f209074682937c58ca031ebb43d64fa98d97b8",
-    imageURL: "https://ipfs.io/ipfs/QmfFyFzv3UPm1jRpBURZ87xFM4Nke6NkrQEKVRLKSuHWFk",
+    author: {
+      walletAddress: "0x15f209074682937c58ca031ebb43d64fa98d97b8",
+      username: "clegfx",
+      profilePic: "https://s3-alpha-sig.figma.com/img/5496/6ae3/dd9c04fcaf22eff661bce1a09756726f?Expires=1655683200&Signature=FsYzI17asOXKTxOs6UOlgMLJqCVksLEq~Ade4-b8R7DE7R7MZ9~8CDUqplj1N-2VgMGq~4vXO4JtsJuUIRBMRW0PtPDfZu3YJHiuYR176-yR8JHC4oNiD4znX8xmYt-mG2jypG7-p8jeBdDCTZ5bImbCJsz3hm3QfRuP0eFFcbLKgzpmoROBPExbolFL4x99QXRkbHRLx4IRfPw1Pu8rCbjGgrUUiH3UCtQx1gUQJh0Gg~PXYVUJQMZWab22Szd~A6SfLD7n6osbH~mmJ1iQIM-IPWmF0PlUz8Hlu6-6nGihAr2jvU8QJD6rOrfn71NDlQGNZlPhUSy4I8saU1zahA__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA"
+    },
+    like: "120",
+    comment: "2",
+    community: "DEvilSh0es",
+    imageURL: "https://s3-alpha-sig.figma.com/img/4a52/9efc/ac9b22129dabcc5fa938049d915eb8dd?Expires=1655683200&Signature=EN23b9hrMsT4brdEavlbENDWWfMSixjuWayZbk1~PIU7Z39OuWLEcNUOz8AWnoCw0-oka8ldkmyiz7NMjQFc2W5jg9fgzHN-nGw~LfzHNbdQ53L6VQjkUGEygFYieT0FEWjtvUJ07me5Nmj2B1Q7GUHHG1eN0-kQxf4uWleH~vCmdFEpT5V-7lgJNb4j-mVmTwXPGUGtD9n7CVMuMPJa9d2Zxz3RsByW2QONfInGVreusO7bBzqP195WPl48vvCp2hqPGhv7HB0uf65C6pX6xvRjAsS5VenEchrF9OBk7luVi0hmxNtUohH2zCoCqpFUrCs-RN-xLjAfFUnq~34nEw__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
     edited: false
   },
   {
     timestamp: "5:43 PM · May 27, 2022",
-    text: "I like ETH",
-    author: "0x15f209074682937c58ca031ebb43d64fa98d97b8",
+    text: "Doodles are cool.",
+    author: {
+      walletAddress: "0x15f209074682937c58ca031ebb43d64fa98d97b8",
+      username: "Evan Keast",
+      profilePic: "https://s3-alpha-sig.figma.com/img/a8fa/df5e/3d73d21b956a4ddcdd287a204b4ea1a0?Expires=1655683200&Signature=HU~fkoIdFxhBi0fN3DE0jROXrUgLrrcUANO7LV1MpiSGyHQntrmgUKuDu~tPHvKw2WaDY5cz0rBSg~UsSMzCGpZ4A38v4HF7~IdzHdvjBqgXkx2dDigRhMezfi6DH9p38YHJQnHJOz2eduoMR3vPZJQ4UIPm9uZOjczzZUnCx6O~CVKefcmHb8icodO0PiQcPbTUEsnSKf1U4Pu2dgT-tPqGAcPVKOpLOaa8MfyxYk4T8SfpxPjjZGKA9aeWrSdn-xt385i6xTMhR24XIqKxmc59DGbzS7H5U2Oo-g2xDDAj5YUddpKmrdHMhecdqemp3J1ObEDmp-Uv9svqFB0xhA__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA"
+    },
+    like: "2.5k",
+    comment: "32",
+    community: "Doodles",
     imageURL: "https://ipfs.io/ipfs/QmfFyFzv3UPm1jRpBURZ87xFM4Nke6NkrQEKVRLKSuHWFk",
     edited: false
   }
@@ -33,32 +52,22 @@ const samplePostData = [
 
 const HomePage = () => {
   return (
-    <Box>
-      <Box
-        bg={"linear-gradient(180deg, #E4EFFF 0%, rgba(228, 239, 255, 0.6) 92.51%, rgba(228, 239, 255, 0.6) 100%)"}
-        minHeight={'100vh'}>
-        <Box position={"absolute !important"} zIndex={"-1"} right={"0"} display={{ base: 'none', lg: 'block' }}>
-          <LandingRect />
-        </Box>
-        <Box>
-          <NavBar />
-          <Box py={'60px'} maxWidth={'4xl'} margin={'0 auto'}>
-            <Stack alignSelf={'center'} gap={'36px'}>
-              {/* Add posts below */}
-              {
-                samplePostData.map((item, i) => {
-                  return (
-                    <Box key={i}>
-                      <PostComponent item={item} />
-                    </Box>
-                  )
-                })
-              }
-            </Stack>
-          </Box>
-        </Box>
+    <AppWrapper>
+      <Box py={'60px'} maxWidth={'4xl'} margin={'0 auto'}>
+        <Stack alignSelf={'center'} gap={'36px'}>
+          {/* Add posts below */}
+          {
+            samplePostData.map((item, i) => {
+              return (
+                <Box key={i}>
+                  <PostComponent item={item} />
+                </Box>
+              )
+            })
+          }
+        </Stack>
       </Box>
-    </Box>
+    </AppWrapper>
   );
 }
 
