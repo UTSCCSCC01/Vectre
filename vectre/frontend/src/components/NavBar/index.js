@@ -23,7 +23,7 @@ export default function NavBar() {
     return (
         <Container maxW={'8xl'}>
             <Flex alignItems="center"
-                position={'fixed'}
+                position={'absolute'}
                 top={'50px'}
                 left={'50%'}
                 text-align={'center'}
