@@ -1,13 +1,26 @@
 import {
-    GET_USER,
+    GET_LOGIN_NONCE,
+    STORE_LOGIN_NONCE,
+    LOGIN_USER,
     GET_USERS,
     STORE_USERS,
     CREATE_USER,
 } from "../constants/users";
 
-export const getUser = (user) => ({
-    type: GET_USER,
-    user
+// Login
+export const getLoginNonce = (wallet_address) => ({
+    type: GET_LOGIN_NONCE,
+    wallet_address
+})
+export const storeLoginNonce = (nonce) => ({
+    type: STORE_LOGIN_NONCE,
+    nonce
+})
+export const loginUser = (wallet_address, signedNonce, redirectWindow) => ({
+    type: LOGIN_USER,
+    wallet_address,
+    signedNonce,
+    redirectWindow
 })
 
 export const getUsers = () => ({
@@ -19,7 +32,8 @@ export const storeUsers = (users) => ({
     users
 })
 
-export const createUser = (user) => ({
+export const createUser = (user, redirectWindow) => ({
     type: CREATE_USER,
-    user
+    user,
+    redirectWindow
 })

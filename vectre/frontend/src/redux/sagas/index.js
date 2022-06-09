@@ -1,15 +1,16 @@
 import { all } from 'redux-saga/effects';
 import usersSaga from "./users";
 
-const token = "my_example_auth_token"
+const headers = {
+    'Content-Type': 'application/json',
+    'Accepts-Type': 'application/json',
+}
 
 export const getRequest = (url) => {
     return fetch(url, {
         method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`
-        }
+        credentials: 'include',
+        headers: headers
     })
         .then(response => Promise.all([response, response.json()]))
         .catch(error => { throw error })
@@ -17,10 +18,8 @@ export const getRequest = (url) => {
 export const postRequest = (url, data) => {
     return fetch(url, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
+        credentials: 'include',
+        headers: headers,
         body: JSON.stringify(data)
     })
         .then(response => Promise.all([response, response.json()]))

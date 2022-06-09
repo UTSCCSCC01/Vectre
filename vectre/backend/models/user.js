@@ -1,5 +1,8 @@
 const _ = require('lodash')
 const User = require('./neo4j/user')
+const config = require('../config');
+const jwt = require('jsonwebtoken')
+const ethUtil = require('ethereumjs-util')
 
 const getAll = (session) => { // Returns all Users
     const query = "MATCH (user:User) RETURN user";
@@ -43,13 +46,14 @@ const getByWalletAddress = (session, wallet_address) => { // Return the first Us
         })
 }
 
-const create = (session, body) => { // Creates User from body data
-    const query = `CREATE (user:User {name: '${body.name}', username: '${body.username}', wallet_address: '${body.wallet_address}', bio: '${body.bio}'});`
+const register = (session, body) => { // Creates User from body data
+    const query = `CREATE (user:User {name: '${body.name}', username: '${body.username}', wallet_address: '${body.wallet_address}', bio: '${body.bio}', nonce: '${generateNonce()}'});`
     return session.run(query)
         .then((results) => {
             return {
                 success: true,
-                user: new User(results.records[0].get('user'))
+                // user: new User(results.records[0].get('user'))
+                message: "Created User"
             }
         })
         .catch((error) => {
@@ -59,6 +63,79 @@ const create = (session, body) => { // Creates User from body data
                 error: error.message
             }
         })
+}
+
+function generateNonce() {
+    return Math.floor(Math.random() * 1000000);
+}
+function validateSignedNonce(wallet_address, nonce, signed_message) {
+    const message = `Hi from Vectre! Sign this message to prove you have access to this wallet in order to log in.\n\nUnique ID: ${nonce}`
+
+    // Elliptic curve signature verification
+    const msgHex = ethUtil.bufferToHex(Buffer.from(message))
+    const msgBuffer = ethUtil.toBuffer(msgHex)
+    const msgHash = ethUtil.hashPersonalMessage(msgBuffer)
+    const signatureBuffer = ethUtil.toBuffer(signed_message)
+    const signatureParams = ethUtil.fromRpcSig(signatureBuffer)
+    const publicKey = ethUtil.ecrecover(
+        msgHash,
+        signatureParams.v,
+        signatureParams.r,
+        signatureParams.s
+    )
+    const addressBuffer= ethUtil.publicToAddress(publicKey)
+    const address = ethUtil.bufferToHex(addressBuffer)
+
+    return address.toLowerCase() === wallet_address.toLowerCase()
+}
+const getNonce = (session, wallet_address) => { // Login User & get JWT authentication
+    return getByWalletAddress(session, wallet_address)
+        .then((response) => {
+            if (response.success) {
+                return {
+                    success: true,
+                    nonce: response.user.nonce,
+                }
+            } else {
+                return response
+            }
+        })
+        .catch((error) => { return error })
+}
+const login = (session, wallet_address, signed_nonce, setTokenInCookie) => { // Login User & get JWT authentication
+    return getByWalletAddress(session, wallet_address)
+        .then((response) => {
+            if (response.success) {
+                // Validate signed_nonce. Then update nonce
+                return getNonce(session, wallet_address)
+                    .then((response) => {
+                        if (response.success) {
+                            if(validateSignedNonce(wallet_address, response.nonce, signed_nonce)) {
+                                const accessToken = jwt.sign(wallet_address, config.jwt_secret_token)
+
+                                // TODO: Regenerate nonce
+                                setTokenInCookie(accessToken)
+
+                                return {
+                                    success: true,
+                                    authorization_token: accessToken
+                                }
+                            } else {
+                                throw {
+                                    success: false,
+                                    message: "Signature validation was invalid"
+                                }
+                            }
+                        } else {
+                            return response
+                        }
+                    })
+                    .catch((error) => { return error })
+            } else {
+                return response
+            }
+        })
+        .catch((error) => { return error })
 }
 
 const update = (session, wallet, newUser) => {
@@ -80,8 +157,10 @@ const update = (session, wallet, newUser) => {
 }
 
 module.exports = {
-    getAll: getAll,
-    getByWalletAddress: getByWalletAddress,
-    register: create,
-    update: update
+    getAll,
+    getByWalletAddress,
+    register,
+    getNonce,
+    login,
+    update,
 }
