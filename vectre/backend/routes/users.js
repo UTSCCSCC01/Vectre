@@ -3,6 +3,7 @@ var router = express.Router();
 
 const User = require('../models/user');
 const dbUtils = require('../utils/neo4j/dbUtils');
+const {authenticateToken} = require("../utils/auth");
 
 // GET /users
 router.get('/', (req, res, next) => {
