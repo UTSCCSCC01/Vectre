@@ -75,7 +75,7 @@ class Login extends React.Component {
     render () {
         return (
             <div>
-                <PreLoginNavBar connectAccount={null} />
+                <PreLoginNavBar />
                 <PreLogin
                     connecting={this.state.connecting}
                     connected={this.state.wallet_address !== ""}
