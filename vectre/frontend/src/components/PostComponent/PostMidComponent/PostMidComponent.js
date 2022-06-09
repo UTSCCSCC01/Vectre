@@ -1,5 +1,4 @@
 import {
-    Box,
     Stack,
     Flex,
     Image
@@ -7,9 +6,10 @@ import {
 
 const PostMidComponent = ({
     item,
+    onOpen
 }) => {
     return (
-        <Box>
+        <>
             <Flex
                 display={'inline-flex'}
                 px={'13px'}
@@ -24,13 +24,15 @@ const PostMidComponent = ({
             </Flex>
             <Stack>
                 <Image
+                    cursor={'pointer'}
+                    onClick={onOpen}
                     src={item.imageURL}
                     fit={'cover'}
                     overflow={'hidden'}
                     borderRadius={'6px'}
                     height={'250px'} />
             </Stack>
-        </Box>
+        </>
     );
 };
 
