@@ -57,13 +57,18 @@ const updateUser = function (session, wallet, filter, newUser) {
      * @param neo4j session.
      * @param wallet address of the user.
      * @param array containing string of keys to modify on Neo4j.
-     * @param object containing new information, must contain keys in `filter`.
+     * @param object containing new information, should contain keys in `filter`.
      * @returns an object with a boolean field 'success' and field 'message'.
      */
 
     // Apply filter to newUser
     const filteredUser = Object.fromEntries(Object.entries(newUser).
         filter(([key, value]) => filter.includes(key)))
+
+    // Check for existence of required fields
+    for (let f of filter) {
+        if (!(f in newUser)) return {success: false, message : "Edit failed, not enough information."}
+    }
 
     const userString = JSON.stringify(filteredUser).replace(/"([^"]+)":/g, '$1:')
     const query = `MATCH (u: User { wallet_address : \"${wallet}\"})
@@ -96,10 +101,6 @@ const updateProfile = function (session, wallet, newProf) {
     const searchUsernameQuery = `MATCH (u: User) 
         WHERE u.username = \"${newProf.username}\" 
         AND (NOT u.wallet_address = \"${wallet}\") RETURN u`;
-
-    const modify = `MATCH (u: User {wallet_address: \"${wallet}\"})
-        SET u.name = \"${newProf.name}\", u.username = \"${newProf.username}\", u.bio = \"${newProf.bio}\"
-        RETURN u`;
     
     return session
         .run(searchUsernameQuery)       
@@ -107,7 +108,7 @@ const updateProfile = function (session, wallet, newProf) {
             if ( !_.isEmpty(existence.records)) { // Check for existing username
                 return {success: false, message: "Username already exists."}
             } else {
-                const profileFilter = ["name", "username", "bio", "nonce"]
+                const profileFilter = ["name", "username", "bio"]
                 return updateUser(session, wallet, profileFilter, newProf)
             }
         })
