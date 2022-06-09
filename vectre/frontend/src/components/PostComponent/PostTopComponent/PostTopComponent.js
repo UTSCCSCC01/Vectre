@@ -1,12 +1,13 @@
 import {
     Box,
-    Button,
     Flex,
     Image,
     Link
 } from '@chakra-ui/react';
 
 import { ReactComponent as VerifiedIcon } from '../../../assets/icons/verified-icon.svg';
+
+import TextButton from '../../Buttons/TextButton/TextButton'
 
 const PostTopComponent = ({
     item,
@@ -17,13 +18,11 @@ const PostTopComponent = ({
                 <Link
                     href={"/users/" + item.author.walletAddress}
                     _hover={{ textDecoration: "none" }}>
-                    <Button
-                        display={'inline-flex'}
+                    <TextButton
+                        text={item.author.username}
                         px={'17.5px'}
                         fontSize={'18px'}
                         fontWeight={700}
-                        color={'primary.400'}
-                        bg={'white'}
                         leftIcon={
                             <Image
                                 src={item.author.profilePic}
@@ -31,13 +30,10 @@ const PostTopComponent = ({
                                 overflow={'hidden'}
                                 borderRadius={'full'}
                                 boxSize={'32px'} />
-                        }
-                        _focus={{ outline: 0 }}>
-                        {item.author.username}
-                    </Button>
+                        } />
                 </Link>
                 <Box
-                    display={'inline-flex'}
+                    display={item.author.verified ? 'inline-flex' : 'none'}
                     px={'8px'}
                     py={'3px'}
                     fontSize={'18px'}

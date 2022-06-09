@@ -11,7 +11,7 @@ const PostMidComponent = ({
     return (
         <>
             <Flex
-                display={'inline-flex'}
+                display={item.text ? 'inline-flex' : 'none'}
                 px={'13px'}
                 py={'11px'}
                 fontSize={'18px'}
@@ -22,7 +22,8 @@ const PostMidComponent = ({
                 alignItems={'center'}>
                 {item.text}
             </Flex>
-            <Stack>
+            <Stack
+                display={item.imageURL ? 'inline-flex' : 'none'}>
                 <Image
                     cursor={'pointer'}
                     onClick={onOpen}

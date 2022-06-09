@@ -2,6 +2,8 @@ import {
     Modal,
     ModalOverlay,
     ModalContent,
+    ModalHeader,
+    ModalCloseButton,
     ModalBody,
     Image
 } from "@chakra-ui/react";
@@ -24,11 +26,25 @@ const PostModalComponent = ({
                     backdropFilter='blur(20px)'
                 />
                 <ModalContent
-                    p={'24px'}>
-                    <ModalBody>
+                    py={'24px'}>
+                    <ModalHeader
+                        px={{ base: '24px', md: '32px' }}>
+                        <ModalCloseButton
+                            color={'primary.400'}
+                            top={4}
+                            left={4}
+                            transform={'scale(1.8)'}
+                            _focus={{ outline: 0 }}
+                            _hover={{ background: 'white' }}
+                            _active={{ background: 'white' }}
+                        />
+                    </ModalHeader>
+                    <ModalBody
+                        px={{ base: '24px', md: '32px' }}>
                         <Image
                             border={'2px solid var(--chakra-colors-brand-400)'}
                             src={imageURL}
+                            alt={imageURL}
                             fit={'cover'}
                             overflow={'hidden'}
                             borderRadius={'6px'} />
