@@ -23,19 +23,19 @@ router.get('/', (req, res, next) => {
         });
 });
 
-router.get('/:wallet/dashboard', (req, res) => {
-    const query =  `MATCH (user:User {wallet_address: "${wallet}" }) RETURN user.dashboard`;
+router.get('/:wallet_address/dashboard', (req, res) => {
+    const query =  `MATCH (user:User {wallet_address: "${req.params.wallet_address}" }) RETURN user.dashboard`;
     const session = dbUtils.getSession(req);
     
     session.run(query)
         .then((result) => {
-            res.send(JSON.parse(result));
+            res.send(result.records);
         })
         .catch((error) => {
             console.error(error);
             res.send("Failed to get dashboard. Error: " + error);
         });
-});
+ });
 
 /* POST */
 router.post('/create', (req, res) => {
