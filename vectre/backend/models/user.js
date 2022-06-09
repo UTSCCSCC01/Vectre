@@ -49,6 +49,40 @@ const getUser = function (session, wallet) {
         })
 }
 
+const updateUser = function (session, wallet, filter, newUser) {
+    /**
+     * Update the user object with matching `wallet` on Neo4j using fields from 
+     * `newUser` after being filtered by `filter`.
+     * 
+     * @param neo4j session.
+     * @param wallet address of the user.
+     * @param array containing string of keys to modify on Neo4j.
+     * @param object containing new information, must contain keys in `filter`.
+     * @returns an object with a boolean field 'success' and field 'message'.
+     */
+
+    // Apply filter to newUser
+    const filteredUser = Object.fromEntries(Object.entries(newUser).
+        filter(([key, value]) => filter.includes(key)))
+
+    const userString = JSON.stringify(filteredUser).replace(/"([^"]+)":/g, '$1:')
+    const query = `MATCH (u: User { wallet_address : \"${wallet}\"})
+        SET u += ${userString}
+        RETURN u`
+    
+    // Apply changes to Neo4j
+    return session
+        .run(query)
+        .then(results => {
+            if (_.isEmpty(results.records)) {
+                return {success: false, message : "Edit failed, wallet does not exist."}
+            }
+            return {success: true, message : "Edit success."}
+        }).catch(error => {
+            return { success: false, error: error.message, message: "Error while editing. Please try again." }
+        })
+}
+
 const updateProfile = function (session, wallet, newProf) {
     /**
      * Update the user profile of the wallet owner using newProf object.
@@ -73,18 +107,9 @@ const updateProfile = function (session, wallet, newProf) {
             if ( !_.isEmpty(existence.records)) { // Check for existing username
                 return {success: false, message: "Username already exists."}
             } else {
-                return session
-                    .run(modify)
-                    .then(results => {
-                        if (_.isEmpty(results.records)) {
-                            return {success: false, message : "Edit failed."}
-                        }
-                        return {success: true}
-                    })
+                const profileFilter = ["name", "username", "bio", "nonce"]
+                return updateUser(session, wallet, profileFilter, newProf)
             }
-        })
-        .catch(error => {
-            return { success: false, error: error.message, message: "Error while editing. Please try again." }
         })
 }
 
