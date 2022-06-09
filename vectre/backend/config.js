@@ -3,6 +3,7 @@
 require('dotenv').config({path: `.env.${process.env.NODE_ENV}`}); // Ensure to pass NODE_ENV=development or NODE_ENV=production when running
 
 const config = {
+    "frontend_base_url": process.env.FRONTEND_BASE_URL,
     "neo4j": {
         url: process.env.NEO4J_DB_URL,
         username: process.env.NEO4J_DB_USERNAME,

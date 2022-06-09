@@ -102,7 +102,7 @@ const getNonce = (session, wallet_address) => { // Login User & get JWT authenti
         })
         .catch((error) => { return error })
 }
-const login = (session, wallet_address, signed_nonce) => { // Login User & get JWT authentication
+const login = (session, wallet_address, signed_nonce, setTokenInCookie) => { // Login User & get JWT authentication
     return getByWalletAddress(session, wallet_address)
         .then((response) => {
             if (response.success) {
@@ -114,6 +114,7 @@ const login = (session, wallet_address, signed_nonce) => { // Login User & get J
                                 const accessToken = jwt.sign(wallet_address, config.jwt_secret_token)
 
                                 // TODO: Regenerate nonce
+                                setTokenInCookie(accessToken)
 
                                 return {
                                     success: true,
