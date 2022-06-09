@@ -1,7 +1,8 @@
 const _ = require('lodash')
 const User = require('./neo4j/user')
-const jwt = require('jsonwebtoken')
 const config = require('../config');
+const jwt = require('jsonwebtoken')
+const ethUtil = require('ethereumjs-util')
 
 const getAll = (session) => { // Returns all Users
     const query = "MATCH (user:User) RETURN user";
@@ -67,6 +68,26 @@ const register = (session, body) => { // Creates User from body data
 function generateNonce() {
     return Math.floor(Math.random() * 1000000);
 }
+function validateSignedNonce(wallet_address, nonce, signed_message) {
+    const message = `Hi from Vectre! Sign this message to prove you have access to this wallet in order to log in.\n\nUnique ID: ${nonce}`
+
+    // Elliptic curve signature verification
+    const msgHex = ethUtil.bufferToHex(Buffer.from(message))
+    const msgBuffer = ethUtil.toBuffer(msgHex)
+    const msgHash = ethUtil.hashPersonalMessage(msgBuffer)
+    const signatureBuffer = ethUtil.toBuffer(signed_message)
+    const signatureParams = ethUtil.fromRpcSig(signatureBuffer)
+    const publicKey = ethUtil.ecrecover(
+        msgHash,
+        signatureParams.v,
+        signatureParams.r,
+        signatureParams.s
+    )
+    const addressBuffer= ethUtil.publicToAddress(publicKey)
+    const address = ethUtil.bufferToHex(addressBuffer)
+
+    return address.toLowerCase() === wallet_address.toLowerCase()
+}
 const getNonce = (session, wallet_address) => { // Login User & get JWT authentication
     return getByWalletAddress(session, wallet_address)
         .then((response) => {
@@ -79,28 +100,41 @@ const getNonce = (session, wallet_address) => { // Login User & get JWT authenti
                 return response
             }
         })
-        .catch((error) => {
-            return error
-        })
+        .catch((error) => { return error })
 }
 const login = (session, wallet_address, signed_nonce) => { // Login User & get JWT authentication
     return getByWalletAddress(session, wallet_address)
         .then((response) => {
             if (response.success) {
-                // TODO: Validate signed_nonce. Then update nonce
+                // Validate signed_nonce. Then update nonce
+                return getNonce(session, wallet_address)
+                    .then((response) => {
+                        if (response.success) {
+                            if(validateSignedNonce(wallet_address, response.nonce, signed_nonce)) {
+                                const accessToken = jwt.sign(wallet_address, config.jwt_secret_token)
 
-                const accessToken = jwt.sign(wallet_address, config.jwt_secret_token)
-                return {
-                    success: true,
-                    authorization_token: accessToken
-                }
+                                // TODO: Regenerate nonce
+
+                                return {
+                                    success: true,
+                                    authorization_token: accessToken
+                                }
+                            } else {
+                                throw {
+                                    success: false,
+                                    message: "Signature validation was invalid"
+                                }
+                            }
+                        } else {
+                            return response
+                        }
+                    })
+                    .catch((error) => { return error })
             } else {
                 return response
             }
         })
-        .catch((error) => {
-            return response
-        })
+        .catch((error) => { return error })
 }
 
 const update = (session, wallet, newUser) => {
