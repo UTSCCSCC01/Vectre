@@ -6,6 +6,7 @@ const token = "my_example_auth_token"
 export const getRequest = (url) => {
     return fetch(url, {
         method: 'GET',
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
@@ -17,6 +18,7 @@ export const getRequest = (url) => {
 export const postRequest = (url, data) => {
     return fetch(url, {
         method: 'POST',
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`

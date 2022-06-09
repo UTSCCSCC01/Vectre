@@ -52,11 +52,11 @@ class Login extends React.Component {
 
     signNonce = async () => {
         if (window.ethereum) {
-            const nonce = `Hi from Vectre! Sign this message to prove you have access to this wallet in order to log in.\n\nUnique ID: ${this.props.nonce}`
+            const message = `Hi from Vectre! Sign this message to prove you have access to this wallet in order to log in.\n\nUnique ID: ${this.props.nonce}`
 
             await window.ethereum.request({
                 method: 'personal_sign',
-                params: [nonce, this.state.wallet_address]
+                params: [message, this.state.wallet_address]
             })
                 .then(signature => {
                     this.props.loginUser(this.state.wallet_address, signature, (href) => { window.location.href = href})
