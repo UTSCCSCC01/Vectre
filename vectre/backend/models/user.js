@@ -54,7 +54,8 @@ const getByWalletAddress = (session, wallet_address) => {
 }
 
 const register = (session, body) => { // Creates User from body data
-    const query = `CREATE (user:User {name: '${body.name}', username: '${body.username}', wallet_address: '${body.wallet_address}', bio: '${body.bio}', nonce: '${generateNonce()}'});`
+    const bio = body.bio ? body.bio : ""
+    const query = `CREATE (user:User {name: '${body.name}', username: '${body.username}', wallet_address: '${body.wallet_address}', bio: '${bio}', nonce: '${generateNonce()}'});`
     return session.run(query)
         .then((results) => {
             return {

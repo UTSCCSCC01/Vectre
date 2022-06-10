@@ -1,14 +1,19 @@
 import { call, put, takeLatest } from "redux-saga/effects"
-import { getRequest, postRequest } from "./index";
+import {getRequest, postRequest, putRequest} from "./index";
 import {
     storeUsers,
     storeLoginNonce,
+    storeLoggedInUser,
+    storeUser,
 } from "../actions/users";
 import {
     GET_LOGIN_NONCE,
     LOGIN_USER,
+    GET_USER,
     GET_USERS,
+    GET_LOGGED_IN_USER,
     CREATE_USER,
+    UPDATE_USER,
 } from "../constants/users";
 import {
     BASE_API_URL,
@@ -37,6 +42,30 @@ function* loginUser(action) {
     }
 }
 
+function* getLoggedInUser() {
+    try {
+        const response = yield call(getRequest, BASE_API_URL + USERS.GET_LOGGED_IN_USER), responseData = response[1]
+        if (responseData.success) {
+            yield put(storeLoggedInUser(responseData.user))
+        } else { // TODO: Show error message
+            console.log(responseData.message)
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+function* getUser(action) {
+    try {
+        const response = yield call(getRequest, BASE_API_URL + USERS.GET_USERS + `/${action.wallet_address}`), responseData = response[1]
+        if (responseData.success) {
+            yield put(storeUser(responseData.user))
+        } else { // TODO: Show error message
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
 function* getUsers() {
     try {
         const response = yield call(getRequest, BASE_API_URL + USERS.GET_USERS), responseData = response[1]
@@ -62,11 +91,26 @@ function* createUser(action) {
     }
 }
 
+function* updateUser(action) {
+    try {
+        const response = yield call(putRequest, BASE_API_URL + USERS.UPDATE_USER.replace("{wallet_address}", action.wallet_address), action.updatedUser), responseData = response[1]
+        if (responseData.success) { // TODO: Show toast success message
+            if (action.redirectWindow) yield put(action.redirectWindow(`/user/${action.wallet_address}`))
+        } else { // TODO: Show toast error message
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 function* usersSaga() {
     yield takeLatest(GET_LOGIN_NONCE, getLoginNonce)
     yield takeLatest(LOGIN_USER, loginUser)
+    yield takeLatest(GET_LOGGED_IN_USER, getLoggedInUser)
+    yield takeLatest(GET_USER, getUser)
     yield takeLatest(GET_USERS, getUsers)
     yield takeLatest(CREATE_USER, createUser)
+    yield takeLatest(UPDATE_USER, updateUser)
 }
 
 export default usersSaga
