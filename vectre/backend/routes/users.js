@@ -43,16 +43,9 @@ router.post('/login', (req, res) => {
 
 /* PUT /users/{wallet_address}/update */
 router.put('/:wallet_address/update', (req, res) => {
-    const session = dbUtils.getSession(req);
-    const wallet_address = req.params.wallet_address;
-    const updateInfo = req.body;
-    updateProfile(session, wallet_address, updateInfo)
-        .then(result => {
-            res.send(result);
-        })
-        .catch(error => {
-            res.send(error);
-        })
+    User.updateProfile(dbUtils.getSession(req), req.params.wallet_address, req.body)
+        .then((result) => res.send(result))
+        .catch((error)=> res.send(error))
 })
 
 module.exports = router;
