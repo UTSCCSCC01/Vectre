@@ -161,10 +161,21 @@ const updateUser = function (session, wallet, filter, newUser) {
     const filteredUser = Object.fromEntries(Object.entries(newUser).
         filter(([key, value]) => filter.includes(key)))
 
-    // Check for existence of required fields
+    // Check for existence of required fields.
     for (let f of filter) {
         if (!(f in newUser)) {
-            throw {success: false, message : "Edit failed, not enough information."}
+            throw {success: false, message : `Missing field ${f}.`}
+        }
+        if (typeof f != String) {
+            throw {success: false, message : `Field ${f} is not String.`}
+        }
+    }
+
+    // Check for non empty fields
+    const nonEmpty = ["username", "name"]
+    for (let f of nonEmpty) {
+        if ( (f in newUser) && newUser[f] == "") {
+            throw {success: false, message : `Field ${f} is empty.`}
         }
     }
 
