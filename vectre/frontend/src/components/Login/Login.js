@@ -4,7 +4,8 @@ import React from "react";
 import PropTypes from 'prop-types';
 import {
     createUser,
-    getLoginNonce, loginUser,
+    getLoginNonce,
+    loginUser,
 } from "../../redux/actions/users";
 import {connect} from "react-redux";
 import {nonceSelector} from "../../redux/selectors/users";

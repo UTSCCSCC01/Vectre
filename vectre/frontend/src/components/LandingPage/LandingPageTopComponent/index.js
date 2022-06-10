@@ -5,16 +5,14 @@ import {
     Heading,
     Text,
     Button,
-    Link
+    Link,
 } from '@chakra-ui/react';
 
 import { ReactComponent as UserTickIcon } from '../../../assets/icons/user-icon-tick.svg'
 import { ReactComponent as PlayCircleIcon } from '../../../assets/icons/play-circle.svg'
 import LandingPageTopImageGrid from '../LandingPageTopImageGrid'
 
-const LandingPageTopComponent = ({
-    ...otherProps
-}) => {
+const LandingPageTopComponent = ({ ...otherProps }) => {
     return (
         <Box height={{ base: 'fit-content', lg: '100vh' }}>
             {otherProps.children}

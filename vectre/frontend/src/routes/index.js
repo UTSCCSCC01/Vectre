@@ -6,7 +6,6 @@ import Feed from '../pages/Feed';
 import LoginPage from '../pages/Login';
 import Profile from '../pages/Profile';
 import Signup from '../pages/Signup';
-import EditUserProfilePage from "../pages/EditUserProfilePage";
 
 export default function Routes() {
     return (
@@ -16,9 +15,8 @@ export default function Routes() {
                 <Route path="/test" component={HomePage} />
                 <Route path="/feed" component={Feed} />
                 <Route path="/login" component={LoginPage} />
-                <Route path="/profile" component={Profile} />
+                <Route path="/user/:wallet_address" component={Profile} />
                 <Route path="/signup" component={Signup} />
-                <Route path="/edit-user-profile" component={EditUserProfilePage} />
             </Switch>
         </Router>
     );
