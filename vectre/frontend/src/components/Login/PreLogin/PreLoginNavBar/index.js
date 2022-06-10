@@ -12,7 +12,8 @@ import {
 import { FaWallet } from 'react-icons/fa'
 import { IoHome } from 'react-icons/io5'
 
-export default function PreLoginNavBar({ connectAccount }) {
+// export default function PreLoginNavBar({ connectAccount }) {
+export default function PreLoginNavBar({  }) {
     return (
         <Container maxW={'8xl'}>
             <Grid
@@ -43,24 +44,24 @@ export default function PreLoginNavBar({ connectAccount }) {
                         </Link>
                     </Stack>
                 </GridItem>
-                <GridItem
-                    justifySelf={'end'}>
-                    <Button
-                        rounded={'6px'}
-                        size={'lg'}
-                        fontWeight={700}
-                        px={'31.5px'}
-                        py={'23px'}
-                        fontSize={'sm'}
-                        textColor={'primary.400'}
-                        bg={'rgba(255, 255, 255, 0.63)'}
-                        rightIcon={<FaWallet ml={'10px'} />}
-                        _focus={{ outline: 0 }}
-                        onClick={connectAccount}
-                    >
-                        Connect to a Wallet
-                    </Button>
-                </GridItem>
+                {/*<GridItem*/}
+                {/*    justifySelf={'end'}>*/}
+                {/*    <Button*/}
+                {/*        rounded={'6px'}*/}
+                {/*        size={'lg'}*/}
+                {/*        fontWeight={700}*/}
+                {/*        px={'31.5px'}*/}
+                {/*        py={'23px'}*/}
+                {/*        fontSize={'sm'}*/}
+                {/*        textColor={'primary.400'}*/}
+                {/*        bg={'rgba(255, 255, 255, 0.63)'}*/}
+                {/*        rightIcon={<FaWallet ml={'10px'} />}*/}
+                {/*        _focus={{ outline: 0 }}*/}
+                {/*        onClick={connectAccount}*/}
+                {/*    >*/}
+                {/*        Connect to a Wallet*/}
+                {/*    </Button>*/}
+                {/*</GridItem>*/}
             </Grid>
         </Container>
     );
