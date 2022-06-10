@@ -3,6 +3,9 @@ var router = express.Router();
 
 const dbUtils = require('../neo4j/dbUtils');
 const User = require('../models/neo4j/user');
+const Post = require('../models/post');
+const { rest } = require('lodash');
+
 
 /* GET */
 router.get('/', (req, res, next) => {
@@ -23,6 +26,17 @@ router.get('/', (req, res, next) => {
         });
 });
 
+router.get('/:user_id/post', (req, res, next) => {
+    const author = req.params.user_id;
+    if (!author) throw {message: 'Invalid user id', status: 400, success: false};
+
+    Post.getUserPosts(dbUtils.getSession(req), author)
+    .then((result) => res.send(result))
+    .catch((error) => res.send(error))
+
+    
+});
+
 /* POST */
 router.post('/create', (req, res) => {
     const query = `CREATE (user:User {id: '${req.body.id}', name: '${req.body.name}', wallet_address: '${req.body.wallet_address}'})`
@@ -38,6 +52,17 @@ router.post('/create', (req, res) => {
         });
 });
 
+router.post('/:user_id/post', (req, res, next) => {
+    const { author, text, imageURL, edited, timestamp } = req.body;
+
+    console.log(req.body);
+    
+    if(!author || !text || !imageURL || !timestamp)
+        throw {message: 'Invalid post properties', status: 400, success: false};
+    
+    res.send(Post.createUserPost(dbUtils.getSession(req), req))
+
+})
 /* PUT */
 router.put('/', (req, res) => {
     res.send('Got a PUT request')
