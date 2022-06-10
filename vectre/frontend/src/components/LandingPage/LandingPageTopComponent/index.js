@@ -8,8 +8,8 @@ import {
     Link
 } from '@chakra-ui/react';
 
-import { ReactComponent as UserTickIcon } from '../../assets/icons/user-icon-tick.svg'
-import { ReactComponent as PlayCircleIcon } from '../../assets/icons/play-circle.svg'
+import { ReactComponent as UserTickIcon } from '../../../assets/icons/user-icon-tick.svg'
+import { ReactComponent as PlayCircleIcon } from '../../../assets/icons/play-circle.svg'
 import LandingPageTopImageGrid from '../LandingPageTopImageGrid'
 
 const LandingPageTopComponent = ({
@@ -25,13 +25,9 @@ const LandingPageTopComponent = ({
                     pt={{ base: 12, lg: 20 }}
                     direction={{ base: 'column', lg: 'row' }}>
                     <Stack flex={1} spacing={{ base: 5, md: 10 }} pr={{ base: "0px", md: "50px" }}>
-                        <Heading
-                            fontWeight={600}
-                            letterSpacing={'1.5px'}
-                            lineHeight={{ sm: 1.1, lg: 0.8 }}
-                            fontSize={{ base: '4xl', lg: '6xl' }}>
+                        <Heading>
                             <Text
-                                as={'span'} color={'brand.400'}>
+                                as={'span'} color={'brand.400'} fontWeight={'700'} fontSize={{ base: "40px", md: '72px' }}>
                                 Vectre.
                             </Text>
                             <br />
@@ -46,7 +42,7 @@ const LandingPageTopComponent = ({
                             spacing={{ base: 4, sm: 6 }}
                             direction={{ base: 'column', sm: 'row' }}>
                             <Link
-                                href='#'
+                                href='/login'
                                 _hover={{ textDecoration: "none" }}>
                                 <Button
                                     rounded={'6px'}
