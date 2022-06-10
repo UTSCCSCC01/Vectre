@@ -45,7 +45,7 @@ const getUser = function (session, wallet) {
                 return { success: true, message: "User wallet_address already exists.", user_data: new User(results.records[0].get('user')) }
             }
         }).catch((error) => {
-            return { success: false, error: error.message, user_data: null, message: "Error while searching. Please try again." }
+            throw { success: false, error: error.message, user_data: null, message: "Error while searching. Please try again." }
         })
 }
 
@@ -67,7 +67,9 @@ const updateUser = function (session, wallet, filter, newUser) {
 
     // Check for existence of required fields
     for (let f of filter) {
-        if (!(f in newUser)) return {success: false, message : "Edit failed, not enough information."}
+        if (!(f in newUser)) {
+            throw {success: false, message : "Edit failed, not enough information."}
+        }
     }
 
     const userString = JSON.stringify(filteredUser).replace(/"([^"]+)":/g, '$1:')
@@ -84,7 +86,7 @@ const updateUser = function (session, wallet, filter, newUser) {
             }
             return {success: true, message : "Edit success."}
         }).catch(error => {
-            return { success: false, error: error.message, message: "Error while editing. Please try again." }
+            throw error
         })
 }
 
@@ -110,7 +112,16 @@ const updateProfile = function (session, wallet, newProf) {
             } else {
                 const profileFilter = ["name", "username", "bio"]
                 return updateUser(session, wallet, profileFilter, newProf)
+                    .then(response => {
+                        return response;
+                    })
+                    .catch(error => {
+                        throw error
+                    })
             }
+        })
+        .catch(error => {
+            throw { success: false, error: error.message, message: "Error while editing. Please try again." }
         })
 }
 
