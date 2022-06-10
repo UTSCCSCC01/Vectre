@@ -16,7 +16,7 @@ const PostTopComponent = ({
         <Flex flexDirection={'row'} alignContent={'center'} justifyContent={'space-between'}>
             <Flex gap={'10px'}>
                 <Link
-                    href={"/users/" + item.author.walletAddress}
+                    href={"/user/" + item.author.walletAddress}
                     _hover={{ textDecoration: "none" }}>
                     <TextButton
                         text={item.author.username}

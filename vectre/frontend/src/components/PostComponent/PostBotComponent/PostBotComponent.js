@@ -41,7 +41,7 @@ const PostBotComponent = ({
                     }} />
             </Flex>
             <Link
-                href={item.community}
+                href={`c/${item.community}`}
                 _hover={{ textDecoration: "none" }}>
                 <TextButton
                     text={`< ${item.community} >`}
