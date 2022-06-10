@@ -35,8 +35,15 @@ router.post('/login/nonce', (req, res) => {
 
 // POST /users/login
 router.post('/login', (req, res) => {
-    const setTokenInCookie = (token) => { res.cookie('token', token, { maxAge: 60 * 60 * 24 * 7, httpOnly: true })}
+    const setTokenInCookie = (token) => { res.cookie('token', token, { maxAge: 1000 * 60 * 60 * 24 * 7, httpOnly: true })}
     User.login(dbUtils.getSession(req), req.body.wallet_address, req.body.signed_nonce, setTokenInCookie)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
+
+// GET /users/login/currentUser
+router.get('/login/currentUser', authenticateToken, (req, res) => {
+    User.getByWalletAddress(dbUtils.getSession(req), req.wallet_address)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
