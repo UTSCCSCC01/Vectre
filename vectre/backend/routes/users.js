@@ -35,7 +35,7 @@ router.post('/login/nonce', (req, res) => {
 
 // POST /users/login
 router.post('/login', (req, res) => {
-    const setTokenInCookie = (token) => { res.cookie('token', token, { maxAge: 1000 * 60 * 60 * 24 * 7, httpOnly: true })}
+    const setTokenInCookie = (token) => { res.cookie('token', token, { maxAge: 1000 * 60 * 60 * 24 * 7, httpOnly: true })} // Expires in 7 days
     User.login(dbUtils.getSession(req), req.body.wallet_address, req.body.signed_nonce, setTokenInCookie)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
@@ -58,6 +58,20 @@ router.put('/:wallet_address/update', authenticateToken, (req, res) => {
         res.status(403).send({
             success: false,
             message: "You do not have access to update this User"
+        })
+    }
+})
+
+// DELETE /users/{wallet_address}/delete
+router.delete('/:wallet_address/delete', authenticateToken, (req, res) => {
+    if (req.wallet_address === req.params.wallet_address) {
+        User.delete(dbUtils.getSession(req), req.wallet_address, req.params.wallet_address)
+            .then((result) => res.send(result))
+            .catch((error) => res.send(error))
+    } else {
+        res.status(403).send({
+            success: false,
+            message: "You do not have access to delete this User"
         })
     }
 })
