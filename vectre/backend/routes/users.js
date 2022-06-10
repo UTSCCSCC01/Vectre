@@ -52,39 +52,19 @@ router.post('/create', (req, res) => {
         });
 });
 
-/* POST */
-router.post('/getUser', (req, res) => {
-    const query = `MATCH (user:User {wallet_address:"${req.body.wallet_address}"}) RETURN user;`
+router.post('/updateDashboard', (req, res) => {
+    const query = `MATCH (user:User {wallet_address:"${req.body.wallet_address}"}) SET user.dashboard = "${req.body.dashboard}" RETURN user`;
     const session = dbUtils.getSession(req);
+ 
     session.run(query)
-        .then((results) => {
-            let response_data = {}
-            results.records.forEach((record) => {
-                response_data = {
-                    success: true,
-                    message: "User wallet_address already exists.",
-                    user_data: new User(record.get('user'))
-                }
-            });
-            if (Object.keys(response_data).length === 0) {
-                response_data = {
-                    success: false,
-                    message: "User wallet_address doesn't exist. Please register your account.",
-                    user_data: null
-                }
-            }
-            res.send(response_data);
+        .then((result) => {
+            res.send(result.records);
         })
         .catch((error) => {
             console.error(error);
-            const response_data = {
-                success: false,
-                message: "User wallet_address doesn't exist. Please register your account.",
-                user_data: null
-            }
-            res.send(response_data);
-        });
-});
+            res.send("Failed to update dashboard. Error: " + error);
+        })
+ });
 
 /* PUT */
 router.put('/', (req, res) => {
