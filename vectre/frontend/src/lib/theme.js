@@ -10,6 +10,9 @@ const styles = {
   global: props => ({
     body: {
       bg: mode('white', 'inherit')(props)
+    },
+    '*': {
+      fontFamily: 'DM sans'
     }
   })
 }
@@ -38,6 +41,9 @@ const colors = {
     700: "#697B98",
     800: "#697B98",
     900: "#697B98",
+  },
+  primary: {
+    400: "#3B82F6"
   }
 }
 

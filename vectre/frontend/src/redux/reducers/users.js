@@ -1,9 +1,11 @@
 import {
+    STORE_LOGIN_NONCE,
     STORE_USERS,
 } from "../constants/users";
 
 const initialState = {
-    users: []
+    users: [],
+    nonce: ""
 }
 
 const users = (state = initialState, action) => {
@@ -11,7 +13,12 @@ const users = (state = initialState, action) => {
         case STORE_USERS:
             return {
                 ...state,
-                users: action.users,
+                users: action.users
+            }
+        case STORE_LOGIN_NONCE:
+            return {
+                ...state,
+                nonce: action.nonce
             }
         default:
             return state
