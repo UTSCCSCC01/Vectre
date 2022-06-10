@@ -92,8 +92,8 @@ export default function LargeWithLogoLeft() {
                             my={'15px'}>
                             <Stack align={'flex-start'} px={{ base: '0px', md: '25px' }} width={'max-content'}>
                                 <ListHeader>Vectre</ListHeader>
-                                <Link href={'#'}>Sign Up</Link>
-                                <Link href={'#'}>Enter the App</Link>
+                                <Link href={'/login'}>Sign Up</Link>
+                                <Link href={'/home'}>Enter the App</Link>
                             </Stack>
                             <Stack align={'flex-start'} px={{ base: '0px', md: '25px' }} width={'max-content'}>
                                 <ListHeader>Get in touch</ListHeader>

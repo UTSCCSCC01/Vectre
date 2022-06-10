@@ -87,7 +87,7 @@ export default function WithSubnavigation() {
                     spacing={6}
                     display={{ base: 'none', lg: 'flex' }}>
                     <Link
-                        href='/test'
+                        href='/home'
                         _hover={{ textDecoration: "none" }}>
                         <Button
                             display={{ base: 'none', lg: 'inline-flex' }}
