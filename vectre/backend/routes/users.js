@@ -41,11 +41,18 @@ router.post('/login', (req, res) => {
         .catch((error) => res.send(error))
 })
 
-/* PUT /users/{wallet_address}/update */
-router.put('/:wallet_address/update', (req, res) => {
-    User.updateProfile(dbUtils.getSession(req), req.params.wallet_address, req.body)
-        .then((result) => res.send(result))
-        .catch((error)=> res.send(error))
+// PUT /users/{wallet_address}/update
+router.put('/:wallet_address/update', authenticateToken, (req, res) => {
+    if (req.wallet_address === req.params.wallet_address) {
+        User.updateProfile(dbUtils.getSession(req), req.params.wallet_address, req.body)
+            .then((result) => res.send(result))
+            .catch((error)=> res.send(error))
+    } else {
+        res.status(403).send({
+            success: false,
+            message: "You do not have access to update this User"
+        })
+    }
 })
 
 module.exports = router;
