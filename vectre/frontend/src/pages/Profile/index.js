@@ -1,163 +1,27 @@
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  FormControl,
-  FormLabel,
-  Input,
-  ModalFooter,
   Button,
-  Flex,
-  Text,
-  Textarea,
-  Image,
-  Box,
+  useDisclosure
 } from "@chakra-ui/react";
 
-import { FaUser } from "react-icons/fa";
-import React, { useEffect } from "react";
-import { useToast } from "@chakra-ui/react";
-import { ReactComponent as EditIcon } from "../../assets/icons/edit-icon.svg";
+import ProfileEditModal from "../../components/Modals/ProfileEditModal/ProfileEditModal";
 
-import DefaultUserProfileBackground from "../../assets/images/default-user-profile-background.svg";
-import DefaultUserProfilePhoto from "../../assets/images/default-user-profile-photo.svg";
+const sampleUserData = {
+  name: "Peter",
+  username: "Deadly Dwarf",
+  bio: "I like dragons",
+  bgImageURL: "https://s3-alpha-sig.figma.com/img/92a5/e247/d09cfe74949f7e39413b504a39b8a6ab?Expires=1655683200&Signature=BONlGzYP0KMX8C9dpmEmFpEu3sFTFisvtio2I85~ARrJEM~hkOd5558FT8bNT-heKqGjIAh5jxbbnW5cL47PQzOhqMvQNz4Pwa--8-7jlltLQ3dfOMPzXrUoW0SPvaW1ppxsQw9CxEyhnjbd9shOIj1cFLwUgPV5r-HBf9eEMicaTAQ30PN3eOxNSnHXkVZYvohmQe3flMT3GlI-IrVrlcbd2dUcttpLlZKWE-ByhqzLgsFZAwP3VvLyUqSkjqAXilXuTJlQpK8Nepa9-2U6QRdhOJt8iDnwprWoL0EOmSsw-2~agz0JM5rLG5U~XDpk8~SdUf1X7CEgp7X-PZXcmg__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
+  profilePic: "https://s3-alpha-sig.figma.com/img/a8fa/df5e/3d73d21b956a4ddcdd287a204b4ea1a0?Expires=1655683200&Signature=HU~fkoIdFxhBi0fN3DE0jROXrUgLrrcUANO7LV1MpiSGyHQntrmgUKuDu~tPHvKw2WaDY5cz0rBSg~UsSMzCGpZ4A38v4HF7~IdzHdvjBqgXkx2dDigRhMezfi6DH9p38YHJQnHJOz2eduoMR3vPZJQ4UIPm9uZOjczzZUnCx6O~CVKefcmHb8icodO0PiQcPbTUEsnSKf1U4Pu2dgT-tPqGAcPVKOpLOaa8MfyxYk4T8SfpxPjjZGKA9aeWrSdn-xt385i6xTMhR24XIqKxmc59DGbzS7H5U2Oo-g2xDDAj5YUddpKmrdHMhecdqemp3J1ObEDmp-Uv9svqFB0xhA__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA"
+}
 
 const Profile = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure()
   return (
-    <Modal isOpen={true} isCentered color={"primary.400"} size={"2xl"}>
-      <ModalOverlay
-        bg={"rgba(255, 255, 255, 0.01)"}
-        backdropFilter="blur(20px)"
-      />
-
-      <ModalContent>
-        <ModalHeader px={{ base: "24px", md: "64px" }}>
-          <ModalCloseButton
-            color={"primary.400"}
-            top={4}
-            left={4}
-            transform={"scale(1.8)"}
-            _focus={{ outline: 0 }}
-            _hover={{ background: "white" }}
-            _active={{ background: "white" }}
-          />
-          <Flex
-            justifyContent={"center"}
-            alignItems={"center"}
-            color={"primary.400"}
-          >
-            <Text fontWeight={700} fontSize="28px" mr="15px">
-              Edit Profile
-            </Text>
-            <FaUser size={"2rem"} />
-          </Flex>
-        </ModalHeader>
-        <ModalBody>
-          <Box
-            id={"edit-user-profile-box"}
-            display={"flex"}
-            flexDirection={"column"}
-          >
-            <Image
-              fit={"cover"}
-              align={"center"}
-              w={"100%"}
-              h={"100%"}
-              src={DefaultUserProfileBackground}
-            />
-            <Image
-              alignSelf={"center"}
-              w={"20%"}
-              h={"20%"}
-              borderRadius={"full"}
-              src={DefaultUserProfilePhoto}
-            />
-            <Button
-              form={"setup-form"}
-              alignSelf={"end"}
-              ml={"32px"}
-              background={"primary.400"}
-              color={"white"}
-              px={"46px"}
-              py={"11px"}
-              borderRadius={"6px"}
-              rightIcon={<EditIcon />}
-            >
-              Edit
-            </Button>
-            <FormLabel
-              htmlFor="name"
-              color={"primary.400"}
-              fontWeight={700}
-              fontSize={"20px"}
-              mb={"3px"}
-            >
-              Name:
-            </FormLabel>
-            <Input
-              id="username"
-              // placeholder="what is your name good ser?"
-              fontSize={"18px"}
-              bg={"rgba(198, 219, 255, 0.32)"}
-              border={"none"}
-              _placeholder={{ fontWeight: "700", color: "sub.400" }}
-            />
-            <FormLabel
-              htmlFor="name"
-              color={"primary.400"}
-              fontWeight={700}
-              fontSize={"20px"}
-              mb={"3px"}
-            >
-              Username:
-            </FormLabel>
-            <Input
-              id="username"
-              fontSize={"18px"}
-              bg={"rgba(198, 219, 255, 0.32)"}
-              border={"none"}
-              _placeholder={{ fontWeight: "700", color: "sub.400" }}
-            />
-            <FormLabel
-              htmlFor="Bio"
-              color={"primary.400"}
-              fontWeight={700}
-              fontSize={"20px"}
-              mb={"3px"}
-            >
-              Bio:
-            </FormLabel>
-            <Textarea
-              id="bio"
-              fontSize={"18px"}
-              bg={"rgba(198, 219, 255, 0.32)"}
-              border={"none"}
-              resize={"none"}
-              size={"md"}
-              minHeight={"140px"}
-              _placeholder={{ fontWeight: "700", color: "sub.400" }}
-            />
-            <br />
-            <Button
-              type={"submit"}
-              form={"setup-form"}
-              alignSelf={"end"}
-              ml={"32px"}
-              background={"primary.400"}
-              color={"white"}
-              px={"46px"}
-              py={"11px"}
-              borderRadius={"6px"}
-            >
-              Save
-            </Button>
-          </Box>
-        </ModalBody>
-      </ModalContent>
-    </Modal>
+    <>
+      <Button onClick={onOpen}>
+        Edit User Profile
+      </Button>
+      <ProfileEditModal isOpen={isOpen} onClose={onClose} userData={sampleUserData} />
+    </>
   );
 };
 
