@@ -163,13 +163,9 @@ const updateUser = function (session, wallet, filter, newUser) {
         filter(([key, value]) => filter.includes(key)))
 
     // Check for existence of required fields.
-    for (let f of filter) {
-        if (!(f in newUser)) {
-            throw {success: false, message : `Missing field ${f}.`}
-        }
-        if (typeof f != String) {
-            throw {success: false, message : `Field ${f} is not String.`}
-        }
+    for (let filterName of filter) {
+        if (!(filterName in newUser)) throw {success: false, message : `Missing field ${f}.`}
+        if (typeof filterName !== 'string') throw {success: false, message : `Field ${f} is not String.`}
     }
 
     // Check for non empty fields
