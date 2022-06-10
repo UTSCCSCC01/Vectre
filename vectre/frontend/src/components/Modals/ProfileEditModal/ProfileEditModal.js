@@ -117,7 +117,8 @@ class ProfileEditModal extends React.Component {
                                         py={'11px'}
                                         borderRadius={'6px'}
                                         rightIcon={<EditIcon/>}
-                                        _focus={{outline: 0}}>
+                                        _focus={{outline: 0}}
+                                        disabled={true}> {/* TODO: Implement edit avatar/banner */}
                                         Edit
                                     </Button>
                                 </Flex>
