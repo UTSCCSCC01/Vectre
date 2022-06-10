@@ -9,7 +9,7 @@ import {
     IconButton
 } from '@chakra-ui/react';
 
-import { ReactComponent as LogoIcon } from '../../assets/icons/logo-V.svg'
+import { ReactComponent as LogoIcon } from '../../../assets/icons/logo-V.svg'
 
 const ListHeader = ({ children }) => {
     return (

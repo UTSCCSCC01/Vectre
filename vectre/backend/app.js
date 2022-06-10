@@ -1,5 +1,6 @@
 var createError = require('http-errors');
 var express = require('express');
+var config = require('./config');
 var cors = require('cors');
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -20,7 +21,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(cors())
+const corsOptions = {
+    origin: config.frontend_base_url,
+    credentials: true
+}
+app.use(cors(corsOptions))
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

@@ -5,12 +5,12 @@ import {
     GridItem
 } from '@chakra-ui/react';
 
-import nft1 from '../../assets/images/nft-ex1.jpeg';
-import nft2 from '../../assets/images/nft-ex2.jpeg';
-import nft3 from '../../assets/images/nft-ex3.jpeg';
-import nft4 from '../../assets/images/nft-ex4.jpeg';
-import nft5 from '../../assets/images/nft-ex5.jpeg';
-import decorBox from '../../assets/others/decor-box.svg';
+import nft1 from '../../../assets/images/nft-ex1.jpeg';
+import nft2 from '../../../assets/images/nft-ex2.jpeg';
+import nft3 from '../../../assets/images/nft-ex3.jpeg';
+import nft4 from '../../../assets/images/nft-ex4.jpeg';
+import nft5 from '../../../assets/images/nft-ex5.jpeg';
+import decorBox from '../../../assets/others/decor-box.svg';
 
 const imageInfos = [
     {
