@@ -156,6 +156,54 @@ const update = (session, wallet, newUser) => {
         })
 }
 
+const getDashboard = (session, wallet_address) => {
+    const query =  `MATCH (user:User {wallet_address: "${wallet_address}" }) RETURN user.dashboard`
+    return session.run(query)
+        .then((results) => {
+            if (_.isEmpty(results.records)) {
+                throw {
+                    success: false,
+                    message: `User with wallet address ${wallet_address} does not exist`
+                }
+            } else {
+                return {
+                    success: true,
+                    user_dashboard: results.records[0].get('user.dashboard')
+                }
+            }
+        }).catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to get User",
+                error: error.message
+            }
+        })
+}
+
+const updateDashboard = (session, body) => { // Return the first User node w/ wallet_address
+    const query = `MATCH (user:User {wallet_address:"${body.wallet_address}"}) SET user.dashboard = "${body.dashboard}" RETURN user`;
+    return session.run(query)
+        .then((results) => {
+            if (_.isEmpty(results.records)) {
+                throw {
+                    success: false,
+                    message: `User with wallet address ${wallet_address} does not exist`
+                }
+            } else {
+                return {
+                    success: true,
+                    user: new User(results.records[0].get('user'))
+                }
+            }
+        }).catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to get User",
+                error: error.message
+            }
+        })
+}
+
 module.exports = {
     getAll,
     getByWalletAddress,
@@ -163,4 +211,6 @@ module.exports = {
     getNonce,
     login,
     update,
+    getDashboard,
+    updateDashboard,
 }
