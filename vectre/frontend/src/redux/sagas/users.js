@@ -54,7 +54,7 @@ function* createUser(action) {
         const response = yield call(postRequest, BASE_API_URL + USERS.CREATE_USER, action.user), responseData = response[1]
         if (responseData.success) { // TODO: Show toast success message
             yield put(getCreate(responseData))
-            yield put(action.redirectWindow("/feed"))
+            if (action.redirectWindow) yield put(action.redirectWindow("/feed"))
         } else { // TODO: Show toast error message
         }
     } catch (error) {
