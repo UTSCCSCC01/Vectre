@@ -156,6 +156,24 @@ const update = (session, wallet, newUser) => {
         })
 }
 
+const deleteUser = (session, wallet_address) => {
+    const query = `MATCH (user:User {wallet_address: '${wallet_address}'}) DETACH DELETE user`
+    return session.run(query)
+        .then((results) => {
+            return {
+                success: true,
+                message: "Deleted User"
+            }
+        })
+        .catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to delete User",
+                error: error.message
+            }
+        })
+}
+
 module.exports = {
     getAll,
     getByWalletAddress,
@@ -163,4 +181,5 @@ module.exports = {
     getNonce,
     login,
     update,
+    delete: deleteUser,
 }
