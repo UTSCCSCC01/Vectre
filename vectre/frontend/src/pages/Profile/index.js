@@ -1,6 +1,9 @@
+import React from 'react'
+import {ReactComponent as LandingRect} from "../../assets/icons/landing-rect.svg";
 import {
-  Button,
-  useDisclosure
+    Box,
+    Button,
+    useDisclosure
 } from "@chakra-ui/react";
 
 import ProfileEditModal from "../../components/Modals/ProfileEditModal/ProfileEditModal";
@@ -16,12 +19,21 @@ const sampleUserData = {
 const Profile = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   return (
-    <>
-      <Button onClick={onOpen}>
-        Edit User Profile
-      </Button>
-      <ProfileEditModal isOpen={isOpen} onClose={onClose} userData={sampleUserData} />
-    </>
+      <Box>
+          <Box
+              bg={"linear-gradient(180deg, #E4EFFF 0%, rgba(228, 239, 255, 0.6) 92.51%, rgba(228, 239, 255, 0.6) 100%)"}
+              minHeight={'100vh'}>
+              <Box position={"absolute !important"} zIndex={"-1"} right={"0"} display={{ base: 'none', lg: 'block' }}>
+                  <LandingRect />
+              </Box>
+              <Box>
+                  <Button onClick={onOpen}>
+                      Edit User Profile
+                  </Button>
+                  <ProfileEditModal isOpen={isOpen} onClose={onClose} userData={sampleUserData} />
+              </Box>
+          </Box>
+      </Box>
   );
 };
 
