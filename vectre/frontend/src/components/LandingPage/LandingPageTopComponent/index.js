@@ -42,7 +42,7 @@ const LandingPageTopComponent = ({
                             spacing={{ base: 4, sm: 6 }}
                             direction={{ base: 'column', sm: 'row' }}>
                             <Link
-                                href='#'
+                                href='/login'
                                 _hover={{ textDecoration: "none" }}>
                                 <Button
                                     rounded={'6px'}

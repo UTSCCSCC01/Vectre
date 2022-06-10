@@ -19,7 +19,7 @@ import { getCreate } from "../actions/create";
 // Login
 function* getLoginNonce(action) {
     try {
-        const response = yield call(postRequest, BASE_API_URL + USERS.GET_LOGIN_NONCE, {wallet_address: action.wallet_address}), responseData = response[1]
+        const response = yield call(postRequest, BASE_API_URL + USERS.GET_LOGIN_NONCE, { wallet_address: action.wallet_address }), responseData = response[1]
         if (responseData.success)
             yield put(storeLoginNonce(responseData.nonce))
     } catch (error) {
@@ -28,10 +28,10 @@ function* getLoginNonce(action) {
 }
 function* loginUser(action) {
     try {
-        const response = yield call(postRequest, BASE_API_URL + USERS.LOGIN, {wallet_address: action.wallet_address, signed_nonce: action.signedNonce}), responseData = response[1]
+        const response = yield call(postRequest, BASE_API_URL + USERS.LOGIN, { wallet_address: action.wallet_address, signed_nonce: action.signedNonce }), responseData = response[1]
         console.log(responseData)
         if (responseData.success)
-            yield put(action.redirectWindow("/feed"))
+            yield put(action.redirectWindow("/home"))
     } catch (error) {
         console.log(error)
     }
@@ -54,7 +54,7 @@ function* createUser(action) {
         const response = yield call(postRequest, BASE_API_URL + USERS.CREATE_USER, action.user), responseData = response[1]
         if (responseData.success) { // TODO: Show toast success message
             yield put(getCreate(responseData))
-            if (action.redirectWindow) yield put(action.redirectWindow("/feed"))
+            if (action.redirectWindow) yield put(action.redirectWindow("/home"))
         } else { // TODO: Show toast error message
         }
     } catch (error) {
