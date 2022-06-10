@@ -1,54 +1,70 @@
 import { call, put, takeLatest } from "redux-saga/effects"
+import { getRequest, postRequest } from "./index";
 import {
-    storeUsers
+    storeUsers,
+    storeLoginNonce,
 } from "../actions/users";
 import {
+    GET_LOGIN_NONCE,
+    LOGIN_USER,
+    GET_USERS,
     CREATE_USER,
-    GET_USERS
 } from "../constants/users";
 import {
     BASE_API_URL,
     USERS
 } from "../constants/endpoints";
+import { getCreate } from "../actions/create";
 
-const getRequest = (url) => {
-    return fetch(url, {
-        method: "GET"
-    })
-        .then(response => response.json())
-        .catch(error => {throw error})
+// Login
+function* getLoginNonce(action) {
+    try {
+        const response = yield call(postRequest, BASE_API_URL + USERS.GET_LOGIN_NONCE, { wallet_address: action.wallet_address }), responseData = response[1]
+        if (responseData.success)
+            yield put(storeLoginNonce(responseData.nonce))
+    } catch (error) {
+        console.log(error)
+    }
 }
-
-const postRequest = (url, data) => {
-    return fetch(url, {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-        .then(response => response.json())
-        .catch(error => {throw error})
+function* loginUser(action) {
+    try {
+        const response = yield call(postRequest, BASE_API_URL + USERS.LOGIN, { wallet_address: action.wallet_address, signed_nonce: action.signedNonce }), responseData = response[1]
+        console.log(responseData)
+        if (responseData.success)
+            yield put(action.redirectWindow("/home"))
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 function* getUsers() {
     try {
-        const response = yield call(getRequest, BASE_API_URL + USERS.GET_USERS)
-        yield put(storeUsers(response))
+        const response = yield call(getRequest, BASE_API_URL + USERS.GET_USERS), responseData = response[1]
+        if (responseData.success) {
+            yield put(storeUsers(responseData.users))
+        } else { // TODO: Show error message
+        }
     } catch (error) {
-        console.log(`ERROR: ${error.message}`)
+        console.log(error)
     }
 }
 
 function* createUser(action) {
     try {
-        const response = yield call(postRequest, BASE_API_URL + USERS.CREATE_USER, action.user)
+        const response = yield call(postRequest, BASE_API_URL + USERS.CREATE_USER, action.user), responseData = response[1]
+        if (responseData.success) { // TODO: Show toast success message
+            yield put(getCreate(responseData))
+            if (action.redirectWindow) yield put(action.redirectWindow("/home"))
+        } else { // TODO: Show toast error message
+        }
     } catch (error) {
-        console.log(`ERROR: ${error.message}`)
+        console.log(error)
     }
 }
 
-function* usersSaga () {
+function* usersSaga() {
+    yield takeLatest(GET_LOGIN_NONCE, getLoginNonce)
+    yield takeLatest(LOGIN_USER, loginUser)
     yield takeLatest(GET_USERS, getUsers)
     yield takeLatest(CREATE_USER, createUser)
 }
