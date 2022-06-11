@@ -4,7 +4,7 @@ const Post = require('./neo4j/post')
 const createUserPost = function(session, req) {
     const { body } = req;
     const query = [
-        `CREATE (p:Post {id: '${body.author+body.timestamp}', text: '${body.text}', imageURL: '${body.imageURL}', author: '${body.author}', edited: '${body.edited}', timestamp: '${body.timestamp}'})`,
+        `CREATE (p:Post {postID: '${body.author+body.timestamp}', text: '${body.text}', imageURL: '${body.imageURL}', author: '${body.author}', edited: '${body.edited}', timestamp: '${body.timestamp}'})`,
         `WITH (p)`,
         `MATCH (u:User)`,
         `WHERE u.wallet_address = '${body.author}'`,
@@ -24,7 +24,7 @@ const createUserPost = function(session, req) {
 const updateUserPost = function(session, req) {
     const { body } = req;
     const query = [
-        `MATCH (p:Post {id: '${body.author+body.timestamp}'})`,
+        `MATCH (p:Post {postID: '${body.author+body.timestamp}'})`,
         `SET p.text = '${body.text}', p.imageURL = '${body.imageURL}', p.edited = true`,
         `RETURN p`
     ].join('\n');
