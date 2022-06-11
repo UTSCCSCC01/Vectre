@@ -4,6 +4,7 @@ var router = express.Router();
 const User = require('../models/user');
 const dbUtils = require('../utils/neo4j/dbUtils');
 const {authenticateToken} = require("../utils/auth");
+const { result } = require('lodash');
 
 // GET /users
 router.get('/', (req, res, next) => {
@@ -15,6 +16,13 @@ router.get('/', (req, res, next) => {
 // GET /users/{wallet_address}
 router.get('/:wallet_address', (req, res) => {
     User.getByWalletAddress(dbUtils.getSession(req), req.params.wallet_address)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
+
+// GET /users/{wallet_address}/nft
+router.get('/:wallet_address/nft', (req, res) => {
+    User.getNFT(req.params.wallet_address)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
