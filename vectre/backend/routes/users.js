@@ -36,8 +36,8 @@ router.post('/login/nonce', (req, res) => {
         .catch((error) => res.send(error))
 })
 
-// GET /users/{wallet_address/post
-router.get('/:user_id/post', (req, res, next) => {
+// GET /users/{wallet_address}/posts
+router.get('/:user_id/posts', (req, res, next) => {
     const author = req.params.user_id;
     if (!author) throw {message: 'Invalid user id', status: 400, success: false};
 
