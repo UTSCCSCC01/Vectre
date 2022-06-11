@@ -68,9 +68,9 @@ const update = function(session, postID, body) {
         });
 }
 
-const getPostsByUser = function(session, author) {
+const getPostsByUser = function(session, wallet_address) {
     const query = [
-        `MATCH (:User {wallet_address:'${author}'})-[:POSTED]->(post:Post)`,
+        `MATCH (:User {wallet_address:'${wallet_address}'})-[:POSTED]->(post:Post)`,
         `RETURN DISTINCT post`,
         `ORDER BY post.timestamp DESC`
       ].join('\n');

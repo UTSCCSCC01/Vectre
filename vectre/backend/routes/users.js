@@ -23,7 +23,7 @@ router.get('/:wallet_address', (req, res) => {
 
 // GET /users/{wallet_address}/posts
 router.get('/:wallet_address/posts', (req, res, next) => {
-    Post.getPostsByUser(dbUtils.getSession(req), author)
+    Post.getPostsByUser(dbUtils.getSession(req), req.params.wallet_address)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 });
