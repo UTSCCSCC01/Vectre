@@ -15,7 +15,7 @@ export default function Routes() {
                 <Route path="/home" component={HomePage} />
                 <Route path="/feed" component={Feed} />
                 <Route path="/login" component={LoginPage} />
-                <Route path="/profile" component={Profile} />
+                <Route path="/user/:wallet_address" component={Profile} />
                 <Route path="/signup" component={Signup} />
             </Switch>
         </Router>
