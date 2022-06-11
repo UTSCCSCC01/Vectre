@@ -2,7 +2,8 @@ const _ = require('lodash')
 const User = require('./neo4j/user')
 const config = require('../config');
 const jwt = require('jsonwebtoken')
-const ethUtil = require('ethereumjs-util')
+const ethUtil = require('ethereumjs-util');
+const { response } = require('express');
 
 const getAll = (session) => { // Returns all Users
     const query = "MATCH (user:User) RETURN user";
@@ -156,7 +157,32 @@ const update = (session, wallet, newUser) => {
         })
 }
 
-const getDashboard = (session, wallet_address) => {
+const getNFT = (wallet_address) => { // Gets all NFTs of a User using OpenSea API.
+    return fetch(`https://testnets-api.opensea.io/api/v1/assets?owner=${wallet_address}&order_direction=desc&offset=0&limit=20&include_orders=false`)
+        .then(res => res.json())
+        .then(json => {
+            if (_.isEmpty(json.assets)){
+                return {
+                    success: false,
+                    nft: null,
+                    message: `Failed to retrieve NFTs for user with wallet address ${wallet_address}`
+                }
+            }
+            return {
+                success: true,
+                nft: json.assets,
+                message: `Successfully retrieved NFTs for user with wallet address ${wallet_address}`
+            }
+        }).catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to get User's NFTs.",
+                error: error.message
+            }
+        })
+} 
+
+const getDashboard = (session, wallet_address) => { // Gets the NFTs in the dashboard of a User.
     const query =  `MATCH (user:User {wallet_address: "${wallet_address}" }) RETURN user.dashboard`
     return session.run(query)
         .then((results) => {
@@ -180,7 +206,7 @@ const getDashboard = (session, wallet_address) => {
         })
 }
 
-const updateDashboard = (session, body) => { // Return the first User node w/ wallet_address
+const updateDashboard = (session, body) => {  // Sets the NFTs in the dashboard of a User.
     const query = `MATCH (user:User {wallet_address:"${body.wallet_address}"}) SET user.dashboard = "${body.dashboard}" RETURN user`;
     return session.run(query)
         .then((results) => {
@@ -211,6 +237,7 @@ module.exports = {
     getNonce,
     login,
     update,
+    getNFT,
     getDashboard,
     updateDashboard,
 }
