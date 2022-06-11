@@ -7,7 +7,6 @@ const dbUtils = require('../utils/neo4j/dbUtils');
 const {authenticateToken} = require("../utils/auth");
 const { rest } = require('lodash');
 
-
 // GET /users
 router.get('/', (req, res, next) => {
     User.getAll(dbUtils.getSession(req))
@@ -21,6 +20,13 @@ router.get('/:wallet_address', (req, res) => {
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
+
+// GET /users/{wallet_address}/posts
+router.get('/:wallet_address/posts', (req, res, next) => {
+    Post.getPostsByUser(dbUtils.getSession(req), author)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+});
 
 // POST /users/register
 router.post('/register', (req, res) => {
@@ -37,15 +43,10 @@ router.post('/login/nonce', (req, res) => {
 })
 
 // GET /users/{wallet_address}/posts
-router.get('/:user_id/posts', (req, res, next) => {
-    const author = req.params.user_id;
-    if (!author) throw {message: 'Invalid user id', status: 400, success: false};
-
-    Post.getUserPosts(dbUtils.getSession(req), author)
-    .then((result) => res.send(result))
-    .catch((error) => res.send(error))
-
-
+router.get('/:wallet_address/posts', (req, res, next) => {
+    Post.getPostsByUser(dbUtils.getSession(req), req.params.wallet_address)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
 });
 
 // POST /users/login
