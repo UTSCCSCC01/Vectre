@@ -9,7 +9,8 @@ const config = {
 const styles = {
   global: props => ({
     body: {
-      bg: mode('white', 'inherit')(props)
+      bg: mode('white', 'inherit')(props),
+      overflow: "overlay"
     },
     '*': {
       fontFamily: 'DM sans'

@@ -2,8 +2,10 @@ var express = require('express');
 var router = express.Router();
 
 const User = require('../models/user');
+const Post = require('../models/post');
 const dbUtils = require('../utils/neo4j/dbUtils');
 const {authenticateToken} = require("../utils/auth");
+const { rest } = require('lodash');
 
 // GET /users
 router.get('/', (req, res, next) => {
@@ -19,6 +21,13 @@ router.get('/:wallet_address', (req, res) => {
         .catch((error) => res.send(error))
 })
 
+// GET /users/{wallet_address}/posts
+router.get('/:wallet_address/posts', (req, res, next) => {
+    Post.getPostsByUser(dbUtils.getSession(req), req.params.wallet_address)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+});
+
 // POST /users/register
 router.post('/register', (req, res) => {
     User.register(dbUtils.getSession(req), req.body)
@@ -32,6 +41,13 @@ router.post('/login/nonce', (req, res) => {
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
+
+// GET /users/{wallet_address}/posts
+router.get('/:wallet_address/posts', (req, res, next) => {
+    Post.getPostsByUser(dbUtils.getSession(req), req.params.wallet_address)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+});
 
 // POST /users/login
 router.post('/login', (req, res) => {
