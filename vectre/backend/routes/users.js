@@ -47,18 +47,6 @@ router.get('/:user_id/post', (req, res, next) => {
 
 
 });
-// POST /users/{wallet_address}/post
-router.post('/:user_id/post', (req, res, next) => {
-    const { author, text, imageURL, edited, timestamp } = req.body;
-
-    console.log(req.body);
-
-    if(!author || !text || !imageURL || !timestamp)
-        throw {message: 'Invalid post properties', status: 400, success: false};
-
-    res.send(Post.createUserPost(dbUtils.getSession(req), req))
-
-})
 
 // POST /users/login
 router.post('/login', (req, res) => {
