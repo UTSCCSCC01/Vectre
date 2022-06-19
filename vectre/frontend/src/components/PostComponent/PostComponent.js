@@ -18,7 +18,7 @@ const PostComponent = ({
         <>
             <Box
                 height={'fit-content'}
-                bg={'rgba(255, 255, 255, 0.5)'}
+                bg={item.isComment ? 'rgba(59, 130, 246, 0.16)' : 'rgba(255, 255, 255, 0.5)'}
                 borderRadius={'6px'}
                 px={'18px'}
                 py={'15px'}>

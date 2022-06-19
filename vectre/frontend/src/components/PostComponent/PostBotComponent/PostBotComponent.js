@@ -18,29 +18,34 @@ const PostBotComponent = ({
         <Flex flexDirection={'row'} alignContent={'center'} justifyContent={'space-between'}>
             <Flex gap={'10px'}>
                 <TextButton
+                    display={item.like ? 'inline-flex' : 'none'}
                     text={`${item.like} Likes`}
                     rightIcon={<LikeIcon />}
                     onClick={() => {
                         // like
                     }} />
                 <TextButton
+                    display={item.comment ? 'inline-flex' : 'none'}
                     text={`${item.comment} Commments`}
                     rightIcon={<FaCommentAlt size="0.9rem" />}
                     onClick={() => {
                         // comment
                     }} />
                 <IconSquareButton
+                    display={item.isComment ? 'none' : 'inline-flex'}
                     icon={<IoIosShareAlt size="1.6rem" />}
                     onClick={() => {
                         // share
                     }} />
                 <IconSquareButton
+                    display={item.isComment ? 'none' : 'inline-flex'}
                     icon={<FaBookmark size="1.1rem" />}
                     onClick={() => {
                         // bookmark
                     }} />
             </Flex>
             <Link
+                display={item.isComment ? 'none' : 'inline-flex'}
                 href={`c/${item.community}`}
                 _hover={{ textDecoration: "none" }}>
                 <TextButton
