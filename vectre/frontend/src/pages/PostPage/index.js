@@ -1,5 +1,6 @@
 import AppWrapper from "../../components/AppWrapper/AppWrapper";
 import PostComponent from "../../components/PostComponent/PostComponent";
+import UserCommentComponent from "../../components/UserCommentComponent/UserCommentComponent";
 
 import {
     Box,
@@ -12,14 +13,23 @@ const samplePostData = {
     author: {
         walletAddress: "0x15f209074682937c58ca031ebb43d64fa98d97b8",
         username: "Evan Keast",
-        profilePic: "https://s3-alpha-sig.figma.com/img/a8fa/df5e/3d73d21b956a4ddcdd287a204b4ea1a0?Expires=1655683200&Signature=HU~fkoIdFxhBi0fN3DE0jROXrUgLrrcUANO7LV1MpiSGyHQntrmgUKuDu~tPHvKw2WaDY5cz0rBSg~UsSMzCGpZ4A38v4HF7~IdzHdvjBqgXkx2dDigRhMezfi6DH9p38YHJQnHJOz2eduoMR3vPZJQ4UIPm9uZOjczzZUnCx6O~CVKefcmHb8icodO0PiQcPbTUEsnSKf1U4Pu2dgT-tPqGAcPVKOpLOaa8MfyxYk4T8SfpxPjjZGKA9aeWrSdn-xt385i6xTMhR24XIqKxmc59DGbzS7H5U2Oo-g2xDDAj5YUddpKmrdHMhecdqemp3J1ObEDmp-Uv9svqFB0xhA__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
+        profilePic: "https://media-exp1.licdn.com/dms/image/C5603AQFr-8Qlf9kXdw/profile-displayphoto-shrink_200_200/0/1641631597302?e=1655942400&v=beta&t=wrB9-3aglTbvD9K2AZ6pd7pk3JreaD6kZVdw-SdEABY",
         verified: true
     },
     like: "942",
     comment: "50",
     community: "Doodles",
-    imageURL: "https://s3-alpha-sig.figma.com/img/8480/cbbd/2c3b477fd04e371685a1a428f77036c0?Expires=1655683200&Signature=XtRJtUk4kxmfht0yVjTZqaTt~0BqjWEwYsPa6VF0yw2X7krernxjkWP5Zp~fRdkBVIgydMJ1snfY8xAuXCoMogiQWG0cOF88eypSMEn9Mgm9FKhHvzVFGKffnTLiKJY3WhafIh2E5wMRan61TIkb14uut2u5OINSmUNJNVRmO0S1vgEVz~LS~ynNa8s8t7bIrTa3c327HqtKeAx7LSox8I4cJs94MD8XeoDl8FRLgGWQSyE4yZFfGHyMuGj7BbXMX84zFnNgYh5sG-4oJ5xZKY98MUpHhyikzcUXaE6rDFot9SDx68ohBWc6o20o6dwKbvw6LcdYODFmg9KA0XyrFg__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
+    imageURL: "https://nfte.co/content/images/2021/12/doodlesbanner.jpeg",
     edited: false
+}
+
+const userData = {
+    author: {
+        walletAddress: "0x15f209074682937c58ca031ebb43d64fa98d97b8",
+        username: "Evan Keast",
+        profilePic: "https://media-exp1.licdn.com/dms/image/C5603AQFr-8Qlf9kXdw/profile-displayphoto-shrink_200_200/0/1641631597302?e=1655942400&v=beta&t=wrB9-3aglTbvD9K2AZ6pd7pk3JreaD6kZVdw-SdEABY",
+        verified: true
+    }
 }
 
 const sampleCommentData = [
@@ -58,13 +68,15 @@ const sampleCommentData = [
 ]
 
 const PostPage = () => {
+    const isLogged = true;
     return (
         <AppWrapper>
             <Box py={'60px'} maxWidth={'4xl'} margin={'0 auto'}>
                 <Stack alignSelf={'center'} gap={'16px'}>
-                    <Box>
-                        <PostComponent item={samplePostData} />
-                    </Box>
+                    <PostComponent item={samplePostData} />
+                    {
+                        isLogged ? (<UserCommentComponent item={userData} />) : (<Box>User is not logged in</Box>)
+                    }
                     {/* Add Comments below */}
                     {
                         sampleCommentData.map((item, i) => {

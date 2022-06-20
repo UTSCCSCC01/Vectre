@@ -46,7 +46,7 @@ const PostTopComponent = ({
                 </Box>
             </Flex>
             <Box
-                display={'inline-flex'}
+                display={item.timestamp ? 'inline-flex' : 'none'}
                 px={'17.5px'}
                 fontSize={'12px'}
                 fontWeight={500}

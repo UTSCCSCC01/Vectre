@@ -18,7 +18,7 @@ const samplePostData = [
     like: "942",
     comment: "50",
     community: "Doodles",
-    imageURL: "https://s3-alpha-sig.figma.com/img/8480/cbbd/2c3b477fd04e371685a1a428f77036c0?Expires=1655683200&Signature=XtRJtUk4kxmfht0yVjTZqaTt~0BqjWEwYsPa6VF0yw2X7krernxjkWP5Zp~fRdkBVIgydMJ1snfY8xAuXCoMogiQWG0cOF88eypSMEn9Mgm9FKhHvzVFGKffnTLiKJY3WhafIh2E5wMRan61TIkb14uut2u5OINSmUNJNVRmO0S1vgEVz~LS~ynNa8s8t7bIrTa3c327HqtKeAx7LSox8I4cJs94MD8XeoDl8FRLgGWQSyE4yZFfGHyMuGj7BbXMX84zFnNgYh5sG-4oJ5xZKY98MUpHhyikzcUXaE6rDFot9SDx68ohBWc6o20o6dwKbvw6LcdYODFmg9KA0XyrFg__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
+    imageURL: "https://nfte.co/content/images/2021/12/doodlesbanner.jpeg",
     edited: false
   },
   {
