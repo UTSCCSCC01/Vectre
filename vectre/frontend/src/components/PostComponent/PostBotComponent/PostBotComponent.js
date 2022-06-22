@@ -21,32 +21,43 @@ const PostBotComponent = ({
                     display={item.like ? 'inline-flex' : 'none'}
                     text={`${item.like} Likes`}
                     rightIcon={<LikeIcon />}
-                    onClick={() => {
+                    onClick={(e) => {
                         // like
+                        console.log("Like")
+                        e.stopPropagation();
                     }} />
                 <TextButton
                     display={item.comment ? 'inline-flex' : 'none'}
                     text={`${item.comment} Commments`}
                     rightIcon={<FaCommentAlt size="0.9rem" />}
-                    onClick={() => {
+                    onClick={(e) => {
                         // comment
+                        console.log("comment")
+                        e.stopPropagation();
                     }} />
                 <IconSquareButton
                     display={item.isComment ? 'none' : 'inline-flex'}
                     icon={<IoIosShareAlt size="1.6rem" />}
-                    onClick={() => {
+                    onClick={(e) => {
                         // share
+                        console.log("share")
+                        e.stopPropagation();
                     }} />
                 <IconSquareButton
                     display={item.isComment ? 'none' : 'inline-flex'}
                     icon={<FaBookmark size="1.1rem" />}
-                    onClick={() => {
+                    onClick={(e) => {
                         // bookmark
+                        console.log("bookmark")
+                        e.stopPropagation();
                     }} />
             </Flex>
             <Link
                 display={item.isComment ? 'none' : 'inline-flex'}
                 href={`c/${item.community}`}
+                onClick={(e) => {
+                    e.stopPropagation();
+                }}
                 _hover={{ textDecoration: "none" }}>
                 <TextButton
                     text={`< ${item.community} >`}
@@ -55,7 +66,7 @@ const PostBotComponent = ({
                     fontWeight={700}
                     rightIcon={<BsFillCheckCircleFill />} />
             </Link>
-        </Flex>
+        </Flex >
     );
 };
 

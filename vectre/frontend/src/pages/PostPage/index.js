@@ -16,10 +16,11 @@ const samplePostData = {
         profilePic: "https://media-exp1.licdn.com/dms/image/C5603AQFr-8Qlf9kXdw/profile-displayphoto-shrink_200_200/0/1641631597302?e=1655942400&v=beta&t=wrB9-3aglTbvD9K2AZ6pd7pk3JreaD6kZVdw-SdEABY",
         verified: true
     },
+    postId: "00001",
     like: "942",
     comment: "50",
     community: "Doodles",
-    imageURL: "https://nfte.co/content/images/2021/12/doodlesbanner.jpeg",
+    imageURL: "https://pbs.twimg.com/media/FTSfCnTXoAEyhOp?format=jpg&name=small",
     edited: false
 }
 
@@ -39,7 +40,7 @@ const sampleCommentData = [
         author: {
             walletAddress: "0x15f209074682937c58ca031ebb43d64fa98d97b8",
             username: "Jonathan",
-            profilePic: "https://s3-alpha-sig.figma.com/img/794b/9ec3/94c9151441e7bc922fc1c4b0226e61b5?Expires=1656288000&Signature=U6qE-vlSykuil6iHLBVI9IYKVmC-1n-3eoALoy7knD6PqWKRSi5R24ZeV~~TY0c-U-DxazRImFc95GiuwmL~4PxjpE6yZAO0hLjx20230027MOAYGLppWPgdzaWUwz5JLL1whvnDfWwEMGRiTl0mNmcjAYhDDAhxPXgQ2qfkYsEINXVw4D5Rc2w80AX-gH1PkoYQ6KOG6qkiRb4vh4VBMHDC-t5LYkkdnxgCm7XGT-ovXLFyFm1jf-QaTYYV-xdSncJC3uX1c~vcWtnDJFU39HriKUzIHDx70vA-UpXdbpnGH~jX~PFM3AcC-8EZ-zSujfStH91ne-Vg6oJCWFnAaw__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
+            profilePic: "https://img.seadn.io/files/ed6633d0685d1ad5b2aa13d5d36c1149.png?fit=max&w=600",
             verified: true
         },
         like: "421",
@@ -55,7 +56,7 @@ const sampleCommentData = [
         author: {
             walletAddress: "0x15f209074682937c58ca031ebb43d64fa98d97b8",
             username: "brandon",
-            profilePic: "https://s3-alpha-sig.figma.com/img/2636/8bea/fa2a6fe4ca37b1cc10914e212aa8092d?Expires=1656288000&Signature=VLCInM3~4GPjUHew5UcRlDcUlnqAkzCUjOx0SgDSZzldFQeOo3TF5HO2lMN8nTWAOytJ7E9nA~vSzp7dfIiq2EmcxujGQbNZ-8PUEMweG1gjgpRVkfu7mB~cJz1HMQC~ytZ7WWs86z~Wy9E5FqqZGSmYmVCe~uo1SWdmlJDiRl9SZxYh1POss2asScWjdEPXUoZSuyUxYRwIAKQrCdwr9g6DaFkYv~H5Pb~2dIEnV9bYUIv4CHITrHZNt5qbNO26z8kIgJrTlbvSgC5XVvkjBcRqqFMKeMbP-bg7Tekp4LId2H3wd-jICtMVBMXnY46gL6bMZdzBmwX91ThBPV4apg__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
+            profilePic: "https://cdn-612d39b2c1ac189e9851cc81.closte.com/wp-content/uploads/2022/01/Generous-Robots-2-360x360.jpg",
             verified: false
         },
         like: "32",
