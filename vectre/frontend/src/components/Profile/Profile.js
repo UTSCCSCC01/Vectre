@@ -7,6 +7,8 @@ import {
     getLoggedInUser,
     getUser,
     updateUser,
+    followUser,
+    unfollowUser,
 } from "../../redux/actions/users";
 import {
     loggedInUserSelector,
@@ -24,7 +26,8 @@ class Profile extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            isModalOpen: false
+            isModalOpen: false,
+            following: false
         }
     }
 
@@ -33,6 +36,9 @@ class Profile extends React.Component {
         this.props.getLoggedInUser()
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.loggedInUser !== this.props.loggedInUser) {
+            this.setState({following: this.props.loggedInUser.following.includes(this.props.profileWalletAddress)})
+        }
     }
 
     handleOpenModal = () => { this.setState({isModalOpen: true}) }
@@ -40,6 +46,13 @@ class Profile extends React.Component {
 
     handleUpdateUser = (newUser) => {
         this.props.updateUser(this.props.loggedInUser.wallet_address, newUser, (href) => { window.location.href = href})
+    }
+    handleFollowUser = () => {
+        if (this.state.following) { // Unfollow
+            this.props.unfollowUser(this.props.profileWalletAddress, (href) => { window.location.href = href})
+        } else { // Follow
+            this.props.followUser(this.props.profileWalletAddress, (href) => { window.location.href = href})
+        }
     }
 
     render () {
@@ -76,6 +89,7 @@ class Profile extends React.Component {
                         {/* Display edit profile is logged in user is same as profile being viewed */}
                         {this.props.loggedInUser.wallet_address === this.props.profileWalletAddress ?
                             <>
+                                {/* Edit user profile */}
                                 <Button
                                     onClick={this.handleOpenModal}>
                                     Edit User Profile
@@ -87,7 +101,14 @@ class Profile extends React.Component {
                                     openModal={this.handleOpenModal}
                                     closeModal={this.handleCloseModal}
                                 />
-                            </> : null
+                            </> :
+                            <>
+                                {/* Follow */}
+                                <Button
+                                    onClick={this.handleFollowUser}>
+                                    {this.state.following ? "Unfollow" : "Follow"}
+                                </Button>
+                            </>
                         }
                     </>
                 }
@@ -99,7 +120,9 @@ class Profile extends React.Component {
 const actionCreators = {
     getLoggedInUser,
     getUser,
-    updateUser
+    updateUser,
+    followUser,
+    unfollowUser,
 }
 const mapStateToProps = (state, ownProps) => ({
     loggedInUser: loggedInUserSelector(state),
