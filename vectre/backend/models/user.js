@@ -292,6 +292,52 @@ const getFollowers = (session, wallet_address) => { // Returns list of Users fol
             }
         });
 }
+const followUser = (session, wallet_address, wallet_address_to_follow) => {
+    if (wallet_address !== wallet_address_to_follow) {
+        const query = `MATCH (n) RETURN n` // TODO: Create follow relationship
+        return session.run(query)
+            .then((result) => {
+                return {
+                    success: true,
+                    message: "Followed user"
+                }
+            })
+            .catch((error) => {
+                throw {
+                    success: false,
+                    message: "Failed to follow user"
+                }
+            })
+    } else {
+        throw {
+            success: false,
+            message: "Cannot follow yourself"
+        }
+    }
+}
+const unfollowUser = (session, wallet_address, wallet_address_to_unfollow) => {
+    if (wallet_address !== wallet_address_to_unfollow) {
+        const query = `MATCH (n) RETURN n` // TODO: Delete follow relationship
+        return session.run(query)
+            .then((result) => {
+                return {
+                    success: true,
+                    message: "Unfollowed user"
+                }
+            })
+            .catch((error) => {
+                throw {
+                    success: false,
+                    message: "Failed to unfollow user"
+                }
+            })
+    } else {
+        throw {
+            success: false,
+            message: "Cannot unfollow yourself"
+        }
+    }
+}
 
 
 module.exports = {
@@ -304,4 +350,6 @@ module.exports = {
     delete: deleteUser,
     getFollowing,
     getFollowers,
+    follow: followUser,
+    unfollow: unfollowUser,
 }

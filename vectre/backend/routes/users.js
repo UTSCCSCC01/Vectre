@@ -104,5 +104,17 @@ router.get('/:wallet_address/followers', (req, res, next) => {
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 });
+// POST /users/{wallet_address_to_follow}/follow
+router.post('/:wallet_address/follow', authenticateToken, (req, res, next) => {
+    User.follow(dbUtils.getSession(req), req.wallet_address, req.params.wallet_address)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+});
+// POST /users/{wallet_address_to_unfollow}/unfollow
+router.post('/:wallet_address/unfollow', authenticateToken, (req, res, next) => {
+    User.unfollow(dbUtils.getSession(req), req.wallet_address, req.params.wallet_address)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+});
 
 module.exports = router;
