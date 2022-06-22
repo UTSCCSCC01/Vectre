@@ -92,4 +92,17 @@ router.delete('/:wallet_address/delete', authenticateToken, (req, res) => {
     }
 })
 
+// GET /users/{wallet_address}/following
+router.get('/:wallet_address/following', (req, res, next) => {
+    User.getFollowing(dbUtils.getSession(req), req.params.wallet_address)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+});
+// GET /users/{wallet_address}/followers
+router.get('/:wallet_address/followers', (req, res, next) => {
+    User.getFollowers(dbUtils.getSession(req), req.params.wallet_address)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+});
+
 module.exports = router;
