@@ -14,7 +14,10 @@ import {
 } from "../../redux/selectors/users";
 
 // Components
-import {Button} from "@chakra-ui/react";
+import {
+    Button,
+    Link,
+} from "@chakra-ui/react";
 import ProfileEditModal from "../Modals/ProfileEditModal/ProfileEditModal";
 
 class Profile extends React.Component {
@@ -47,10 +50,27 @@ class Profile extends React.Component {
                     :
                     <>
                         <div>
-                            <b>wallet_address:</b> {this.props.user.wallet_address}, <br></br>
-                            <b>username:</b> @{this.props.user.username}, <br></br>
-                            <b>name</b>: {this.props.user.name}, <br></br>
+                            <b>wallet_address:</b> {this.props.user.wallet_address} <br></br>
+                            <b>username:</b> @{this.props.user.username} <br></br>
+                            <b>name</b>: {this.props.user.name} <br></br>
                             <b>bio</b>: {this.props.user.bio} <br></br>
+
+                            <br></br>
+                            <b>Following</b>: <br></br>
+                            {this.props.user.following.map(wallet_address =>
+                                <>
+                                    - <Link href={"/user/" + wallet_address}>{wallet_address}</Link><br></br>
+                                </>
+                            )}
+
+                            <br></br>
+                            <b>Followers</b>: <br></br>
+                            {this.props.user.followers.map(wallet_address =>
+                                <>
+                                    - <Link href={"/user/" + wallet_address}>{wallet_address}</Link><br></br>
+                                </>
+                            )}
+                            <br></br>
                         </div>
 
                         {/* Display edit profile is logged in user is same as profile being viewed */}
