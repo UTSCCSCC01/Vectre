@@ -258,9 +258,21 @@ const getNFT = (wallet_address) => { // Gets all NFTs of a User using OpenSea AP
                     message: `Failed to retrieve NFTs for user with wallet address ${wallet_address}`
                 }
             }
+
+            var asset_list = [];
+            for (let i = 0; i < json.assets.length; i++) {
+                var jsonObj = {
+                    token_id: json.assets[3].id,
+                    name: json.assets[3].asset_contract.name, //change 'asset_contract.name' -> 'name' once OpenSea Mainnet API is received.
+                    image_url: json.assets[3].image_url,
+                    contract_address: json.assets[3].asset_contract.address,
+                }
+                asset_list.push(jsonObj);
+            }
+
             return {
                 success: true,
-                nft: json.assets,
+                nft: asset_list,
                 message: `Successfully retrieved NFTs for user with wallet address ${wallet_address}`
             }
         }).catch((error) => {
