@@ -23,7 +23,7 @@ export default function NavBar() {
     return (
         <Container maxW={'8xl'}>
             <Flex alignItems="center"
-                position={'fixed'}
+                position={'absolute'}
                 top={'50px'}
                 left={'50%'}
                 text-align={'center'}
@@ -52,7 +52,7 @@ export default function NavBar() {
                         display={{ base: 'none', lg: 'flex' }}
                         alignItems={'center'}>
                         <Link
-                            href='/login'
+                            href='/'
                             _hover={{ textDecoration: "none" }}>
                             <IconButton
                                 size={'lg'}
@@ -65,7 +65,7 @@ export default function NavBar() {
                             </IconButton>
                         </Link>
                         <Link
-                            href='/login'
+                            href='/trending'
                             _hover={{ textDecoration: "none" }}>
                             <Button
                                 display={{ base: 'none', lg: 'inline-flex' }}
@@ -80,7 +80,7 @@ export default function NavBar() {
                             </Button>
                         </Link>
                         <Link
-                            href='/login'
+                            href='#'
                             _hover={{ textDecoration: "none" }}>
                             <Button
                                 display={{ base: 'none', lg: 'inline-flex' }}
@@ -104,7 +104,7 @@ export default function NavBar() {
                         display={{ base: 'none', lg: 'flex' }}
                         alignItems={'center'}>
                         <Link
-                            href='/login'
+                            href='#'
                             _hover={{ textDecoration: "none" }}>
                             <Button
                                 display={{ base: 'none', lg: 'inline-flex' }}
@@ -118,7 +118,7 @@ export default function NavBar() {
                             </Button>
                         </Link>
                         <Link
-                            href='/login'
+                            href='#'
                             _hover={{ textDecoration: "none" }}>
                             <IconButton
                                 size={'lg'}
@@ -131,7 +131,7 @@ export default function NavBar() {
                             </IconButton>
                         </Link>
                         <Link
-                            href='/login'
+                            href='/profile'
                             _hover={{ textDecoration: "none" }}>
                             <IconButton
                                 size={'lg'}

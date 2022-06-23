@@ -20,10 +20,11 @@ class UsersTest extends React.Component {
     }
 
     handleCreateUser = () => {
+        const random = Math.random().toString(36).slice(2)
         let user = {
-            name: "Test User",
-            username: "test_user",
-            wallet_address: "1234567890"
+            name: "Tester " + random,
+            username: "test_" + random,
+            wallet_address: random
         }
         this.props.createUser(user)
     }
@@ -51,7 +52,12 @@ class UsersTest extends React.Component {
                 </div>
                 <div>
                     <h2>Users:</h2>
-                    {this.props.users.map((user) => `name: ${user.name}, wallet_address: ${user.wallet_address} |\n `)}
+                    {this.props.users.map((user, index) =>
+                        <div key={index}>
+                            name: {user.name},
+                            username: @{user.username},
+                            wallet_address: {user.wallet_address} </div>
+                    )}
                 </div>
 
             </div>
