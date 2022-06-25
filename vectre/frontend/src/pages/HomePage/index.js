@@ -50,6 +50,21 @@ const samplePostData = [
     community: "GOT",
     imageURL: "https://api.time.com/wp-content/uploads/2016/05/tyrion-game-of-thrones-peter-dinklage.jpeg",
     edited: false
+  },
+  {
+    timestamp: "12:20 PM · May 1, 2022",
+    text: "uwu",
+    author: {
+      walletAddress: "0x88a6be0f6b921edfcc5211dc716a397e141631a6",
+      username: "Not Deadly Dwarf",
+      profilePic: "https://nextshark.com/wp-content/uploads/2020/07/2skdghdlaiwjkaugsf.jpg",
+      verified: true
+    },
+    like: "30.2m",
+    comment: "43k",
+    community: "Meowz",
+    repost: "00001",
+    edited: false
   }
 ]
 
