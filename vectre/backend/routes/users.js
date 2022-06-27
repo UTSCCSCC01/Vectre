@@ -124,7 +124,8 @@ router.get("/:wallet_address/following", authenticateToken, (req, res) => {
     });
   }
 });
-// GET /users/{wallet_address}/following
+
+// GET /users/{wallet_address}/followers
 router.get("/:wallet_address/followers", authenticateToken, (req, res) => {
   const walletAddress = req.params.wallet_address;
   if (req.wallet_address === req.params.wallet_address) {
@@ -137,6 +138,21 @@ router.get("/:wallet_address/followers", authenticateToken, (req, res) => {
       message: "You do not have access to this User's followers' list",
     });
   }
+});
+
+// POST /users/{wallet_address}/follow
+router.post("/:wallet_address/follow", authenticateToken, (req, res) => {
+  const walletAddress = req.params.wallet_address;
+  User.createFollow(dbUtils.getSession(req), req.wallet_address, walletAddress)
+    .then((result) => res.send(result))
+    .catch((error) => res.send(error));
+});
+// DELETE /users/{wallet_address}/unfollow
+router.post("/:wallet_address/unfollow", authenticateToken, (req, res) => {
+  const walletAddress = req.params.wallet_address;
+  User.deleteFollow(dbUtils.getSession(req), req.wallet_address, walletAddress)
+    .then((result) => res.send(result))
+    .catch((error) => res.send(error));
 });
 
 module.exports = router;

@@ -309,6 +309,7 @@ const getFollowing = (session, wallet_address) => {
       };
     });
 };
+
 const getFollowers = (session, wallet_address) => {
   const query = `MATCH ((b:User)-[r:FOLLOWING]->(a:User{wallet_address:"${wallet_address}"})) RETURN b`;
   return session
@@ -330,6 +331,81 @@ const getFollowers = (session, wallet_address) => {
     });
 };
 
+const createFollow = (
+  session,
+  wallet_address_follower,
+  wallet_address_to_follow
+) => {
+  // Creates User from body data
+  const query = `match(a:User), (b:User)
+where a.wallet_address="${wallet_address_follower}" AND b.wallet_address="${wallet_address_to_follow}"
+create((a)-[r:FOLLOWING]->(b))`;
+
+  const queryExist = `match((a:User{wallet_address:"${wallet_address_follower}"})-[r:FOLLOWING]->(b:User{wallet_address:"${wallet_address_to_follow}"})) return r`;
+
+  return session.run(queryExist).then((exist) => {
+    if (!_.isEmpty(exist.records)) {
+      throw {
+        success: false,
+        message: `Relationship already exists`,
+      };
+    } else {
+      return session
+        .run(query)
+        .then((results) => {
+          return {
+            success: true,
+            message: "Created Following Relationship",
+          };
+        })
+        .catch((error) => {
+          throw {
+            success: false,
+            message: "Failed to create Following Relationship",
+            error: error.message,
+          };
+        });
+    }
+  });
+};
+
+const deleteFollow = (
+  session,
+  wallet_address_follower,
+  wallet_address_following
+) => {
+  // Creates User from body data
+
+  const query = `match((a:User{wallet_address:"${wallet_address_follower}"})-[r:FOLLOWING]->(b:User{wallet_address:"${wallet_address_following}"})) delete r`;
+
+  const queryExist = `match((a:User{wallet_address:"${wallet_address_follower}"})-[r:FOLLOWING]->(b:User{wallet_address:"${wallet_address_following}"})) return r`;
+
+  return session.run(queryExist).then((exist) => {
+    if (_.isEmpty(exist.records)) {
+      throw {
+        success: false,
+        message: `Relationship does not exist`,
+      };
+    } else {
+      return session
+        .run(query)
+        .then((results) => {
+          return {
+            success: true,
+            message: "deleted Following Relationship",
+          };
+        })
+        .catch((error) => {
+          throw {
+            success: false,
+            message: "Failed to delete Following Relationship",
+            error: error.message,
+          };
+        });
+    }
+  });
+};
+
 module.exports = {
   getAll,
   getByWalletAddress,
@@ -340,4 +416,6 @@ module.exports = {
   delete: deleteUser,
   getFollowing,
   getFollowers,
+  createFollow,
+  deleteFollow,
 };
