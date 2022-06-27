@@ -330,6 +330,35 @@ const getFollowers = (session, wallet_address) => {
       };
     });
 };
+const getFollowersAndFollowing = (session, wallet_address) => {
+  const query = `MATCH ((b:User)-[r:FOLLOWING]->(a:User{wallet_address:"${wallet_address}"})) RETURN b`;
+  const query2 = `MATCH ((a:User{wallet_address:"${wallet_address}"})-[r:FOLLOWING]->(b:User)) RETURN b`;
+  return session
+    .run(query)
+    .then((results) => {
+      const followers = results.records.map((record) => {
+        return new User(record.get("b"));
+      });
+      return session.run(query2).then((results2) => {
+        const following = results2.records.map((record) => {
+          return new User(record.get("b"));
+        });
+        console.log(followers);
+        console.log(following);
+        return {
+          success: true,
+          users: followers.concat(following),
+        };
+      });
+    })
+    .catch((error) => {
+      throw {
+        success: false,
+        message: "Failed to get User followers' list",
+        error: error.message,
+      };
+    });
+};
 
 const createFollow = (
   session,
@@ -418,4 +447,5 @@ module.exports = {
   getFollowers,
   createFollow,
   deleteFollow,
+  getFollowersAndFollowing,
 };

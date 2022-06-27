@@ -155,4 +155,28 @@ router.post("/:wallet_address/unfollow", authenticateToken, (req, res) => {
     .catch((error) => res.send(error));
 });
 
+// GET /users/{wallet_address}
+router.get(
+  "/:wallet_address/followersfollowing",
+  authenticateToken,
+  (req, res) => {
+    const walletAddress = req.params.wallet_address;
+    if (req.wallet_address === req.params.wallet_address) {
+      User.getFollowersAndFollowing(
+        dbUtils.getSession(req),
+        walletAddress,
+        req.body
+      )
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error));
+    } else {
+      res.status(403).send({
+        success: false,
+        message:
+          "You do not have access to this User's followers' and following list",
+      });
+    }
+  }
+);
+
 module.exports = router;
