@@ -124,5 +124,19 @@ router.get("/:wallet_address/following", authenticateToken, (req, res) => {
     });
   }
 });
+// GET /users/{wallet_address}/following
+router.get("/:wallet_address/followers", authenticateToken, (req, res) => {
+  const walletAddress = req.params.wallet_address;
+  if (req.wallet_address === req.params.wallet_address) {
+    User.getFollowers(dbUtils.getSession(req), walletAddress, req.body)
+      .then((result) => res.send(result))
+      .catch((error) => res.send(error));
+  } else {
+    res.status(403).send({
+      success: false,
+      message: "You do not have access to this User's followers' list",
+    });
+  }
+});
 
 module.exports = router;

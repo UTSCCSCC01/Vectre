@@ -293,25 +293,38 @@ const getFollowing = (session, wallet_address) => {
   return session
     .run(query)
     .then((results) => {
-      if (_.isEmpty(results.records)) {
-        throw {
-          success: false,
-          message: `User with wallet address ${wallet_address} is not currently following anyone`,
-        };
-      } else {
-        console.log(results.records);
-        return {
-          success: true,
-          users: results.records.map((record) => {
-            return new User(record.get("b"));
-          }),
-        };
-      }
+      console.log(results.records);
+      return {
+        success: true,
+        users: results.records.map((record) => {
+          return new User(record.get("b"));
+        }),
+      };
     })
     .catch((error) => {
       throw {
         success: false,
         message: "Failed to get User following list",
+        error: error.message,
+      };
+    });
+};
+const getFollowers = (session, wallet_address) => {
+  const query = `MATCH ((b:User)-[r:FOLLOWING]->(a:User{wallet_address:"${wallet_address}"})) RETURN b`;
+  return session
+    .run(query)
+    .then((results) => {
+      return {
+        success: true,
+        users: results.records.map((record) => {
+          return new User(record.get("b"));
+        }),
+      };
+    })
+    .catch((error) => {
+      throw {
+        success: false,
+        message: "Failed to get User followers' list",
         error: error.message,
       };
     });
@@ -326,4 +339,5 @@ module.exports = {
   updateProfile,
   delete: deleteUser,
   getFollowing,
+  getFollowers,
 };
