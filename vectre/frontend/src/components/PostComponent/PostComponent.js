@@ -25,9 +25,9 @@ const PostComponent = ({
                 px={'18px'}
                 py={'15px'}
                 _hover={{ border: "1px solid rgba(59, 130, 246, 0.4)" }}
-                cursor={'pointer'}
+                cursor={window.location.toString().includes('home') ? 'pointer' : 'default'}
                 onClick={(() => {
-                    if (item.postId && !item.isComment) window.location = `/post/${item.postId}`;
+                    if (item.postId && !item.isComment && window.location.toString().includes('home')) window.location = `/post/${item.postId}`;
                 })}>
                 <Stack gap={'4px'}>
                     <PostTopComponent item={item} />
