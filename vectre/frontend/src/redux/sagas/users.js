@@ -33,7 +33,7 @@ function* getLoginNonce(action) {
 }
 function* loginUser(action) {
     try {
-        const response = yield call(postRequest, BASE_API_URL + USERS.LOGIN, { walletAddress: action.walletAddress, signed_nonce: action.signedNonce }), responseData = response[1]
+        const response = yield call(postRequest, BASE_API_URL + USERS.LOGIN, { walletAddress: action.walletAddress, signedNonce: action.signedNonce }), responseData = response[1]
         console.log(responseData)
         if (responseData.success)
             yield put(action.redirectWindow("/home"))
