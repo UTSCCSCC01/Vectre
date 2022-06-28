@@ -1,6 +1,7 @@
 import AppWrapper from "../../components/AppWrapper/AppWrapper";
 import PostComponent from "../../components/PostComponent/PostComponent";
 import UserCommentComponent from "../../components/UserCommentComponent/UserCommentComponent";
+import UserCommentNotLoggedInComponent from "../../components/UserCommentComponent/UserCommentNotLoggedInComponent";
 
 import {
     Box,
@@ -79,7 +80,7 @@ const PostPage = () => {
                 <Stack alignSelf={'center'} gap={'16px'}>
                     <PostComponent item={samplePostData} />
                     {
-                        loggedInUser.walletAddress ? (<UserCommentComponent item={{ author: loggedInUser }} />) : (<Box>User is not logged in</Box>)
+                        loggedInUser.walletAddress ? (<UserCommentComponent item={{ author: loggedInUser }} />) : (<UserCommentNotLoggedInComponent />)
                     }
                     {/* Add Comments below */}
                     {
