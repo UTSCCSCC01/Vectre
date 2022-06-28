@@ -52,7 +52,7 @@ router.get('/:walletAddress/posts', (req, res, next) => {
 // POST /users/login
 router.post('/login', (req, res) => {
     const setTokenInCookie = (token) => { res.cookie('token', token, { maxAge: 1000 * 60 * 60 * 24 * 7, httpOnly: true }) } // Expires in 7 days
-    User.login(dbUtils.getSession(req), req.body.walletAddress, req.body.signed_nonce, setTokenInCookie)
+    User.login(dbUtils.getSession(req), req.body.walletAddress, req.body.signedNonce, setTokenInCookie)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })

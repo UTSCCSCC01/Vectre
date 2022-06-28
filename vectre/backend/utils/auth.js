@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken')
 const authenticateToken = (req, res, next) => {
     const token = req.cookies.token
     if (token) {
-        jwt.verify(token, config.jwt_secret_token, (error, walletAddress) => {
+        jwt.verify(token, config.jwtSecretToken, (error, walletAddress) => {
             if (error) // Invalid token
                 return res.status(403).send({
                     success: false,

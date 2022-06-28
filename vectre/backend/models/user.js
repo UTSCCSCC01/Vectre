@@ -76,14 +76,14 @@ const register = (session, body) => { // Creates User from body data
 function generateNonce() {
     return Math.floor(Math.random() * 1000000);
 }
-function validateSignedNonce(walletAddress, nonce, signed_message) {
+function validateSignedNonce(walletAddress, nonce, signedMessage) {
     const message = `Hi from Vectre! Sign this message to prove you have access to this wallet in order to log in.\n\nUnique ID: ${nonce}`
 
     // Elliptic curve signature verification
     const msgHex = ethUtil.bufferToHex(Buffer.from(message))
     const msgBuffer = ethUtil.toBuffer(msgHex)
     const msgHash = ethUtil.hashPersonalMessage(msgBuffer)
-    const signatureBuffer = ethUtil.toBuffer(signed_message)
+    const signatureBuffer = ethUtil.toBuffer(signedMessage)
     const signatureParams = ethUtil.fromRpcSig(signatureBuffer)
     const publicKey = ethUtil.ecrecover(
         msgHash,
@@ -110,23 +110,23 @@ const getNonce = (session, walletAddress) => { // Login User & get JWT authentic
         })
         .catch((error) => { return error })
 }
-const login = (session, walletAddress, signed_nonce, setTokenInCookie) => { // Login User & get JWT authentication
+const login = (session, walletAddress, signedNonce, setTokenInCookie) => { // Login User & get JWT authentication
     return getByWalletAddress(session, walletAddress)
         .then((response) => {
             if (response.success) {
-                // Validate signed_nonce. Then update nonce
+                // Validate signedNonce. Then update nonce
                 return getNonce(session, walletAddress)
                     .then((response) => {
                         if (response.success) {
-                            if (validateSignedNonce(walletAddress, response.nonce, signed_nonce)) {
-                                const accessToken = jwt.sign(walletAddress, config.jwt_secret_token)
+                            if (validateSignedNonce(walletAddress, response.nonce, signedNonce)) {
+                                const accessToken = jwt.sign(walletAddress, config.jwtSecretToken)
 
                                 // TODO: Regenerate nonce
                                 setTokenInCookie(accessToken)
 
                                 return {
                                     success: true,
-                                    authorization_token: accessToken
+                                    authorizationToken: accessToken
                                 }
                             } else {
                                 throw {
