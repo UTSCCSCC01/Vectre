@@ -13,24 +13,24 @@ import {
 } from "../constants/users";
 
 // Login
-export const getLoginNonce = (wallet_address) => ({
+export const getLoginNonce = (walletAddress) => ({
     type: GET_LOGIN_NONCE,
-    wallet_address
+    walletAddress
 })
 export const storeLoginNonce = (nonce) => ({
     type: STORE_LOGIN_NONCE,
     nonce
 })
-export const loginUser = (wallet_address, signedNonce, redirectWindow) => ({
+export const loginUser = (walletAddress, signedNonce, redirectWindow) => ({
     type: LOGIN_USER,
-    wallet_address,
+    walletAddress,
     signedNonce,
     redirectWindow
 })
 
-export const getUser = (wallet_address) => ({
+export const getUser = (walletAddress) => ({
     type: GET_USER,
-    wallet_address
+    walletAddress
 })
 export const storeUser = (user) => ({
     type: STORE_USER,
@@ -60,9 +60,9 @@ export const createUser = (user, redirectWindow) => ({
     redirectWindow
 })
 
-export const updateUser = (wallet_address, updatedUser, redirectWindow) => ({
+export const updateUser = (walletAddress, updatedUser, redirectWindow) => ({
     type: UPDATE_USER,
-    wallet_address,
+    walletAddress,
     updatedUser,
     redirectWindow
 })

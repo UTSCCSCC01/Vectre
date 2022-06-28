@@ -2,7 +2,7 @@ import React from "react";
 
 // Redux
 import PropTypes from 'prop-types';
-import {connect} from "react-redux";
+import { connect } from "react-redux";
 import {
     getLoggedInUser,
     getUser,
@@ -14,7 +14,7 @@ import {
 } from "../../redux/selectors/users";
 
 // Components
-import {Button} from "@chakra-ui/react";
+import { Button } from "@chakra-ui/react";
 import ProfileEditModal from "../Modals/ProfileEditModal/ProfileEditModal";
 
 class Profile extends React.Component {
@@ -32,29 +32,29 @@ class Profile extends React.Component {
     componentDidUpdate(prevProps, prevState, snapshot) {
     }
 
-    handleOpenModal = () => { this.setState({isModalOpen: true}) }
-    handleCloseModal = () => { this.setState({isModalOpen: false}) }
+    handleOpenModal = () => { this.setState({ isModalOpen: true }) }
+    handleCloseModal = () => { this.setState({ isModalOpen: false }) }
 
     handleUpdateUser = (newUser) => {
-        this.props.updateUser(this.props.loggedInUser.wallet_address, newUser, (href) => { window.location.href = href})
+        this.props.updateUser(this.props.loggedInUser.walletAddress, newUser, (href) => { window.location.href = href })
     }
 
-    render () {
+    render() {
         return (
             <div>
                 <h1><b>Profile:</b></h1>
-                {!this.props.user.wallet_address ? `User ${this.props.profileWalletAddress} does not exist!`
+                {!this.props.user.walletAddress ? `User ${this.props.profileWalletAddress} does not exist!`
                     :
                     <>
                         <div>
-                            <b>wallet_address:</b> {this.props.user.wallet_address}, <br></br>
+                            <b>walletAddress:</b> {this.props.user.walletAddress}, <br></br>
                             <b>username:</b> @{this.props.user.username}, <br></br>
                             <b>name</b>: {this.props.user.name}, <br></br>
                             <b>bio</b>: {this.props.user.bio} <br></br>
                         </div>
 
                         {/* Display edit profile is logged in user is same as profile being viewed */}
-                        {this.props.loggedInUser.wallet_address === this.props.profileWalletAddress ?
+                        {this.props.loggedInUser.walletAddress === this.props.profileWalletAddress ?
                             <>
                                 <Button
                                     onClick={this.handleOpenModal}>

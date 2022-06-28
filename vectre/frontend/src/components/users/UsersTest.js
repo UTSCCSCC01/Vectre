@@ -1,9 +1,9 @@
 import React from "react";
 import PropTypes from 'prop-types';
-import {Button} from "@chakra-ui/react";
-import {createUser, getUsers} from "../../redux/actions/users";
-import {connect} from "react-redux";
-import {usersSelector} from "../../redux/selectors/users";
+import { Button } from "@chakra-ui/react";
+import { createUser, getUsers } from "../../redux/actions/users";
+import { connect } from "react-redux";
+import { usersSelector } from "../../redux/selectors/users";
 
 class UsersTest extends React.Component {
     constructor(props) {
@@ -24,19 +24,19 @@ class UsersTest extends React.Component {
         let user = {
             name: "Tester " + random,
             username: "test_" + random,
-            wallet_address: random
+            walletAddress: random
         }
         this.props.createUser(user)
     }
 
-    render () {
+    render() {
         return (
             <div>
                 <div>
                     <Button
                         colorScheme="pink"
                         variant="solid"
-                        style={{margin: 10}}
+                        style={{ margin: 10 }}
                         onClick={this.props.getUsers}
                     >
                         Get users
@@ -44,7 +44,7 @@ class UsersTest extends React.Component {
                     <Button
                         colorScheme="teal"
                         variant="solid"
-                        style={{margin: 10}}
+                        style={{ margin: 10 }}
                         onClick={this.handleCreateUser}
                     >
                         Create test user
@@ -56,7 +56,7 @@ class UsersTest extends React.Component {
                         <div key={index}>
                             name: {user.name},
                             username: @{user.username},
-                            wallet_address: {user.wallet_address} </div>
+                            walletAddress: {user.walletAddress} </div>
                     )}
                 </div>
 
