@@ -3,7 +3,7 @@ var router = express.Router();
 
 const dbUtils = require('../utils/neo4j/dbUtils');
 const Post = require('../models/post');
-const {authenticateToken} = require("../utils/auth");
+const { authenticateToken } = require("../utils/auth");
 const { rest } = require('lodash');
 
 // POST /posts/create
@@ -15,7 +15,7 @@ router.post('/create', authenticateToken, (req, res, next) => {
 
 // POST /posts/{postID}/update
 router.post('/:postID/update', authenticateToken, (req, res, next) => {
-    if (req.wallet_address === req.body.author) {
+    if (req.walletAddress === req.body.author) {
         Post.update(dbUtils.getSession(req), req.params.postID, req.body)
             .then((result) => res.send(result))
             .catch((error) => res.send(error))
