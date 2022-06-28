@@ -7,13 +7,18 @@ import {
     Stack
 } from '@chakra-ui/react'
 
+import React, { useEffect } from 'react'
+import { loggedInUserSelector } from "../../redux/selectors/users";
+import { getLoggedInUser } from "../../redux/actions/users";
+import { useDispatch, useSelector } from 'react-redux';
+
 const samplePostData = {
     timestamp: "12:47 AM · May 25, 2022",
     text: "Doodles are headed to NYC 🍎. June 21-23: Midtown Manhattan. RSVP for Doodles and Dooplicator holders will open next week.",
     author: {
         walletAddress: "0x15f209074682937c58ca031ebb43d64fa98d97b8",
         username: "Evan Keast",
-        profilePic: "https://media-exp1.licdn.com/dms/image/C5603AQFr-8Qlf9kXdw/profile-displayphoto-shrink_200_200/0/1641631597302?e=1655942400&v=beta&t=wrB9-3aglTbvD9K2AZ6pd7pk3JreaD6kZVdw-SdEABY",
+        profilePic: "https://ipfs.io/ipfs/QmS2qSssG5M8dBzaqeCcWibULXoddeDFH1dNyvhaMszcd9",
         verified: true
     },
     postId: "00001",
@@ -22,15 +27,6 @@ const samplePostData = {
     community: "Doodles",
     imageURL: "https://pbs.twimg.com/media/FTSfCnTXoAEyhOp?format=jpg&name=small",
     edited: false
-}
-
-const userData = {
-    author: {
-        walletAddress: "0x15f209074682937c58ca031ebb43d64fa98d97b8",
-        username: "Evan Keast",
-        profilePic: "https://media-exp1.licdn.com/dms/image/C5603AQFr-8Qlf9kXdw/profile-displayphoto-shrink_200_200/0/1641631597302?e=1655942400&v=beta&t=wrB9-3aglTbvD9K2AZ6pd7pk3JreaD6kZVdw-SdEABY",
-        verified: true
-    }
 }
 
 const sampleCommentData = [
@@ -68,15 +64,22 @@ const sampleCommentData = [
     },
 ]
 
+
 const PostPage = () => {
-    const isLogged = true;
+    const loggedInUser = useSelector(loggedInUserSelector);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(getLoggedInUser());
+    }, [])
+
     return (
         <AppWrapper>
             <Box py={'60px'} maxWidth={'4xl'} margin={'0 auto'}>
                 <Stack alignSelf={'center'} gap={'16px'}>
                     <PostComponent item={samplePostData} />
                     {
-                        isLogged ? (<UserCommentComponent item={userData} />) : (<Box>User is not logged in</Box>)
+                        loggedInUser.walletAddress ? (<UserCommentComponent item={{ author: loggedInUser }} />) : (<Box>User is not logged in</Box>)
                     }
                     {/* Add Comments below */}
                     {
