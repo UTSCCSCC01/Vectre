@@ -1,5 +1,5 @@
 import { call, put, takeLatest } from "redux-saga/effects"
-import {getRequest, postRequest, putRequest} from "./index";
+import { getRequest, postRequest, putRequest } from "./index";
 import {
     storeUsers,
     storeLoginNonce,
@@ -24,7 +24,7 @@ import { getCreate } from "../actions/create";
 // Login
 function* getLoginNonce(action) {
     try {
-        const response = yield call(postRequest, BASE_API_URL + USERS.GET_LOGIN_NONCE, { wallet_address: action.wallet_address }), responseData = response[1]
+        const response = yield call(postRequest, BASE_API_URL + USERS.GET_LOGIN_NONCE, { walletAddress: action.walletAddress }), responseData = response[1]
         if (responseData.success)
             yield put(storeLoginNonce(responseData.nonce))
     } catch (error) {
@@ -33,7 +33,7 @@ function* getLoginNonce(action) {
 }
 function* loginUser(action) {
     try {
-        const response = yield call(postRequest, BASE_API_URL + USERS.LOGIN, { wallet_address: action.wallet_address, signed_nonce: action.signedNonce }), responseData = response[1]
+        const response = yield call(postRequest, BASE_API_URL + USERS.LOGIN, { walletAddress: action.walletAddress, signedNonce: action.signedNonce }), responseData = response[1]
         console.log(responseData)
         if (responseData.success)
             yield put(action.redirectWindow("/home"))
@@ -57,7 +57,7 @@ function* getLoggedInUser() {
 
 function* getUser(action) {
     try {
-        const response = yield call(getRequest, BASE_API_URL + USERS.GET_USERS + `/${action.wallet_address}`), responseData = response[1]
+        const response = yield call(getRequest, BASE_API_URL + USERS.GET_USERS + `/${action.walletAddress}`), responseData = response[1]
         if (responseData.success) {
             yield put(storeUser(responseData.user))
         } else { // TODO: Show error message
@@ -93,9 +93,9 @@ function* createUser(action) {
 
 function* updateUser(action) {
     try {
-        const response = yield call(putRequest, BASE_API_URL + USERS.UPDATE_USER.replace("{wallet_address}", action.wallet_address), action.updatedUser), responseData = response[1]
+        const response = yield call(putRequest, BASE_API_URL + USERS.UPDATE_USER.replace("{walletAddress}", action.walletAddress), action.updatedUser), responseData = response[1]
         if (responseData.success) { // TODO: Show toast success message
-            if (action.redirectWindow) yield put(action.redirectWindow(`/user/${action.wallet_address}`))
+            if (action.redirectWindow) yield put(action.redirectWindow(`/user/${action.walletAddress}`))
         } else { // TODO: Show toast error message
         }
     } catch (error) {
