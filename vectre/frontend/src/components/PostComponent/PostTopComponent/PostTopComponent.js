@@ -5,7 +5,7 @@ import {
     Link
 } from '@chakra-ui/react';
 
-import { ReactComponent as VerifiedIcon } from '../../../assets/icons/verified-icon.svg';
+import VerifiedIcon from '../../../assets/icons/verified-icon.svg';
 import DefaultAvatar from '../../../assets/images/default-avatar.png';
 import TextButton from '../../Buttons/TextButton/TextButton'
 import { formatISO } from '../../../utils/Utils'
@@ -44,7 +44,7 @@ const PostTopComponent = ({
                     bg={'white'}
                     borderRadius={'6px'}
                     alignItems={'center'}>
-                    <VerifiedIcon size="1.5rem" />
+                    <Image src={VerifiedIcon} boxSize={'1.5rem'} />
                 </Box>
             </Flex>
             <Box
