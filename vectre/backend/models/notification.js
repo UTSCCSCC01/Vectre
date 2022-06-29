@@ -1,0 +1,109 @@
+const _ = require('lodash');
+const Notification = require('./neo4j/notification');
+const { nanoid } = require("nanoid");
+
+const ACTIONS = {
+    LIKED: "like",
+    COMMENTED: "comment",
+    FOLLOWED: "follow",
+}
+
+const create = function (session, action, toUser, fromUser, postID=null) {
+    action = action.toLowerCase()
+    if (!Object.values(ACTIONS).includes(action)) {
+        throw {
+            success: false,
+            message: "Invalid action. Valid actions are: \"Like\", \"Comment\", \"Follow\"",
+        }
+    } else if ([ACTIONS.LIKED, ACTIONS.COMMENTED].includes(action) && !postID) {
+        throw {
+            success: false,
+            message: 'Must provide postID from Like or Comment actions'
+        }
+    } else if (!action || !toUser || !fromUser) {
+        throw {
+            success: false,
+            message: 'Invalid Notification properties'
+        }
+    }
+
+    const notificationID = nanoid(), timestamp = new Date().toISOString()
+    const query = `CREATE (notif:Notification {notificationID: '${notificationID}', toUser: '${toUser}', fromUser: '${fromUser}', action: '${action}', postID: '${postID}', timestamp: '${timestamp}', read: false});`
+    return session.run(query)
+        .then((results) => {
+            return {
+                success: true,
+                message: "Created Notification"
+            }
+        })
+        .catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to create Notification",
+                error: error.message
+            }
+        })
+};
+
+const read = function (session, readerWalletAddress, notificationID) {
+    const query = [
+        `MATCH (notif:Notification {notificationID: '${notificationID}'})`,
+        `SET notif.read = true`,
+        `RETURN notif`,
+    ].join('\n');
+
+    return session.run(query)
+        .then((results) => {
+            if (_.isEmpty(results.records)) {
+                throw {
+                    success: false,
+                    message: `Notification ${notificationID} does not exist`
+                }
+            } else {
+                return {
+                    success: true,
+                    message: "Successfully read notification"
+                }
+            }
+        })
+        .catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to read notification",
+                error: error.message
+            }
+        });
+}
+
+const getUserNotifications = function (session, walletAddress) {
+    const query = [
+        `MATCH (notification:Notification {toUser:'${walletAddress}'})`,
+        `RETURN notification`,
+        `ORDER BY notification.timestamp DESC`
+    ].join('\n');
+
+    return session.run(query)
+        .then((results) => {
+            let notifications = []
+            results.records.forEach((record) => {
+                notifications.push(new Notification(record.get('notification')))
+            })
+            return {
+                success: true,
+                notifications: notifications
+            }
+        })
+        .catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to get notifications"
+            }
+        });
+}
+
+
+module.exports = {
+    create,
+    read,
+    getUserNotifications
+};
