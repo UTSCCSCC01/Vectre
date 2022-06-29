@@ -1,15 +1,18 @@
 const _ = require('lodash');
 const Post = require('./neo4j/post')
+const { nanoid } = require("nanoid");
 
 const createUserPost = function (session, body) {
-    if (!body.author || !body.text || !body.imageURL || !body.timestamp) {
+    if (!body.author || !body.text || !body.imageURL) {
         throw {
             success: false,
             message: 'Invalid post properties'
         }
     }
+    const postID = nanoid()
+    const date = new Date().toISOString()
     const query = [
-        `CREATE (p:Post {postID: '${body.author + body.timestamp}', text: '${body.text}', imageURL: '${body.imageURL}', author: '${body.author}', edited: '${body.edited}', timestamp: '${body.timestamp}'})`,
+        `CREATE (p:Post {postID: '${postID}', text: '${body.text}', imageURL: '${body.imageURL}', author: '${body.author}', edited: false, timestamp: '${date}'})`,
         `WITH (p)`,
         `MATCH (u:User)`,
         `WHERE u.walletAddress = '${body.author}'`,
@@ -33,16 +36,16 @@ const createUserPost = function (session, body) {
 };
 
 const update = function (session, postID, body) {
-    if (!body.author || !body.text || !body.imageURL || !body.timestamp) {
+    if (!body.author || !body.text || !body.imageURL) {
         throw {
             success: false,
             message: 'Invalid post properties'
         }
     }
+    const date = new Date().toISOString()
     const query = [
         `MATCH (p:Post {postID: '${postID}'})`,
-        // `MATCH (p:Post {postID: '${body.author+body.timestamp}'})`,
-        `SET p.text = '${body.text}', p.imageURL = '${body.imageURL}', p.edited = true`,
+        `SET p.text = '${body.text}', p.imageURL = '${body.imageURL}', p.edited = true, p.timestamp = '${date}'`,
         `RETURN p`
     ].join('\n');
 
