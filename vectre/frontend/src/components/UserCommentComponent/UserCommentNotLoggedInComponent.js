@@ -4,6 +4,7 @@ import {
     Text
 } from '@chakra-ui/react';
 import TextButton from '../Buttons/TextButton/TextButton';
+import ButtonLinkWrapper from '../Buttons/ButtonLinkWrapper/ButtonLinkWrapper';
 
 const UserCommentNotLoggedInComponent = () => {
     return (
@@ -21,15 +22,17 @@ const UserCommentNotLoggedInComponent = () => {
                     justifyContent={'space-between'}
                     alignItems={'center'}>
                     <Text>
-                        Log in or Sign up to leave a comment
+                        Please log in to leave a comment
                     </Text>
-                    <TextButton
-                        text={`Login / Signup`}
-                        px={'17.5px'}
-                        fontSize={'18px'}
-                        fontWeight={700}
-                        bg={'primary.400'}
-                        color={'white'} />
+                    <ButtonLinkWrapper href={'/login'}>
+                        <TextButton
+                            text={`Login`}
+                            px={'17.5px'}
+                            fontSize={'18px'}
+                            fontWeight={700}
+                            bg={'primary.400'}
+                            color={'white'} />
+                    </ButtonLinkWrapper>
                 </Flex>
             </Box>
         </>
