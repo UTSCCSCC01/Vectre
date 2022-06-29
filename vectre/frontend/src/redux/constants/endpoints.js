@@ -7,5 +7,5 @@ export const USERS = {
 
     GET_USERS: "/users",
     CREATE_USER: "/users/register",
-    UPDATE_USER: "/users/{wallet_address}/update",
+    UPDATE_USER: "/users/{walletAddress}/update",
 }
