@@ -7,8 +7,8 @@ import {
 
 import { ReactComponent as VerifiedIcon } from '../../../assets/icons/verified-icon.svg';
 import DefaultAvatar from '../../../assets/images/default-avatar.png';
-
 import TextButton from '../../Buttons/TextButton/TextButton'
+import { formatISO } from '../../../utils/Utils'
 
 const PostTopComponent = ({
     item,
@@ -56,7 +56,7 @@ const PostTopComponent = ({
                 bg={'white'}
                 borderRadius={'6px'}
                 alignItems={'center'}>
-                {item.timestamp}
+                {formatISO(item.timestamp)}
             </Box>
         </Flex>
     );
