@@ -36,7 +36,7 @@ const PostBotComponent = ({
                         e.stopPropagation();
                     }} />
                 <IconSquareButton
-                    display={item.isComment ? 'none' : 'inline-flex'}
+                    display={item.parent ? 'none' : 'inline-flex'}
                     icon={<IoIosShareAlt size="1.6rem" />}
                     onClick={(e) => {
                         // share
@@ -44,7 +44,7 @@ const PostBotComponent = ({
                         e.stopPropagation();
                     }} />
                 <IconSquareButton
-                    display={item.isComment ? 'none' : 'inline-flex'}
+                    display={item.parent ? 'none' : 'inline-flex'}
                     icon={<FaBookmark size="1.1rem" />}
                     onClick={(e) => {
                         // bookmark
@@ -53,7 +53,7 @@ const PostBotComponent = ({
                     }} />
             </Flex>
             <Link
-                display={item.isComment ? 'none' : 'inline-flex'}
+                display={item.parent ? 'none' : 'inline-flex'}
                 href={`c/${item.community}`}
                 onClick={(e) => {
                     e.stopPropagation();

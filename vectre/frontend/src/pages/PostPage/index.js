@@ -44,7 +44,7 @@ const PostPage = () => {
                     {
                         comments.map((item, i) => {
                             return (
-                                <Box key={i} mt={item.isComment ? "0 !important" : "initial"}>
+                                <Box key={i} mt={item.parent ? "0 !important" : "initial"}>
                                     <PostComponent item={item} />
                                 </Box>
                             )
