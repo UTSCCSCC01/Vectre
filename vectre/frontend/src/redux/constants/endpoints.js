@@ -9,3 +9,7 @@ export const USERS = {
     CREATE_USER: "/users/register",
     UPDATE_USER: "/users/{walletAddress}/update",
 }
+
+export const POSTS = {
+    GET_COMMENTS: "/posts/{postID}/comments"
+}

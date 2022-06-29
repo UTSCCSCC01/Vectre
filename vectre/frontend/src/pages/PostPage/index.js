@@ -10,7 +10,9 @@ import {
 
 import React, { useEffect } from 'react'
 import { loggedInUserSelector } from "../../redux/selectors/users";
+import { commentsSelector } from "../../redux/selectors/posts";
 import { getLoggedInUser } from "../../redux/actions/users";
+import { getComments } from "../../redux/actions/posts";
 import { useDispatch, useSelector } from 'react-redux';
 
 const samplePostData = {
@@ -30,61 +32,30 @@ const samplePostData = {
     edited: false
 }
 
-const sampleCommentData = [
-    {
-        timestamp: "2:43 PM · May 26, 2022",
-        text: "I listened to the Doom soundtrack while designing these. Mainly the song “BFG Division”. Look at the demon sneaker while listening to it, trust me. You will get the vibe. 👹",
-        author: {
-            walletAddress: "0x15f209074682937c58ca031ebb43d64fa98d97b8",
-            username: "Jonathan",
-            profilePic: "https://img.seadn.io/files/ed6633d0685d1ad5b2aa13d5d36c1149.png?fit=max&w=600",
-            verified: true
-        },
-        like: "421",
-        isComment: true,
-        comment: null,
-        community: null,
-        imageURL: null,
-        edited: false
-    },
-    {
-        timestamp: "4:32 PM · May 26, 2022",
-        text: "Beep Boop I'm a robot!",
-        author: {
-            walletAddress: "0x15f209074682937c58ca031ebb43d64fa98d97b8",
-            username: "brandon",
-            profilePic: "https://cdn-612d39b2c1ac189e9851cc81.closte.com/wp-content/uploads/2022/01/Generous-Robots-2-360x360.jpg",
-            verified: false
-        },
-        like: "32",
-        isComment: true,
-        comment: null,
-        community: null,
-        imageURL: null,
-        edited: false
-    },
-]
-
-
 const PostPage = () => {
     const loggedInUser = useSelector(loggedInUserSelector);
+    const comments = useSelector(commentsSelector);
     const dispatch = useDispatch();
+
+    const currentPostID = "00001";
 
     useEffect(() => {
         dispatch(getLoggedInUser());
+        dispatch(getComments(currentPostID));
     }, [])
 
     return (
         <AppWrapper>
             <Box py={'60px'} maxWidth={'4xl'} margin={'0 auto'}>
                 <Stack alignSelf={'center'} gap={'16px'}>
+                    {console.log(comments)}
                     <PostComponent item={samplePostData} />
                     {
                         loggedInUser.walletAddress ? (<UserCommentComponent item={{ author: loggedInUser }} />) : (<UserCommentNotLoggedInComponent />)
                     }
                     {/* Add Comments below */}
                     {
-                        sampleCommentData.map((item, i) => {
+                        comments.map((item, i) => {
                             return (
                                 <Box key={i} mt={item.isComment ? "0 !important" : "initial"}>
                                     <PostComponent item={item} />
