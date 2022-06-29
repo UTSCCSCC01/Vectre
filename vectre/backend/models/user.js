@@ -294,20 +294,37 @@ const getFollowers = (session, wallet_address) => { // Returns list of Users fol
 }
 const followUser = (session, wallet_address, wallet_address_to_follow) => {
     if (wallet_address !== wallet_address_to_follow) {
-        const query = `MATCH (n) RETURN n` // TODO: Create follow relationship
-        return session.run(query)
-            .then((result) => {
+        // Creates User from body data
+        const query = `match(a:User), (b:User)
+        where a.wallet_address="${wallet_address}" AND b.wallet_address="${wallet_address_to_follow}"
+        create((a)-[r:FOLLOWS]->(b))`;
+
+        const queryExist = `match((a:User{wallet_address:"${wallet_address}"})-[r:FOLLOWS]->(b:User{wallet_address:"${wallet_address_to_follow}"})) return r`;
+
+        return session.run(queryExist).then((exist) => {
+            if (!_.isEmpty(exist.records)) {
+            throw {
+                success: false,
+                message: `Relationship already exists`,
+            };
+            } else {
+            return session
+                .run(query)
+                .then((results) => {
                 return {
                     success: true,
-                    message: "Followed user"
-                }
-            })
-            .catch((error) => {
+                    message: "Created Following Relationship",
+                };
+                })
+                .catch((error) => {
                 throw {
                     success: false,
-                    message: "Failed to follow user"
-                }
-            })
+                    message: "Failed to create Following Relationship",
+                    error: error.message,
+                };
+                });
+            }
+        });
     } else {
         throw {
             success: false,
@@ -317,20 +334,34 @@ const followUser = (session, wallet_address, wallet_address_to_follow) => {
 }
 const unfollowUser = (session, wallet_address, wallet_address_to_unfollow) => {
     if (wallet_address !== wallet_address_to_unfollow) {
-        const query = `MATCH (n) RETURN n` // TODO: Delete follow relationship
-        return session.run(query)
-            .then((result) => {
+        const query = `match((a:User{wallet_address:"${wallet_address}"})-[r:FOLLOWS]->(b:User{wallet_address:"${wallet_address_to_unfollow}"})) delete r`;
+
+        const queryExist = `match((a:User{wallet_address:"${wallet_address}"})-[r:FOLLOWS]->(b:User{wallet_address:"${wallet_address_to_unfollow}"})) return r`;
+
+        return session.run(queryExist).then((exist) => {
+            if (_.isEmpty(exist.records)) {
+            throw {
+                success: false,
+                message: `Relationship does not exist`,
+            };
+            } else {
+            return session
+                .run(query)
+                .then((results) => {
                 return {
                     success: true,
-                    message: "Unfollowed user"
-                }
-            })
-            .catch((error) => {
+                    message: "deleted Following Relationship",
+                };
+                })
+                .catch((error) => {
                 throw {
                     success: false,
-                    message: "Failed to unfollow user"
-                }
-            })
+                    message: "Failed to delete Following Relationship",
+                    error: error.message,
+                };
+                });
+            }
+        });
     } else {
         throw {
             success: false,
