@@ -27,5 +27,11 @@ router.post('/:postID/update', authenticateToken, (req, res, next) => {
     }
 })
 
+// GET /posts/{postID}
+router.get('/:postID', (req, res, next) => {
+    Post.getPostByID(dbUtils.getSession(req), req.params.postID, req.body)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
 
 module.exports = router;

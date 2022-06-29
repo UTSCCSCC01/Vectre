@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const Post = require('./neo4j/post')
+const User = require('./neo4j/user')
 const { nanoid } = require("nanoid");
 
 const createUserPost = function (session, body) {
@@ -12,11 +13,11 @@ const createUserPost = function (session, body) {
     const postID = nanoid()
     const date = new Date().toISOString()
     const query = [
-        `CREATE (p:Post {postID: '${postID}', text: '${body.text}', imageURL: '${body.imageURL}', author: '${body.author}', edited: false, timestamp: '${date}'})`,
+        `CREATE (p:Post {postID: '${postID}', parent: null, text: '${body.text}', imageURL: '${body.imageURL}', author: '${body.author}', edited: false, timestamp: '${date}'})`,
         `WITH (p)`,
         `MATCH (u:User)`,
         `WHERE u.walletAddress = '${body.author}'`,
-        `CREATE (u)-[r:POSTED]->(p)`
+        `CREATE (u)-[r:POSTED_BY]->(p)`
     ].join('\n');
 
     return session.run(query)
@@ -73,7 +74,7 @@ const update = function (session, postID, body) {
 
 const getPostsByUser = function (session, walletAddress) {
     const query = [
-        `MATCH (:User {walletAddress:'${walletAddress}'})-[:POSTED]->(post:Post)`,
+        `MATCH (:User {walletAddress:'${walletAddress}'})-[:POSTED_BY]->(post:Post)`,
         `RETURN DISTINCT post`,
         `ORDER BY post.timestamp DESC`
     ].join('\n');
@@ -97,9 +98,45 @@ const getPostsByUser = function (session, walletAddress) {
         });
 }
 
+const getPostByID = function (session, postID) {
+    const query = [
+        `MATCH (author:User)-[:POSTED_BY]->(post:Post {postID:'${postID}'})`,
+        `WHERE post.author = author.walletAddress`,
+        `RETURN DISTINCT author, post`
+    ].join('\n');
+
+    return session.run(query)
+        .then((results) => {
+            let post = {};
+            results.records.forEach((record) => {
+                post = new Post(record.get('post'))
+                post.author = new User(record.get('author'))
+            })
+
+            // hardcoded values (since some values have not been implemented yet)
+            if (post !== {}) {
+                post.community = "notarealcommunity";
+                post.like = "32.6k";
+                post.comment = "2.3k";
+            }
+
+            return {
+                success: true,
+                post: post
+            }
+        })
+        .catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to get posts"
+            }
+        });
+}
+
 
 module.exports = {
     createUserPost,
     getPostsByUser,
-    update
+    update,
+    getPostByID
 };
