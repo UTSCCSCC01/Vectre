@@ -18,7 +18,7 @@ export default function Routes() {
                 <Route path="/login" component={LoginPage} />
                 <Route path="/user/:walletAddress" component={Profile} />
                 <Route path="/settings" component={SettingsPage} />
-                <Route path="/post/:postId" component={PostPage} />
+                <Route path="/post/:postID" component={PostPage} />
             </Switch>
         </Router>
     );
