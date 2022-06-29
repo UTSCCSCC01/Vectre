@@ -6,6 +6,7 @@ import {
 } from '@chakra-ui/react';
 
 import { ReactComponent as VerifiedIcon } from '../../../assets/icons/verified-icon.svg';
+import DefaultAvatar from '../../../assets/images/default-avatar.png';
 
 import TextButton from '../../Buttons/TextButton/TextButton'
 
@@ -26,6 +27,7 @@ const PostTopComponent = ({
                         leftIcon={
                             <Image
                                 src={item.author.profilePic}
+                                fallbackSrc={DefaultAvatar}
                                 fit={'cover'}
                                 overflow={'hidden'}
                                 borderRadius={'full'}
