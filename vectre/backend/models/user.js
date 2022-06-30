@@ -314,21 +314,14 @@ const followUser = (session, walletAddress, walletAddressToFollow) => {
                 if (!_.isEmpty(exist.records)) {
                     throw {
                         success: false,
-                        message: `Relationship already exists`,
+                        message: "You already follow this user"
                     }
                 } else {
                     return session.run(query)
                         .then((results) => {
                             return {
                                 success: true,
-                                message: "Created Following Relationship",
-                            }
-                        })
-                        .catch((error) => {
-                            throw {
-                                success: false,
-                                message: "Failed to create Following Relationship",
-                                error: error.message,
+                                message: "Successfully followed user",
                             }
                         })
                 }
@@ -358,21 +351,14 @@ const unfollowUser = (session, walletAddress, walletAddressToUnfollow) => {
                 if (_.isEmpty(exist.records)) {
                     throw {
                         success: false,
-                        message: `Relationship does not exist`,
+                        message: "You do not follow this user"
                     }
                 } else {
                     return session.run(query)
                         .then((results) => {
                             return {
                                 success: true,
-                                message: "deleted Following Relationship",
-                            }
-                        })
-                        .catch((error) => {
-                            throw {
-                                success: false,
-                                message: "Failed to delete Following Relationship",
-                                error: error.message
+                                message: "Successfully unfollowed user"
                             }
                         })
                     }
@@ -380,7 +366,7 @@ const unfollowUser = (session, walletAddress, walletAddressToUnfollow) => {
             .catch((error) => {
                 throw {
                     success: false,
-                    message: "Failed to follow user",
+                    message: "Failed to unfollow user",
                     error: error.message
                 }
             })
