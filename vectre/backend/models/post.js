@@ -1,21 +1,21 @@
 const _ = require('lodash');
 const Post = require('./neo4j/post')
 
-const createUserPost = function(session, body) {
-    if(!body.author || !body.text || !body.imageURL || !body.timestamp) {
+const createUserPost = function (session, body) {
+    if (!body.author || !body.text || !body.imageURL || !body.timestamp) {
         throw {
             success: false,
             message: 'Invalid post properties'
         }
     }
     const query = [
-        `CREATE (p:Post {postID: '${body.author+body.timestamp}', text: '${body.text}', imageURL: '${body.imageURL}', author: '${body.author}', edited: '${body.edited}', timestamp: '${body.timestamp}'})`,
+        `CREATE (p:Post {postID: '${body.author + body.timestamp}', text: '${body.text}', imageURL: '${body.imageURL}', author: '${body.author}', edited: '${body.edited}', timestamp: '${body.timestamp}'})`,
         `WITH (p)`,
         `MATCH (u:User)`,
-        `WHERE u.wallet_address = '${body.author}'`,
+        `WHERE u.walletAddress = '${body.author}'`,
         `CREATE (u)-[r:POSTED]->(p)`
     ].join('\n');
-    
+
     return session.run(query)
         .then((result) => {
             return {
@@ -32,8 +32,8 @@ const createUserPost = function(session, body) {
         });
 };
 
-const update = function(session, postID, body) {
-    if(!body.author || !body.text || !body.imageURL || !body.timestamp) {
+const update = function (session, postID, body) {
+    if (!body.author || !body.text || !body.imageURL || !body.timestamp) {
         throw {
             success: false,
             message: 'Invalid post properties'
@@ -68,12 +68,12 @@ const update = function(session, postID, body) {
         });
 }
 
-const getPostsByUser = function(session, wallet_address) {
+const getPostsByUser = function (session, walletAddress) {
     const query = [
-        `MATCH (:User {wallet_address:'${wallet_address}'})-[:POSTED]->(post:Post)`,
+        `MATCH (:User {walletAddress:'${walletAddress}'})-[:POSTED]->(post:Post)`,
         `RETURN DISTINCT post`,
         `ORDER BY post.timestamp DESC`
-      ].join('\n');
+    ].join('\n');
 
     return session.run(query)
         .then((results) => {
@@ -99,4 +99,4 @@ module.exports = {
     createUserPost,
     getPostsByUser,
     update
-  };
+};
