@@ -125,10 +125,37 @@ const getPostsByUser = function (session, walletAddress) {
         });
 }
 
+const getCommentsByPost = function (session, postID) {
+    const query = [
+        `MATCH (:Post {postID:'${postID}'})<-[:COMMENTED_ON]-(post:Post)`,
+        `RETURN DISTINCT post`,
+        `ORDER BY post.timestamp DESC`
+    ].join('\n');
+
+    return session.run(query)
+        .then((results) => {
+            let posts = []
+            results.records.forEach((record) => {
+                posts.push(new Post(record.get('post')))
+            })
+            return {
+                success: true,
+                posts: posts
+            }
+        })
+        .catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to get posts"
+            }
+        });
+}
+
 
 module.exports = {
     createUserPost,
     createUserComment, 
     getPostsByUser,
-    update
+    update,
+    getCommentsByPost
 };
