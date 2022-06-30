@@ -137,26 +137,29 @@ const getPostsByUser = function (session, walletAddress) {
 
 const getCommentsByPost = function (session, postID) {
     const query = [
-        `MATCH (:Post {postID:'${postID}'})<-[:COMMENTED_ON]-(post:Post)`,
-        `RETURN DISTINCT post`,
-        `ORDER BY post.timestamp DESC`
+        `MATCH (:Post {postID:'${postID}'})<-[:COMMENTED_ON]-(comment:Post)<-[:POSTED]-(author:User)`,
+        `WHERE comment.author = author.walletAddress`,
+        `RETURN DISTINCT author, comment`,
+        `ORDER BY comment.timestamp DESC`
     ].join('\n');
 
     return session.run(query)
         .then((results) => {
-            let posts = []
+            let comments = []
             results.records.forEach((record) => {
-                posts.push(new Post(record.get('post')))
+                let commentRecord = new Post(record.get('comment'))
+                commentRecord.author = new User(record.get('author'))
+                comments.push(commentRecord)
             })
             return {
                 success: true,
-                posts: posts
+                comments: comments
             }
         })
         .catch((error) => {
             throw {
                 success: false,
-                message: "Failed to get posts"
+                message: "Failed to get comments"
             }
         });
 }
