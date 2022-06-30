@@ -149,6 +149,12 @@ const getCommentsByPost = function (session, postID) {
             results.records.forEach((record) => {
                 let commentRecord = new Post(record.get('comment'))
                 commentRecord.author = new User(record.get('author'))
+
+                // hardcoded values (since some values have not been implemented yet)
+                // TODO remove this and change the query when the things below are implemented
+                if (commentRecord !== {}) {
+                    commentRecord.like = "0";
+                }
                 comments.push(commentRecord)
             })
             return {

@@ -42,7 +42,7 @@ router.get('/:postID', (req, res, next) => {
 })
 
 // GET /posts/{postID}/comments
-router.get('/:postID/comments', authenticateToken, (req, res, next) => {
+router.get('/:postID/comments', (req, res, next) => {
     Post.getCommentsByPost(dbUtils.getSession(req), req.params.postID, req.body)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
