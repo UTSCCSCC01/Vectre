@@ -2,6 +2,7 @@ import AppWrapper from "../../components/AppWrapper/AppWrapper";
 import PostComponent from "../../components/PostComponent/PostComponent";
 import UserCommentComponent from "../../components/UserCommentComponent/UserCommentComponent";
 import UserCommentNotLoggedInComponent from "../../components/UserCommentComponent/UserCommentNotLoggedInComponent";
+import PostCommentsComponent from "../../components/PostCommentsComponent/PostCommentsComponent";
 
 import {
     Box,
@@ -39,20 +40,7 @@ const PostPage = () => {
                             <>
                                 <PostComponent item={post} />
                                 {loggedInUser.walletAddress ? (<UserCommentComponent item={{ author: loggedInUser }} />) : (<UserCommentNotLoggedInComponent />)}
-                                {/* Add Comments below */}
-                                {
-                                    comments !== undefined ?
-                                        comments.map((item, i) => {
-                                            return (
-                                                <Box key={i} mt={item.parent ? "0 !important" : "initial"}>
-                                                    <PostComponent item={item} />
-                                                </Box>
-                                            )
-                                        })
-                                        : (
-                                            <div>No Comments? 🤔 </div>
-                                        )
-                                }
+                                <PostCommentsComponent comments={comments} />
                             </>
                         ) : (
                             <Box>The post with postID {postID} does not exist.</Box>
