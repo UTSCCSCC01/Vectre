@@ -9,11 +9,42 @@ const createUserPost = function (session, body) {
         }
     }
     const query = [
-        `CREATE (p:Post {postID: '${body.author + body.timestamp}', text: '${body.text}', imageURL: '${body.imageURL}', author: '${body.author}', edited: '${body.edited}', timestamp: '${body.timestamp}'})`,
+        `CREATE (p:Post {postID: '${body.author + body.timestamp}', text: '${body.text}', imageURL: '${body.imageURL}', author: '${body.author}', edited: '${body.edited}', timestamp: '${body.timestamp}', parent: NULL})`,
         `WITH (p)`,
         `MATCH (u:User)`,
         `WHERE u.walletAddress = '${body.author}'`,
-        `CREATE (u)-[r:POSTED]->(p)`
+        `CREATE (p)-[r:POSTED_BY]->(u)`
+    ].join('\n');
+
+    return session.run(query)
+        .then((result) => {
+            return {
+                success: true,
+                message: "Successfully created Post"
+            }
+        })
+        .catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to create Post",
+                error: error
+            }
+        });
+};
+
+const createUserComment = function (session, body) {
+    if (!body.author || !body.text || !body.imageURL || !body.timestamp || !body.parent) {
+        throw {
+            success: false,
+            message: 'Invalid post properties'
+        }
+    }
+    const query = [
+        `CREATE (p:Post {postID: '${body.author + body.timestamp}', text: '${body.text}', imageURL: '${body.imageURL}', author: '${body.author}', edited: '${body.edited}', timestamp: '${body.timestamp}', parent: '${body.parent}'})
+        WITH (p)
+        MATCH (u:User), (parent:Post)
+        WHERE u.walletAddress = '${body.author}' AND parent.postID = '${body.parent}'
+        CREATE (p)-[r:POSTED_BY]->(u), (p)-[r2:COMMENTED_ON]->(parent)`
     ].join('\n');
 
     return session.run(query)
@@ -70,7 +101,7 @@ const update = function (session, postID, body) {
 
 const getPostsByUser = function (session, walletAddress) {
     const query = [
-        `MATCH (:User {walletAddress:'${walletAddress}'})-[:POSTED]->(post:Post)`,
+        `MATCH (:User {walletAddress:'${walletAddress}'})<-[:POSTED_BY]-(post:Post)`,
         `RETURN DISTINCT post`,
         `ORDER BY post.timestamp DESC`
     ].join('\n');
@@ -97,6 +128,7 @@ const getPostsByUser = function (session, walletAddress) {
 
 module.exports = {
     createUserPost,
+    createUserComment, 
     getPostsByUser,
     update
 };
