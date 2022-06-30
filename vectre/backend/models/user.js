@@ -265,13 +265,17 @@ const getFollowing = (session, walletAddress) => { // Returns list of Users foll
             results.records.forEach((record) => {
                 users.push(record.get('followed.walletAddress'))
             })
-            return {success: true, following: users}
+            return {
+                success: true,
+                following: users
+            }
         })
         .catch((error) => {
             console.log(error)
             throw {
                 success: false,
-                message: "Failed to get followed Users"
+                message: "Failed to get followed Users",
+                error: error.message
             }
         });
 }
@@ -283,15 +287,18 @@ const getFollowers = (session, walletAddress) => { // Returns list of Users foll
             results.records.forEach((record) => {
                 users.push(record.get('following.walletAddress'))
             })
-            return {success: true, followers: users}
+            return {
+                success: true,
+                followers: users
+            }
         })
         .catch((error) => {
-            console.log(error)
             throw {
                 success: false,
-                message: "Failed to get following Users"
+                message: "Failed to get following Users",
+                error: error.message
             }
-        });
+        })
 }
 const followUser = (session, walletAddress, walletAddressToFollow) => {
     if (walletAddress !== walletAddressToFollow) {
@@ -302,30 +309,37 @@ const followUser = (session, walletAddress, walletAddressToFollow) => {
 
         const queryExist = `match((a:User{walletAddress:"${walletAddress}"})-[r:FOLLOWS]->(b:User{walletAddress:"${walletAddressToFollow}"})) return r`;
 
-        return session.run(queryExist).then((exist) => {
-            if (!_.isEmpty(exist.records)) {
-            throw {
-                success: false,
-                message: `Relationship already exists`,
-            };
-            } else {
-            return session
-                .run(query)
-                .then((results) => {
-                return {
-                    success: true,
-                    message: "Created Following Relationship",
-                };
-                })
-                .catch((error) => {
+        return session.run(queryExist)
+            .then((exist) => {
+                if (!_.isEmpty(exist.records)) {
+                    throw {
+                        success: false,
+                        message: `Relationship already exists`,
+                    }
+                } else {
+                    return session.run(query)
+                        .then((results) => {
+                            return {
+                                success: true,
+                                message: "Created Following Relationship",
+                            }
+                        })
+                        .catch((error) => {
+                            throw {
+                                success: false,
+                                message: "Failed to create Following Relationship",
+                                error: error.message,
+                            }
+                        })
+                }
+            })
+            .catch((error) => {
                 throw {
                     success: false,
-                    message: "Failed to create Following Relationship",
-                    error: error.message,
-                };
-                });
-            }
-        });
+                    message: "Failed to follow user",
+                    error: error.message
+                }
+            })
     } else {
         throw {
             success: false,
@@ -339,30 +353,37 @@ const unfollowUser = (session, walletAddress, walletAddressToUnfollow) => {
 
         const queryExist = `match((a:User{walletAddress:"${walletAddress}"})-[r:FOLLOWS]->(b:User{walletAddress:"${walletAddressToUnfollow}"})) return r`;
 
-        return session.run(queryExist).then((exist) => {
-            if (_.isEmpty(exist.records)) {
-            throw {
-                success: false,
-                message: `Relationship does not exist`,
-            };
-            } else {
-            return session
-                .run(query)
-                .then((results) => {
-                return {
-                    success: true,
-                    message: "deleted Following Relationship",
-                };
-                })
-                .catch((error) => {
+        return session.run(queryExist)
+            .then((exist) => {
+                if (_.isEmpty(exist.records)) {
+                    throw {
+                        success: false,
+                        message: `Relationship does not exist`,
+                    }
+                } else {
+                    return session.run(query)
+                        .then((results) => {
+                            return {
+                                success: true,
+                                message: "deleted Following Relationship",
+                            }
+                        })
+                        .catch((error) => {
+                            throw {
+                                success: false,
+                                message: "Failed to delete Following Relationship",
+                                error: error.message
+                            }
+                        })
+                    }
+            })
+            .catch((error) => {
                 throw {
                     success: false,
-                    message: "Failed to delete Following Relationship",
-                    error: error.message,
-                };
-                });
-            }
-        });
+                    message: "Failed to follow user",
+                    error: error.message
+                }
+            })
     } else {
         throw {
             success: false,
