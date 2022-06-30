@@ -14,6 +14,8 @@ import {
     GET_LOGGED_IN_USER,
     CREATE_USER,
     UPDATE_USER,
+    FOLLOW_USER,
+    UNFOLLOW_USER,
 } from "../constants/users";
 import {
     BASE_API_URL,
@@ -103,6 +105,29 @@ function* updateUser(action) {
     }
 }
 
+function* followUser(action) {
+    try {
+        const response = yield call(postRequest, BASE_API_URL + USERS.FOLLOW_USER.replace("{walletAddress}", action.walletAddressToFollow), {}), responseData = response[1]
+        if (responseData.success) { // TODO: Show toast success message
+            if (action.redirectWindow) yield put(action.redirectWindow(`/user/${action.walletAddressToFollow}`))
+        } else { // TODO: Show toast error message
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+function* unfollowUser(action) {
+    try {
+        const response = yield call(postRequest, BASE_API_URL + USERS.UNFOLLOW_USER.replace("{walletAddress}", action.walletAddressToUnfollow), {}), responseData = response[1]
+        if (responseData.success) { // TODO: Show toast success message
+            if (action.redirectWindow) yield put(action.redirectWindow(`/user/${action.walletAddressToUnfollow}`))
+        } else { // TODO: Show toast error message
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 function* usersSaga() {
     yield takeLatest(GET_LOGIN_NONCE, getLoginNonce)
     yield takeLatest(LOGIN_USER, loginUser)
@@ -111,6 +136,8 @@ function* usersSaga() {
     yield takeLatest(GET_USERS, getUsers)
     yield takeLatest(CREATE_USER, createUser)
     yield takeLatest(UPDATE_USER, updateUser)
+    yield takeLatest(FOLLOW_USER, followUser)
+    yield takeLatest(UNFOLLOW_USER, unfollowUser)
 }
 
 export default usersSaga

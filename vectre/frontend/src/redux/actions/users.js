@@ -10,6 +10,8 @@ import {
     UPDATE_USER,
     GET_LOGGED_IN_USER,
     STORE_LOGGED_IN_USER,
+    FOLLOW_USER,
+    UNFOLLOW_USER,
 } from "../constants/users";
 
 // Login
@@ -64,5 +66,16 @@ export const updateUser = (walletAddress, updatedUser, redirectWindow) => ({
     type: UPDATE_USER,
     walletAddress,
     updatedUser,
+    redirectWindow
+})
+
+export const followUser = (walletAddressToFollow, redirectWindow) => ({
+    type: FOLLOW_USER,
+    walletAddressToFollow,
+    redirectWindow
+})
+export const unfollowUser = (walletAddressToUnfollow, redirectWindow) => ({
+    type: UNFOLLOW_USER,
+    walletAddressToUnfollow,
     redirectWindow
 })
