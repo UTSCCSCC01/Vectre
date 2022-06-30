@@ -4,7 +4,7 @@ const User = require('./neo4j/user')
 const { nanoid } = require("nanoid");
 
 const createUserPost = function (session, body) {
-    if (!body.author || !body.text || !body.imageURL) {
+    if (!body.author || !body.text) {
         throw {
             success: false,
             message: 'Invalid post properties'
@@ -12,8 +12,12 @@ const createUserPost = function (session, body) {
     }
     const postID = nanoid()
     const date = new Date().toISOString()
+
+    // imageURL is optional on a post
+    const possibleImageString = body.imageURL ? `, imageURL: '${body.imageURL}',` : "";
+
     const query = [
-        `CREATE (p:Post {postID: '${postID}', parent: null, text: '${body.text}', imageURL: '${body.imageURL}', author: '${body.author}', edited: false, timestamp: '${date}'})`,
+        `CREATE (p:Post {postID: '${postID}', text: '${body.text}', author: '${body.author}', edited: false, timestamp: '${date}', parent: null ${possibleImageString}})`,
         `WITH (p)`,
         `MATCH (u:User)`,
         `WHERE u.walletAddress = '${body.author}'`,
@@ -36,18 +40,20 @@ const createUserPost = function (session, body) {
         });
 };
 
-const createUserComment = function (session, body) {
-    if (!body.author || !body.text || !body.imageURL || !body.timestamp || !body.parent) {
+const createUserComment = function (session, postID, body) {
+    if (!body.author || !body.text) {
         throw {
             success: false,
-            message: 'Invalid post properties'
+            message: 'Invalid comment properties'
         }
     }
+    const commentPostID = nanoid()
+    const date = new Date().toISOString()
     const query = [
-        `CREATE (p:Post {postID: '${body.author + body.timestamp}', text: '${body.text}', imageURL: '${body.imageURL}', author: '${body.author}', edited: '${body.edited}', timestamp: '${body.timestamp}', parent: '${body.parent}'})`,
+        `CREATE (p:Post {postID: '${commentPostID}', text: '${body.text}', author: '${body.author}', edited: false, timestamp: '${date}', parent: '${postID}'})`,
         `WITH (p)`,
         `MATCH (u:User), (parent:Post)`,
-        `WHERE u.walletAddress = '${body.author}' AND parent.postID = '${body.parent}'`,
+        `WHERE u.walletAddress = '${body.author}' AND parent.postID = '${postID}'`,
         `CREATE (p)-[r:POSTED_BY]->(u), (p)-[r2:COMMENTED_ON]->(parent)`
     ].join('\n');
 
@@ -55,13 +61,13 @@ const createUserComment = function (session, body) {
         .then((result) => {
             return {
                 success: true,
-                message: "Successfully created Post"
+                message: "Successfully created Comment"
             }
         })
         .catch((error) => {
             throw {
                 success: false,
-                message: "Failed to create Post",
+                message: "Failed to create Comment",
                 error: error
             }
         });

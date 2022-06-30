@@ -8,15 +8,14 @@ const { rest } = require('lodash');
 
 // POST /posts/create
 router.post('/create', authenticateToken, (req, res, next) => {
-    req.body.author = req.walletAddress;
     Post.createUserPost(dbUtils.getSession(req), req.body)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
 
-router.post('/create/:postID/comments', authenticateToken, (req, res, next) => {
-    req.body.author = req.walletAddress;
-    Post.createUserComment(dbUtils.getSession(req), req.body)
+// POST /posts/{postID}/comment
+router.post('/:postID/comment', authenticateToken, (req, res, next) => {
+    Post.createUserComment(dbUtils.getSession(req), req.params.postID, req.body)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
