@@ -84,13 +84,17 @@ const getUserNotifications = function (session, walletAddress) {
 
     return session.run(query)
         .then((results) => {
-            let notifications = []
+            let notifications = [], hasUnreadNotif = false
             results.records.forEach((record) => {
-                notifications.push(new Notification(record.get('notification')))
+                let notif = new Notification(record.get('notification'))
+                notifications.push(notif)
+                if (notif.read === false)
+                    hasUnreadNotif = true
             })
             return {
                 success: true,
-                notifications: notifications
+                notifications: notifications,
+                unread: hasUnreadNotif
             }
         })
         .catch((error) => {
