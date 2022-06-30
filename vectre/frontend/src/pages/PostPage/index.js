@@ -35,20 +35,28 @@ const PostPage = () => {
                 <Stack alignSelf={'center'} gap={'16px'}>
                     {
                         // checks if post.author is defined first
-                        post.author !== undefined ? (<PostComponent item={post} />) : (<Box>The post with postID {postID} does not exist.</Box>)
-                    }
-                    {
-                        loggedInUser.walletAddress ? (<UserCommentComponent item={{ author: loggedInUser }} />) : (<UserCommentNotLoggedInComponent />)
-                    }
-                    {/* Add Comments below */}
-                    {
-                        comments.map((item, i) => {
-                            return (
-                                <Box key={i} mt={item.parent ? "0 !important" : "initial"}>
-                                    <PostComponent item={item} />
-                                </Box>
-                            )
-                        })
+                        post.author !== undefined ? (
+                            <>
+                                <PostComponent item={post} />
+                                {loggedInUser.walletAddress ? (<UserCommentComponent item={{ author: loggedInUser }} />) : (<UserCommentNotLoggedInComponent />)}
+                                {/* Add Comments below */}
+                                {
+                                    comments !== undefined ?
+                                        comments.map((item, i) => {
+                                            return (
+                                                <Box key={i} mt={item.parent ? "0 !important" : "initial"}>
+                                                    <PostComponent item={item} />
+                                                </Box>
+                                            )
+                                        })
+                                        : (
+                                            <div>No Comments? 🤔 </div>
+                                        )
+                                }
+                            </>
+                        ) : (
+                            <Box>The post with postID {postID} does not exist.</Box>
+                        )
                     }
                 </Stack>
             </Box>
