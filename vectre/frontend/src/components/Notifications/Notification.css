@@ -1,0 +1,72 @@
+:root {
+    --boxBg : rgba(198, 219, 255, 0.36)
+}
+
+.popover {
+    border-radius : sm;
+    width : 389px;
+    height : 60vh;
+}
+
+.header {
+    font-weight : bold;
+    font-size : 18px;
+    padding-inline-start : 38px;
+    padding-inline-end : 38px;
+    padding-top : 4px;
+    padding-bottom : 4px;
+    gap : 10px;
+    height : fit-content;
+    width: fit-content;
+    background : var(--boxBg);
+    border-radius : 6px;
+    display : inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.time-tag {
+    justify-content : center;
+    align-items : center;
+    background : var(--boxBg);
+    border-radius : 6px;
+    font-size : 12px;
+    font-weight : 500;
+    height : fit-content;
+    padding-top : 4px;
+    padding-bottom : 4px
+}
+
+.notif-box {
+    display: inline-flex;
+    height: 36px;
+    cursor: pointer;
+}
+
+.notif-message {
+    justify-content: center;
+    align-items: center;
+    background: var(--boxBg);
+    border-radius: 6px;
+    width: 215px;
+    user-select: none;
+}
+
+.notif-icon {
+    justify-content: center;
+    align-items: center;
+    background: var(--boxBg);
+    border-radius: 6px;
+    width: 36px;
+}
+
+.unread-marker {
+    position: absolute;
+    background-color: red;
+    top: -1px;
+    right: -1px;
+    width: 10px;
+    height: 10px;
+    padding: 4px;
+    transform: translate(-30%, 30%);
+}

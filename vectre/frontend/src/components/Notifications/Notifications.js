@@ -1,108 +1,112 @@
 import { Box, Flex, Stack } from '@chakra-ui/react'
 import React from 'react'
 import Notification from './Notification'
-
-const boxBg = 'rgba(198, 219, 255, 0.36)'
+import './Notification.css'
 
 const sampleNotifications = [
   {
     fromUser: "@johnny",
     action: "liked",
-    timestamp: "2022-06-22T21:12:57.000Z"
+    timestamp: "2022-06-22T21:12:57.000Z",
+    read: true,
+    link: "https://google.com/notif1"
   },
   {
     fromUser: "@Peter",
     action: "commented",
-    timestamp: "2022-06-22T21:12:57.000Z"
+    timestamp: "2022-06-22T21:12:57.000Z",
+    read: true,
+    link: "https://google.com/notif2"
   },
   {
     fromUser: "@Peter",
     action: "commented",
-    timestamp: "2022-06-22T21:12:57.000Z"
+    timestamp: "2022-06-22T21:12:57.000Z",
+    read: true,
+    link: "https://google.com/notif3"
   },
   {
     fromUser: "@Peter",
-    action: "commented",
-    timestamp: "2022-06-22T21:12:57.000Z"
-  },
-  {
-    fromUser: "@Peter",
-    action: "commented",
-    timestamp: "2022-06-22T21:12:57.000Z"
-  },
-  {
-    fromUser: "@Peter",
-    action: "commented",
-    timestamp: "2022-06-22T21:12:57.000Z"
-  },
-  {
-    fromUser: "@Peter",
-    action: "commented",
-    timestamp: "2022-06-22T21:12:57.000Z"
-  },
-  {
-    fromUser: "@Peter",
-    action: "commented",
-    timestamp: "2022-06-22T21:12:57.000Z"
-  },
-  {
-    fromUser: "@Peter",
-    action: "commented",
-    timestamp: "2022-06-22T21:12:57.000Z"
+    action: "followed",
+    timestamp: "2022-06-22T21:12:57.000Z",
+    read: true,
+    link: "https://google.com/notif4"
   }
 ]
 
-function makeRecentPost(notification) {
-  const currentTime = new Date()
-  const postTime = new Date(notification.timestamp)
-  const hoursDif = (currentTime - postTime) / (1000 * 3600)
-
-  if ( (hoursDif <= 24) ) {
-    return (
-      <Notification fromUser={notification.fromUser}
-        action={notification.action}/>
-    );
+export default class Notifications extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      recent: [],
+      past: [],
+    }
   }
-}
+  
+  catagorise(allNotifications) {
+    // reset the state before catagorise
+    // this.setState( { recent:[], past: []} )
+    this.state.past = []
+    this.state.recent = []
 
-function makePastPost(notification) {
-  const currentTime = new Date()
-  const postTime = new Date(notification.timestamp)
-  const hoursDif = (currentTime - postTime) / (1000 * 3600)
-
-  if ( (hoursDif > 24) ) {
-    return (
-      <Notification fromUser={notification.fromUser}
-        action={notification.action}/>
-    );
+    const currentTime = new Date()
+    for (let n of allNotifications) {
+      // Update the unRead state
+      if (!n.read) {
+        this.props.setHasUnread(true)
+      }
+      // Calculate time difference.
+      let notifTime = new Date(n.timestamp)
+      let hoursDif = (currentTime - notifTime) / (1000 * 3600)
+      if (hoursDif <= 24) {
+        this.state.recent.push(n)
+      } else {
+        this.state.past.push(n)
+      }
+    }
   }
-}
+  
+  makeNotification(notification) {
+    return(
+      <Notification fromUser={notification.fromUser}
+        action={notification.action}
+        read={notification.read}
+        link={notification.link}
+      />
+    )
+  }
 
-export default function Notifications() {
-  return (
-    <Box display={'table-column'} px={'30px'} pt={'7px'} pb={'25px'} 
-         justifyContent={'center'} align={'center'} overflowY={'overlay'}>
-      <Flex justifyContent={'center'} align={'center'}
-            bg={boxBg} borderRadius={6}
-            fontSize={'12px'} fontWeight={'500'}
-            height={'fit-content'} py={1}>
-        <div>Today</div>
-      </Flex>
+  render() {
+    // Use `sampleNotifications` temporary
+    this.catagorise(sampleNotifications)
 
-      <Stack direction={'column'} pt={'9px'} pb={'30px'} spacing={'5px'} fontSize={'10px'}>
-        {sampleNotifications.map(makeRecentPost)}
-      </Stack>
+    return (
+      
+      <Box display={'table-column'} px={'30px'} pt={'7px'} pb={'25px'} 
+          justifyContent={'center'} align={'center'} overflowY={'overlay'}>
+        
+        {this.state.hasUnread && <h1>Unread</h1>}
+        
+        {this.state.recent.length !== 0 &&
+          <>
+          <Flex className='time-tag'>Today</Flex>
 
-      <Flex justifyContent={'center'} align={'center'}
-            bg={boxBg} borderRadius={6}
-            fontSize={'12px'} fontWeight={'500'}
-            height={'fit-content'} py={1}>
-        <div>This Week</div>
-      </Flex>
+          <Stack direction={'column'} pt={'9px'} pb={'30px'} spacing={'5px'} fontSize={'10px'}>
+            {this.state.recent.map(this.makeNotification)}
+          </Stack>
+          </>
+        }
 
-      <Stack direction={'column'} pt={'15px'} spacing={'6px'} fontSize={'10px'}>
-        {sampleNotifications.map(makePastPost)}
-      </Stack>
-    </Box>
-  )
+        {this.state.past.length !== 0 &&
+          <>
+          <Flex className='time-tag'>This Week</Flex>
+
+          <Stack direction={'column'} pt={'15px'} spacing={'6px'} fontSize={'10px'}>
+            {this.state.past.map(this.makeNotification)}
+          </Stack>
+          </>
+        }
+      </Box>
+    )
+  }
 }
