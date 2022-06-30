@@ -16,6 +16,7 @@ import {
 // Components
 import {Button} from "@chakra-ui/react";
 import ProfileEditModal from "../Modals/ProfileEditModal/ProfileEditModal";
+import Dashboard from "../Dashboard/Dashboard"
 
 class Profile extends React.Component {
     constructor(props) {
@@ -69,6 +70,10 @@ class Profile extends React.Component {
                                 />
                             </> : null
                         }
+                        <Dashboard
+                            loggedInUser={this.props.loggedInUser}
+                            profileWalletAddress={this.props.profileWalletAddress}
+                        />
                     </>
                 }
             </div>
