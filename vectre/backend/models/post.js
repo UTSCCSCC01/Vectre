@@ -14,14 +14,14 @@ const createUserPost = function (session, body) {
     const date = new Date().toISOString()
 
     // imageURL is optional on a post
-    const possibleImageString = body.imageURL ? `, imageURL: '${body.imageURL}',` : "";
+    const possibleImageString = body.imageURL ? `, imageURL: '${body.imageURL}'` : "";
 
     const query = [
         `CREATE (p:Post {postID: '${postID}', text: '${body.text}', author: '${body.author}', edited: false, timestamp: '${date}', parent: null ${possibleImageString}})`,
         `WITH (p)`,
         `MATCH (u:User)`,
         `WHERE u.walletAddress = '${body.author}'`,
-        `CREATE (u)<-[r:POSTED_BY]-(p)`
+        `CREATE (u)-[r:POSTED]->(p)`
     ].join('\n');
 
     return session.run(query)
@@ -54,7 +54,7 @@ const createUserComment = function (session, postID, body) {
         `WITH (p)`,
         `MATCH (u:User), (parent:Post)`,
         `WHERE u.walletAddress = '${body.author}' AND parent.postID = '${postID}'`,
-        `CREATE (p)-[r:POSTED_BY]->(u), (p)-[r2:COMMENTED_ON]->(parent)`
+        `CREATE (u)-[r:POSTED]->(p), (p)-[r2:COMMENTED_ON]->(parent)`
     ].join('\n');
 
     return session.run(query)
@@ -111,7 +111,7 @@ const update = function (session, postID, body) {
 
 const getPostsByUser = function (session, walletAddress) {
     const query = [
-        `MATCH (:User {walletAddress:'${walletAddress}'})<-[:POSTED_BY]-(post:Post)`,
+        `MATCH (:User {walletAddress:'${walletAddress}'})-[:POSTED]->(post:Post)`,
         `RETURN DISTINCT post`,
         `ORDER BY post.timestamp DESC`
     ].join('\n');
@@ -163,7 +163,7 @@ const getCommentsByPost = function (session, postID) {
 
 const getPostByID = function (session, postID) {
     const query = [
-        `MATCH (author:User)<-[:POSTED_BY]-(post:Post {postID:'${postID}'})`,
+        `MATCH (author:User)-[:POSTED]->(post:Post {postID:'${postID}'})`,
         `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
         `WHERE post.author = author.walletAddress`,
         `RETURN DISTINCT author, post, count(c) AS comment`
