@@ -63,14 +63,16 @@ const getByWalletAddress = (session, walletAddress) => {
         })
 }
 
-const register = (session, body) => { // Creates User from body data
+const register = (session, body, setTokenInCookie) => { // Creates User from body data
     const bio = body.bio ? body.bio : ""
     const query = `CREATE (user:User {name: '${body.name}', username: '${body.username}', walletAddress: '${body.walletAddress}', bio: '${bio}', nonce: '${generateNonce()}'});`
     return session.run(query)
         .then((results) => {
+            const accessToken = jwt.sign(body.walletAddress, config.jwtSecretToken)
+            setTokenInCookie(accessToken)
+
             return {
                 success: true,
-                // user: new User(results.records[0].get('user'))
                 message: "Created User"
             }
         })
@@ -130,13 +132,12 @@ const login = (session, walletAddress, signedNonce, setTokenInCookie) => { // Lo
                         if (response.success) {
                             if (validateSignedNonce(walletAddress, response.nonce, signedNonce)) {
                                 const accessToken = jwt.sign(walletAddress, config.jwtSecretToken)
-
-                                // TODO: Regenerate nonce
                                 setTokenInCookie(accessToken)
+                                session.run(`MATCH (u: User {walletAddress : '${walletAddress}'}) SET u.nonce = '${generateNonce()}'`) // Regenerate nonce
 
                                 return {
                                     success: true,
-                                    authorizationToken: accessToken
+                                    message: "Successfully logged in"
                                 }
                             } else {
                                 throw {
