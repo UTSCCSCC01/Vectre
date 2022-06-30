@@ -1,15 +1,23 @@
 import {
     Box,
-    Flex,
     Textarea,
     Button,
     FormControl,
-    Stack
+    Stack,
+    useToast
 } from '@chakra-ui/react';
+import { postComment } from "../../../redux/actions/posts";
+import { useDispatch, useSelector } from 'react-redux';
+import { loggedInUserSelector } from '../../../redux/selectors/users';
+import { useParams } from "react-router-dom";
 
 const UserCommentBotComponent = ({
     item,
 }) => {
+    const loggedInUser = useSelector(loggedInUserSelector);
+    const dispatch = useDispatch();
+    const { postID } = useParams();
+
     return (
         <>
             <Stack
@@ -21,13 +29,18 @@ const UserCommentBotComponent = ({
                     width={'100%'}>
                     <form
                         id="user-comment-form"
-                        onSubmit={(() => {
-                            console.log("HI!");
+                        onSubmit={((event) => {
+                            event.preventDefault();
+                            let newComment = {
+                                author: loggedInUser.walletAddress,
+                                text: event.target.comment.value
+                            }
+                            dispatch(postComment(postID, newComment, () => { document.getElementById("user-comment-form").reset() }));
                         })}
                     >
                         <FormControl>
                             <Textarea
-                                id='bio'
+                                id='comment'
                                 placeholder={'thoughts?'}
                                 fontSize={'18px'}
                                 bg={'rgba(255, 255, 255, 0.78)'}

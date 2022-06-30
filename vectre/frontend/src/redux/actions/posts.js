@@ -3,6 +3,7 @@ import {
     STORE_POST,
     GET_COMMENTS,
     STORE_COMMENTS,
+    POST_COMMENT
 } from "../constants/posts";
 
 export const getPost = (postID) => ({
@@ -23,4 +24,11 @@ export const getComments = (postID) => ({
 export const storeComments = (comments) => ({
     type: STORE_COMMENTS,
     comments
+})
+
+export const postComment = (postID, comment, reloadForm) => ({
+    type: POST_COMMENT,
+    postID,
+    comment,
+    reloadForm
 })

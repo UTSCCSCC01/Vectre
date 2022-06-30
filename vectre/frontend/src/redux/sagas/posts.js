@@ -6,7 +6,8 @@ import {
 } from "../actions/posts";
 import {
     GET_POST,
-    GET_COMMENTS
+    GET_COMMENTS,
+    POST_COMMENT
 } from "../constants/posts";
 import {
     BASE_API_URL,
@@ -37,9 +38,24 @@ function* getComments(action) {
     }
 }
 
+function* postComment(action) {
+    try {
+        const response = yield call(postRequest, BASE_API_URL + POSTS.POST_COMMENT.replace("{postID}", action.postID), action.comment), responseData = response[1]
+        if (responseData.success) {
+            yield getPost({ postID: action.postID });
+            yield getComments({ postID: action.postID });
+            action.reloadForm();
+        } else { // TODO: Show toast error message
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 function* postsSaga() {
     yield takeLatest(GET_POST, getPost)
     yield takeLatest(GET_COMMENTS, getComments)
+    yield takeLatest(POST_COMMENT, postComment)
 }
 
 export default postsSaga

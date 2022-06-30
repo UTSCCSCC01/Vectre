@@ -1,11 +1,13 @@
 import {
     STORE_POST,
-    STORE_COMMENTS
+    STORE_COMMENTS,
+    POST_COMMENT
 } from "../constants/posts";
 
 const initialState = {
     post: {},
-    comments: []
+    comments: [],
+    comment: {}
 }
 
 const posts = (state = initialState, action) => {
@@ -19,6 +21,11 @@ const posts = (state = initialState, action) => {
             return {
                 ...state,
                 comments: action.comments
+            }
+        case POST_COMMENT:
+            return {
+                ...state,
+                comment: action.comment
             }
         default:
             return state
