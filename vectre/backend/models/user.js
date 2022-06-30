@@ -39,10 +39,20 @@ const getByWalletAddress = (session, walletAddress) => {
                     message: `User with wallet address ${walletAddress} does not exist`
                 }
             } else {
-                return {
-                    success: true,
-                    user: new User(results.records[0].get('user'))
-                }
+                let user = new User(results.records[0].get('user'))
+
+                return getFollowing(session, walletAddress)
+                    .then((followingResult) => {
+                        user.following = followingResult.following
+                        return getFollowers(session, walletAddress)
+                            .then((followerResult) => {
+                                user.followers = followerResult.followers
+                                return {
+                                    success: true,
+                                        user: user
+                                }
+                            })
+                    })
             }
         }).catch((error) => {
             throw {
@@ -246,6 +256,128 @@ const deleteUser = (session, walletAddress) => {
         })
 }
 
+const getFollowing = (session, walletAddress) => { // Returns list of Users followed by User w/ walletAddress
+    const query = `MATCH (u: User)-[r:FOLLOWS]->(followed: User) WHERE u.walletAddress='${walletAddress}' RETURN followed.walletAddress`;
+    return session.run(query)
+        .then((results) => {
+            let users = []
+            results.records.forEach((record) => {
+                users.push(record.get('followed.walletAddress'))
+            })
+            return {
+                success: true,
+                following: users
+            }
+        })
+        .catch((error) => {
+            console.log(error)
+            throw {
+                success: false,
+                message: "Failed to get followed Users",
+                error: error.message
+            }
+        });
+}
+const getFollowers = (session, walletAddress) => { // Returns list of Users following User w/ walletAddress
+    const query = `MATCH (u: User)<-[r:FOLLOWS]-(following: User) WHERE u.walletAddress='${walletAddress}' RETURN following.walletAddress`;
+    return session.run(query)
+        .then((results) => {
+            let users = []
+            results.records.forEach((record) => {
+                users.push(record.get('following.walletAddress'))
+            })
+            return {
+                success: true,
+                followers: users
+            }
+        })
+        .catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to get following Users",
+                error: error.message
+            }
+        })
+}
+const followUser = (session, walletAddress, walletAddressToFollow) => {
+    if (walletAddress !== walletAddressToFollow) {
+        // Creates User from body data
+        const query = `match(a:User), (b:User)
+        where a.walletAddress="${walletAddress}" AND b.walletAddress="${walletAddressToFollow}"
+        create((a)-[r:FOLLOWS]->(b))`;
+
+        const queryExist = `match((a:User{walletAddress:"${walletAddress}"})-[r:FOLLOWS]->(b:User{walletAddress:"${walletAddressToFollow}"})) return r`;
+
+        return session.run(queryExist)
+            .then((exist) => {
+                if (!_.isEmpty(exist.records)) {
+                    throw {
+                        success: false,
+                        message: "You already follow this user"
+                    }
+                } else {
+                    return session.run(query)
+                        .then((results) => {
+                            return {
+                                success: true,
+                                message: "Successfully followed user",
+                            }
+                        })
+                }
+            })
+            .catch((error) => {
+                throw {
+                    success: false,
+                    message: "Failed to follow user",
+                    error: error.message
+                }
+            })
+    } else {
+        throw {
+            success: false,
+            message: "Cannot follow yourself"
+        }
+    }
+}
+const unfollowUser = (session, walletAddress, walletAddressToUnfollow) => {
+    if (walletAddress !== walletAddressToUnfollow) {
+        const query = `match((a:User{walletAddress:"${walletAddress}"})-[r:FOLLOWS]->(b:User{walletAddress:"${walletAddressToUnfollow}"})) delete r`;
+
+        const queryExist = `match((a:User{walletAddress:"${walletAddress}"})-[r:FOLLOWS]->(b:User{walletAddress:"${walletAddressToUnfollow}"})) return r`;
+
+        return session.run(queryExist)
+            .then((exist) => {
+                if (_.isEmpty(exist.records)) {
+                    throw {
+                        success: false,
+                        message: "You do not follow this user"
+                    }
+                } else {
+                    return session.run(query)
+                        .then((results) => {
+                            return {
+                                success: true,
+                                message: "Successfully unfollowed user"
+                            }
+                        })
+                    }
+            })
+            .catch((error) => {
+                throw {
+                    success: false,
+                    message: "Failed to unfollow user",
+                    error: error.message
+                }
+            })
+    } else {
+        throw {
+            success: false,
+            message: "Cannot unfollow yourself"
+        }
+    }
+}
+
+
 module.exports = {
     getAll,
     getByWalletAddress,
@@ -254,4 +386,8 @@ module.exports = {
     login,
     updateProfile,
     delete: deleteUser,
+    getFollowing,
+    getFollowers,
+    follow: followUser,
+    unfollow: unfollowUser,
 }
