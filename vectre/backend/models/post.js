@@ -17,7 +17,7 @@ const createUserPost = function (session, body) {
         `WITH (p)`,
         `MATCH (u:User)`,
         `WHERE u.walletAddress = '${body.author}'`,
-        `CREATE (u)-[r:POSTED_BY]->(p)`
+        `CREATE (u)<-[r:POSTED_BY]-(p)`
     ].join('\n');
 
     return session.run(query)
@@ -74,7 +74,7 @@ const update = function (session, postID, body) {
 
 const getPostsByUser = function (session, walletAddress) {
     const query = [
-        `MATCH (:User {walletAddress:'${walletAddress}'})-[:POSTED_BY]->(post:Post)`,
+        `MATCH (:User {walletAddress:'${walletAddress}'})<-[:POSTED_BY]-(post:Post)`,
         `RETURN DISTINCT post`,
         `ORDER BY post.timestamp DESC`
     ].join('\n');
@@ -100,9 +100,10 @@ const getPostsByUser = function (session, walletAddress) {
 
 const getPostByID = function (session, postID) {
     const query = [
-        `MATCH (author:User)-[:POSTED_BY]->(post:Post {postID:'${postID}'})`,
+        `MATCH (author:User)<-[:POSTED_BY]-(post:Post {postID:'${postID}'})`,
+        `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
         `WHERE post.author = author.walletAddress`,
-        `RETURN DISTINCT author, post`
+        `RETURN DISTINCT author, post, count(c) AS comment`
     ].join('\n');
 
     return session.run(query)
@@ -111,13 +112,14 @@ const getPostByID = function (session, postID) {
             results.records.forEach((record) => {
                 post = new Post(record.get('post'))
                 post.author = new User(record.get('author'))
+                post.comment = String(record.get("comment").low);
             })
 
             // hardcoded values (since some values have not been implemented yet)
+            // TODO remove this and change the query when the things below are implemented
             if (post !== {}) {
+                post.like = "0";
                 post.community = "notarealcommunity";
-                post.like = "32.6k";
-                post.comment = "2.3k";
             }
 
             return {
