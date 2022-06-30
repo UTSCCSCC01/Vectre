@@ -4,7 +4,6 @@ var router = express.Router();
 const dbUtils = require('../utils/neo4j/dbUtils');
 const Post = require('../models/post');
 const { authenticateToken } = require("../utils/auth");
-const { rest } = require('lodash');
 
 // POST /posts/create
 router.post('/create', authenticateToken, (req, res, next) => {

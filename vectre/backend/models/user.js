@@ -60,7 +60,6 @@ const register = (session, body) => { // Creates User from body data
         .then((results) => {
             return {
                 success: true,
-                // user: new User(results.records[0].get('user'))
                 message: "Created User"
             }
         })
