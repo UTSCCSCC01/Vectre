@@ -8,7 +8,7 @@ const ACTIONS = {
     FOLLOWED: "follow",
 }
 
-const create = function (session, action, toUser, fromUser, postID=null) {
+function create(session, action, toUser, fromUser, postID=null) {
     action = action.toLowerCase()
     if (!Object.values(ACTIONS).includes(action)) {
         throw {

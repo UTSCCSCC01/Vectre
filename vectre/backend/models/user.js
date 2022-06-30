@@ -1,5 +1,6 @@
 const _ = require('lodash')
 const User = require('./neo4j/user')
+const Notification = require('../models/notification');
 const config = require('../config');
 const jwt = require('jsonwebtoken')
 const ethUtil = require('ethereumjs-util')
@@ -316,12 +317,16 @@ const followUser = (session, walletAddress, walletAddressToFollow) => {
                         message: "You already follow this user"
                     }
                 } else {
-                    return session.run(query)
-                        .then((results) => {
-                            return {
-                                success: true,
-                                message: "Successfully followed user",
-                            }
+                    return Notification.create(session, "follow", walletAddressToFollow, walletAddress, null)
+                        .then((result) => {
+                            console.log(result)
+                            return session.run(query)
+                                .then((results) => {
+                                    return {
+                                        success: true,
+                                        message: "Successfully followed user",
+                                    }
+                                })
                         })
                 }
             })
