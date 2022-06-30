@@ -7,7 +7,7 @@ export const USERS = {
 
     GET_USERS: "/users",
     CREATE_USER: "/users/register",
-    UPDATE_USER: "/users/{wallet_address}/update",
-    FOLLOW_USER: "/users/{wallet_address}/follow",
-    UNFOLLOW_USER: "/users/{wallet_address}/unfollow",
+    UPDATE_USER: "/users/{walletAddress}/update",
+    FOLLOW_USER: "/users/{walletAddress}/follow",
+    UNFOLLOW_USER: "/users/{walletAddress}/unfollow",
 }

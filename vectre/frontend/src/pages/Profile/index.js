@@ -7,11 +7,11 @@ import Profile from "../../components/Profile/Profile";
 import { useParams } from "react-router-dom";
 
 const ProfilePage = () => {
-    const { wallet_address } = useParams() // Get wallet_address from URL
+    const { walletAddress } = useParams() // Get walletAddress from URL
     return (
         <AppWrapper>
             <Box py={'60px'} maxWidth={'4xl'} margin={'0 auto'}>
-                <Profile profileWalletAddress={wallet_address} />
+                <Profile profileWalletAddress={walletAddress} />
             </Box>
         </AppWrapper>
     );
