@@ -107,9 +107,9 @@ function* updateUser(action) {
 
 function* followUser(action) {
     try {
-        const response = yield call(postRequest, BASE_API_URL + USERS.FOLLOW_USER.replace("{wallet_address}", action.wallet_address_to_follow), {}), responseData = response[1]
+        const response = yield call(postRequest, BASE_API_URL + USERS.FOLLOW_USER.replace("{walletAddress}", action.walletAddressToFollow), {}), responseData = response[1]
         if (responseData.success) { // TODO: Show toast success message
-            if (action.redirectWindow) yield put(action.redirectWindow(`/user/${action.wallet_address_to_follow}`))
+            if (action.redirectWindow) yield put(action.redirectWindow(`/user/${action.walletAddressToFollow}`))
         } else { // TODO: Show toast error message
         }
     } catch (error) {
@@ -118,9 +118,9 @@ function* followUser(action) {
 }
 function* unfollowUser(action) {
     try {
-        const response = yield call(postRequest, BASE_API_URL + USERS.UNFOLLOW_USER.replace("{wallet_address}", action.wallet_address_to_unfollow), {}), responseData = response[1]
+        const response = yield call(postRequest, BASE_API_URL + USERS.UNFOLLOW_USER.replace("{walletAddress}", action.walletAddressToUnfollow), {}), responseData = response[1]
         if (responseData.success) { // TODO: Show toast success message
-            if (action.redirectWindow) yield put(action.redirectWindow(`/user/${action.wallet_address_to_unfollow}`))
+            if (action.redirectWindow) yield put(action.redirectWindow(`/user/${action.walletAddressToUnfollow}`))
         } else { // TODO: Show toast error message
         }
     } catch (error) {

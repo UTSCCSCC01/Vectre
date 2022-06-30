@@ -92,27 +92,27 @@ router.delete('/:walletAddress/delete', authenticateToken, (req, res) => {
     }
 })
 
-// GET /users/{wallet_address}/following
-router.get('/:wallet_address/following', (req, res, next) => {
-    User.getFollowing(dbUtils.getSession(req), req.params.wallet_address)
+// GET /users/{walletAddress}/following
+router.get('/:walletAddress/following', (req, res, next) => {
+    User.getFollowing(dbUtils.getSession(req), req.params.walletAddress)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 });
-// GET /users/{wallet_address}/followers
-router.get('/:wallet_address/followers', (req, res, next) => {
-    User.getFollowers(dbUtils.getSession(req), req.params.wallet_address)
+// GET /users/{walletAddress}/followers
+router.get('/:walletAddress/followers', (req, res, next) => {
+    User.getFollowers(dbUtils.getSession(req), req.params.walletAddress)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 });
-// POST /users/{wallet_address_to_follow}/follow
-router.post('/:wallet_address/follow', authenticateToken, (req, res, next) => {
-    User.follow(dbUtils.getSession(req), req.wallet_address, req.params.wallet_address)
+// POST /users/{walletAddressToFollow}/follow
+router.post('/:walletAddressToFollow/follow', authenticateToken, (req, res, next) => {
+    User.follow(dbUtils.getSession(req), req.walletAddress, req.params.walletAddressToFollow)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 });
-// POST /users/{wallet_address_to_unfollow}/unfollow
-router.post('/:wallet_address/unfollow', authenticateToken, (req, res, next) => {
-    User.unfollow(dbUtils.getSession(req), req.wallet_address, req.params.wallet_address)
+// POST /users/{walletAddressToUnfollow}/unfollow
+router.post('/:walletAddressToUnfollow/unfollow', authenticateToken, (req, res, next) => {
+    User.unfollow(dbUtils.getSession(req), req.walletAddress, req.params.walletAddressToUnfollow)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 });

@@ -70,17 +70,17 @@ class Profile extends React.Component {
 
                             <br></br>
                             <b>Following</b>: <br></br>
-                            {this.props.user.following.map(wallet_address =>
+                            {this.props.user.following.map(walletAddress =>
                                 <>
-                                    - <Link href={"/user/" + wallet_address}>{wallet_address}</Link><br></br>
+                                    - <Link href={"/user/" + walletAddress}>{walletAddress}</Link><br></br>
                                 </>
                             )}
 
                             <br></br>
                             <b>Followers</b>: <br></br>
-                            {this.props.user.followers.map(wallet_address =>
+                            {this.props.user.followers.map(walletAddress =>
                                 <>
-                                    - <Link href={"/user/" + wallet_address}>{wallet_address}</Link><br></br>
+                                    - <Link href={"/user/" + walletAddress}>{walletAddress}</Link><br></br>
                                 </>
                             )}
                             <br></br>

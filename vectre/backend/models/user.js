@@ -41,10 +41,10 @@ const getByWalletAddress = (session, walletAddress) => {
             } else {
                 let user = new User(results.records[0].get('user'))
 
-                return getFollowing(session, wallet_address)
+                return getFollowing(session, walletAddress)
                     .then((followingResult) => {
                         user.following = followingResult.following
-                        return getFollowers(session, wallet_address)
+                        return getFollowers(session, walletAddress)
                             .then((followerResult) => {
                                 user.followers = followerResult.followers
                                 return {
@@ -257,13 +257,13 @@ const deleteUser = (session, walletAddress) => {
         })
 }
 
-const getFollowing = (session, wallet_address) => { // Returns list of Users followed by User w/ wallet_address
-    const query = `MATCH (u: User)-[r:FOLLOWS]->(followed: User) WHERE u.wallet_address='${wallet_address}' RETURN followed.wallet_address`;
+const getFollowing = (session, walletAddress) => { // Returns list of Users followed by User w/ walletAddress
+    const query = `MATCH (u: User)-[r:FOLLOWS]->(followed: User) WHERE u.walletAddress='${walletAddress}' RETURN followed.walletAddress`;
     return session.run(query)
         .then((results) => {
             let users = []
             results.records.forEach((record) => {
-                users.push(record.get('followed.wallet_address'))
+                users.push(record.get('followed.walletAddress'))
             })
             return {success: true, following: users}
         })
@@ -275,13 +275,13 @@ const getFollowing = (session, wallet_address) => { // Returns list of Users fol
             }
         });
 }
-const getFollowers = (session, wallet_address) => { // Returns list of Users following User w/ wallet_address
-    const query = `MATCH (u: User)<-[r:FOLLOWS]-(following: User) WHERE u.wallet_address='${wallet_address}' RETURN following.wallet_address`;
+const getFollowers = (session, walletAddress) => { // Returns list of Users following User w/ walletAddress
+    const query = `MATCH (u: User)<-[r:FOLLOWS]-(following: User) WHERE u.walletAddress='${walletAddress}' RETURN following.walletAddress`;
     return session.run(query)
         .then((results) => {
             let users = []
             results.records.forEach((record) => {
-                users.push(record.get('following.wallet_address'))
+                users.push(record.get('following.walletAddress'))
             })
             return {success: true, followers: users}
         })
@@ -293,14 +293,14 @@ const getFollowers = (session, wallet_address) => { // Returns list of Users fol
             }
         });
 }
-const followUser = (session, wallet_address, wallet_address_to_follow) => {
-    if (wallet_address !== wallet_address_to_follow) {
+const followUser = (session, walletAddress, walletAddressToFollow) => {
+    if (walletAddress !== walletAddressToFollow) {
         // Creates User from body data
         const query = `match(a:User), (b:User)
-        where a.wallet_address="${wallet_address}" AND b.wallet_address="${wallet_address_to_follow}"
+        where a.walletAddress="${walletAddress}" AND b.walletAddress="${walletAddressToFollow}"
         create((a)-[r:FOLLOWS]->(b))`;
 
-        const queryExist = `match((a:User{wallet_address:"${wallet_address}"})-[r:FOLLOWS]->(b:User{wallet_address:"${wallet_address_to_follow}"})) return r`;
+        const queryExist = `match((a:User{walletAddress:"${walletAddress}"})-[r:FOLLOWS]->(b:User{walletAddress:"${walletAddressToFollow}"})) return r`;
 
         return session.run(queryExist).then((exist) => {
             if (!_.isEmpty(exist.records)) {
@@ -333,11 +333,11 @@ const followUser = (session, wallet_address, wallet_address_to_follow) => {
         }
     }
 }
-const unfollowUser = (session, wallet_address, wallet_address_to_unfollow) => {
-    if (wallet_address !== wallet_address_to_unfollow) {
-        const query = `match((a:User{wallet_address:"${wallet_address}"})-[r:FOLLOWS]->(b:User{wallet_address:"${wallet_address_to_unfollow}"})) delete r`;
+const unfollowUser = (session, walletAddress, walletAddressToUnfollow) => {
+    if (walletAddress !== walletAddressToUnfollow) {
+        const query = `match((a:User{walletAddress:"${walletAddress}"})-[r:FOLLOWS]->(b:User{walletAddress:"${walletAddressToUnfollow}"})) delete r`;
 
-        const queryExist = `match((a:User{wallet_address:"${wallet_address}"})-[r:FOLLOWS]->(b:User{wallet_address:"${wallet_address_to_unfollow}"})) return r`;
+        const queryExist = `match((a:User{walletAddress:"${walletAddress}"})-[r:FOLLOWS]->(b:User{walletAddress:"${walletAddressToUnfollow}"})) return r`;
 
         return session.run(queryExist).then((exist) => {
             if (_.isEmpty(exist.records)) {
