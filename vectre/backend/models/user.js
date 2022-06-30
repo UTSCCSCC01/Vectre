@@ -262,10 +262,10 @@ const getNFT = (wallet_address) => { // Gets all NFTs of a User using OpenSea AP
             var asset_list = [];
             for (let i = 0; i < json.assets.length; i++) {
                 var jsonObj = {
-                    token_id: json.assets[3].id,
-                    name: json.assets[3].asset_contract.name, //change 'asset_contract.name' -> 'name' once OpenSea Mainnet API is received.
-                    image_url: json.assets[3].image_url,
-                    contract_address: json.assets[3].asset_contract.address,
+                    token_id: json.assets[i].id,
+                    name: json.assets[i].asset_contract.name, //change 'asset_contract.name' -> 'name' once OpenSea Mainnet API is received.
+                    image_url: json.assets[i].image_url,
+                    contract_address: json.assets[i].asset_contract.address,
                 }
                 asset_list.push(jsonObj);
             }
