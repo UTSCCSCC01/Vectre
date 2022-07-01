@@ -47,7 +47,7 @@ const PostBotComponent = ({
             </Flex>
             <Link
                 display={item.parent ? 'none' : 'inline-flex'}
-                href={`c/${item.community}`}
+                href={`/c/${item.community}`}
                 onClick={(e) => {
                     e.stopPropagation();
                 }}

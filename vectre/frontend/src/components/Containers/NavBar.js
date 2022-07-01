@@ -18,8 +18,8 @@ import { MdNotificationsActive } from 'react-icons/md'
 import { FaWallet } from 'react-icons/fa'
 
 import VectreIcon from '../Icons/VectreIcon'
-import {loggedInUserSelector} from "../../redux/selectors/users";
-import {useSelector} from "react-redux";
+import { loggedInUserSelector } from "../../redux/selectors/users";
+import { useSelector } from "react-redux";
 
 export default function NavBar() {
     const loggedInUser = useSelector(loggedInUserSelector)
@@ -55,7 +55,7 @@ export default function NavBar() {
                         display={{ base: 'none', lg: 'flex' }}
                         alignItems={'center'}>
                         <Link
-                            href='/'
+                            href='/home'
                             _hover={{ textDecoration: "none" }}>
                             <IconButton
                                 size={'lg'}
