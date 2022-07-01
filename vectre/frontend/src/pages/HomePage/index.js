@@ -16,7 +16,7 @@ const samplePostData = [
       verified: true
     },
     postId: "00001",
-    like: "942",
+    likes: "942",
     comment: "50",
     community: "Doodles",
     imageURL: "https://pbs.twimg.com/media/FTSfCnTXoAEyhOp?format=jpg&name=small",
@@ -32,7 +32,7 @@ const samplePostData = [
       verified: false
     },
     postId: "00002",
-    like: "120",
+    likes: "120",
     comment: "2",
     community: "DEvilSh0es",
     imageURL: "https://img.businessoffashion.com/resizer/26N-gpJby-rUwge6lNFDShJpi4k=/arc-photo-businessoffashion/eu-central-1-prod/public/WWEPZDRDRNGXVNWWY2RB722GPE.png",
@@ -48,7 +48,7 @@ const samplePostData = [
       verified: true
     },
     postId: "00003",
-    like: "4.2k",
+    likes: "4.2k",
     comment: "420",
     community: "GOT",
     imageURL: "https://api.time.com/wp-content/uploads/2016/05/tyrion-game-of-thrones-peter-dinklage.jpeg",
