@@ -17,7 +17,7 @@ const getAll = (session) => { // Returns all Users
         .catch((error) => {
             throw {
                 success: false,
-                message: "Failed to get Users"
+                message: "Failed to get users"
             }
         });
 }
@@ -36,7 +36,7 @@ const getByWalletAddress = (session, walletAddress) => {
             if (_.isEmpty(results.records)) {
                 throw {
                     success: false,
-                    message: `User with wallet address ${walletAddress} does not exist`
+                    message: `User does not exist`
                 }
             } else {
                 let user = new User(results.records[0].get('user'))
@@ -49,7 +49,7 @@ const getByWalletAddress = (session, walletAddress) => {
                                 user.followers = followerResult.followers
                                 return {
                                     success: true,
-                                        user: user
+                                    user: user
                                 }
                             })
                     })
@@ -57,7 +57,7 @@ const getByWalletAddress = (session, walletAddress) => {
         }).catch((error) => {
             throw {
                 success: false,
-                message: "Failed to get User",
+                message: "Failed to get user",
                 error: error.message
             }
         })
@@ -73,13 +73,20 @@ const register = (session, body, setTokenInCookie) => { // Creates User from bod
 
             return {
                 success: true,
-                message: "Created User"
+                message: "Created user"
             }
         })
         .catch((error) => {
+            if (error.message.includes("already exists with label `User` and property `username`")) {
+                console.log("test")
+                throw {
+                    success: false,
+                    message: "Username already in use"
+                }
+            }
             throw {
                 success: false,
-                message: "Failed to create User",
+                message: "Failed to create user",
                 error: error.message
             }
         })
@@ -198,12 +205,12 @@ const updateUser = function (session, wallet, filter, newUser) {
             if (_.isEmpty(results.records)) {
                 return {
                     success: false,
-                    message: "Edit failed, wallet does not exist."
+                    message: "Edit failed, wallet does not exist"
                 }
             }
             return {
                 success: true,
-                message: "Edit success."
+                message: "Edit success"
             }
         }).catch(error => { throw error })
 }
@@ -246,13 +253,13 @@ const deleteUser = (session, walletAddress) => {
         .then((results) => {
             return {
                 success: true,
-                message: "Deleted User"
+                message: "Deleted user"
             }
         })
         .catch((error) => {
             throw {
                 success: false,
-                message: "Failed to delete User",
+                message: "Failed to delete user",
                 error: error.message
             }
         })
@@ -275,7 +282,7 @@ const getFollowing = (session, walletAddress) => { // Returns list of Users foll
             console.log(error)
             throw {
                 success: false,
-                message: "Failed to get followed Users",
+                message: "Failed to get followed users",
                 error: error.message
             }
         });
@@ -296,7 +303,7 @@ const getFollowers = (session, walletAddress) => { // Returns list of Users foll
         .catch((error) => {
             throw {
                 success: false,
-                message: "Failed to get following Users",
+                message: "Failed to get following users",
                 error: error.message
             }
         })
