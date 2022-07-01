@@ -27,8 +27,6 @@ class Notifications extends React.Component {
       this.props.getNotifications(this.props.loggedInUser.walletAddress)
     }
     if (prevProps.notifications !== this.props.notifications) {
-      // console.log(this.props.notifications)
-      // console.log(this.props.unreadStatus)
       this.categorise(this.props.notifications)
       this.props.setHasUnread(this.props.unreadStatus)
     }

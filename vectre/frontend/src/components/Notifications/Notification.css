@@ -45,14 +45,15 @@
     cursor: pointer;
 }
 
-.notif-message {
-    justify-content: center;
+.notif-tag {
     align-items: center;
     background: var(--boxBg);
     border-radius: 6px;
     width: 285px;
     user-select: none;
     font-size: 12px;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 .notif-icon {
