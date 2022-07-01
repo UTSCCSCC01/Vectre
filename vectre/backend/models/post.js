@@ -200,6 +200,29 @@ const getPostByID = function (session, postID) {
         });
 }
 
+// returns true if there is already a like
+const checkIfAlreadyLiked = function (session, postID, body) {
+    const query = [
+        `MATCH (u:User{walletAddress: '${body.walletAddress}'})-[r:LIKED]->(p:Post{postID:'${postID}'})`,
+        `RETURN r`
+    ].join('\n');
+
+    return session.run(query)
+        .then((result) => {
+            return {
+                success: true,
+                alreadyLiked: !_.isEmpty(result.records)
+            }
+        })
+        .catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to check if post was already liked",
+                error: error
+            }
+        });
+}
+
 const likePost = function (session, postID, body) {
     if (!body.walletAddress) {
         throw {
@@ -217,11 +240,27 @@ const likePost = function (session, postID, body) {
         `MERGE (u)-[r:LIKED]->(p)`
     ].join('\n');
 
-    return session.run(query)
+    return checkIfAlreadyLiked(session, postID, body)
         .then((result) => {
+            if (!result.alreadyLiked) {
+                return session.run(query)
+                    .then((result) => {
+                        return {
+                            success: true,
+                            message: "Successfully liked Post"
+                        }
+                    })
+                    .catch((error) => {
+                        throw {
+                            success: false,
+                            message: "Failed to like Post",
+                            error: error
+                        }
+                    });
+            }
             return {
-                success: true,
-                message: "Successfully liked Post"
+                success: false,
+                message: "Post was already liked",
             }
         })
         .catch((error) => {
@@ -230,7 +269,7 @@ const likePost = function (session, postID, body) {
                 message: "Failed to like Post",
                 error: error
             }
-        });
+        })
 };
 
 const unlikePost = function (session, postID, body) {
@@ -246,11 +285,27 @@ const unlikePost = function (session, postID, body) {
         `DELETE r`
     ].join('\n');
 
-    return session.run(query)
+    return checkIfAlreadyLiked(session, postID, body)
         .then((result) => {
+            if (result.alreadyLiked) {
+                return session.run(query)
+                    .then((result) => {
+                        return {
+                            success: true,
+                            message: "Successfully unliked Post"
+                        }
+                    })
+                    .catch((error) => {
+                        throw {
+                            success: false,
+                            message: "Failed to unlike Post",
+                            error: error
+                        }
+                    });
+            }
             return {
-                success: true,
-                message: "Successfully unliked Post"
+                success: false,
+                message: "Post was not already liked",
             }
         })
         .catch((error) => {
@@ -259,7 +314,7 @@ const unlikePost = function (session, postID, body) {
                 message: "Failed to unlike Post",
                 error: error
             }
-        });
+        })
 };
 
 const getLikesOnPost = function (session, postID) {
