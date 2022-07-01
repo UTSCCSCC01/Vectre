@@ -13,6 +13,8 @@ import {
     GET_NOTIFICATIONS,
     STORE_NOTIFICATIONS,
     STORE_UNREADSTATUS,
+    FOLLOW_USER,
+    UNFOLLOW_USER,
 } from "../constants/users";
 
 // Login
@@ -63,11 +65,10 @@ export const createUser = (user, redirectWindow) => ({
     redirectWindow
 })
 
-export const updateUser = (walletAddress, updatedUser, redirectWindow) => ({
+export const updateUser = (walletAddress, updatedUser) => ({
     type: UPDATE_USER,
     walletAddress,
-    updatedUser,
-    redirectWindow
+    updatedUser
 })
 
 export const getNotifications = (walletAddress) => ({
@@ -83,4 +84,13 @@ export const storeNotifications = (notifications) => ({
 export const storeUnreadStatus = (unreadStatus) => ({
     type: STORE_UNREADSTATUS,
     unreadStatus
+})
+
+export const followUser = (walletAddressToFollow,) => ({
+    type: FOLLOW_USER,
+    walletAddressToFollow
+})
+export const unfollowUser = (walletAddressToUnfollow) => ({
+    type: UNFOLLOW_USER,
+    walletAddressToUnfollow
 })

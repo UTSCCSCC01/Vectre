@@ -8,7 +8,11 @@ export const USERS = {
     GET_USERS: "/users",
     CREATE_USER: "/users/register",
     UPDATE_USER: "/users/{walletAddress}/update",
-    GET_NOTIFICATIONS: "/users/{walletAddress}/notifications"
+
+    FOLLOW_USER: "/users/{walletAddress}/follow",
+    UNFOLLOW_USER: "/users/{walletAddress}/unfollow",
+
+    GET_NOTIFICATIONS: "/users/{walletAddress}/notifications",
 }
 
 export const NOTIF = {
