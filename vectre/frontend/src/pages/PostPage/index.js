@@ -43,7 +43,7 @@ const PostPage = () => {
                                 <PostCommentsComponent comments={comments} />
                             </>
                         ) : (
-                            <Box>The post with postID {postID} does not exist.</Box>
+                            <Box>Post does not exist!</Box>
                         )
                     }
                 </Stack>
