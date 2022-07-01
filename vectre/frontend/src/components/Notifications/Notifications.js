@@ -19,7 +19,6 @@ class Notifications extends React.Component {
   }
 
   componentDidMount() {
-    this.props.getLoggedInUser()
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
