@@ -1,6 +1,12 @@
 import { all } from 'redux-saga/effects';
 import usersSaga from "./users";
 
+export default function* root() {
+    yield all([ // Insert sagas
+        usersSaga()
+    ]);
+}
+
 const headers = {
     'Content-Type': 'application/json',
     'Accepts-Type': 'application/json',
@@ -34,11 +40,4 @@ export const putRequest = (url, data) => {
     })
         .then(response => Promise.all([response, response.json()]))
         .catch(error => { throw error })
-}
-
-export default function* root() {
-  yield all([
-      // insert sagas
-      usersSaga()
-  ]);
 }

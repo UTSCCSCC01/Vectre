@@ -30,7 +30,8 @@ router.get('/:walletAddress/posts', (req, res, next) => {
 
 // POST /users/register
 router.post('/register', (req, res) => {
-    User.register(dbUtils.getSession(req), req.body)
+    const setTokenInCookie = (token) => { res.cookie('token', token, { maxAge: 1000 * 60 * 60 * 24 * 7, httpOnly: true }) } // Expires in 7 days
+    User.register(dbUtils.getSession(req), req.body, setTokenInCookie)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
@@ -91,5 +92,30 @@ router.delete('/:walletAddress/delete', authenticateToken, (req, res) => {
         })
     }
 })
+
+// GET /users/{walletAddress}/following
+router.get('/:walletAddress/following', (req, res, next) => {
+    User.getFollowing(dbUtils.getSession(req), req.params.walletAddress)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+});
+// GET /users/{walletAddress}/followers
+router.get('/:walletAddress/followers', (req, res, next) => {
+    User.getFollowers(dbUtils.getSession(req), req.params.walletAddress)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+});
+// POST /users/{walletAddressToFollow}/follow
+router.post('/:walletAddressToFollow/follow', authenticateToken, (req, res, next) => {
+    User.follow(dbUtils.getSession(req), req.walletAddress, req.params.walletAddressToFollow)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+});
+// POST /users/{walletAddressToUnfollow}/unfollow
+router.post('/:walletAddressToUnfollow/unfollow', authenticateToken, (req, res, next) => {
+    User.unfollow(dbUtils.getSession(req), req.walletAddress, req.params.walletAddressToUnfollow)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+});
 
 module.exports = router;

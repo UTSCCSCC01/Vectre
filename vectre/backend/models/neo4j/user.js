@@ -7,6 +7,8 @@ const User = module.exports = function (_node) {
         "username": _node.properties["username"],
         "name": _node.properties["name"],
         "bio": _node.properties["bio"],
-        "nonce": _node.properties["nonce"]
+        "nonce": _node.properties["nonce"],
+        "following": [],
+        "followers": [],
     })
 }
