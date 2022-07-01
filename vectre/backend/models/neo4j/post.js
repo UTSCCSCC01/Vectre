@@ -8,6 +8,6 @@ const Post = module.exports = function (_node) {
         "imageURL": _node.properties["imageURL"] ? _node.properties["imageURL"] : null,
         "edited": _node.properties["edited"],
         "timestamp": _node.properties["timestamp"],
-        "likes": 0
+        "likes": _node.properties["likes"]
     })
 };
