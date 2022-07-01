@@ -7,7 +7,7 @@ const { authenticateToken } = require("../utils/auth");
 const { rest } = require('lodash');
 
 // POST /posts/create
-router.post('/create', (req, res, next) => {
+router.post('/create', authenticateToken, (req, res, next) => {
     Post.createUserPost(dbUtils.getSession(req), req.body)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
@@ -28,7 +28,7 @@ router.post('/:postID/update', authenticateToken, (req, res, next) => {
 })
 
 // GET /posts/:walletAddress/feed
-router.get('/:walletAddress/feed', (req, res, next) => {
+router.get('/:walletAddress/feed', authenticateToken, (req, res, next) => {
     const walletAddress = req.params.walletAddress
     const start = req.body.start? req.body.start : 0;
     const size = req.body.size? req.body.size : 10;
