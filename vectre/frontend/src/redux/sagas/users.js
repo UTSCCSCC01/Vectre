@@ -49,13 +49,10 @@ function* loginUser(action) {
 function* getLoggedInUser() {
     try {
         const response = yield call(getRequest, BASE_API_URL + USERS.GET_LOGGED_IN_USER), responseData = response[1]
-        if (responseData.success) {
+        if (responseData.success)
             yield put(storeLoggedInUser(responseData.user))
-        } else { // TODO: Show error message
-            console.log(responseData.message)
-        }
     } catch (error) {
-        console.log(error)
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get current logged in user"))
     }
 }
 
@@ -64,10 +61,11 @@ function* getUser(action) {
         const response = yield call(getRequest, BASE_API_URL + USERS.GET_USERS + `/${action.walletAddress}`), responseData = response[1]
         if (responseData.success) {
             yield put(storeUser(responseData.user))
-        } else { // TODO: Show error message
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }
     } catch (error) {
-        console.log(error)
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get user"))
     }
 }
 function* getUsers() {
@@ -75,35 +73,40 @@ function* getUsers() {
         const response = yield call(getRequest, BASE_API_URL + USERS.GET_USERS), responseData = response[1]
         if (responseData.success) {
             yield put(storeUsers(responseData.users))
-        } else { // TODO: Show error message
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }
     } catch (error) {
-        console.log(error)
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get users"))
     }
 }
 
 function* createUser(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + USERS.CREATE_USER, action.user), responseData = response[1]
-        if (responseData.success) { // TODO: Show toast success message
+        if (responseData.success) {
             yield put(getCreate(responseData))
+            yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
             if (action.redirectWindow) yield put(action.redirectWindow("/home"))
-        } else { // TODO: Show toast error message
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }
     } catch (error) {
-        console.log(error)
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to create user"))
     }
 }
 
 function* updateUser(action) {
     try {
         const response = yield call(putRequest, BASE_API_URL + USERS.UPDATE_USER.replace("{walletAddress}", action.walletAddress), action.updatedUser), responseData = response[1]
-        if (responseData.success) { // TODO: Show toast success message
+        if (responseData.success) {
+            yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
             if (action.redirectWindow) yield put(action.redirectWindow(`/user/${action.walletAddress}`))
-        } else { // TODO: Show toast error message
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }
     } catch (error) {
-        console.log(error)
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to update user"))
     }
 }
 
@@ -117,18 +120,20 @@ function* followUser(action) {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }
     } catch (error) {
-        console.log(error)
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to follow user"))
     }
 }
 function* unfollowUser(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + USERS.UNFOLLOW_USER.replace("{walletAddress}", action.walletAddressToUnfollow), {}), responseData = response[1]
-        if (responseData.success) { // TODO: Show toast success message
+        if (responseData.success) {
+            yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
             if (action.redirectWindow) yield put(action.redirectWindow(`/user/${action.walletAddressToUnfollow}`))
-        } else { // TODO: Show toast error message
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }
     } catch (error) {
-        console.log(error)
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to unfollow user"))
     }
 }
 
