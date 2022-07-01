@@ -54,12 +54,12 @@ class Notifications extends React.Component {
   makeNotification(notification) {
     return(
       <Notification
-        fromUser={notification.fromUser}
-        action={notification.action}
-        read={notification.read}
-        link={notification.link}
         key={notification.notificationID}
         notificationID={notification.notificationID}
+        fromUser={notification.fromUser}
+        action={notification.action}
+        postID={notification.postID}
+        read={notification.read}
       />
     )
   }
