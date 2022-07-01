@@ -3,7 +3,7 @@ var router = express.Router();
 
 const dbUtils = require('../utils/neo4j/dbUtils');
 const Post = require('../models/post');
-const { authenticateToken } = require("../utils/auth");
+const { authenticateToken, storeWalletAddressFromToken } = require("../utils/auth");
 const { rest } = require('lodash');
 
 // POST /posts/create
@@ -35,15 +35,22 @@ router.post('/:postID/update', authenticateToken, (req, res, next) => {
 })
 
 // GET /posts/{postID}
-router.get('/:postID', (req, res, next) => {
-    Post.getPostByID(dbUtils.getSession(req), req.params.postID, req.body)
+router.get('/:postID', storeWalletAddressFromToken, (req, res, next) => {
+    Post.getPostByID(dbUtils.getSession(req), req.walletAddress, req.params.postID)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
 
 // GET /posts/{postID}/comments
-router.get('/:postID/comments', (req, res, next) => {
-    Post.getCommentsByPost(dbUtils.getSession(req), req.params.postID, req.body)
+router.get('/:postID/comments', storeWalletAddressFromToken, (req, res, next) => {
+    Post.getCommentsByPost(dbUtils.getSession(req), req.walletAddress, req.params.postID)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
+
+// GET /posts/{postID}/checkLike
+router.get('/:postID/checkLike', authenticateToken, (req, res, next) => {
+    Post.checkIfAlreadyLiked(dbUtils.getSession(req), req.params.postID, req.body)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })

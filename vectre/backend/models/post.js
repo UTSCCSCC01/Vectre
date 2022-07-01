@@ -135,11 +135,12 @@ const getPostsByUser = function (session, walletAddress) {
         });
 }
 
-const getCommentsByPost = function (session, postID) {
+const getCommentsByPost = function (session, walletAddress, postID) {
     const query = [
         `MATCH (:Post {postID:'${postID}'})<-[:COMMENTED_ON]-(comment:Post)<-[:POSTED]-(author:User)`,
+        `OPTIONAL MATCH (user:User{walletAddress:"${walletAddress}"})-[l:LIKED]->(comment)`,
         `WHERE comment.author = author.walletAddress`,
-        `RETURN DISTINCT author, comment`,
+        `RETURN DISTINCT author, comment, count(l) AS likes`,
         `ORDER BY comment.timestamp DESC`
     ].join('\n');
 
@@ -149,6 +150,7 @@ const getCommentsByPost = function (session, postID) {
             results.records.forEach((record) => {
                 let commentRecord = new Post(record.get('comment'))
                 commentRecord.author = new User(record.get('author'))
+                commentRecord.alreadyLiked = record.get('likes').low > 0 ? true : false;
                 comments.push(commentRecord)
             })
             return {
@@ -164,7 +166,7 @@ const getCommentsByPost = function (session, postID) {
         });
 }
 
-const getPostByID = function (session, postID) {
+const getPostByID = function (session, walletAddress, postID) {
     const query = [
         `MATCH (author:User)-[:POSTED]->(post:Post {postID:'${postID}'})`,
         `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
@@ -187,6 +189,31 @@ const getPostByID = function (session, postID) {
                 post.community = "notarealcommunity";
             }
 
+            if (walletAddress !== null) {
+                return checkIfAlreadyLiked(session, postID, { walletAddress: walletAddress })
+                    .then((result) => {
+                        if (result.alreadyLiked) {
+                            post.alreadyLiked = true;
+                            return {
+                                success: true,
+                                post: post
+                            }
+                        }
+                        post.alreadyLiked = false;
+                        return {
+                            success: true,
+                            post: post
+                        }
+                    })
+                    .catch((error) => {
+                        throw {
+                            success: false,
+                            message: "Failed to check if post was already liked",
+                            error: error
+                        }
+                    })
+            }
+            post.alreadyLiked = false;
             return {
                 success: true,
                 post: post
@@ -352,5 +379,6 @@ module.exports = {
     getCommentsByPost,
     likePost,
     unlikePost,
-    getLikesOnPost
+    getLikesOnPost,
+    checkIfAlreadyLiked
 };
