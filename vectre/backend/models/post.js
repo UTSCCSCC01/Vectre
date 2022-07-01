@@ -3,24 +3,21 @@ const Post = require('./neo4j/post')
 const User = require('./neo4j/user')
 const { nano } = require('../utils/Utils')
 
-const createUserPost = function (session, body) {
-    if (!body.author || !body.text) {
+const createUserPost = function (session, authorWalletAddress, body) {
+    if (!body.text) {
         throw {
             success: false,
-            message: 'Invalid post properties'
+            message: 'Post must contain text field'
         }
     }
     const postID = nano()
     const date = new Date().toISOString()
-
-    // imageURL is optional on a post
-    const possibleImageString = body.imageURL ? `, imageURL: '${body.imageURL}'` : "";
-
+    const imageString = body.imageURL ? `, imageURL: '${body.imageURL}'` : ""; // imageURL is optional on a post
     const query = [
-        `CREATE (p:Post {postID: '${postID}', text: '${body.text}', author: '${body.author}', edited: false, timestamp: '${date}', likes: 0, parent: null ${possibleImageString}})`,
+        `CREATE (p:Post {postID: '${postID}', text: '${body.text}', author: '${authorWalletAddress}', edited: false, timestamp: '${date}', likes: 0, parent: null ${imageString}})`,
         `WITH (p)`,
         `MATCH (u:User)`,
-        `WHERE u.walletAddress = '${body.author}'`,
+        `WHERE u.walletAddress = '${authorWalletAddress}'`,
         `CREATE (u)-[r:POSTED]->(p)`
     ].join('\n');
 
@@ -40,8 +37,8 @@ const createUserPost = function (session, body) {
         });
 };
 
-const createUserComment = function (session, postID, body) {
-    if (!body.author || !body.text) {
+const createUserComment = function (session, authorWalletAddress, postID, body) {
+    if (!body.text) {
         throw {
             success: false,
             message: 'Invalid comment properties'
@@ -50,10 +47,10 @@ const createUserComment = function (session, postID, body) {
     const commentPostID = nano()
     const date = new Date().toISOString()
     const query = [
-        `CREATE (p:Post {postID: '${commentPostID}', text: '${body.text}', author: '${body.author}', edited: false, timestamp: '${date}', parent: '${postID}', likes: 0})`,
+        `CREATE (p:Post {postID: '${commentPostID}', text: '${body.text}', author: '${authorWalletAddress}', edited: false, timestamp: '${date}', parent: '${postID}', likes: 0})`,
         `WITH (p)`,
         `MATCH (u:User), (parent:Post)`,
-        `WHERE u.walletAddress = '${body.author}' AND parent.postID = '${postID}'`,
+        `WHERE u.walletAddress = '${authorWalletAddress}' AND parent.postID = '${postID}'`,
         `CREATE (u)-[r:POSTED]->(p), (p)-[r2:COMMENTED_ON]->(parent)`
     ].join('\n');
 
@@ -73,17 +70,18 @@ const createUserComment = function (session, postID, body) {
         });
 };
 
-const update = function (session, postID, body) {
-    if (!body.author || !body.text || !body.imageURL) {
+const update = function (session, walletAddress, postID, body) {
+    if (!body.text) {
         throw {
             success: false,
-            message: 'Invalid post properties'
+            message: 'Post must contain a text field'
         }
     }
     const date = new Date().toISOString()
+    const imageString = body.imageURL ? `, p.imageURL = '${body.imageURL}'` : ""; // imageURL is optional on a post
     const query = [
         `MATCH (p:Post {postID: '${postID}'})`,
-        `SET p.text = '${body.text}', p.imageURL = '${body.imageURL}', p.edited = true, p.timestamp = '${date}'`,
+        `SET p.text = '${body.text}' ${imageString}, p.edited = true, p.timestamp = '${date}'`,
         `RETURN p`
     ].join('\n');
 
@@ -94,11 +92,17 @@ const update = function (session, postID, body) {
                     success: false,
                     message: "Post does not exist"
                 }
+            } else if (new Post(result.records[0].get('p')).author !== walletAddress) {
+                throw {
+                    success: false,
+                    message: "You do not have access to update this Post"
+                }
+            } else {
+                return {
+                    success: true,
+                    message: "Successfully updated post"
+                };
             }
-            return {
-                success: true,
-                message: "Successfully updated post"
-            };
         })
         .catch((error) => {
             throw {
