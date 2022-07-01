@@ -107,13 +107,13 @@ const repostPost = function(session, body) {
         }
     }
     const postID = nanoid()
-    const timestamp = new Date()/toISOString()
+    const timestamp = new Date().toISOString()
     const { author, text, imageURL, post } = body;
     const query = [
         `CREATE (p:Post {postID: '${postID}', text: '${text}', imageURL: '${imageURL}', author: '${author}', edited: false, timestamp: '${timestamp}', isRepost: true, repostID: '${post.postID}', repostAuthor: '${post.author}', repostText: '${post.text}', repostImageURL: '${post.imageURL}', repostEdited: ${post.edited}, repostTimestamp: '${post.timestamp}'})`,
         `WITH (p)`,
         `MATCH (u:User)`,
-        `WHERE u.walletAddress = '${body.author}'`,
+        `WHERE u.walletAddress = '${author}'`,
         `CREATE (u)-[r:POSTED]->(p)`
     ].join('\n');
     
