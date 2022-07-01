@@ -1,13 +1,18 @@
 import React from 'react'
-import { Flex, Spacer, Box } from '@chakra-ui/react'
+import { Flex, Spacer, Box, chakra } from '@chakra-ui/react'
 import './Notification.css'
 import { FaCommentAlt } from 'react-icons/fa'
 import { ImUserPlus } from 'react-icons/im'
 import { ReactComponent as LikeIcon } from '../../assets/icons/like-icon.svg'
 
-export default class Notification extends React.Component {
+// Redux
+import { connect } from "react-redux";
+import { readNotification } from "../../redux/actions/notification";
+
+class Notification extends React.Component {
   constructor(props) {
     super(props)
+    this.id = props.notificationID
     this.fromUser = props.fromUser
     this.action = props.action
     this.link = props.link
@@ -20,30 +25,37 @@ export default class Notification extends React.Component {
   formatMessage() {
     let messageEnd = undefined
     switch (this.action) {
-      case 'liked':
+      case 'like':
         this.icon = <LikeIcon/>
-        messageEnd = "your post."
+        messageEnd = "liked your post."
         break
-      case 'commented':
+      case 'comment':
         this.icon = <FaCommentAlt/>
-        messageEnd = "on your post."
+        messageEnd = "commented on your post."
         break
-      case 'followed':
+      case 'follow':
         this.icon = <ImUserPlus/>
-        messageEnd = "you."
+        messageEnd = "followed you."
         break
       default:
         this.icon = "icon"
         messageEnd = ""
     }
-    this.message = <><b>{this.fromUser}</b> {this.action} {messageEnd}</>
+    this.message = <><b>{this.fromUser}</b> {messageEnd}</>
+  }
+
+  handleRead = () => {
+    this.props.readNotification(this.id)
   }
 
   render() {
     return(
-      <Box className={'notif-box'} _hover={{bg: "rgba(200, 200, 200, 0.3)"}}
-          as='a' href={this.link}>
-        <Flex className='notif-icon'>{this.icon}</Flex>
+      <Box className={'notif-box'} _hover={{bg: "rgba(200, 200, 200, 0.3)", borderRadius: "6px"}}
+          as='a' href={this.link} onClick={this.handleRead}>
+        <Flex className='notif-icon' position='relative'>
+          {this.icon} 
+          {!this.read && <chakra.span className='unread-small-marker' rounded='full'></chakra.span>}
+        </Flex>
         <Spacer />
         <Flex className='notif-message'>
           <p>{this.message}</p>
@@ -52,3 +64,14 @@ export default class Notification extends React.Component {
     )
   }
 }
+
+const actionCreators = {
+  readNotification
+}
+
+const mapStateToProps = (state, ownProps) => ({})
+
+export default connect(
+  mapStateToProps,
+  actionCreators
+)(Notification);

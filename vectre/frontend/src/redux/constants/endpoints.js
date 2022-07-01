@@ -8,4 +8,9 @@ export const USERS = {
     GET_USERS: "/users",
     CREATE_USER: "/users/register",
     UPDATE_USER: "/users/{walletAddress}/update",
+    GET_NOTIFICATIONS: "/users/{walletAddress}/notifications"
+}
+
+export const NOTIF = {
+    READ_NOTIFICATION: "/notifications/{notificationID}/read"
 }

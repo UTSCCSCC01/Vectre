@@ -60,7 +60,7 @@
     width: 36px;
 }
 
-.unread-marker {
+.unread-big-marker {
     position: absolute;
     background-color: red;
     top: -1px;
@@ -69,4 +69,13 @@
     height: 10px;
     padding: 4px;
     transform: translate(-30%, 30%);
+}
+
+.unread-small-marker {
+    position: absolute;
+    background-color: red;
+    top: 1px;
+    right: 1px;
+    padding: 4px;
+    /* transform: translate(-30%, 30%); */
 }

@@ -1,7 +1,14 @@
 import React, { useState } from 'react'
-import { IconButton, PopoverTrigger, Flex, chakra } from '@chakra-ui/react'
+import { IconButton, 
+  PopoverTrigger, 
+  Flex, 
+  chakra, 
+  Popover, 
+  PopoverContent,
+  PopoverHeader, 
+  Portal 
+} from '@chakra-ui/react'
 import { MdNotificationsActive } from 'react-icons/md'
-import { Popover, PopoverContent, PopoverHeader, Portal } from '@chakra-ui/react'
 import Notifications from './Notifications'
 import './Notification.css'
 
@@ -17,12 +24,11 @@ export default function NotificationPopover() {
           isRound={'true'}
           bg={'white'}
           _focus={{ outline: 0 }}
-          onClick={() => console.log(hasUnread)}
           icon={
             <>
             <MdNotificationsActive size="1.5rem" />
             { hasUnread && 
-            <chakra.span className="unread-marker" rounded="full" >
+            <chakra.span className="unread-big-marker" rounded="full" >
               </chakra.span>}
             </>
           }

@@ -5,6 +5,8 @@ import {
     storeLoginNonce,
     storeLoggedInUser,
     storeUser,
+    storeNotifications,
+    storeUnreadStatus
 } from "../actions/users";
 import {
     GET_LOGIN_NONCE,
@@ -14,6 +16,7 @@ import {
     GET_LOGGED_IN_USER,
     CREATE_USER,
     UPDATE_USER,
+    GET_NOTIFICATIONS,
 } from "../constants/users";
 import {
     BASE_API_URL,
@@ -103,6 +106,19 @@ function* updateUser(action) {
     }
 }
 
+function* getNotifications(action) {
+    try {
+        const response = yield call(getRequest, BASE_API_URL + USERS.GET_NOTIFICATIONS.replace("{walletAddress}", action.walletAddress)), responseData = response[1]
+        if (responseData.success) { // TODO: Show toast success message
+            yield put(storeNotifications(responseData.notifications))
+            yield put(storeUnreadStatus(responseData.unread))
+        } else { // TODO: Show toast error message
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 function* usersSaga() {
     yield takeLatest(GET_LOGIN_NONCE, getLoginNonce)
     yield takeLatest(LOGIN_USER, loginUser)
@@ -111,6 +127,7 @@ function* usersSaga() {
     yield takeLatest(GET_USERS, getUsers)
     yield takeLatest(CREATE_USER, createUser)
     yield takeLatest(UPDATE_USER, updateUser)
+    yield takeLatest(GET_NOTIFICATIONS, getNotifications)
 }
 
 export default usersSaga

@@ -1,4 +1,5 @@
 import { all } from 'redux-saga/effects';
+import notificationSaga from './notification';
 import usersSaga from "./users";
 
 const headers = {
@@ -39,6 +40,7 @@ export const putRequest = (url, data) => {
 export default function* root() {
   yield all([
       // insert sagas
-      usersSaga()
+      usersSaga(),
+      notificationSaga()
   ]);
 }

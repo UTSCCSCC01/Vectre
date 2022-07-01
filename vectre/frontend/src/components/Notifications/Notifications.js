@@ -3,38 +3,13 @@ import React from 'react'
 import Notification from './Notification'
 import './Notification.css'
 
-const sampleNotifications = [
-  {
-    fromUser: "@johnny",
-    action: "liked",
-    timestamp: "2022-06-22T21:12:57.000Z",
-    read: true,
-    link: "https://google.com/notif1"
-  },
-  {
-    fromUser: "@Peter",
-    action: "commented",
-    timestamp: "2022-06-22T21:12:57.000Z",
-    read: true,
-    link: "https://google.com/notif2"
-  },
-  {
-    fromUser: "@Peter",
-    action: "commented",
-    timestamp: "2022-06-22T21:12:57.000Z",
-    read: true,
-    link: "https://google.com/notif3"
-  },
-  {
-    fromUser: "@Peter",
-    action: "followed",
-    timestamp: "2022-06-22T21:12:57.000Z",
-    read: true,
-    link: "https://google.com/notif4"
-  }
-]
+// Redux
+import PropTypes from 'prop-types';
+import { connect } from "react-redux";
+import { getLoggedInUser, getNotifications } from "../../redux/actions/users";
+import { loggedInUserSelector, notificationsSelector, unreadStatusSelector } from "../../redux/selectors/users";
 
-export default class Notifications extends React.Component {
+class Notifications extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -42,28 +17,39 @@ export default class Notifications extends React.Component {
       past: [],
     }
   }
+
+  componentDidMount() {
+    this.props.getLoggedInUser()
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (prevProps.loggedInUser !== this.props.loggedInUser) {
+      this.props.getNotifications(this.props.loggedInUser.walletAddress)
+    }
+    if (prevProps.notifications !== this.props.notifications) {
+      // console.log(this.props.notifications)
+      // console.log(this.props.unreadStatus)
+      this.categorise(this.props.notifications)
+      this.props.setHasUnread(this.props.unreadStatus)
+    }
+  }
   
-  catagorise(allNotifications) {
+  categorise(allNotifications) {
     // reset the state before catagorise
-    // this.setState( { recent:[], past: []} )
-    this.state.past = []
-    this.state.recent = []
+    this.setState( { recent:[], past: []} )
 
     const currentTime = new Date()
-    for (let n of allNotifications) {
-      // Update the unRead state
-      if (!n.read) {
-        this.props.setHasUnread(true)
-      }
+    allNotifications.map(n => {
       // Calculate time difference.
+      // TODO: use utils method to calculate hour difference
       let notifTime = new Date(n.timestamp)
       let hoursDif = (currentTime - notifTime) / (1000 * 3600)
       if (hoursDif <= 24) {
-        this.state.recent.push(n)
+        this.setState({ recent: [...this.state.recent, n] })
       } else {
-        this.state.past.push(n)
+        this.setState({ past: [...this.state.past, n] })
       }
-    }
+    })
   }
   
   makeNotification(notification) {
@@ -72,13 +58,15 @@ export default class Notifications extends React.Component {
         action={notification.action}
         read={notification.read}
         link={notification.link}
+        key={notification.notificationID}
+        notificationID={notification.notificationID}
       />
     )
   }
 
   render() {
     // Use `sampleNotifications` temporary
-    this.catagorise(sampleNotifications)
+    //this.categorise(sampleNotifications)
 
     return (
       
@@ -110,3 +98,28 @@ export default class Notifications extends React.Component {
     )
   }
 }
+
+const actionCreators = {
+  getLoggedInUser,
+  getNotifications
+}
+const mapStateToProps = (state, ownProps) => ({
+  loggedInUser: loggedInUserSelector(state),
+  notifications: notificationsSelector(state),
+  unreadStatus: unreadStatusSelector(state)
+})
+Notifications.propTypes = {
+  loggedInUser: PropTypes.object,
+  notifications: PropTypes.array,
+  unreadStatus: PropTypes.bool
+}
+Notifications.defaultProps = {
+  loggedInUser: {},
+  notifications: [],
+  unreadStatus: false
+}
+
+export default connect(
+  mapStateToProps,
+  actionCreators
+)(Notifications);
