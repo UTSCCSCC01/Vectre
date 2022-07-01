@@ -6,6 +6,8 @@
     border-radius : sm;
     width : 389px;
     height : 60vh;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .header {
@@ -39,7 +41,7 @@
 
 .notif-box {
     display: inline-flex;
-    height: 36px;
+    height: 42px;
     cursor: pointer;
 }
 
@@ -48,8 +50,9 @@
     align-items: center;
     background: var(--boxBg);
     border-radius: 6px;
-    width: 215px;
+    width: 285px;
     user-select: none;
+    font-size: 12px;
 }
 
 .notif-icon {
@@ -57,7 +60,7 @@
     align-items: center;
     background: var(--boxBg);
     border-radius: 6px;
-    width: 36px;
+    width: 42px;
 }
 
 .unread-big-marker {
@@ -74,8 +77,7 @@
 .unread-small-marker {
     position: absolute;
     background-color: red;
-    top: 1px;
-    right: 1px;
+    top: -2px;
+    right: -2px;
     padding: 4px;
-    /* transform: translate(-30%, 30%); */
 }

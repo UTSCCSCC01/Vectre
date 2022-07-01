@@ -35,21 +35,22 @@ class Notifications extends React.Component {
   }
   
   categorise(allNotifications) {
-    // reset the state before catagorise
-    this.setState( { recent:[], past: []} )
+    let r = []
+    let p = []
 
     const currentTime = new Date()
-    allNotifications.map(n => {
+    allNotifications.forEach(n => {
       // Calculate time difference.
       // TODO: use utils method to calculate hour difference
       let notifTime = new Date(n.timestamp)
       let hoursDif = (currentTime - notifTime) / (1000 * 3600)
       if (hoursDif <= 24) {
-        this.setState({ recent: [...this.state.recent, n] })
+        r.push(n)
       } else {
-        this.setState({ past: [...this.state.past, n] })
+        p.push(n)
       }
     })
+    this.setState({ recent: r, past: p})
   }
   
   makeNotification(notification) {
@@ -65,9 +66,6 @@ class Notifications extends React.Component {
   }
 
   render() {
-    // Use `sampleNotifications` temporary
-    //this.categorise(sampleNotifications)
-
     return (
       
       <Box display={'table-column'} px={'30px'} pt={'7px'} pb={'25px'} 

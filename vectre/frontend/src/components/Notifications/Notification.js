@@ -1,7 +1,7 @@
 import React from 'react'
 import { Flex, Spacer, Box, chakra } from '@chakra-ui/react'
 import './Notification.css'
-import { FaCommentAlt } from 'react-icons/fa'
+import { FaCommentAlt, FaHeart } from 'react-icons/fa'
 import { ImUserPlus } from 'react-icons/im'
 import { ReactComponent as LikeIcon } from '../../assets/icons/like-icon.svg'
 
@@ -26,15 +26,15 @@ class Notification extends React.Component {
     let messageEnd = undefined
     switch (this.action) {
       case 'like':
-        this.icon = <LikeIcon/>
+        this.icon = <FaHeart size={"18px"}/>
         messageEnd = "liked your post."
         break
       case 'comment':
-        this.icon = <FaCommentAlt/>
+        this.icon = <FaCommentAlt size={"18px"}/>
         messageEnd = "commented on your post."
         break
       case 'follow':
-        this.icon = <ImUserPlus/>
+        this.icon = <ImUserPlus size={"22px"}/>
         messageEnd = "followed you."
         break
       default:

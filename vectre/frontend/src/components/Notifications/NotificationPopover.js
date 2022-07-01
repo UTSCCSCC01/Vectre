@@ -36,7 +36,7 @@ export default function NotificationPopover() {
         </IconButton>
       </PopoverTrigger>
       <Portal>
-        <PopoverContent className="popover" color='primary.400'>
+        <PopoverContent className="popover" color='primary.400' w={'400px'} mx={'75px'}>
           <PopoverHeader border='0' alignItems={'center'} justifyContent={'center'} display={'inline-flex'}>
             <Flex className="header" flexDir={'row'}>
               <p>Notifications</p>
