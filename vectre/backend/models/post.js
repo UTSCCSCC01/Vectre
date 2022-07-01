@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const Post = require('./neo4j/post')
+const User = require('./neo4j/user')
 
 const createUserPost = function (session, body) {
     if (!body.author || !body.text || !body.imageURL || !body.timestamp) {
@@ -9,7 +10,7 @@ const createUserPost = function (session, body) {
         }
     }
     const query = [
-        `CREATE (p:Post {postID: '${body.author + body.timestamp}', text: '${body.text}', imageURL: '${body.imageURL}', author: '${body.author}', edited: '${body.edited}', timestamp: '${body.timestamp}', parent: NULL})`,
+        `CREATE (p:Post {postID: '${body.author + body.timestamp}', text: '${body.text}', imageURL: '${body.imageURL}', author: '${body.author}', edited: '${body.edited}', timestamp: '${body.timestamp}', parent: NULL, likes: 0})`,
         `WITH (p)`,
         `MATCH (u:User)`,
         `WHERE u.walletAddress = '${body.author}'`,
@@ -151,11 +152,102 @@ const getCommentsByPost = function (session, postID) {
         });
 }
 
+const likePost = function (session, body) {
+    if (!body.postID || !body.walletAddress || !body.timestamp) {
+        throw {
+            success: false,
+            message: 'Invalid properties in request body'
+        }
+    }
+    const query = [
+        `MATCH (p:Post)`,
+        `WHERE p.postID = '${body.postID}'`,
+        `SET p.likes = p.likes + 1`,
+        `WITH (p)`,
+        `MATCH (u:User)`,
+        `WHERE u.walletAddress = '${body.walletAddress}'`,
+        `CREATE (u)-[r:LIKED {timestamp: '${body.timestamp}'}]->(p)`
+    ].join('\n');
+
+    return session.run(query)
+        .then((result) => {
+            return {
+                success: true,
+                message: "Successfully liked Post"
+            }
+        })
+        .catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to like Post",
+                error: error
+            }
+        });
+};
+
+const unlikePost = function (session, body) {
+    if (!body.postID || !body.walletAddress) {
+        throw {
+            success: false,
+            message: 'Invalid properties in request body'
+        }
+    }
+    const query = [
+        `MATCH (u:User {walletAddress: '${body.walletAddress}'})-[r:LIKED]->(p: Post {postID: '${body.postID}'})`,
+        `SET p.likes = p.likes - 1`,
+        `DELETE r`
+    ].join('\n');
+
+    return session.run(query)
+        .then((result) => {
+            return {
+                success: true,
+                message: "Successfully unliked Post"
+            }
+        })
+        .catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to unlike Post",
+                error: error
+            }
+        });
+};
+
+const getLikesOnPost = function (session, postID) {
+    const query = [
+        `MATCH (u:User )-[r:LIKED]->(post:Post {postID : '${postID}'})`,
+        `RETURN DISTINCT u, r`,
+        `ORDER BY r.timestamp DESC`
+    ].join('\n');
+
+    return session.run(query)
+        .then((results) => {
+            let users = []
+            results.records.forEach((record) => {
+                users.push(new User(record.get('u')))
+            })
+            return {
+                success: true,
+                users: users
+            }
+        })
+        .catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to get users"
+            }
+        });
+}
+
 
 module.exports = {
     createUserPost,
     createUserComment, 
     getPostsByUser,
     update,
-    getCommentsByPost
+    getCommentsByPost,
+    likePost,
+    unlikePost,
+    getLikesOnPost
 };
