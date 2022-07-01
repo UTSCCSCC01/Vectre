@@ -1,10 +1,18 @@
-import NavBar from "../../components/NavBar";
+import NavBar from "../NavBar/NavBar";
 import { ReactComponent as LandingRect } from '../../assets/icons/landing-rect.svg'
 import { Box } from '@chakra-ui/react'
+import {useEffect} from "react";
+import {useDispatch} from "react-redux";
+import {getLoggedInUser} from "../../redux/actions/users";
 
 const AppWrapper = ({
     ...otherProps
 }) => {
+    const dispatch = useDispatch()
+    useEffect(() => {
+        dispatch(getLoggedInUser())
+    }, [])
+
     return (
         <Box>
             <Box
