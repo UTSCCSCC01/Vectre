@@ -57,7 +57,6 @@ function* postComment(action) {
 function* postLike(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + POSTS.POST_LIKE.replace("{postID}", action.postID), action.walletAddress), responseData = response[1]
-        console.log(response)
         if (responseData.success) {
             action.reloadComponent();
         } else { // TODO: Show toast error message
@@ -70,7 +69,6 @@ function* postLike(action) {
 function* postUnlike(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + POSTS.POST_UNLIKE.replace("{postID}", action.postID), action.walletAddress), responseData = response[1]
-        console.log(response)
         if (responseData.success) {
             action.reloadComponent();
         } else { // TODO: Show toast error message

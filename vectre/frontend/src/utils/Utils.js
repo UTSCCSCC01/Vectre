@@ -6,6 +6,14 @@ export const formatISO = (isoString) => {
     return Moment(isoString).format('h[:]mm A [·] MMM D[,] YYYY').toString();
 };
 
+// assumes num is a valid number
+export const formatLikes = (num) => {
+    if (num === undefined) {
+        return "0";
+    }
+    return num.toString();
+};
+
 // assumes isoString is valid
 // checks if isoString is within 24 hours of current time
 export const within24 = (isoString) => {

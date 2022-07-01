@@ -2,7 +2,7 @@ import {
     useBoolean
 } from '@chakra-ui/react';
 
-import { ReactComponent as LikeIcon } from '../../../../assets/icons/like-icon.svg';
+import { RiHeart2Line, RiHeart2Fill } from 'react-icons/ri'
 
 import TextButton from '../../../Buttons/TextButton/TextButton'
 import { formatLikes } from '../../../../utils/Utils';
@@ -17,18 +17,19 @@ const PostBotLikeButton = ({
 }) => {
     const loggedInUser = useSelector(loggedInUserSelector);
     const dispatch = useDispatch();
-    const [likeToggle, setLikeToggle] = useBoolean() //setLikeToggle.toggle()
-    // const [likes, setLikes] = useState(item.likes);
+    const [likeToggle, setLikeToggle] = useBoolean()
 
     return (
         <>
             <TextButton
                 display={item.likes || item.likes === 0 ? 'inline-flex' : 'none'}
-                bg={likeToggle ? 'red' : 'white'}
                 text={`${formatLikes(item.likes)} Likes`}
-                rightIcon={<LikeIcon />}
+                bg={likeToggle ? 'primary.400' : 'white'}
+                color={likeToggle ? 'white' : 'primary.400'}
+                _hover={{}}
+                _active={{}}
+                rightIcon={likeToggle ? <RiHeart2Fill size={'1.2rem'} /> : <RiHeart2Line size={'1.2rem'} />}
                 onClick={(e) => {
-                    // like
                     if (likeToggle) {
                         dispatch(postUnlike(item.postID, { walletAddress: loggedInUser.walletAddress }, Boolean(item.parent), () => { setLikeToggle.toggle() }));
                     }
