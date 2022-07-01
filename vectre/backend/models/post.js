@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const Post = require('./neo4j/post')
 const User = require('./neo4j/user')
-const { nanoid } = require("nanoid");
+const { nano } = require('../utils/Utils')
 
 const createUserPost = function (session, body) {
     if (!body.author || !body.text) {
@@ -10,7 +10,7 @@ const createUserPost = function (session, body) {
             message: 'Invalid post properties'
         }
     }
-    const postID = nanoid()
+    const postID = nano()
     const date = new Date().toISOString()
 
     // imageURL is optional on a post
@@ -47,7 +47,7 @@ const createUserComment = function (session, postID, body) {
             message: 'Invalid comment properties'
         }
     }
-    const commentPostID = nanoid()
+    const commentPostID = nano()
     const date = new Date().toISOString()
     const query = [
         `CREATE (p:Post {postID: '${commentPostID}', text: '${body.text}', author: '${body.author}', edited: false, timestamp: '${date}', parent: '${postID}', likes: 0})`,
