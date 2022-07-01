@@ -7,6 +7,12 @@ const Post = module.exports = function (_node) {
         "text": _node.properties["text"],
         "imageURL": _node.properties["imageURL"] ? _node.properties["imageURL"] : null,
         "edited": _node.properties["edited"],
-        "timestamp": _node.properties["timestamp"]
+        "timestamp": _node.properties["timestamp"],
+        "repostID": _node.properties["repostID"],
+        "repostAuthor": _node.properties["repostAuthor"],
+        "repostText": _node.properties["repostText"],
+        "repostImageURL": _node.properties["repostImageURL"] ? _node.properties["repostImageURL"] : null,
+        "repostEdited": _node.properties["repostEdited"],
+        "repostTimestamp": _node.properties["repostTimestamp"],
     })
 };

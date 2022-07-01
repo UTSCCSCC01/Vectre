@@ -9,10 +9,10 @@ const createUserPost = function(session, body) {
         }
     }
     const query = [
-        `CREATE (p:Post {postID: '${body.author+body.timestamp}', text: '${body.text}', imageURL: '${body.imageURL}', author: '${body.author}', edited: '${body.edited}', timestamp: '${body.timestamp}'})`,
+        `CREATE (p:Post {postID: '${body.author+body.timestamp}', text: '${body.text}', imageURL: '${body.imageURL}', author: '${body.author}', edited: false, timestamp: '${body.timestamp}'})`,
         `WITH (p)`,
         `MATCH (u:User)`,
-        `WHERE u.wallet_address = '${body.author}'`,
+        `WHERE u.walletAddress = '${body.author}'`,
         `CREATE (u)-[r:POSTED]->(p)`
     ].join('\n');
     
@@ -94,9 +94,43 @@ const getPostsByUser = function(session, wallet_address) {
         });
 }
 
+const repostPost = function(session, body) {
+    if(!body.author || !body.text || !body.imageURL || !body.timestamp || !body.post || !body.post.postID
+        || !body.post.author || !body.post.text || !body.post.imageURL || !body.post.timestamp) {
+        throw {
+            success: false,
+            message: 'Invalid post properties'
+        }
+    }
+    const { author, text, imageURL, timestamp, post } = body;
+    const query = [
+        `CREATE (p:Post {postID: '${author+timestamp}', text: '${text}', imageURL: '${imageURL}', author: '${author}', edited: false, timestamp: '${timestamp}', repostID: '${post.postID}', repostAuthor: '${post.author}', repostText: '${post.text}', repostImageURL: '${post.imageURL}', repostEdited: ${post.edited}, repostTimestamp: '${post.timestamp}'})`,
+        `WITH (p)`,
+        `MATCH (u:User)`,
+        `WHERE u.walletAddress = '${body.author}'`,
+        `CREATE (u)-[r:POSTED]->(p)`
+    ].join('\n');
+    
+    return session.run(query)
+        .then((result) => {
+            return {
+                success: true,
+                message: "Successfully created Post"
+            }
+        })
+        .catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to create Post",
+                error: error
+            }
+        });
+};
+
 
 module.exports = {
     createUserPost,
     getPostsByUser,
-    update
+    update,
+    repostPost
   };
