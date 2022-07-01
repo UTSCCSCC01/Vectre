@@ -68,24 +68,31 @@ class Notifications extends React.Component {
     return (
       <Box display={'table-column'} px={'30px'} pt={'7px'} pb={'25px'} 
           justifyContent={'center'} align={'center'} overflowY={'overlay'}>
-        
-        {this.state.hasUnread && <h1>Unread</h1>}
-        {this.state.recent.length !== 0 ?
-          <>
-            <Flex className='time-tag'>Today</Flex>
-            <Stack direction={'column'} pt={'9px'} pb={'30px'} spacing={'5px'} fontSize={'10px'}>
-              {this.state.recent.map(this.makeNotification)}
-            </Stack>
-          </> : null}
 
-        {this.state.past.length !== 0 ?
-          <>
-            <Flex className='time-tag'>This Week</Flex>
+        {(this.state.recent.length === 0 && this.state.past.length === 0) ?
+            <Flex className='time-tag'>You have no notifications</Flex>
+          :
+          <> {/* Notifications exist */}
+            {this.state.hasUnread && <h1>Unread</h1>}
+            {this.state.recent.length !== 0 ?
+              <>
+              <Flex className='time-tag'>Today</Flex>
+              <Stack direction={'column'} pt={'9px'} pb={'30px'} spacing={'5px'} fontSize={'10px'}>
+            {this.state.recent.map(this.makeNotification)}
+              </Stack>
+              </> : null}
 
-            <Stack direction={'column'} pt={'15px'} spacing={'6px'} fontSize={'10px'}>
-              {this.state.past.map(this.makeNotification)}
-            </Stack>
-          </> : null}
+            {this.state.past.length !== 0 ?
+              <>
+              <Flex className='time-tag'>This Week</Flex>
+
+              <Stack direction={'column'} pt={'15px'} spacing={'6px'} fontSize={'10px'}>
+            {this.state.past.map(this.makeNotification)}
+              </Stack>
+              </> : null}
+          </>
+          }
+
       </Box>
     )
   }
