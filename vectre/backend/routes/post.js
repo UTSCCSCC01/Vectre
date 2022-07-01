@@ -48,5 +48,26 @@ router.get('/:postID/comments', (req, res, next) => {
         .catch((error) => res.send(error))
 })
 
+// POST /posts/{postID}/like
+router.post('/:postID/like', authenticateToken, (req, res, next) => {
+    Post.likePost(dbUtils.getSession(req), req.params.postID, req.body)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
+
+// POST /posts/{postID}/unlike
+router.post('/:postID/unlike', authenticateToken, (req, res, next) => {
+    Post.unlikePost(dbUtils.getSession(req), req.params.postID, req.body)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
+
+// GET /posts/{postID}/likes
+router.get('/:postID/likes', authenticateToken, (req, res, next) => {
+    Post.getLikesOnPost(dbUtils.getSession(req), req.params.postID)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
+
 
 module.exports = router;
