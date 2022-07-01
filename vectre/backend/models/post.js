@@ -3,7 +3,6 @@ const Post = require('./neo4j/post')
 const User = require('./neo4j/user')
 
 const createUserPost = function (session, body) {
-    console.log(body);
     if (!body.author || !body.text || !body.imageURL || !body.timestamp) {
         throw {
             success: false,
@@ -216,7 +215,6 @@ const unlikePost = function (session, body) {
 };
 
 const getLikesOnPost = function (session, postID) {
-    console.log(postID)
     const query = [
         `MATCH (u:User )-[r:LIKED]->(post:Post {postID : '${postID}'})`,
         `RETURN DISTINCT u, r`,
