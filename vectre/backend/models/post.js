@@ -1,16 +1,19 @@
 const _ = require('lodash');
 const Post = require('./neo4j/post')
+const { nanoid } = require("nanoid")
 
 const createUserPost = function(session, body) {
-    if(!body.author || !body.text || !body.imageURL || !body.timestamp) {
+    if(!body.author || !body.text || !body.imageURL) {
         throw {
             success: false,
             message: 'Invalid post properties'
         }
     }
-    const { author, text, imageURL, timestamp} = body;
+    const postID = nanoid()
+    const timestamp = new Date().toISOString()
+    const { author, text, imageURL } = body;
     const query = [
-        `CREATE (p:Post {postID: '${author+timestamp}', text: '${text}', imageURL: '${imageURL}', author: '${author}', edited: false, timestamp: '${timestamp}', isRepost: false, repostID: '', repostAuthor: '', repostText: '', repostImageURL: '', repostEdited: false, repostTimestamp: ''})`,
+        `CREATE (p:Post {postID: '${postID}', text: '${text}', imageURL: '${imageURL}', author: '${author}', edited: false, timestamp: '${timestamp}', isRepost: false, repostID: '', repostAuthor: '', repostText: '', repostImageURL: '', repostEdited: false, repostTimestamp: ''})`,
         `WITH (p)`,
         `MATCH (u:User)`,
         `WHERE u.walletAddress = '${body.author}'`,
@@ -96,16 +99,18 @@ const getPostsByUser = function(session, wallet_address) {
 }
 
 const repostPost = function(session, body) {
-    if(!body.author || !body.text || !body.imageURL || !body.timestamp || !body.post || !body.post.postID
+    if(!body.author || !body.text || !body.imageURL || !body.post || !body.post.postID
         || !body.post.author || !body.post.text || !body.post.imageURL || !body.post.timestamp) {
         throw {
             success: false,
             message: 'Invalid post properties'
         }
     }
-    const { author, text, imageURL, timestamp, post } = body;
+    const postID = nanoid()
+    const timestamp = new Date()/toISOString()
+    const { author, text, imageURL, post } = body;
     const query = [
-        `CREATE (p:Post {postID: '${author+timestamp}', text: '${text}', imageURL: '${imageURL}', author: '${author}', edited: false, timestamp: '${timestamp}', isRepost: true, repostID: '${post.postID}', repostAuthor: '${post.author}', repostText: '${post.text}', repostImageURL: '${post.imageURL}', repostEdited: ${post.edited}, repostTimestamp: '${post.timestamp}'})`,
+        `CREATE (p:Post {postID: '${postID}', text: '${text}', imageURL: '${imageURL}', author: '${author}', edited: false, timestamp: '${timestamp}', isRepost: true, repostID: '${post.postID}', repostAuthor: '${post.author}', repostText: '${post.text}', repostImageURL: '${post.imageURL}', repostEdited: ${post.edited}, repostTimestamp: '${post.timestamp}'})`,
         `WITH (p)`,
         `MATCH (u:User)`,
         `WHERE u.walletAddress = '${body.author}'`,
