@@ -27,9 +27,9 @@ router.post('/:postID/update', authenticateToken, (req, res, next) => {
     }
 })
 
-// GET /posts/:walletAddress/feed
-router.get('/:walletAddress/feed', authenticateToken, (req, res, next) => {
-    const walletAddress = req.params.walletAddress
+// GET /posts/feed
+router.get('/feed', authenticateToken, (req, res, next) => {
+    const walletAddress = req.walletAddress
     const start = req.body.start? req.body.start : 0;
     const size = req.body.size? req.body.size : 10;
     Post.getUserFeed(dbUtils.getSession(req), walletAddress, start, size)
