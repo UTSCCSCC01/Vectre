@@ -7,7 +7,6 @@ import { RiHeart2Line, RiHeart2Fill } from 'react-icons/ri'
 import TextButton from '../../../Buttons/TextButton/TextButton'
 import { formatLikes } from '../../../../utils/Utils';
 
-// import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loggedInUserSelector } from '../../../../redux/selectors/users';
 import { postLike, postUnlike } from "../../../../redux/actions/posts";
@@ -17,7 +16,7 @@ const PostBotLikeButton = ({
 }) => {
     const loggedInUser = useSelector(loggedInUserSelector);
     const dispatch = useDispatch();
-    const [likeToggle, setLikeToggle] = useBoolean()
+    const [likeToggle, setLikeToggle] = useBoolean(item.alreadyLiked);
 
     return (
         <>
@@ -30,11 +29,15 @@ const PostBotLikeButton = ({
                 _active={{}}
                 rightIcon={likeToggle ? <RiHeart2Fill size={'1.2rem'} /> : <RiHeart2Line size={'1.2rem'} />}
                 onClick={(e) => {
-                    if (likeToggle) {
-                        dispatch(postUnlike(item.postID, { walletAddress: loggedInUser.walletAddress }, Boolean(item.parent), () => { setLikeToggle.toggle() }));
-                    }
-                    else {
-                        dispatch(postLike(item.postID, { walletAddress: loggedInUser.walletAddress }, Boolean(item.parent), () => { setLikeToggle.toggle() }));
+                    if (Object.keys(loggedInUser).length !== 0) {
+                        if (likeToggle) {
+                            dispatch(postUnlike(item.postID, { walletAddress: loggedInUser.walletAddress }, Boolean(item.parent), () => { setLikeToggle.toggle() }));
+                        }
+                        else {
+                            dispatch(postLike(item.postID, { walletAddress: loggedInUser.walletAddress }, Boolean(item.parent), () => { setLikeToggle.toggle() }));
+                        }
+                    } else {
+                        console.log("Not logged in!");
                     }
                     e.stopPropagation();
                 }} />
