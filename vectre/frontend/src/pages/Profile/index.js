@@ -2,7 +2,7 @@ import React from 'react'
 import {
     Box,
 } from "@chakra-ui/react";
-import AppWrapper from "../../components/AppWrapper/AppWrapper";
+import AppWrapper from "../../components/Wrapper/AppWrapper";
 import Profile from "../../components/Profile/Profile";
 import { useParams } from "react-router-dom";
 

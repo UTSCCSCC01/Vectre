@@ -13,8 +13,7 @@ import {
     Button,
     Flex,
     Text,
-    Textarea,
-    useToast
+    Textarea
 } from "@chakra-ui/react"
 import { FaUser } from 'react-icons/fa'
 

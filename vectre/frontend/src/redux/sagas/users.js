@@ -22,6 +22,8 @@ import {
     USERS
 } from "../constants/endpoints";
 import { getCreate } from "../actions/create";
+import {TOAST_STATUSES} from "../constants/toast";
+import {showToast} from "../actions/toast";
 
 // Login
 function* getLoginNonce(action) {
@@ -108,9 +110,11 @@ function* updateUser(action) {
 function* followUser(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + USERS.FOLLOW_USER.replace("{walletAddress}", action.walletAddressToFollow), {}), responseData = response[1]
-        if (responseData.success) { // TODO: Show toast success message
+        if (responseData.success) {
+            yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
             if (action.redirectWindow) yield put(action.redirectWindow(`/user/${action.walletAddressToFollow}`))
-        } else { // TODO: Show toast error message
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }
     } catch (error) {
         console.log(error)

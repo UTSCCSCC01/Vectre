@@ -1,17 +1,32 @@
-import NavBar from "../NavBar/NavBar";
+import NavBar from "./NavBar";
 import { ReactComponent as LandingRect } from '../../assets/icons/landing-rect.svg'
-import { Box } from '@chakra-ui/react'
+import {Box, useToast} from '@chakra-ui/react'
 import {useEffect} from "react";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {getLoggedInUser} from "../../redux/actions/users";
+import {toastSelector} from "../../redux/selectors/toast";
+import {deleteToast} from "../../redux/actions/toast";
 
 const AppWrapper = ({
     ...otherProps
 }) => {
     const dispatch = useDispatch()
+    const createToast = useToast()
+    const toast = useSelector(toastSelector)
     useEffect(() => {
         dispatch(getLoggedInUser())
-    }, [])
+
+        // Toast
+        if (toast.status !== "" && toast.message !== "") {
+            createToast({
+                description: toast.message,
+                status: toast.status,
+                position: "bottom",
+                isClosable: true
+            })
+            dispatch(deleteToast())
+        }
+    }, [toast])
 
     return (
         <Box>

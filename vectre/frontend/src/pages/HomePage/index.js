@@ -1,4 +1,4 @@
-import AppWrapper from "../../components/AppWrapper/AppWrapper";
+import AppWrapper from "../../components/Wrapper/AppWrapper";
 import PostComponent from "../../components/PostComponent/PostComponent";
 import {
   Box,

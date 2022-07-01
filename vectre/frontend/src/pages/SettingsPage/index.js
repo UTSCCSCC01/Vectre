@@ -1,7 +1,7 @@
 import {
   Box,
 } from "@chakra-ui/react";
-import AppWrapper from "../../components/AppWrapper/AppWrapper";
+import AppWrapper from "../../components/Wrapper/AppWrapper";
 
 const SettingsPage = () => {
   return (
