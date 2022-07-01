@@ -23,18 +23,13 @@ class Notification extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      id: props.notificationID,
-      fromUser: props.fromUser,
-      action: props.action,
-      link: props.link,
-      read: props.read,
       message: "",
       icon: ""
     }
   }
 
   componentDidMount() {
-    this.props.getUser(this.state.fromUser)
+    this.props.getUser(this.props.fromUser)
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -45,7 +40,7 @@ class Notification extends React.Component {
 
   formatMessage() {
     let messageEnd = undefined
-    switch (this.state.action) {
+    switch (this.props.action) {
       case 'like':
         this.setState( {icon: <FaHeart size={"18px"}/>} )
         messageEnd = "liked your post."
@@ -64,16 +59,16 @@ class Notification extends React.Component {
   }
 
   handleRead = () => {
-    this.props.readNotification(this.state.id)
+    this.props.readNotification(this.props.id)
   }
 
   render() {
     return(
       <Box className={'notif-box'} _hover={{bg: "rgba(200, 200, 200, 0.3)", borderRadius: "6px"}}
-          as='a' href={this.state.link} onClick={this.handleRead}>
+          as='a' href={this.props.link} onClick={this.handleRead}>
         <Flex className='notif-icon' position='relative'>
           {this.state.icon} 
-          {!this.state.read && <chakra.span className='unread-small-marker' rounded='full'></chakra.span>}
+          {!this.props.read && <chakra.span className='unread-small-marker' rounded='full'></chakra.span>}
         </Flex>
         <Spacer />
         <Flex className='notif-tag'>
