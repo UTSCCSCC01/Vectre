@@ -2,7 +2,9 @@ import { call, put, takeLatest } from "redux-saga/effects"
 import { getRequest, postRequest, putRequest } from "./index";
 import {
     storePost,
-    storeComments
+    storeComments,
+    doLike,
+    doUnlike
 } from "../actions/posts";
 import {
     GET_POST,
@@ -15,8 +17,8 @@ import {
     BASE_API_URL,
     POSTS
 } from "../constants/endpoints";
-import {showToast} from "../actions/toast";
-import {TOAST_STATUSES} from "../constants/toast";
+import { showToast } from "../actions/toast";
+import { TOAST_STATUSES } from "../constants/toast";
 
 function* getPost(action) {
     try {
@@ -66,6 +68,7 @@ function* postLike(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + POSTS.POST_LIKE.replace("{postID}", action.postID), action.walletAddress), responseData = response[1]
         if (responseData.success) {
+            yield put(doLike(action.postID, action.walletAddress, action.isComment));
             action.reloadComponent();
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
@@ -80,6 +83,7 @@ function* postUnlike(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + POSTS.POST_UNLIKE.replace("{postID}", action.postID), action.walletAddress), responseData = response[1]
         if (responseData.success) {
+            yield put(doUnlike(action.postID, action.walletAddress, action.isComment));
             action.reloadComponent();
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))

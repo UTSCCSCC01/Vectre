@@ -1,15 +1,13 @@
 import {
     STORE_POST,
     STORE_COMMENTS,
-    POST_COMMENT,
-    POST_LIKE,
-    POST_UNLIKE
+    DO_LIKE,
+    DO_UNLIKE
 } from "../constants/posts";
 
 const initialState = {
     post: {},
-    comments: [],
-    comment: {}
+    comments: []
 }
 
 const posts = (state = initialState, action) => {
@@ -24,12 +22,7 @@ const posts = (state = initialState, action) => {
                 ...state,
                 comments: action.comments
             }
-        case POST_COMMENT:
-            return {
-                ...state,
-                comment: action.comment
-            }
-        case POST_LIKE:
+        case DO_LIKE:
             if (action.isComment) {
                 return {
                     ...state,
@@ -43,7 +36,7 @@ const posts = (state = initialState, action) => {
                     likes: state.post.likes + 1
                 }
             }
-        case POST_UNLIKE:
+        case DO_UNLIKE:
             if (action.isComment) {
                 return {
                     ...state,
