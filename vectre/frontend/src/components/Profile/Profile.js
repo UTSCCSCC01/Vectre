@@ -4,7 +4,6 @@ import React from "react";
 import PropTypes from 'prop-types';
 import { connect } from "react-redux";
 import {
-    getLoggedInUser,
     getUser,
     updateUser,
     followUser,
@@ -33,7 +32,6 @@ class Profile extends React.Component {
 
     componentDidMount() {
         this.props.getUser(this.props.profileWalletAddress) // Profile owner
-        this.props.getLoggedInUser()
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.loggedInUser !== this.props.loggedInUser) {
@@ -118,7 +116,6 @@ class Profile extends React.Component {
 }
 
 const actionCreators = {
-    getLoggedInUser,
     getUser,
     updateUser,
     followUser,
