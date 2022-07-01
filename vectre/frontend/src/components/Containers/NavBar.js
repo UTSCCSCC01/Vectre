@@ -14,12 +14,15 @@ import {
 
 import { IoHome } from 'react-icons/io5'
 import { HiTrendingUp, HiSearch } from 'react-icons/hi'
-import { MdNotificationsActive } from 'react-icons/md'
 import { FaWallet } from 'react-icons/fa'
+import NotificationPopover from '../Notifications/NotificationPopover'
 
 import VectreIcon from '../Icons/VectreIcon'
+import {loggedInUserSelector} from "../../redux/selectors/users";
+import {useSelector} from "react-redux";
 
 export default function NavBar() {
+    const loggedInUser = useSelector(loggedInUserSelector)
     return (
         <Container maxW={'8xl'}>
             <Flex alignItems="center"
@@ -117,21 +120,9 @@ export default function NavBar() {
                                 --- $ETH
                             </Button>
                         </Link>
+                        <NotificationPopover />
                         <Link
-                            href='#'
-                            _hover={{ textDecoration: "none" }}>
-                            <IconButton
-                                size={'lg'}
-                                transform={'scale(1.2)'}
-                                color={'primary.400'}
-                                isRound={'true'}
-                                bg={'white'}
-                                icon={<MdNotificationsActive size="1.5rem" />}
-                                _focus={{ outline: 0 }}>
-                            </IconButton>
-                        </Link>
-                        <Link
-                            href='/profile'
+                            href={Object.keys(loggedInUser).length === 0 ? "/login" : `/user/${loggedInUser.walletAddress}`}
                             _hover={{ textDecoration: "none" }}>
                             <IconButton
                                 size={'lg'}

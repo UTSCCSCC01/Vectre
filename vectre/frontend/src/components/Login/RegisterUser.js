@@ -13,8 +13,7 @@ import {
     Button,
     Flex,
     Text,
-    Textarea,
-    useToast
+    Textarea
 } from "@chakra-ui/react"
 import { FaUser } from 'react-icons/fa'
 
@@ -25,12 +24,8 @@ class RegisterUser extends React.Component {
             username: "",
             name: "",
             bio: "",
-            isModalOpen: true
         }
     }
-
-    handleOpenModal = () => { this.setState({ isModalOpen: true }) }
-    handleCloseModal = () => { this.setState({ isModalOpen: false }) }
 
     handleRegisterSubmit = (event) => {
         event.preventDefault();
@@ -41,15 +36,15 @@ class RegisterUser extends React.Component {
             walletAddress: this.props.walletAddress
         }
         this.props.createUser(newUser)
-        this.handleCloseModal()
+        this.props.closeModal()
     }
 
     render() {
         return (
             <>
                 <Modal
-                    isOpen={this.state.isModalOpen}
-                    onClose={this.handleCloseModal}
+                    isOpen={this.props.isModalOpen}
+                    onClose={this.props.closeModal}
                     isCentered
                     color={'primary.400'}
                     size={'3xl'}>

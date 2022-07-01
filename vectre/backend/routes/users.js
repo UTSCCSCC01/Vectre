@@ -44,7 +44,8 @@ router.get('/:walletAddress/notifications', authenticateToken, (req, res, next) 
 
 // POST /users/register
 router.post('/register', (req, res) => {
-    User.register(dbUtils.getSession(req), req.body)
+    const setTokenInCookie = (token) => { res.cookie('token', token, { maxAge: 1000 * 60 * 60 * 24 * 7, httpOnly: true }) } // Expires in 7 days
+    User.register(dbUtils.getSession(req), req.body, setTokenInCookie)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
