@@ -1,15 +1,15 @@
 import {
   Box,
 } from "@chakra-ui/react";
-import AppWrapper from "../../components/Wrapper/AppWrapper";
+import ContentWIthNavContainer from "../../components/Containers/ContentWIthNavContainer";
 
 const SettingsPage = () => {
   return (
-    <AppWrapper>
+    <ContentWIthNavContainer>
       <Box py={'60px'} maxWidth={'4xl'} margin={'0 auto'}>
         SettingsPage
       </Box>
-    </AppWrapper>
+    </ContentWIthNavContainer>
   );
 }
 
