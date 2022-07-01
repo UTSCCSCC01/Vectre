@@ -7,8 +7,7 @@ const { authenticateToken } = require("../utils/auth");
 const { rest } = require('lodash');
 
 // POST /posts/create
-router.post('/create', authenticateToken, (req, res, next) => {
-    req.body.author = req.walletAddress; 
+router.post('/create', (req, res, next) => {
     Post.createUserPost(dbUtils.getSession(req), req.body)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
@@ -38,6 +37,27 @@ router.post('/:postID/update', authenticateToken, (req, res, next) => {
 // GET /posts/{postID}/comments
 router.get('/:postID/comments', authenticateToken, (req, res, next) => {
     Post.getCommentsByPost(dbUtils.getSession(req), req.params.postID, req.body)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
+
+// POST /posts/like
+router.post('/like', authenticateToken, (req, res, next) => {
+    Post.likePost(dbUtils.getSession(req), req.body)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
+
+// POST /posts/unlike
+router.post('/unlike', authenticateToken, (req, res, next) => {
+    Post.unlikePost(dbUtils.getSession(req), req.body)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
+
+// GET /posts/likes/:postID
+router.get('/likes/:postID', authenticateToken, (req, res, next) => {
+    Post.getLikesOnPost(dbUtils.getSession(req), req.params.postID)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
