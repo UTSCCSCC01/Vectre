@@ -8,8 +8,9 @@ const createUserPost = function(session, body) {
             message: 'Invalid post properties'
         }
     }
+    const { author, text, imageURL, timestamp} = body;
     const query = [
-        `CREATE (p:Post {postID: '${body.author+body.timestamp}', text: '${body.text}', imageURL: '${body.imageURL}', author: '${body.author}', edited: false, timestamp: '${body.timestamp}'})`,
+        `CREATE (p:Post {postID: '${author+timestamp}', text: '${text}', imageURL: '${imageURL}', author: '${author}', edited: false, timestamp: '${timestamp}', isRepost: false, repostID: '', repostAuthor: '', repostText: '', repostImageURL: '', repostEdited: false, repostTimestamp: ''})`,
         `WITH (p)`,
         `MATCH (u:User)`,
         `WHERE u.walletAddress = '${body.author}'`,
@@ -104,7 +105,7 @@ const repostPost = function(session, body) {
     }
     const { author, text, imageURL, timestamp, post } = body;
     const query = [
-        `CREATE (p:Post {postID: '${author+timestamp}', text: '${text}', imageURL: '${imageURL}', author: '${author}', edited: false, timestamp: '${timestamp}', repostID: '${post.postID}', repostAuthor: '${post.author}', repostText: '${post.text}', repostImageURL: '${post.imageURL}', repostEdited: ${post.edited}, repostTimestamp: '${post.timestamp}'})`,
+        `CREATE (p:Post {postID: '${author+timestamp}', text: '${text}', imageURL: '${imageURL}', author: '${author}', edited: false, timestamp: '${timestamp}', isRepost: true, repostID: '${post.postID}', repostAuthor: '${post.author}', repostText: '${post.text}', repostImageURL: '${post.imageURL}', repostEdited: ${post.edited}, repostTimestamp: '${post.timestamp}'})`,
         `WITH (p)`,
         `MATCH (u:User)`,
         `WHERE u.walletAddress = '${body.author}'`,

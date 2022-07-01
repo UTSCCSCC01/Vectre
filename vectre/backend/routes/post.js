@@ -28,7 +28,7 @@ router.post('/:postID/update', authenticateToken, (req, res, next) => {
 })
 
 // POST /posts/repost
-router.post('/repost', (req, res, next) => {
+router.post('/repost', authenticateToken, (req, res, next) => {
     Post.repostPost(dbUtils.getSession(req), req.body)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
