@@ -6,7 +6,7 @@ const Notification = module.exports = function (_node) {
         "toUser": _node.properties["toUser"],
         "fromUser": _node.properties["fromUser"],
         "action": _node.properties["action"],
-        "link": _node.properties["link"],
+        "postID": _node.properties["postID"],
         "read": _node.properties["read"],
         "timestamp": _node.properties["timestamp"]
     })
