@@ -94,9 +94,39 @@ const getPostsByUser = function (session, walletAddress) {
         });
 }
 
+const getUserFeed = function (session, walletAddress, start, size) {
+    const query = [
+        `MATCH (u: User {walletAddress: '${walletAddress}'})-[:FOLLOWS]->(b:User)-[:POSTED]->(p: Post)`,
+        `RETURN DISTINCT p`,
+        `ORDER BY p.timestamp DESC`,
+        `SKIP ${start}`,
+        `LIMIT ${size}`
+    ].join('\n');
+
+    return session.run(query)
+        .then((results) => {
+            let posts = []
+            results.records.forEach((record) => {
+                posts.push(new Post(record.get('p')))
+            })
+            return {
+                success: true,
+                posts: posts
+            }
+        })
+        .catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to get posts",
+                error: error
+            }
+        });
+}
+
 
 module.exports = {
     createUserPost,
     getPostsByUser,
-    update
+    update,
+    getUserFeed
 };
