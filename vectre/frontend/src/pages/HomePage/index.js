@@ -1,4 +1,4 @@
-import AppWrapper from "../../components/AppWrapper/AppWrapper";
+import ContentWIthNavContainer from "../../components/Containers/ContentWIthNavContainer";
 import PostComponent from "../../components/PostComponent/PostComponent";
 import {
   Box,
@@ -55,7 +55,7 @@ const samplePostData = [
 
 const HomePage = () => {
   return (
-    <AppWrapper>
+    <ContentWIthNavContainer>
       <Box py={'60px'} maxWidth={'4xl'} margin={'0 auto'}>
         <Stack alignSelf={'center'} gap={'36px'}>
           {/* Add posts below */}
@@ -70,7 +70,7 @@ const HomePage = () => {
           }
         </Stack>
       </Box>
-    </AppWrapper>
+    </ContentWIthNavContainer>
   );
 }
 
