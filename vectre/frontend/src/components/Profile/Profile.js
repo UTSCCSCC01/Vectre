@@ -43,13 +43,13 @@ class Profile extends React.Component {
     handleCloseModal = () => { this.setState({ isModalOpen: false }) }
 
     handleUpdateUser = (newUser) => {
-        this.props.updateUser(this.props.loggedInUser.walletAddress, newUser, (href) => { window.location.href = href })
+        this.props.updateUser(this.props.loggedInUser.walletAddress, newUser)
     }
     handleFollowUser = () => {
         if (this.state.following) { // Unfollow
-            this.props.unfollowUser(this.props.profileWalletAddress, (href) => { window.location.href = href})
+            this.props.unfollowUser(this.props.profileWalletAddress)
         } else { // Follow
-            this.props.followUser(this.props.profileWalletAddress, (href) => { window.location.href = href})
+            this.props.followUser(this.props.profileWalletAddress)
         }
     }
 

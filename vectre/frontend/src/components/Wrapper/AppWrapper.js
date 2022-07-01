@@ -5,7 +5,7 @@ import {useEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {getLoggedInUser} from "../../redux/actions/users";
 import {toastSelector} from "../../redux/selectors/toast";
-import {deleteToast} from "../../redux/actions/toast";
+import {clearToast} from "../../redux/actions/toast";
 
 const AppWrapper = ({
     ...otherProps
@@ -24,7 +24,7 @@ const AppWrapper = ({
                 position: "bottom",
                 isClosable: true
             })
-            dispatch(deleteToast())
+            dispatch(clearToast())
         }
     }, [toast])
 

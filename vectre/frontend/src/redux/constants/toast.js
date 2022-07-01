@@ -3,5 +3,5 @@ export const TOAST_STATUSES = {
     ERROR: 'error'
 }
 
-export const STORE_TOAST = "STORE_TOAST"
-export const DELETE_TOAST = "DELETE_TOAST"
+export const SHOW_TOAST = "SHOWE_TOAST"
+export const CLEAR_TOAST = "CLEAR_TOAST"

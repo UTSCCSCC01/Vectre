@@ -1,6 +1,6 @@
 import {
-    STORE_TOAST,
-    DELETE_TOAST,
+    SHOW_TOAST,
+    CLEAR_TOAST,
 } from "../constants/toast";
 
 const initialState = {
@@ -10,13 +10,13 @@ const initialState = {
 
 const toast = (state = initialState, action) => {
     switch (action.type) {
-        case STORE_TOAST:
+        case SHOW_TOAST:
             return {
                 ...state,
                 status: action.status,
                 message: action.message
             }
-        case DELETE_TOAST:
+        case CLEAR_TOAST:
             return {
                 ...state,
                 status: "",
