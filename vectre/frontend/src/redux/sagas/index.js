@@ -2,12 +2,6 @@ import { all } from 'redux-saga/effects';
 import notificationSaga from './notification';
 import usersSaga from "./users";
 
-export default function* root() {
-    yield all([ // Insert sagas
-        usersSaga()
-    ]);
-}
-
 const headers = {
     'Content-Type': 'application/json',
     'Accepts-Type': 'application/json',
@@ -41,7 +35,6 @@ export const putRequest = (url, data) => {
     })
         .then(response => Promise.all([response, response.json()]))
         .catch(error => { throw error })
-<<<<<<< HEAD
 }
 
 export default function* root() {
@@ -50,6 +43,4 @@ export default function* root() {
       usersSaga(),
       notificationSaga()
   ]);
-=======
->>>>>>> df4da443eeaea4c6ddea4dd1074f6894ac9189b9
 }

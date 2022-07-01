@@ -73,11 +73,7 @@ const register = (session, body, setTokenInCookie) => { // Creates User from bod
 
             return {
                 success: true,
-<<<<<<< HEAD
                 message: "Created User"
-=======
-                message: "Created user"
->>>>>>> df4da443eeaea4c6ddea4dd1074f6894ac9189b9
             }
         })
         .catch((error) => {
