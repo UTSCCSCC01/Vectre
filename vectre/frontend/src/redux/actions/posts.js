@@ -3,7 +3,9 @@ import {
     STORE_POST,
     GET_COMMENTS,
     STORE_COMMENTS,
-    POST_COMMENT
+    POST_COMMENT,
+    POST_LIKE,
+    POST_UNLIKE
 } from "../constants/posts";
 
 export const getPost = (postID) => ({
@@ -31,4 +33,20 @@ export const postComment = (postID, comment, reloadForm) => ({
     postID,
     comment,
     reloadForm
+})
+
+export const postLike = (postID, walletAddress, isComment, reloadComponent) => ({
+    type: POST_LIKE,
+    postID,
+    walletAddress,
+    isComment,
+    reloadComponent
+})
+
+export const postUnlike = (postID, walletAddress, isComment, reloadComponent) => ({
+    type: POST_UNLIKE,
+    postID,
+    walletAddress,
+    isComment,
+    reloadComponent
 })

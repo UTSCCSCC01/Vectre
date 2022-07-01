@@ -13,5 +13,7 @@ export const USERS = {
 export const POSTS = {
     GET_POST: "/posts/{postID}",
     GET_COMMENTS: "/posts/{postID}/comments",
-    POST_COMMENT: "/posts/{postID}/comment"
+    POST_COMMENT: "/posts/{postID}/comment",
+    POST_LIKE: "/posts/{postID}/like",
+    POST_UNLIKE: "/posts/{postID}/unlike"
 }

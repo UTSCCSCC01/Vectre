@@ -7,7 +7,9 @@ import {
 import {
     GET_POST,
     GET_COMMENTS,
-    POST_COMMENT
+    POST_COMMENT,
+    POST_LIKE,
+    POST_UNLIKE
 } from "../constants/posts";
 import {
     BASE_API_URL,
@@ -52,10 +54,38 @@ function* postComment(action) {
     }
 }
 
+function* postLike(action) {
+    try {
+        const response = yield call(postRequest, BASE_API_URL + POSTS.POST_LIKE.replace("{postID}", action.postID), action.walletAddress), responseData = response[1]
+        console.log(response)
+        if (responseData.success) {
+            action.reloadComponent();
+        } else { // TODO: Show toast error message
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+function* postUnlike(action) {
+    try {
+        const response = yield call(postRequest, BASE_API_URL + POSTS.POST_UNLIKE.replace("{postID}", action.postID), action.walletAddress), responseData = response[1]
+        console.log(response)
+        if (responseData.success) {
+            action.reloadComponent();
+        } else { // TODO: Show toast error message
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 function* postsSaga() {
     yield takeLatest(GET_POST, getPost)
     yield takeLatest(GET_COMMENTS, getComments)
     yield takeLatest(POST_COMMENT, postComment)
+    yield takeLatest(POST_LIKE, postLike)
+    yield takeLatest(POST_UNLIKE, postUnlike)
 }
 
 export default postsSaga
