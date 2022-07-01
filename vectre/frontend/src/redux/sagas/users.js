@@ -7,7 +7,7 @@ import {
     storeUser,
     storeNotifications,
     storeUnreadStatus,
-    getUser,
+    getUser, getLoggedInUser,
 } from "../actions/users";
 import {
     GET_LOGIN_NONCE,
@@ -50,7 +50,7 @@ function* loginUser(action) {
     }
 }
 
-function* getLoggedInUser() {
+function* getLoggedInUserSaga() {
     try {
         const response = yield call(getRequest, BASE_API_URL + USERS.GET_LOGGED_IN_USER), responseData = response[1]
         if (responseData.success)
@@ -123,6 +123,7 @@ function* followUser(action) {
         const response = yield call(postRequest, BASE_API_URL + USERS.FOLLOW_USER.replace("{walletAddress}", action.walletAddressToFollow), {}), responseData = response[1]
         if (responseData.success) {
             yield put(getUser(action.walletAddressToFollow))
+            yield put(getLoggedInUser())
             yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
@@ -137,6 +138,7 @@ function* unfollowUser(action) {
         const response = yield call(postRequest, BASE_API_URL + USERS.UNFOLLOW_USER.replace("{walletAddress}", action.walletAddressToUnfollow), {}), responseData = response[1]
         if (responseData.success) {
             yield put(getUser(action.walletAddressToUnfollow))
+            yield put(getLoggedInUser())
             yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
@@ -163,7 +165,7 @@ function* getNotifications(action) {
 function* usersSaga() {
     yield takeLatest(GET_LOGIN_NONCE, getLoginNonce)
     yield takeLatest(LOGIN_USER, loginUser)
-    yield takeLatest(GET_LOGGED_IN_USER, getLoggedInUser)
+    yield takeLatest(GET_LOGGED_IN_USER, getLoggedInUserSaga)
     yield takeLatest(GET_USER, getUserSaga)
     yield takeLatest(GET_USERS, getUsers)
     yield takeLatest(CREATE_USER, createUser)
