@@ -5,9 +5,10 @@ import {
     Link
 } from '@chakra-ui/react';
 
-import { ReactComponent as VerifiedIcon } from '../../../assets/icons/verified-icon.svg';
-
+import VerifiedIcon from '../../../assets/icons/verified-icon.svg';
+import DefaultAvatar from '../../../assets/images/default-avatar.png';
 import TextButton from '../../Buttons/TextButton/TextButton'
+import { formatISO } from '../../../utils/Utils'
 
 const PostTopComponent = ({
     item,
@@ -26,6 +27,7 @@ const PostTopComponent = ({
                         leftIcon={
                             <Image
                                 src={item.author.profilePic}
+                                fallbackSrc={DefaultAvatar}
                                 fit={'cover'}
                                 overflow={'hidden'}
                                 borderRadius={'full'}
@@ -42,11 +44,11 @@ const PostTopComponent = ({
                     bg={'white'}
                     borderRadius={'6px'}
                     alignItems={'center'}>
-                    <VerifiedIcon size="1.5rem" />
+                    <Image src={VerifiedIcon} boxSize={'1.5rem'} />
                 </Box>
             </Flex>
             <Box
-                display={'inline-flex'}
+                display={item.timestamp ? 'inline-flex' : 'none'}
                 px={'17.5px'}
                 fontSize={'12px'}
                 fontWeight={500}
@@ -54,7 +56,7 @@ const PostTopComponent = ({
                 bg={'white'}
                 borderRadius={'6px'}
                 alignItems={'center'}>
-                {item.timestamp}
+                {formatISO(item.timestamp)}
             </Box>
         </Flex>
     );

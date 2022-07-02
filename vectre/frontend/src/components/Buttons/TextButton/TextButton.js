@@ -17,12 +17,13 @@ const TextButton = ({
         <Button
             display={display ? display : 'inline-flex'}
             px={px ? px : '15px'}
-            py={py ? py : '6px'}
+            py={py ? py : '5.5px'}
             fontSize={fontSize ? fontSize : '12px'}
             fontWeight={fontWeight ? fontWeight : 500}
             color={color ? color : 'primary.400'}
             bg={bg ? bg : 'white'}
             _focus={{ outline: 0 }}
+            lineHeight={'1'}
             {...otherProps} // other props can be passed into here
         >
             {text}
