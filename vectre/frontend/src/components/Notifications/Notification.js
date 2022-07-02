@@ -12,11 +12,8 @@ import { ImUserPlus } from 'react-icons/im'
 import DEFAULT_PROFILE_PICTURE from "../../assets/images/default_profile_pic.jpg"
 
 // Redux
-import PropTypes from 'prop-types';
 import { connect } from "react-redux";
 import { readNotification } from "../../redux/actions/notification";
-import { getUser } from "../../redux/actions/users"
-import { userSelector } from "../../redux/selectors/users"
 
 const NOTIFICATION_ACTIONS = {
   "like": {
@@ -43,7 +40,6 @@ class Notification extends React.Component {
   }
 
   componentDidMount() {
-    this.props.getUser(this.props.fromUser)
     this.setState(NOTIFICATION_ACTIONS[this.props.action])
   }
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -59,7 +55,7 @@ class Notification extends React.Component {
         className={'notif-box'}
         _hover={{bg: "rgba(200, 200, 200, 0.3)", borderRadius: "6px"}}
         as='a'
-        href={this.props.action === "follow" ? `/user/${this.props.fromUser}` : `/post/${this.props.postID}`}
+        href={this.props.action === "follow" ? `/user/${this.props.fromUser.walletAddress}` : `/post/${this.props.postID}`}
         onClick={this.handleRead}>
         <Flex className='notif-icon' position='relative'>
           {this.state.icon}
@@ -74,7 +70,7 @@ class Notification extends React.Component {
             />
             <Box noOfLines={1} textAlign={"left"}>
               <p>
-                <b>{this.props.userProfile.username}</b> {this.state.message}
+                <b>{this.props.fromUser.username}</b> {this.state.message}
               </p>
             </Box>
         </Flex>
@@ -85,21 +81,13 @@ class Notification extends React.Component {
 
 const actionCreators = {
   readNotification,
-  getUser
 }
-
 const mapStateToProps = (state, ownProps) => ({
-  userProfile: userSelector(state)
 })
-
 Notification.propTypes = {
-  userProfile: PropTypes.object
 }
-
 Notification.defaultProps = {
-  userProfile: {}
 }
-
 export default connect(
   mapStateToProps,
   actionCreators

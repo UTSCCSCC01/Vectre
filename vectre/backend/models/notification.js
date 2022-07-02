@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const Notification = require('./neo4j/notification');
+const User = require('./neo4j/user');
 const {nano} = require("../utils/Utils");
 
 const ACTIONS = {
@@ -85,7 +86,10 @@ const read = function (session, readerWalletAddress, notificationID) {
 const getUserNotifications = function (session, walletAddress) {
     const query = [
         `MATCH (notification:Notification {toUser:'${walletAddress}'})`,
-        `RETURN notification`,
+        `WITH notification`,
+        `MATCH (fromUser:User)`,
+        `WHERE fromUser.walletAddress = notification.fromUser`,
+        `RETURN notification, fromUser`,
         `ORDER BY notification.timestamp DESC`
     ].join('\n');
 
@@ -94,6 +98,8 @@ const getUserNotifications = function (session, walletAddress) {
             let notifications = [], hasUnreadNotif = false
             results.records.forEach((record) => {
                 let notif = new Notification(record.get('notification'))
+                notif.fromUser = new User(record.get('fromUser'))
+
                 notifications.push(notif)
                 if (notif.read === false)
                     hasUnreadNotif = true
