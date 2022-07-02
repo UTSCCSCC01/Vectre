@@ -3,6 +3,9 @@ import {
    useBoolean,
    Image
 } from "@chakra-ui/react"
+import { TOAST_STATUSES } from "../../../redux/constants/toast";
+import { showToast } from "../../../redux/actions/toast";
+import { useDispatch } from "react-redux";
 
 const NFTImage = ({
    handleSelectAdd,
@@ -12,6 +15,8 @@ const NFTImage = ({
    nftItem,
 }) => {
    var [selected, setSelected] = useBoolean();
+   const dispatch = useDispatch();
+
    return (
       <Image
          cursor={'pointer'}
@@ -34,6 +39,9 @@ const NFTImage = ({
                   console.log("removed item: " + nftItem.tokenID)
                   handleSelectDelete(selectedList, nftItem, setSelectedList);
                }
+            }
+            if (selectedList.length == 3 && selected == false) {
+               dispatch(showToast(TOAST_STATUSES.ERROR, "Select a Maximum of 3 NFTs"));
             }
          }}
       />
