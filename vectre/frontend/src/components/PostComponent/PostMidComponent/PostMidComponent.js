@@ -26,7 +26,10 @@ const PostMidComponent = ({
                 display={item.imageURL ? 'inline-flex' : 'none'}>
                 <Image
                     cursor={'pointer'}
-                    onClick={onOpen}
+                    onClick={((e) => {
+                        onOpen();
+                        e.stopPropagation();
+                    })}
                     src={item.imageURL}
                     fit={'cover'}
                     overflow={'hidden'}
