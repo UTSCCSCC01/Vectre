@@ -4,7 +4,7 @@ import {
     storePost,
     storeComments,
     doLike,
-    doUnlike
+    doUnlike, getPost, getComments
 } from "../actions/posts";
 import {
     GET_POST,
@@ -20,7 +20,7 @@ import {
 import { showToast } from "../actions/toast";
 import { TOAST_STATUSES } from "../constants/toast";
 
-function* getPost(action) {
+function* getPostSaga(action) {
     try {
         const response = yield call(getRequest, BASE_API_URL + POSTS.GET_POST.replace("{postID}", action.postID)), responseData = response[1]
         if (responseData.success) {
@@ -34,7 +34,7 @@ function* getPost(action) {
     }
 }
 
-function* getComments(action) {
+function* getCommentsSaga(action) {
     try {
         const response = yield call(getRequest, BASE_API_URL + POSTS.GET_COMMENTS.replace("{postID}", action.postID)), responseData = response[1]
         if (responseData.success) {
@@ -52,8 +52,8 @@ function* postComment(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + POSTS.POST_COMMENT.replace("{postID}", action.postID), action.comment), responseData = response[1]
         if (responseData.success) {
-            yield getPost({ postID: action.postID });
-            yield getComments({ postID: action.postID });
+            yield put(getPost(action.postID))
+            yield put(getComments(action.postID))
             action.reloadForm();
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
@@ -95,8 +95,8 @@ function* postUnlike(action) {
 }
 
 function* postsSaga() {
-    yield takeLatest(GET_POST, getPost)
-    yield takeLatest(GET_COMMENTS, getComments)
+    yield takeLatest(GET_POST, getPostSaga)
+    yield takeLatest(GET_COMMENTS, getCommentsSaga)
     yield takeLatest(POST_COMMENT, postComment)
     yield takeLatest(POST_LIKE, postLike)
     yield takeLatest(POST_UNLIKE, postUnlike)
