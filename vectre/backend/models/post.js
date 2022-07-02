@@ -15,7 +15,7 @@ const createUserPost = function (session, authorWalletAddress, body) {
     const imageString = body.imageURL ? `, imageURL: '${body.imageURL}'` : ""; // imageURL is optional on a post
 
     if (body.repostPostID) { // Repost
-        return getPostByID(session, null, ) // Note: walletAddress here is null means alreadyLiked will not show for
+        return getPostByID(session, null, body.repostPostID)
             .then((result) => {
                 if (result.success) {
                     const query = [
