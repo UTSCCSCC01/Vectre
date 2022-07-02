@@ -3,13 +3,15 @@ import {
     STORE_USERS,
     STORE_LOGGED_IN_USER,
     STORE_LOGIN_NONCE,
+    STORE_NFT,
 } from "../constants/users";
 
 const initialState = {
     user: {},
     users: [],
     loggedInUser: {},
-    nonce: ""
+    nonce: "",
+    nft: []
 }
 
 const users = (state = initialState, action) => {
@@ -33,6 +35,11 @@ const users = (state = initialState, action) => {
             return {
                 ...state,
                 nonce: action.nonce
+            }
+        case STORE_NFT:
+            return {
+                ...state,
+                nft: action.nft
             }
         default:
             return state

@@ -4,7 +4,7 @@ import {
     storeUsers,
     storeLoginNonce,
     storeLoggedInUser,
-    storeUser, getUser,
+    storeUser, getUser, storeNFT,
 } from "../actions/users";
 import {
     GET_LOGIN_NONCE,
@@ -16,13 +16,15 @@ import {
     UPDATE_USER,
     FOLLOW_USER,
     UNFOLLOW_USER,
+    GET_NFT,
+    UPDATE_DASHBOARD,
 } from "../constants/users";
 import {
     BASE_API_URL,
     USERS
 } from "../constants/endpoints";
-import {TOAST_STATUSES} from "../constants/toast";
-import {showToast} from "../actions/toast";
+import { TOAST_STATUSES } from "../constants/toast";
+import { showToast } from "../actions/toast";
 
 // Login
 function* getLoginNonce(action) {
@@ -39,7 +41,7 @@ function* loginUser(action) {
         const response = yield call(postRequest, BASE_API_URL + USERS.LOGIN, { walletAddress: action.walletAddress, signedNonce: action.signedNonce }), responseData = response[1]
         if (responseData.success)
             yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
-            yield put(action.redirectWindow("/home"))
+        yield put(action.redirectWindow("/home"))
     } catch (error) {
         yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get login"))
         console.log(error)
@@ -84,6 +86,23 @@ function* getUsers() {
     }
 }
 
+function* getNFT(action) {
+    try {
+        const response = yield call(getRequest, BASE_API_URL + USERS.GET_NFT.replace("{walletAddress}", action.walletAddress)), responseData = response[1]
+        console.log(response);
+        if (responseData.success) {
+            console.log(responseData.nft)
+            yield put(storeNFT(responseData.nft))
+        }
+        else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+    } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get NFTs"))
+        console.log(error)
+    }
+}
+
 function* createUser(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + USERS.CREATE_USER, action.user), responseData = response[1]
@@ -110,6 +129,21 @@ function* updateUser(action) {
         }
     } catch (error) {
         yield put(showToast(TOAST_STATUSES.ERROR, "Failed to update user"))
+        console.log(error)
+    }
+}
+
+function* updateDashboard(action) {
+    try {
+        const response = yield call(postRequest, BASE_API_URL + USERS.UPDATE_DASHBOARD.replace("{walletAddress}", action.walletAddress), { dashboard: action.dashboard }), responseData = response[1]
+        console.log(response)
+        if (responseData.success) {
+            yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+    } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to update dashboard"))
         console.log(error)
     }
 }
@@ -148,11 +182,13 @@ function* usersSaga() {
     yield takeLatest(LOGIN_USER, loginUser)
     yield takeLatest(GET_LOGGED_IN_USER, getLoggedInUser)
     yield takeLatest(GET_USER, getUserSaga)
+    yield takeLatest(GET_NFT, getNFT)
     yield takeLatest(GET_USERS, getUsers)
     yield takeLatest(CREATE_USER, createUser)
     yield takeLatest(UPDATE_USER, updateUser)
     yield takeLatest(FOLLOW_USER, followUser)
     yield takeLatest(UNFOLLOW_USER, unfollowUser)
+    yield takeLatest(UPDATE_DASHBOARD, updateDashboard)
 }
 
 export default usersSaga

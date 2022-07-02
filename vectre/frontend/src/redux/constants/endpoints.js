@@ -4,10 +4,12 @@ export const USERS = {
     GET_LOGIN_NONCE: "/users/login/nonce",
     LOGIN: "/users/login",
     GET_LOGGED_IN_USER: "/users/login/currentUser",
+    GET_NFT: "/users/{walletAddress}/nft",
 
     GET_USERS: "/users",
     CREATE_USER: "/users/register",
     UPDATE_USER: "/users/{walletAddress}/update",
+    UPDATE_DASHBOARD: "/users/{walletAddress}/updateDashboard",
 }
 
 export const POSTS = {

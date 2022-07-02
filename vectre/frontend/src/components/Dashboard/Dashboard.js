@@ -13,6 +13,7 @@ import DashboardEditModal from "./DashboardEditModal/DashboardEditModal";
 const Dashboard = ({
    loggedInUser,
    profileWalletAddress,
+   currentDashboard,
 }) => {
    const { isOpen, onOpen, onClose } = useDisclosure()
    return (
@@ -27,8 +28,10 @@ const Dashboard = ({
             py={'15px'}>
             <Stack gap={'4px'} width={'100%'}>
                <DashboardTop></DashboardTop>
-               <DashboardMid></DashboardMid>
-               {loggedInUser.wallet_address === profileWalletAddress ?
+               <DashboardMid
+                  currentDashboard={currentDashboard}>
+               </DashboardMid>
+               {loggedInUser.walletAddress === profileWalletAddress ?
                   <>
                      <DashboardBot onOpen={onOpen} />
                      <DashboardEditModal isOpen={isOpen} onClose={onClose} />

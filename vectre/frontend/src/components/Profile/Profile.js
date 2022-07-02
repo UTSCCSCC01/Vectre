@@ -36,7 +36,7 @@ class Profile extends React.Component {
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.loggedInUser !== this.props.loggedInUser) {
-            this.setState({following: this.props.loggedInUser.following.includes(this.props.profileWalletAddress)})
+            this.setState({ following: this.props.loggedInUser.following.includes(this.props.profileWalletAddress) })
         }
     }
 
@@ -66,6 +66,7 @@ class Profile extends React.Component {
                             <b>username:</b> @{this.props.user.username} <br></br>
                             <b>name</b>: {this.props.user.name} <br></br>
                             <b>bio</b>: {this.props.user.bio} <br></br>
+                            <b>dashboard</b>: {this.props.user.dashboard} <br></br>
 
                             <br></br>
                             <b>Following</b>: <br></br>
@@ -112,6 +113,7 @@ class Profile extends React.Component {
                         <Dashboard
                             loggedInUser={this.props.loggedInUser}
                             profileWalletAddress={this.props.profileWalletAddress}
+                            currentDashboard={this.props.user.dashboard}
                         />
                     </>
                 }

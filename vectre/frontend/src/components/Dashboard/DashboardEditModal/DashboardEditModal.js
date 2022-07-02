@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import {
     Modal,
     ModalOverlay,
@@ -12,11 +12,16 @@ import {
     Box,
 } from "@chakra-ui/react"
 
-import NFTImage from "../NFTImage/NFTImage";
+import { useDispatch, useSelector } from 'react-redux';
+import { loggedInUserSelector, nftSelector } from '../../../redux/selectors/users';
+
 import { BsFillCheckCircleFill } from 'react-icons/bs';
 import { BiSelectMultiple } from 'react-icons/bi';
 
-const nft = [
+import NFTImage from "../NFTImage/NFTImage";
+import { getNFT, updateDashboard } from "../../../redux/actions/users";
+
+const nft_preset = [
     {
         "tokenID": 77809613,
         "name": "Ryder Ripps Bored Ape Yacht Club",
@@ -103,22 +108,31 @@ const nft = [
     }
 ]
 
-function handleSelectDelete(selectedList, nftItem) {
-    const index = selectedList.findIndex(el => {
-        return el.tokenID === String(nftItem.tokenID);
+function handleSelectDelete(selectedList, nftItem, setSelectedList) {
+    var newSelectedList = [];
+    selectedList.map((element) => {
+        if (element !== nftItem) {
+            newSelectedList.push(element);
+        }
     })
-    if (index === -1) {
-        return false;
-    }
-    selectedList = selectedList.splice(index, 100);
+    setSelectedList(newSelectedList)
     console.log(selectedList);
 }
 
-function handleSelectAdd(selectedList, nftItem, selected) {
+function handleSelectAdd(selectedList, nftItem, setSelectedList) {
 
     if (!selectedList.some(item => item.tokenID == nftItem.tokenID)) {
         selectedList.push(nftItem);
     }
+
+    // var contains = false;
+    // selectedList.map((element) => {
+    //     if (element === nftItem) {
+    //         contains = true;
+    //     }
+    // })
+    // if (!contains) setSelectedList(selectedList.push(nftItem))
+
     console.log(selectedList);
 }
 
@@ -126,8 +140,16 @@ function DashboardEditModal({
     isOpen,
     onClose
 }) {
-    const [scrollBehavior, setScrollBehavior] = React.useState('inside')
-    var selectedList = []
+    const [scrollBehavior] = React.useState('inside')
+    const [selectedList, setSelectedList] = useState([]);
+    const dispatch = useDispatch()
+    const loggedInUser = useSelector(loggedInUserSelector);
+
+    useEffect(() => {
+        dispatch(getNFT(loggedInUser.walletAddress))
+    }, [loggedInUser])
+
+    const nft = useSelector(nftSelector);
 
     return (
         <>
@@ -167,7 +189,7 @@ function DashboardEditModal({
                                 Select NFTs Below
                             </Button>
                         </Flex>
-                        <Flex flexDirection={'left'} alignContent={'left'} justifyContent={'left'}>
+                        <Flex flexDirection={'row'} alignContent={'left'} justifyContent={'left'}>
                             <Button
                                 display={{ base: 'none', lg: 'inline-flex' }}
                                 marginTop={'2px'}
@@ -186,7 +208,6 @@ function DashboardEditModal({
                         <Grid templateColumns='repeat(3, 1fr)' gap={6}>
                             {
                                 nft.map((nftItem, i) => {
-
                                     return (
                                         <Box
                                             key={i}>
@@ -194,6 +215,7 @@ function DashboardEditModal({
                                                 handleSelectDelete={handleSelectDelete}
                                                 handleSelectAdd={handleSelectAdd}
                                                 selectedList={selectedList}
+                                                setSelectedList={setSelectedList}
                                                 nftItem={nftItem}
                                             />
                                         </Box>
@@ -204,7 +226,16 @@ function DashboardEditModal({
                     </ModalBody>
                     <ModalFooter>
                         <Button
-                            onClick={onClose}
+                            onClick={(e) => {
+                                if (selectedList.length > 0) {
+                                    const dashboard = JSON.stringify(selectedList).replace(/"/g, "'");
+                                    dispatch(updateDashboard(loggedInUser.walletAddress, dashboard))
+                                    onClose();
+                                } else {
+                                    console.log("Unable to Update Dashboard [EditModal]");
+                                }
+                                e.stopPropagation();
+                            }}
                             bg={'primary.400'}
                             color={'white'}
                             _hover={{ textDecoration: "none" }}

@@ -369,7 +369,7 @@ const unfollowUser = (session, walletAddress, walletAddressToUnfollow) => {
                                 message: "Successfully unfollowed user"
                             }
                         })
-                    }
+                }
             })
             .catch((error) => {
                 throw {
@@ -411,7 +411,7 @@ const getNFT = (walletAddress) => { // Gets all NFTs of a User using OpenSea API
 
             return {
                 success: true,
-                nft: json.assets,
+                nft: asset_list,
                 message: `Successfully retrieved NFTs for user with wallet address ${walletAddress}`
             }
         }).catch((error) => {
@@ -424,7 +424,7 @@ const getNFT = (walletAddress) => { // Gets all NFTs of a User using OpenSea API
 }
 
 const getDashboard = (session, walletAddress) => { // Gets the NFTs in the dashboard of a User.
-    const query =  `MATCH (user:User {walletAddress: "${walletAddress}" }) RETURN user.dashboard`
+    const query = `MATCH (user:User {walletAddress: "${walletAddress}" }) RETURN user.dashboard`
     return session.run(query)
         .then((results) => {
             if (_.isEmpty(results.records)) {
@@ -447,8 +447,8 @@ const getDashboard = (session, walletAddress) => { // Gets the NFTs in the dashb
         })
 }
 
-const updateDashboard = (session, body) => {  // Sets the NFTs in the dashboard of a User.
-    const query = `MATCH (user:User {walletAddress:"${body.walletAddress}"}) SET user.dashboard = "${body.dashboard}" RETURN user`;
+const updateDashboard = (session, walletAddress, body) => {  // Sets the NFTs in the dashboard of a User.
+    const query = `MATCH (user:User {walletAddress:"${walletAddress}"}) SET user.dashboard = "${body.dashboard}" RETURN user`;
     return session.run(query)
         .then((results) => {
             if (_.isEmpty(results.records)) {
@@ -459,13 +459,14 @@ const updateDashboard = (session, body) => {  // Sets the NFTs in the dashboard 
             } else {
                 return {
                     success: true,
-                    user: new User(results.records[0].get('user'))
+                    user: new User(results.records[0].get('user')),
+                    message: `Successfully updated dashboard!`
                 }
             }
         }).catch((error) => {
             throw {
                 success: false,
-                message: "Failed to get User",
+                message: "Failed to update Dashboard.",
                 error: error.message
             }
         })

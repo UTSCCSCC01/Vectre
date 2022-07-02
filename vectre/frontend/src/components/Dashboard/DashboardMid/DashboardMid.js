@@ -4,7 +4,7 @@ import {
     Grid
 } from '@chakra-ui/react';
 
-const dashboard = [
+const dashboardPreset = [
     {
         "tokenID": 77809613,
         "name": "Ryder Ripps Bored Ape Yacht Club",
@@ -25,9 +25,23 @@ const dashboard = [
     },
 ]
 
+function isJsonString(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
+
 const DashboardMid = ({
-    dashboardList,
+    currentDashboard,
 }) => {
+    const currentDashboardList = currentDashboard.replace(/'/g, "\"");
+    // console.log(currentDashboardList);
+    // console.log("isJsonSTRING: " + isJsonString(currentDashboardList));
+    const dashboard = JSON.parse(currentDashboardList);
+
     return (
         <Box
             height={'350px'}
@@ -37,7 +51,6 @@ const DashboardMid = ({
             py={'15px'}
             alignItems={'baseline'}
             display={'in-line grid'}>
-
             {
                 <Grid
                     justifyContent={'center'}

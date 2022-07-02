@@ -8,6 +8,7 @@ const NFTImage = ({
    handleSelectAdd,
    handleSelectDelete,
    selectedList,
+   setSelectedList,
    nftItem,
 }) => {
    var [selected, setSelected] = useBoolean();
@@ -26,11 +27,11 @@ const NFTImage = ({
             console.log(!selected);
             if (!selected == true) {
                console.log("added item: " + nftItem.tokenID)
-               handleSelectAdd(selectedList, nftItem);
+               handleSelectAdd(selectedList, nftItem, setSelectedList);
             }
             else {
                console.log("removed item: " + nftItem.tokenID)
-               handleSelectDelete(selectedList, nftItem);
+               handleSelectDelete(selectedList, nftItem, setSelectedList);
             }
          }
          }
