@@ -66,7 +66,6 @@ class Profile extends React.Component {
                             <b>username:</b> @{this.props.user.username} <br></br>
                             <b>name</b>: {this.props.user.name} <br></br>
                             <b>bio</b>: {this.props.user.bio} <br></br>
-                            <b>dashboard</b>: {this.props.user.dashboard} <br></br>
 
                             <br></br>
                             <b>Following</b>: <br></br>
