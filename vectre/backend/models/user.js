@@ -3,6 +3,7 @@ const User = require('./neo4j/user')
 const config = require('../config');
 const jwt = require('jsonwebtoken')
 const ethUtil = require('ethereumjs-util');
+const fetch = (url) => import('node-fetch').then(({default: fetch}) => fetch(url));
 
 const getAll = (session) => { // Returns all Users
     const query = "MATCH (user:User) RETURN user";
