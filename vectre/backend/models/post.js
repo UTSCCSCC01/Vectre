@@ -97,7 +97,8 @@ const getPostsByUser = function (session, walletAddress) {
 const getUserFeed = function (session, walletAddress, start, size) {
     const query = [
         `MATCH (u: User {walletAddress: '${walletAddress}'})-[:FOLLOWS]->(b:User)-[:POSTED]->(p: Post)`,
-        `RETURN DISTINCT p`,
+        `OPTIONAL MATCH (p)-[:REPOSTED]->(c)`,
+        `RETURN p, c`,
         `ORDER BY p.timestamp DESC`,
         `SKIP ${start}`,
         `LIMIT ${size}`
@@ -107,7 +108,12 @@ const getUserFeed = function (session, walletAddress, start, size) {
         .then((results) => {
             let posts = []
             results.records.forEach((record) => {
-                posts.push(new Post(record.get('p')))
+                const post = new Post(record.get('p'))
+                if(post.repostPostID){
+                    const child = new Post(record.get('c'))
+                    post.repostPost = child
+                }
+                posts.push(post)
             })
             return {
                 success: true,
