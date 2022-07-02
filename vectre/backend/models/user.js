@@ -13,7 +13,7 @@ const getAll = (session) => { // Returns all Users
             results.records.forEach((record) => {
                 users.push(new User(record.get('user')))
             })
-            return {success: true, users: users}
+            return { success: true, users: users }
         })
         .catch((error) => {
             throw {
@@ -92,7 +92,7 @@ function validateSignedNonce(wallet_address, nonce, signed_message) {
         signatureParams.r,
         signatureParams.s
     )
-    const addressBuffer= ethUtil.publicToAddress(publicKey)
+    const addressBuffer = ethUtil.publicToAddress(publicKey)
     const address = ethUtil.bufferToHex(addressBuffer)
 
     return address.toLowerCase() === wallet_address.toLowerCase()
@@ -119,7 +119,7 @@ const login = (session, wallet_address, signed_nonce, setTokenInCookie) => { // 
                 return getNonce(session, wallet_address)
                     .then((response) => {
                         if (response.success) {
-                            if(validateSignedNonce(wallet_address, response.nonce, signed_nonce)) {
+                            if (validateSignedNonce(wallet_address, response.nonce, signed_nonce)) {
                                 const accessToken = jwt.sign(wallet_address, config.jwt_secret_token)
 
                                 // TODO: Regenerate nonce
@@ -165,15 +165,15 @@ const updateUser = function (session, wallet, filter, newUser) {
 
     // Check for existence of required fields.
     for (let filterName of filter) {
-        if (!(filterName in newUser)) throw {success: false, message : `Missing field ${f}.`}
-        if (typeof filterName !== 'string') throw {success: false, message : `Field ${f} is not String.`}
+        if (!(filterName in newUser)) throw { success: false, message: `Missing field ${f}.` }
+        if (typeof filterName !== 'string') throw { success: false, message: `Field ${f} is not String.` }
     }
 
     // Check for non empty fields
     const nonEmpty = ["username", "name"]
     for (let f of nonEmpty) {
-        if ( (f in newUser) && newUser[f] == "") {
-            throw {success: false, message : `Field ${f} is empty.`}
+        if ((f in newUser) && newUser[f] == "") {
+            throw { success: false, message: `Field ${f} is empty.` }
         }
     }
 
@@ -188,12 +188,12 @@ const updateUser = function (session, wallet, filter, newUser) {
             if (_.isEmpty(results.records)) {
                 return {
                     success: false,
-                    message : "Edit failed, wallet does not exist."
+                    message: "Edit failed, wallet does not exist."
                 }
             }
             return {
                 success: true,
-                message : "Edit success."
+                message: "Edit success."
             }
         }).catch(error => { throw error })
 }
@@ -212,8 +212,8 @@ const updateProfile = function (session, wallet, newProf) {
         AND (NOT u.wallet_address = \"${wallet}\") RETURN u`;
     return session.run(searchUsernameQuery)
         .then(existence => {
-            if ( !_.isEmpty(existence.records)) { // Check for existing username
-                return {success: false, message: "Username already exists."}
+            if (!_.isEmpty(existence.records)) { // Check for existing username
+                return { success: false, message: "Username already exists." }
             } else {
                 const profileFilter = ["name", "username", "bio"]
                 return updateUser(session, wallet, profileFilter, newProf)
@@ -225,7 +225,8 @@ const updateProfile = function (session, wallet, newProf) {
             throw {
                 success: false,
                 error: error.message,
-                message: "Error while editing. Please try again." }
+                message: "Error while editing. Please try again."
+            }
         })
 }
 
@@ -251,7 +252,7 @@ const getNFT = (wallet_address) => { // Gets all NFTs of a User using OpenSea AP
     return fetch(`https://testnets-api.opensea.io/api/v1/assets?owner=${wallet_address}&order_direction=desc&offset=0&limit=20&include_orders=false`)
         .then(res => res.json())
         .then(json => {
-            if (_.isEmpty(json.assets)){
+            if (_.isEmpty(json.assets)) {
                 return {
                     success: false,
                     nft: null,
@@ -262,10 +263,10 @@ const getNFT = (wallet_address) => { // Gets all NFTs of a User using OpenSea AP
             var asset_list = [];
             for (let i = 0; i < json.assets.length; i++) {
                 var jsonObj = {
-                    token_id: json.assets[i].id,
+                    tokenID: json.assets[i].id,
                     name: json.assets[i].asset_contract.name, //change 'asset_contract.name' -> 'name' once OpenSea Mainnet API is received.
-                    image_url: json.assets[i].image_url,
-                    contract_address: json.assets[i].asset_contract.address,
+                    imageURL: json.assets[i].image_url,
+                    contractAddress: json.assets[i].asset_contract.address,
                 }
                 asset_list.push(jsonObj);
             }
@@ -282,10 +283,10 @@ const getNFT = (wallet_address) => { // Gets all NFTs of a User using OpenSea AP
                 error: error.message
             }
         })
-} 
+}
 
 const getDashboard = (session, wallet_address) => { // Gets the NFTs in the dashboard of a User.
-    const query =  `MATCH (user:User {wallet_address: "${wallet_address}" }) RETURN user.dashboard`
+    const query = `MATCH (user:User {wallet_address: "${wallet_address}" }) RETURN user.dashboard`
     return session.run(query)
         .then((results) => {
             if (_.isEmpty(results.records)) {

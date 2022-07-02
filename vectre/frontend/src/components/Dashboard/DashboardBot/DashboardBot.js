@@ -3,19 +3,18 @@ import {
     Link
 } from '@chakra-ui/react';
 
-import { TiArrowLeft, TiArrowRight } from 'react-icons/ti';
 import { BsFillCheckCircleFill } from 'react-icons/bs';
 
 import TextButton from '../../Buttons/TextButton/TextButton'
 
 const DashboardBot = ({
     onOpen,
-    item,
 }) => {
+
     return (
-        <Flex 
-            flexDirection={'row'} 
-            alignContent={'center'} 
+        <Flex
+            flexDirection={'row'}
+            alignContent={'center'}
             justifyContent={'center'}>
             <Link
                 _hover={{ textDecoration: "none" }}>

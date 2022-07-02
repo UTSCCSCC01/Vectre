@@ -6,7 +6,6 @@ import {
 import { RiDashboard2Line } from 'react-icons/ri'
 
 const PostTopComponent = ({
-   item,
 }) => {
    return (
       <Flex flexDirection={'row'} alignContent={'center'} justifyContent={'center'}>

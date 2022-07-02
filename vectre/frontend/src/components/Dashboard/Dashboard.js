@@ -1,7 +1,6 @@
 import React from "react"
 import {
    Stack,
-   Button,
    Box,
    useDisclosure
 } from "@chakra-ui/react"
@@ -31,8 +30,8 @@ const Dashboard = ({
                <DashboardMid></DashboardMid>
                {loggedInUser.wallet_address === profileWalletAddress ?
                   <>
-                     <DashboardBot onOpen={onOpen}/>
-                     <DashboardEditModal isOpen={isOpen} onClose={onClose}/>
+                     <DashboardBot onOpen={onOpen} />
+                     <DashboardEditModal isOpen={isOpen} onClose={onClose} />
                   </> : null
                }
             </Stack>
