@@ -10,6 +10,9 @@ import {
     UPDATE_USER,
     GET_LOGGED_IN_USER,
     STORE_LOGGED_IN_USER,
+    GET_NOTIFICATIONS,
+    STORE_NOTIFICATIONS,
+    STORE_UNREADSTATUS,
     FOLLOW_USER,
     UNFOLLOW_USER,
 } from "../constants/users";
@@ -66,6 +69,21 @@ export const updateUser = (walletAddress, updatedUser) => ({
     type: UPDATE_USER,
     walletAddress,
     updatedUser
+})
+
+export const getNotifications = (walletAddress) => ({
+    type: GET_NOTIFICATIONS,
+    walletAddress
+})
+
+export const storeNotifications = (notifications) => ({
+    type: STORE_NOTIFICATIONS,
+    notifications
+})
+
+export const storeUnreadStatus = (unreadStatus) => ({
+    type: STORE_UNREADSTATUS,
+    unreadStatus
 })
 
 export const followUser = (walletAddressToFollow,) => ({
