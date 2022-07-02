@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import { connect } from "react-redux";
 import { getLoggedInUser, getNotifications } from "../../redux/actions/users";
 import { loggedInUserSelector, notificationsSelector, unreadStatusSelector } from "../../redux/selectors/users";
+import {within24} from "../../utils/Utils";
 
 class Notifications extends React.Component {
   constructor(props) {
@@ -36,10 +37,7 @@ class Notifications extends React.Component {
     const currentTime = new Date()
     allNotifications.forEach(notif => {
       // Calculate time difference.
-      // TODO: use utils method to calculate hour difference
-      let notifTime = new Date(notif.timestamp)
-      let hoursDif = (currentTime - notifTime) / (1000 * 3600)
-      if (hoursDif <= 24) {
+      if (within24(notif.timestamp)) {
         recentNotifs.push(notif)
       } else {
         pastNotifs.push(notif)
