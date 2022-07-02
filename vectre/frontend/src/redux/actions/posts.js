@@ -26,9 +26,10 @@ export const storePost = (post) => ({
     type: STORE_POST,
     post
 })
-export const createRepost = (repostData) => ({
+export const createRepost = (repostData, redirectWindow) => ({
     type: CREATE_REPOST,
-    repostData
+    repostData,
+    redirectWindow
 })
 
 // Post interactions:

@@ -19,6 +19,7 @@ import RepostComponent from "../../PostComponent/RepostComponent/RepostComponent
 import { useDispatch, useSelector } from "react-redux";
 import { loggedInUserSelector } from "../../../redux/selectors/users";
 import { createRepost } from "../../../redux/actions/posts";
+import { redirectWindow } from "../../../utils/Utils"
 
 const RepostModal = ({
     item,
@@ -54,7 +55,7 @@ const RepostModal = ({
                                     repostPostID: item.postID,
                                     walletAddress: loggedInUser.walletAddress
                                 }
-                                dispatch(createRepost(repostData))
+                                dispatch(createRepost(repostData, redirectWindow))
                                 onClose();
                             }}
                         >

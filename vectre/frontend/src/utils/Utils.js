@@ -32,3 +32,5 @@ export const getBannerOrDefault = (bannerLink) => {
     if (!bannerLink || bannerLink === "") return DEFAULT_BANNER
     else return bannerLink
 }
+
+export const redirectWindow = (href) => { window.location.href = href }

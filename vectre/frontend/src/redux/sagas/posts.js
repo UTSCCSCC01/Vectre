@@ -26,6 +26,7 @@ function* createRepost(action) {
         const response = yield call(postRequest, BASE_API_URL + POSTS.CREATE_REPOST, action.repostData), responseData = response[1]
         if (responseData.success) {
             yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
+            yield put(action.redirectWindow("/post/" + responseData.newPostID))
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }
