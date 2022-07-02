@@ -393,13 +393,21 @@ const unfollowUser = (session, walletAddress, walletAddressToUnfollow) => {
 
 const getNFT = (walletAddress) => { // Gets all NFTs of a User using OpenSea API.
     return fetch(`https://testnets-api.opensea.io/api/v1/assets?owner=${walletAddress}&order_direction=desc&offset=0&limit=20&include_orders=false`)
-        .then(res => res.json())
+        .then(res => {
+            if (res.status !== 200) {
+                throw {
+                    success: false,
+                    message: "Failed to retrieve NFTs"
+                }
+            }
+            return res.json()
+        })
         .then(json => {
             if (_.isEmpty(json.assets)) {
-                return {
-                    success: false,
-                    nft: null,
-                    message: `Failed to retrieve NFTs for user with wallet address ${walletAddress}`
+                return { // User has no NFTs
+                    success: true,
+                    nft: [],
+                    message: "User has no NFTs"
                 }
             }
 
@@ -417,12 +425,12 @@ const getNFT = (walletAddress) => { // Gets all NFTs of a User using OpenSea API
             return {
                 success: true,
                 nft: asset_list,
-                message: `Successfully retrieved NFTs for user with wallet address ${walletAddress}`
+                message: `Successfully retrieved user's NFTs`
             }
         }).catch((error) => {
             throw {
                 success: false,
-                message: "Failed to get User's NFTs.",
+                message: "Failed to get user's NFTs",
                 error: error.message
             }
         })
