@@ -9,7 +9,7 @@ import {
 import './Notification.css'
 import { FaCommentAlt, FaHeart } from 'react-icons/fa'
 import { ImUserPlus } from 'react-icons/im'
-import DEFAULT_PROFILE_PICTURE from "../../assets/images/default_profile_pic.jpg"
+import DEFAULT_AVATAR from "../../assets/images/default-avatar.png"
 
 // Redux
 import PropTypes from 'prop-types';
@@ -68,7 +68,7 @@ class Notification extends React.Component {
         <Spacer />
         <Flex className='notif-tag'>
             {/* TODO: add avatar from props.userProfile instead. */}
-            <Avatar src={DEFAULT_PROFILE_PICTURE}
+            <Avatar src={DEFAULT_AVATAR}
               size="sm"
               mx="15px"
             />
