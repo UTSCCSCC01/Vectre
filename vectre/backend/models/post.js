@@ -217,9 +217,11 @@ const getPostByID = function (session, walletAddress, postID) {
         `MATCH (author:User)-[:POSTED]->(post:Post {postID:'${postID}'})`,
         `OPTIONAL MATCH (repost:Post)`,
         `WHERE repost.postID = post.repostPostID`,
+        `OPTIONAL MATCH (repostAuthor:User)`,
+        `WHERE repostAuthor.walletAddress = repost.author`,
         `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
         `WHERE post.author = author.walletAddress`,
-        `RETURN DISTINCT author, post, count(c) AS comment, repost`
+        `RETURN DISTINCT author, post, count(c) AS comment, repost, repostAuthor`
     ].join('\n');
 
     return session.run(query)
@@ -229,7 +231,10 @@ const getPostByID = function (session, walletAddress, postID) {
             post.author = new User(queryRecord.get('author'))
             post.comment = String(queryRecord.get("comment").low);
             post.community = "notarealcommunity" // TOOD: Unhardcode this value
-            if (post.repostPostID) post.repostPost = new Post(queryRecord.get('repost'))
+            if (post.repostPostID) {
+                post.repostPost = new Post(queryRecord.get('repost'))
+                post.repostPost.author = new User(queryRecord.get('repostAuthor'))
+            }
 
             if (walletAddress !== null) {
                 return checkIfAlreadyLiked(session, postID, { walletAddress: walletAddress })
