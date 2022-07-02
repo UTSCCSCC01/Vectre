@@ -5,7 +5,6 @@ const User = require('../models/user');
 const Post = require('../models/post');
 const dbUtils = require('../utils/neo4j/dbUtils');
 const { authenticateToken } = require("../utils/auth");
-const { rest } = require('lodash');
 
 // GET /users
 router.get('/', (req, res, next) => {

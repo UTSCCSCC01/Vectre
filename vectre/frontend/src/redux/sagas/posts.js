@@ -9,7 +9,7 @@ import {
 import {
     GET_POST,
     GET_COMMENTS,
-    POST_COMMENT,
+    CREATE_COMMENT,
     POST_LIKE,
     POST_UNLIKE
 } from "../constants/posts";
@@ -48,9 +48,9 @@ function* getCommentsSaga(action) {
     }
 }
 
-function* postComment(action) {
+function* createComment(action) {
     try {
-        const response = yield call(postRequest, BASE_API_URL + POSTS.POST_COMMENT.replace("{postID}", action.postID), action.comment), responseData = response[1]
+        const response = yield call(postRequest, BASE_API_URL + POSTS.CREATE_COMMENT.replace("{postID}", action.postID), action.comment), responseData = response[1]
         if (responseData.success) {
             yield put(getPost(action.postID))
             yield put(getComments(action.postID))
@@ -66,7 +66,7 @@ function* postComment(action) {
 
 function* postLike(action) {
     try {
-        const response = yield call(postRequest, BASE_API_URL + POSTS.POST_LIKE.replace("{postID}", action.postID), action.walletAddress), responseData = response[1]
+        const response = yield call(postRequest, BASE_API_URL + POSTS.POST_LIKE.replace("{postID}", action.postID)), responseData = response[1]
         if (responseData.success) {
             yield put(doLike(action.postID, action.walletAddress, action.isComment));
         } else {
@@ -80,7 +80,7 @@ function* postLike(action) {
 
 function* postUnlike(action) {
     try {
-        const response = yield call(postRequest, BASE_API_URL + POSTS.POST_UNLIKE.replace("{postID}", action.postID), action.walletAddress), responseData = response[1]
+        const response = yield call(postRequest, BASE_API_URL + POSTS.POST_UNLIKE.replace("{postID}", action.postID)), responseData = response[1]
         if (responseData.success) {
             yield put(doUnlike(action.postID, action.walletAddress, action.isComment));
         } else {
@@ -95,7 +95,7 @@ function* postUnlike(action) {
 function* postsSaga() {
     yield takeLatest(GET_POST, getPostSaga)
     yield takeLatest(GET_COMMENTS, getCommentsSaga)
-    yield takeLatest(POST_COMMENT, postComment)
+    yield takeLatest(CREATE_COMMENT, createComment)
     yield takeLatest(POST_LIKE, postLike)
     yield takeLatest(POST_UNLIKE, postUnlike)
 }
