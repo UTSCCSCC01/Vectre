@@ -14,8 +14,8 @@ import {
 
 import { IoHome } from 'react-icons/io5'
 import { HiTrendingUp, HiSearch } from 'react-icons/hi'
-import { MdNotificationsActive } from 'react-icons/md'
 import { FaWallet } from 'react-icons/fa'
+import NotificationPopover from '../Notifications/NotificationPopover'
 
 import VectreIcon from '../Icons/VectreIcon'
 import { loggedInUserSelector } from "../../redux/selectors/users";
@@ -120,19 +120,7 @@ export default function NavBar() {
                                 --- $ETH
                             </Button>
                         </Link>
-                        <Link
-                            href='#'
-                            _hover={{ textDecoration: "none" }}>
-                            <IconButton
-                                size={'lg'}
-                                transform={'scale(1.2)'}
-                                color={'primary.400'}
-                                isRound={'true'}
-                                bg={'white'}
-                                icon={<MdNotificationsActive size="1.5rem" />}
-                                _focus={{ outline: 0 }}>
-                            </IconButton>
-                        </Link>
+                        <NotificationPopover />
                         <Link
                             href={Object.keys(loggedInUser).length === 0 ? "/login" : `/user/${loggedInUser.walletAddress}`}
                             _hover={{ textDecoration: "none" }}>
