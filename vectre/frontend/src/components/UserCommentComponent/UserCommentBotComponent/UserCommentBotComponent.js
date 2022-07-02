@@ -6,7 +6,7 @@ import {
     Stack,
     useToast
 } from '@chakra-ui/react';
-import { postComment } from "../../../redux/actions/posts";
+import { createComment } from "../../../redux/actions/posts";
 import { useDispatch, useSelector } from 'react-redux';
 import { loggedInUserSelector } from '../../../redux/selectors/users';
 import { useParams } from "react-router-dom";
@@ -35,7 +35,7 @@ const UserCommentBotComponent = ({
                                 author: loggedInUser.walletAddress,
                                 text: event.target.comment.value
                             }
-                            dispatch(postComment(postID, newComment, () => { document.getElementById("user-comment-form").reset() }));
+                            dispatch(createComment(postID, newComment, () => { document.getElementById("user-comment-form").reset() }));
                         })}
                     >
                         <FormControl>

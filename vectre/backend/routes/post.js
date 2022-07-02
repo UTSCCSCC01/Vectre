@@ -13,8 +13,8 @@ router.post('/create', authenticateToken, (req, res, next) => {
         .catch((error) => res.send(error))
 })
 
-// POST /posts/{postID}/comment
-router.post('/:postID/comment', authenticateToken, (req, res, next) => {
+// POST /posts/create/{postID}/comment
+router.post('/create/:postID/comment', authenticateToken, (req, res, next) => {
     Post.createUserComment(dbUtils.getSession(req), req.walletAddress, req.params.postID, req.body)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
