@@ -2,6 +2,7 @@ const _ = require('lodash');
 const Post = require('./neo4j/post')
 const User = require('./neo4j/user')
 const { nano } = require('../utils/Utils')
+const Notification = require("../models/notification")
 
 const createUserPost = function (session, authorWalletAddress, body) {
     if (!body.text) {
@@ -51,20 +52,25 @@ const createUserComment = function (session, authorWalletAddress, postID, body) 
         `WITH (p)`,
         `MATCH (u:User), (parent:Post)`,
         `WHERE u.walletAddress = '${authorWalletAddress}' AND parent.postID = '${postID}'`,
-        `CREATE (u)-[r:POSTED]->(p), (p)-[r2:COMMENTED_ON]->(parent)`
+        `CREATE (u)-[r:POSTED]->(p), (p)-[r2:COMMENTED_ON]->(parent)`,
+        `RETURN parent`
     ].join('\n');
 
     return session.run(query)
         .then((result) => {
-            return {
-                success: true,
-                message: "Successfully created Comment"
-            }
+            var parentAuthor = new Post(result.records[0].get('parent')).author
+            return Notification.create(session, "comment", parentAuthor, authorWalletAddress, commentPostID)
+                .then((result2) => {
+                    return {
+                        success: true,
+                        message: "Successfully created comment"
+                    }
+                })
         })
         .catch((error) => {
             throw {
                 success: false,
-                message: "Failed to create Comment",
+                message: "Failed to create comment",
                 error: error
             }
         });
@@ -268,26 +274,24 @@ const likePost = function (session, postID, body) {
         `WITH (p)`,
         `MATCH (u:User)`,
         `WHERE u.walletAddress = '${body.walletAddress}'`,
-        `MERGE (u)-[r:LIKED]->(p)`
+        `MERGE (u)-[r:LIKED]->(p)`,
+        `RETURN p`
     ].join('\n');
 
     return checkIfAlreadyLiked(session, postID, body)
         .then((result) => {
             if (!result.alreadyLiked) {
                 return session.run(query)
-                    .then((result) => {
-                        return {
-                            success: true,
-                            message: "Successfully liked Post"
-                        }
+                    .then((result2) => {
+                        var postAuthor = new Post(result2.records[0].get('p')).author
+                        return Notification.create(session, "like", postAuthor, body.walletAddress, postID)
+                            .then((result3) => {
+                                return {
+                                    success: true,
+                                    message: "Successfully liked post",
+                                }
+                            })
                     })
-                    .catch((error) => {
-                        throw {
-                            success: false,
-                            message: "Failed to like Post",
-                            error: error
-                        }
-                    });
             }
             return {
                 success: false,
