@@ -56,10 +56,10 @@ class Profile extends React.Component {
     render() {
         return (
             <div>
-                <h1><b>Profile:</b></h1>
                 {!this.props.user.walletAddress ? `User ${this.props.profileWalletAddress} does not exist!`
                     :
                     <>
+                        <h1><b>Profile:</b></h1>
                         <div>
                             <b>walletAddress:</b> {this.props.user.walletAddress} <br></br>
                             <b>username:</b> @{this.props.user.username} <br></br>

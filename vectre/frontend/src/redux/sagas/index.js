@@ -1,6 +1,7 @@
 import { all } from 'redux-saga/effects';
 import notificationSaga from './notification';
 import usersSaga from "./users";
+import postsSaga from "./posts";
 
 const headers = {
     'Content-Type': 'application/json',
@@ -41,6 +42,8 @@ export default function* root() {
   yield all([
       // insert sagas
       usersSaga(),
-      notificationSaga()
+      notificationSaga(),
+      postsSaga()
   ]);
 }
+
