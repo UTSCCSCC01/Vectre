@@ -247,14 +247,12 @@ const getPostByID = function (session, walletAddress, postID) {
                     .then((result2) => {
                         if (result2.alreadyLiked) {
                             post.alreadyLiked = true;
-                            console.log(post)
                             return {
                                 success: true,
                                 post: post
                             }
                         }
                         post.alreadyLiked = false;
-                        console.log(post)
                         return {
                             success: true,
                             post: post
@@ -275,7 +273,6 @@ const getPostByID = function (session, walletAddress, postID) {
             }
         })
         .catch((error) => {
-            console.log(error)
             throw {
                 success: false,
                 message: "Failed to get posts",
