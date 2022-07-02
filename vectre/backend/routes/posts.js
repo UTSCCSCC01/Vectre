@@ -3,12 +3,7 @@ var router = express.Router();
 
 const dbUtils = require('../utils/neo4j/dbUtils');
 const Post = require('../models/post');
-<<<<<<< HEAD:vectre/backend/routes/posts.js
-const { authenticateToken } = require("../utils/auth");
-=======
 const { authenticateToken, storeWalletAddressFromToken } = require("../utils/auth");
-const { rest } = require('lodash');
->>>>>>> 83e9c225b23a2263f9c68d9308bb35486694ebbe:vectre/backend/routes/post.js
 
 // POST /posts/create
 router.post('/create', authenticateToken, (req, res, next) => {

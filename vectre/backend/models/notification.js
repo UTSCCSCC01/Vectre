@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const Notification = require('./neo4j/notification');
-const { nanoid } = require("nanoid");
+const User = require('./neo4j/user');
+const {nano} = require("../utils/Utils");
 
 const ACTIONS = {
     LIKED: "like",
@@ -25,9 +26,16 @@ function create(session, action, toUser, fromUser, postID=null) {
             success: false,
             message: 'Invalid Notification properties'
         }
+    } else if (toUser === fromUser) {
+        return new Promise((resolve) => {
+           resolve({
+               success: false,
+               message: 'Cannot create notification between same user'
+           })
+        })
     }
 
-    const notificationID = nanoid(), timestamp = new Date().toISOString()
+    const notificationID = nano(), timestamp = new Date().toISOString()
     const query = `CREATE (notif:Notification {notificationID: '${notificationID}', toUser: '${toUser}', fromUser: '${fromUser}', action: '${action}', postID: '${postID}', timestamp: '${timestamp}', read: false});`
     return session.run(query)
         .then((results) => {
@@ -78,7 +86,10 @@ const read = function (session, readerWalletAddress, notificationID) {
 const getUserNotifications = function (session, walletAddress) {
     const query = [
         `MATCH (notification:Notification {toUser:'${walletAddress}'})`,
-        `RETURN notification`,
+        `WITH notification`,
+        `MATCH (fromUser:User)`,
+        `WHERE fromUser.walletAddress = notification.fromUser`,
+        `RETURN notification, fromUser`,
         `ORDER BY notification.timestamp DESC`
     ].join('\n');
 
@@ -87,6 +98,8 @@ const getUserNotifications = function (session, walletAddress) {
             let notifications = [], hasUnreadNotif = false
             results.records.forEach((record) => {
                 let notif = new Notification(record.get('notification'))
+                notif.fromUser = new User(record.get('fromUser'))
+
                 notifications.push(notif)
                 if (notif.read === false)
                     hasUnreadNotif = true

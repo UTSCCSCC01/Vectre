@@ -108,6 +108,7 @@ function* updateUser(action) {
         const response = yield call(putRequest, BASE_API_URL + USERS.UPDATE_USER.replace("{walletAddress}", action.walletAddress), action.updatedUser), responseData = response[1]
         if (responseData.success) {
             yield put(getUser(action.walletAddress))
+            yield put(getLoggedInUser())
             yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
@@ -152,12 +153,14 @@ function* unfollowUser(action) {
 function* getNotifications(action) {
     try {
         const response = yield call(getRequest, BASE_API_URL + USERS.GET_NOTIFICATIONS.replace("{walletAddress}", action.walletAddress)), responseData = response[1]
-        if (responseData.success) { // TODO: Show toast success message
+        if (responseData.success) {
             yield put(storeNotifications(responseData.notifications))
             yield put(storeUnreadStatus(responseData.unread))
-        } else { // TODO: Show toast error message
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }
     } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get notifications"))
         console.log(error)
     }
 }

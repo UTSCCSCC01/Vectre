@@ -9,14 +9,11 @@ import {
 import './Notification.css'
 import { FaCommentAlt, FaHeart } from 'react-icons/fa'
 import { ImUserPlus } from 'react-icons/im'
-import DEFAULT_AVATAR from "../../assets/images/default-avatar.png"
 
 // Redux
-import PropTypes from 'prop-types';
 import { connect } from "react-redux";
 import { readNotification } from "../../redux/actions/notification";
-import { getUser } from "../../redux/actions/users"
-import { userSelector } from "../../redux/selectors/users"
+import {getAvatarOrDefault} from "../../utils/Utils";
 
 const NOTIFICATION_ACTIONS = {
   "like": {
@@ -43,7 +40,6 @@ class Notification extends React.Component {
   }
 
   componentDidMount() {
-    this.props.getUser(this.props.fromUser)
     this.setState(NOTIFICATION_ACTIONS[this.props.action])
   }
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -59,7 +55,7 @@ class Notification extends React.Component {
         className={'notif-box'}
         _hover={{bg: "rgba(200, 200, 200, 0.3)", borderRadius: "6px"}}
         as='a'
-        href={this.props.action === "follow" ? `/user/${this.props.fromUser}` : `/post/${this.props.postID}`}
+        href={this.props.action === "follow" ? `/user/${this.props.fromUser.walletAddress}` : `/post/${this.props.postID}`}
         onClick={this.handleRead}>
         <Flex className='notif-icon' position='relative'>
           {this.state.icon}
@@ -67,14 +63,13 @@ class Notification extends React.Component {
         </Flex>
         <Spacer />
         <Flex className='notif-tag'>
-            {/* TODO: add avatar from props.userProfile instead. */}
-            <Avatar src={DEFAULT_AVATAR}
+            <Avatar src={getAvatarOrDefault(this.props.fromUser.profilePic)}
               size="sm"
               mx="15px"
             />
             <Box noOfLines={1} textAlign={"left"}>
               <p>
-                <b>{this.props.userProfile.username}</b> {this.state.message}
+                <b>{this.props.fromUser.username}</b> {this.state.message}
               </p>
             </Box>
         </Flex>
@@ -85,21 +80,13 @@ class Notification extends React.Component {
 
 const actionCreators = {
   readNotification,
-  getUser
 }
-
 const mapStateToProps = (state, ownProps) => ({
-  userProfile: userSelector(state)
 })
-
 Notification.propTypes = {
-  userProfile: PropTypes.object
 }
-
 Notification.defaultProps = {
-  userProfile: {}
 }
-
 export default connect(
   mapStateToProps,
   actionCreators

@@ -8,6 +8,11 @@ export const USERS = {
     GET_USERS: "/users",
     CREATE_USER: "/users/register",
     UPDATE_USER: "/users/{walletAddress}/update",
+
+    FOLLOW_USER: "/users/{walletAddress}/follow",
+    UNFOLLOW_USER: "/users/{walletAddress}/unfollow",
+
+    GET_NOTIFICATIONS: "/users/{walletAddress}/notifications",
 }
 
 export const POSTS = {
@@ -16,10 +21,6 @@ export const POSTS = {
     POST_COMMENT: "/posts/{postID}/comment",
     POST_LIKE: "/posts/{postID}/like",
     POST_UNLIKE: "/posts/{postID}/unlike",
-    FOLLOW_USER: "/users/{walletAddress}/follow",
-    UNFOLLOW_USER: "/users/{walletAddress}/unfollow",
-
-    GET_NOTIFICATIONS: "/users/{walletAddress}/notifications",
 }
 
 export const NOTIF = {
