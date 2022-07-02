@@ -66,7 +66,7 @@ function* postComment(action) {
 
 function* postLike(action) {
     try {
-        const response = yield call(postRequest, BASE_API_URL + POSTS.POST_LIKE.replace("{postID}", action.postID), action.walletAddress), responseData = response[1]
+        const response = yield call(postRequest, BASE_API_URL + POSTS.POST_LIKE.replace("{postID}", action.postID)), responseData = response[1]
         if (responseData.success) {
             yield put(doLike(action.postID, action.walletAddress, action.isComment));
         } else {
@@ -80,7 +80,7 @@ function* postLike(action) {
 
 function* postUnlike(action) {
     try {
-        const response = yield call(postRequest, BASE_API_URL + POSTS.POST_UNLIKE.replace("{postID}", action.postID), action.walletAddress), responseData = response[1]
+        const response = yield call(postRequest, BASE_API_URL + POSTS.POST_UNLIKE.replace("{postID}", action.postID)), responseData = response[1]
         if (responseData.success) {
             yield put(doUnlike(action.postID, action.walletAddress, action.isComment));
         } else {
