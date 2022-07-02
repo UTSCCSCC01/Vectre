@@ -11,7 +11,8 @@ import {
     GET_COMMENTS,
     CREATE_COMMENT,
     POST_LIKE,
-    POST_UNLIKE
+    POST_UNLIKE,
+    CREATE_REPOST
 } from "../constants/posts";
 import {
     BASE_API_URL,
@@ -19,6 +20,20 @@ import {
 } from "../constants/endpoints";
 import { showToast } from "../actions/toast";
 import { TOAST_STATUSES } from "../constants/toast";
+
+function* createRepost(action) {
+    try {
+        const response = yield call(postRequest, BASE_API_URL + POSTS.CREATE_REPOST, action.repostData), responseData = response[1]
+        if (responseData.success) {
+            yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+    } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to create repost"))
+        console.log(error)
+    }
+}
 
 function* getPostSaga(action) {
     try {
@@ -93,6 +108,7 @@ function* postUnlike(action) {
 }
 
 function* postsSaga() {
+    yield takeLatest(CREATE_REPOST, createRepost)
     yield takeLatest(GET_POST, getPostSaga)
     yield takeLatest(GET_COMMENTS, getCommentsSaga)
     yield takeLatest(CREATE_COMMENT, createComment)

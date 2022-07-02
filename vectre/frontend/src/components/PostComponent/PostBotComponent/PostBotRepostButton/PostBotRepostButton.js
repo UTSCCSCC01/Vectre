@@ -14,7 +14,7 @@ const PostBotRepostButton = ({
     // const dispatch = useDispatch();
     return (
         <>
-            <Tooltip label='Cannot repost a repost 🤯' placement='bottom' shouldWrapChildren>
+            <Tooltip isDisabled={item.repostPostID ? false : true} label='Cannot repost a repost 🤯' placement='bottom' shouldWrapChildren>
                 <IconSquareButton
                     isDisabled={item.repostPostID ? true : false}
                     display={item.parent ? 'none' : 'inline-flex'}

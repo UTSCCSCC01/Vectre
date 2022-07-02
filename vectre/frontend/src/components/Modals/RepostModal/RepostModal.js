@@ -16,14 +16,9 @@ import {
 import DefaultAvatar from '../../../assets/images/default-avatar.png';
 import TextButton from '../../Buttons/TextButton/TextButton'
 import RepostComponent from "../../PostComponent/RepostComponent/RepostComponent";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { loggedInUserSelector } from "../../../redux/selectors/users";
-
-const sampleLoggedInUserData = {
-    walletAddress: "0x88a6be0f6b921edfcc5211dc716a397e141631a6",
-    profilePic: "bruh",
-    username: "PeetaC"
-}
+import { createRepost } from "../../../redux/actions/posts";
 
 const RepostModal = ({
     item,
@@ -31,6 +26,7 @@ const RepostModal = ({
     onClose
 }) => {
     const loggedInUser = useSelector(loggedInUserSelector);
+    const dispatch = useDispatch();
     return (
         <>
             <Modal
@@ -53,12 +49,13 @@ const RepostModal = ({
                             id="repost-form"
                             onSubmit={(event) => {
                                 event.preventDefault();
-                                let repostPost = {
+                                let repostData = {
                                     text: event.target.text.value,
                                     repostPostID: item.postID,
                                     walletAddress: loggedInUser.walletAddress
                                 }
-                                console.log(repostPost)
+                                dispatch(createRepost(repostData))
+                                onClose();
                             }}
                         >
                             <Flex
