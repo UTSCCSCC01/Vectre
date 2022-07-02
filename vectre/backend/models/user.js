@@ -326,11 +326,10 @@ const followUser = (session, walletAddress, walletAddressToFollow) => {
                         message: "You already follow this user"
                     }
                 } else {
-                    return Notification.create(session, "follow", walletAddressToFollow, walletAddress, null)
+                    return session.run(query)
                         .then((result) => {
-                            console.log(result)
-                            return session.run(query)
-                                .then((results) => {
+                            return Notification.create(session, "follow", walletAddressToFollow, walletAddress, null)
+                                .then((result2) => {
                                     return {
                                         success: true,
                                         message: "Successfully followed user",

@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const Notification = require('./neo4j/notification');
-const { nanoid } = require("nanoid");
+const {nano} = require("../utils/Utils");
 
 const ACTIONS = {
     LIKED: "like",
@@ -25,9 +25,16 @@ function create(session, action, toUser, fromUser, postID=null) {
             success: false,
             message: 'Invalid Notification properties'
         }
+    } else if (toUser === fromUser) {
+        return new Promise((resolve) => {
+           resolve({
+               success: false,
+               message: 'Cannot create notification between same user'
+           })
+        })
     }
 
-    const notificationID = nanoid(), timestamp = new Date().toISOString()
+    const notificationID = nano(), timestamp = new Date().toISOString()
     const query = `CREATE (notif:Notification {notificationID: '${notificationID}', toUser: '${toUser}', fromUser: '${fromUser}', action: '${action}', postID: '${postID}', timestamp: '${timestamp}', read: false});`
     return session.run(query)
         .then((results) => {
