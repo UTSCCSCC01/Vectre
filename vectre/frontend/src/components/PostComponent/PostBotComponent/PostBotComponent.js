@@ -5,13 +5,13 @@ import {
 
 import { FaCommentAlt } from 'react-icons/fa';
 import { FiShare2 } from 'react-icons/fi';
-import { AiOutlineRetweet } from 'react-icons/ai'
 import { BsFillCheckCircleFill } from 'react-icons/bs';
 
 import TextButton from '../../Buttons/TextButton/TextButton'
 import IconSquareButton from '../../Buttons/IconSquareButton/IconSquareButton';
 
 import PostBotLikeButton from "./PostBotLikeButton/PostBotLikeButton";
+import PostBotRepostButton from "./PostBotRepostButton/PostBotRepostButton";
 
 const PostBotComponent = ({
     item,
@@ -37,14 +37,7 @@ const PostBotComponent = ({
                         console.log("share")
                         e.stopPropagation();
                     }} />
-                <IconSquareButton
-                    display={item.parent ? 'none' : 'inline-flex'}
-                    icon={<AiOutlineRetweet size="1.5rem" />}
-                    onClick={(e) => {
-                        // retweet
-                        console.log("retweet")
-                        e.stopPropagation();
-                    }} />
+                <PostBotRepostButton item={item} />
             </Flex>
             <Link
                 display={item.parent ? 'none' : 'inline-flex'}
