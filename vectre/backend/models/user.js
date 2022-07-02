@@ -423,30 +423,6 @@ const getNFT = (walletAddress) => { // Gets all NFTs of a User using OpenSea API
         })
 }
 
-const getDashboard = (session, walletAddress) => { // Gets the NFTs in the dashboard of a User.
-    const query = `MATCH (user:User {walletAddress: "${walletAddress}" }) RETURN user.dashboard`
-    return session.run(query)
-        .then((results) => {
-            if (_.isEmpty(results.records)) {
-                throw {
-                    success: false,
-                    message: `User with wallet address ${walletAddress} does not exist`
-                }
-            } else {
-                return {
-                    success: true,
-                    user_dashboard: results.records[0].get('user.dashboard')
-                }
-            }
-        }).catch((error) => {
-            throw {
-                success: false,
-                message: "Failed to get User",
-                error: error.message
-            }
-        })
-}
-
 const updateDashboard = (session, walletAddress, body) => {  // Sets the NFTs in the dashboard of a User.
     const query = `MATCH (user:User {walletAddress:"${walletAddress}"}) SET user.dashboard = "${body.dashboard}" RETURN user`;
     return session.run(query)
@@ -486,6 +462,5 @@ module.exports = {
     follow: followUser,
     unfollow: unfollowUser,
     getNFT,
-    getDashboard,
     updateDashboard
 }
