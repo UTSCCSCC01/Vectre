@@ -4,11 +4,18 @@ import {
     Grid
 } from '@chakra-ui/react';
 
+const dashboard_preset = "";
+
 const DashboardMid = ({
     currentDashboard,
 }) => {
-    const currentDashboardList = currentDashboard.replace(/'/g, "\"");
-    const dashboard = JSON.parse(currentDashboardList);
+
+    var dashboardList = '';
+    if (currentDashboard.length !== 0) {
+        const currentDashboardList = currentDashboard.replace(/'/g, "\"");
+        dashboardList = JSON.parse(currentDashboardList);
+    }
+    const dashboard = dashboardList;
 
     return (
         <Box
@@ -19,31 +26,32 @@ const DashboardMid = ({
             py={'15px'}
             alignItems={'baseline'}
             display={'in-line grid'}>
-            {
-                <Grid
-                    justifyContent={'center'}
-                    display={'grid'}
-                    gap={6}
-                    gridAutoFlow={'column'}
-                >
-                    {
-                        dashboard.map((nftItem, i) => {
-                            return (
-                                <Image
-                                    //awaiting for the NFT verified symbol to showcase within the dashboard. 
-                                    key={i}
-                                    cursor={'pointer'}
-                                    src={nftItem.imageURL}
-                                    fit={'cover'}
-                                    overflow={'hidden'}
-                                    borderRadius={'6px'}
-                                    height={'310px'}
-                                    boxShadow={'outline'}>
-                                </Image>
-                            )
-                        })
-                    }
-                </Grid>
+            {dashboard.length !== 0 ?
+                <>
+                    <Grid
+                        justifyContent={'center'}
+                        display={'grid'}
+                        gap={6}
+                        gridAutoFlow={'column'}>
+                        {
+                            dashboard.map((nftItem, i) => {
+                                return (
+                                    <Image
+                                        //awaiting for the NFT verified symbol to showcase within the dashboard. 
+                                        key={i}
+                                        cursor={'pointer'}
+                                        src={nftItem.imageURL}
+                                        fit={'cover'}
+                                        overflow={'hidden'}
+                                        borderRadius={'6px'}
+                                        height={'310px'}
+                                        boxShadow={'outline'}>
+                                    </Image>
+                                )
+                            })
+                        }
+                    </Grid>
+                </> : null
             }
         </Box>
     );
