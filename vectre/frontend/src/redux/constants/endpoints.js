@@ -8,6 +8,14 @@ export const USERS = {
     GET_USERS: "/users",
     CREATE_USER: "/users/register",
     UPDATE_USER: "/users/{walletAddress}/update",
+}
+
+export const POSTS = {
+    GET_POST: "/posts/{postID}",
+    GET_COMMENTS: "/posts/{postID}/comments",
+    POST_COMMENT: "/posts/{postID}/comment",
+    POST_LIKE: "/posts/{postID}/like",
+    POST_UNLIKE: "/posts/{postID}/unlike",
     FOLLOW_USER: "/users/{walletAddress}/follow",
     UNFOLLOW_USER: "/users/{walletAddress}/unfollow",
 }

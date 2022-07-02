@@ -4,6 +4,7 @@ import HomePage from '../pages/HomePage';
 import LandingPage from '../pages/LandingPage';
 import TrendingCommunitiesPage from '../pages/TrendingCommunitiesPage';
 import LoginPage from '../pages/Login';
+import PostPage from '../pages/PostPage';
 import Profile from '../pages/Profile';
 import SettingsPage from '../pages/SettingsPage';
 
@@ -17,6 +18,7 @@ export default function Routes() {
                 <Route path="/login" component={LoginPage} />
                 <Route path="/user/:walletAddress" component={Profile} />
                 <Route path="/settings" component={SettingsPage} />
+                <Route path="/post/:postID" component={PostPage} />
             </Switch>
         </Router>
     );
