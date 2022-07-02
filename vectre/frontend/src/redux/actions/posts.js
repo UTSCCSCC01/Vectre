@@ -37,20 +37,18 @@ export const postComment = (postID, comment, reloadForm) => ({
     reloadForm
 })
 
-export const postLike = (postID, walletAddress, isComment, reloadComponent) => ({
+export const postLike = (postID, walletAddress, isComment) => ({
     type: POST_LIKE,
     postID,
     walletAddress,
     isComment,
-    reloadComponent
 })
 
-export const postUnlike = (postID, walletAddress, isComment, reloadComponent) => ({
+export const postUnlike = (postID, walletAddress, isComment) => ({
     type: POST_UNLIKE,
     postID,
     walletAddress,
     isComment,
-    reloadComponent
 })
 
 export const doLike = (postID, walletAddress, isComment) => ({

@@ -69,7 +69,6 @@ function* postLike(action) {
         const response = yield call(postRequest, BASE_API_URL + POSTS.POST_LIKE.replace("{postID}", action.postID), action.walletAddress), responseData = response[1]
         if (responseData.success) {
             yield put(doLike(action.postID, action.walletAddress, action.isComment));
-            action.reloadComponent();
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }
@@ -84,7 +83,6 @@ function* postUnlike(action) {
         const response = yield call(postRequest, BASE_API_URL + POSTS.POST_UNLIKE.replace("{postID}", action.postID), action.walletAddress), responseData = response[1]
         if (responseData.success) {
             yield put(doUnlike(action.postID, action.walletAddress, action.isComment));
-            action.reloadComponent();
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }

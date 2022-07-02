@@ -26,7 +26,7 @@ const posts = (state = initialState, action) => {
             if (action.isComment) {
                 return {
                     ...state,
-                    comments: state.comments.map((comment, i) => comment.postID === action.postID ? { ...comment, likes: comment.likes + 1 } : comment)
+                    comments: state.comments.map((comment, i) => comment.postID === action.postID ? { ...comment, likes: comment.likes + 1, alreadyLiked: true } : comment)
                 }
             }
             return {
@@ -40,7 +40,7 @@ const posts = (state = initialState, action) => {
             if (action.isComment) {
                 return {
                     ...state,
-                    comments: state.comments.map((comment, i) => comment.postID === action.postID ? { ...comment, likes: comment.likes - 1 } : comment)
+                    comments: state.comments.map((comment, i) => comment.postID === action.postID ? { ...comment, likes: comment.likes - 1, alreadyLiked: false } : comment)
                 }
             }
             return {

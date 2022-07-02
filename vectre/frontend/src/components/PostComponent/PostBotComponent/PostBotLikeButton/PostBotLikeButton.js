@@ -16,25 +16,23 @@ const PostBotLikeButton = ({
 }) => {
     const loggedInUser = useSelector(loggedInUserSelector);
     const dispatch = useDispatch();
-    const [likeToggle, setLikeToggle] = useBoolean(item.alreadyLiked);
 
     return (
         <>
             <TextButton
                 display={item.likes || item.likes === 0 ? 'inline-flex' : 'none'}
                 text={`${formatLikes(item.likes)} Likes`}
-                bg={likeToggle ? 'primary.400' : 'white'}
-                color={likeToggle ? 'white' : 'primary.400'}
+                bg={item.alreadyLiked ? 'primary.400' : 'white'}
+                color={item.alreadyLiked ? 'white' : 'primary.400'}
                 _hover={{}}
                 _active={{}}
-                rightIcon={likeToggle ? <RiHeart2Fill size={'1.2rem'} /> : <RiHeart2Line size={'1.2rem'} />}
+                rightIcon={item.alreadyLiked ? <RiHeart2Fill size={'1.2rem'} /> : <RiHeart2Line size={'1.2rem'} />}
                 onClick={(e) => {
                     if (Object.keys(loggedInUser).length !== 0) {
-                        if (likeToggle) {
-                            dispatch(postUnlike(item.postID, { walletAddress: loggedInUser.walletAddress }, Boolean(item.parent), () => { setLikeToggle.toggle() }));
-                        }
-                        else {
-                            dispatch(postLike(item.postID, { walletAddress: loggedInUser.walletAddress }, Boolean(item.parent), () => { setLikeToggle.toggle() }));
+                        if (item.alreadyLiked) {
+                            dispatch(postUnlike(item.postID, {walletAddress: loggedInUser.walletAddress}, Boolean(item.parent)));
+                        } else {
+                            dispatch(postLike(item.postID, {walletAddress: loggedInUser.walletAddress}, Boolean(item.parent)));
                         }
                     } else {
                         console.log("Not logged in!");
