@@ -3,14 +3,15 @@ import {
     Link
 } from '@chakra-ui/react';
 
-import { IoIosShareAlt } from 'react-icons/io';
-import { FaCommentAlt, FaBookmark } from 'react-icons/fa';
+import { FaCommentAlt } from 'react-icons/fa';
+import { FiShare2 } from 'react-icons/fi';
 import { BsFillCheckCircleFill } from 'react-icons/bs';
 
 import TextButton from '../../Buttons/TextButton/TextButton'
 import IconSquareButton from '../../Buttons/IconSquareButton/IconSquareButton';
 
 import PostBotLikeButton from "./PostBotLikeButton/PostBotLikeButton";
+import PostBotRepostButton from "./PostBotRepostButton/PostBotRepostButton";
 
 const PostBotComponent = ({
     item,
@@ -22,7 +23,7 @@ const PostBotComponent = ({
                 <TextButton
                     display={item.comment ? 'inline-flex' : 'none'}
                     text={`${item.comment} Commments`}
-                    rightIcon={<FaCommentAlt size="0.9rem" />}
+                    rightIcon={<FaCommentAlt size="1.1rem" />}
                     onClick={(e) => {
                         // comment
                         console.log("comment")
@@ -30,20 +31,13 @@ const PostBotComponent = ({
                     }} />
                 <IconSquareButton
                     display={item.parent ? 'none' : 'inline-flex'}
-                    icon={<IoIosShareAlt size="1.6rem" />}
+                    icon={<FiShare2 size="1.2rem" />}
                     onClick={(e) => {
                         // share
                         console.log("share")
                         e.stopPropagation();
                     }} />
-                <IconSquareButton
-                    display={item.parent ? 'none' : 'inline-flex'}
-                    icon={<FaBookmark size="1.1rem" />}
-                    onClick={(e) => {
-                        // bookmark
-                        console.log("bookmark")
-                        e.stopPropagation();
-                    }} />
+                <PostBotRepostButton item={item} />
             </Flex>
             <Link
                 display={item.parent ? 'none' : 'inline-flex'}

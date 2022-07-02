@@ -31,7 +31,7 @@ const samplePostData = [
       profilePic: "https://img.seadn.io/files/ed6633d0685d1ad5b2aa13d5d36c1149.png?fit=max&w=600",
       verified: false
     },
-    postId: "00002",
+    postID: "00002",
     likes: "120",
     comment: "2",
     community: "DEvilSh0es",
@@ -47,11 +47,44 @@ const samplePostData = [
       profilePic: "https://www.cheatsheet.com/wp-content/uploads/2016/11/tyrion-tywin-1024x683.jpg",
       verified: true
     },
-    postId: "00003",
+    postID: "00003",
     likes: "4.2k",
     comment: "420",
     community: "GOT",
     imageURL: "https://api.time.com/wp-content/uploads/2016/05/tyrion-game-of-thrones-peter-dinklage.jpeg",
+    edited: false
+  },
+  {
+    timestamp: "12:20 PM · May 1, 2022",
+    text: "uwu",
+    author: {
+      walletAddress: "0x88a6be0f6b921edfcc5211dc716a397e141631a6",
+      username: "Not Deadly Dwarf",
+      profilePic: "https://nextshark.com/wp-content/uploads/2020/07/2skdghdlaiwjkaugsf.jpg",
+      verified: true
+    },
+    likes: "30.2m",
+    comment: "43k",
+    community: "Meowz",
+    postID: "00002",
+    repostPostID: "00004",
+    repostPost: {
+      timestamp: "1:43 PM · May 9, 2022",
+      text: "Saw a dragon today. Wow!",
+      author: {
+        walletAddress: "0x15f209074682937c58ca031ebb43d64fa98d97b8",
+        username: "Deadly Dwarf",
+        profilePic: "https://www.cheatsheet.com/wp-content/uploads/2016/11/tyrion-tywin-1024x683.jpg",
+        verified: false
+      },
+      like: "4.2k",
+      comment: "420",
+      community: "GOT",
+      imageURL: "https://api.time.com/wp-content/uploads/2016/05/tyrion-game-of-thrones-peter-dinklage.jpeg",
+      postID: "00004",
+      repostPostID: null,
+      edited: false
+    },
     edited: false
   }
 ]

@@ -2,6 +2,7 @@ import {
     CREATE_POST,
     GET_POST,
     STORE_POST,
+    CREATE_REPOST,
     GET_COMMENTS,
     STORE_COMMENTS,
     CREATE_COMMENT,
@@ -24,6 +25,11 @@ export const getPost = (postID) => ({
 export const storePost = (post) => ({
     type: STORE_POST,
     post
+})
+export const createRepost = (repostData, redirectWindow) => ({
+    type: CREATE_REPOST,
+    repostData,
+    redirectWindow
 })
 
 // Post interactions:

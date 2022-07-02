@@ -19,6 +19,12 @@ const createUserPost = function (session, authorWalletAddress, body) {
         return getPostByID(session, null, body.repostPostID)
             .then((result) => {
                 if (result.success) {
+                    if (result.post.repostPostID) { // Prevent repost of repost
+                        throw {
+                            success: false,
+                            message: "Cannot create repost of repost"
+                        }
+                    }
                     const query = [
                         `CREATE (p:Post {postID: '${postID}', repostPostID: '${body.repostPostID}', text: '${body.text}', author: '${authorWalletAddress}', edited: false, timestamp: '${date}', likes: 0, parent: null ${imageString}})`,
                         `WITH (p)`,
@@ -30,7 +36,8 @@ const createUserPost = function (session, authorWalletAddress, body) {
                         .then((result2) => {
                             return {
                                 success: true,
-                                message: "Successfully created repost"
+                                message: "Successfully created repost",
+                                newPostID: postID
                             }
                         })
                         .catch((error) => {
@@ -67,7 +74,8 @@ const createUserPost = function (session, authorWalletAddress, body) {
             .then((result) => {
                 return {
                     success: true,
-                    message: "Successfully created post"
+                    message: "Successfully created post",
+                    newPostID: postID
                 }
             })
             .catch((error) => {
@@ -243,7 +251,7 @@ const getPostByID = function (session, walletAddress, postID) {
             }
 
             if (walletAddress !== null) {
-                return checkIfAlreadyLiked(session, postID, { walletAddress: walletAddress })
+                return checkIfAlreadyLiked(session, postID, walletAddress)
                     .then((result2) => {
                         if (result2.alreadyLiked) {
                             post.alreadyLiked = true;
@@ -273,7 +281,6 @@ const getPostByID = function (session, walletAddress, postID) {
             }
         })
         .catch((error) => {
-            console.log(error)
             throw {
                 success: false,
                 message: "Failed to get posts",
