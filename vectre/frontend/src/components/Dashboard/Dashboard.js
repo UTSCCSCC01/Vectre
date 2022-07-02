@@ -27,10 +27,8 @@ const Dashboard = ({
             px={'18px'}
             py={'15px'}>
             <Stack gap={'4px'} width={'100%'}>
-               <DashboardTop></DashboardTop>
-               <DashboardMid
-                  currentDashboard={currentDashboard}>
-               </DashboardMid>
+               <DashboardTop />
+               <DashboardMid currentDashboard={currentDashboard} />
                {loggedInUser.walletAddress === profileWalletAddress ?
                   <>
                      <DashboardBot onOpen={onOpen} />
