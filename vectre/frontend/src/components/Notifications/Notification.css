@@ -1,0 +1,84 @@
+:root {
+    --boxBg : rgba(198, 219, 255, 0.36)
+}
+
+.popover {
+    border-radius : sm;
+    width : 389px;
+    height : 60vh;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.header {
+    font-weight : bold;
+    font-size : 18px;
+    padding-inline-start : 38px;
+    padding-inline-end : 38px;
+    padding-top : 4px;
+    padding-bottom : 4px;
+    gap : 10px;
+    height : fit-content;
+    width: fit-content;
+    background : var(--boxBg);
+    border-radius : 6px;
+    display : inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.time-tag {
+    justify-content : center;
+    align-items : center;
+    background : var(--boxBg);
+    border-radius : 6px;
+    font-size : 12px;
+    font-weight : 500;
+    height : fit-content;
+    padding-top : 4px;
+    padding-bottom : 4px
+}
+
+.notif-box {
+    display: inline-flex;
+    height: 42px;
+    cursor: pointer;
+}
+
+.notif-tag {
+    align-items: center;
+    background: var(--boxBg);
+    border-radius: 6px;
+    width: 285px;
+    user-select: none;
+    font-size: 12px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.notif-icon {
+    justify-content: center;
+    align-items: center;
+    background: var(--boxBg);
+    border-radius: 6px;
+    width: 42px;
+}
+
+.unread-big-marker {
+    position: absolute;
+    background-color: red;
+    top: -1px;
+    right: -1px;
+    width: 10px;
+    height: 10px;
+    padding: 4px;
+    transform: translate(-30%, 30%);
+}
+
+.unread-small-marker {
+    position: absolute;
+    background-color: red;
+    top: -2px;
+    right: -2px;
+    padding: 4px;
+}
