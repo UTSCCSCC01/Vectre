@@ -5,7 +5,6 @@ import {
     ModalContent,
     ModalBody,
     ModalFooter,
-    Button,
     Link,
     Image,
     Flex,
@@ -13,6 +12,7 @@ import {
     Textarea
 } from "@chakra-ui/react"
 
+import { BsFillCheckCircleFill } from 'react-icons/bs';
 import DefaultAvatar from '../../../assets/images/default-avatar.png';
 import TextButton from '../../Buttons/TextButton/TextButton'
 import RepostComponent from "../../PostComponent/RepostComponent/RepostComponent";
@@ -39,7 +39,7 @@ const RepostModal = ({
                     bg={'rgba(250, 250, 250, 0.01)'}
                     backdropFilter='blur(20px)' />
                 <ModalContent
-                    bg={'rgba(255, 255, 255, 0.8)'}
+                    bg={'rgba(250, 250, 250, 0.7)'}
                     py={'27px'}
                     px={'24px'}>
                     <ModalBody
@@ -82,6 +82,7 @@ const RepostModal = ({
                                         } />
                                 </Link>
                                 <FormControl
+                                    isRequired
                                     pb={'5px'}>
                                     <Textarea
                                         id='text'
@@ -102,18 +103,24 @@ const RepostModal = ({
                         pt={'17px'}
                         pb={'0px'}
                         px={'0px'}>
-                        <Button
-                            type={"submit"}
+                        <TextButton
+                            text={`Select a < Community >`}
+                            px={'17.5px'}
+                            fontSize={'18px'}
+                            fontWeight={700}
+                            rightIcon={<BsFillCheckCircleFill />} />
+                        <TextButton
+                            ml={'13px'}
                             form={"repost-form"}
+                            type={"submit"}
+                            px={'17.5px'}
+                            text={'Repost'}
+                            fontWeight={700}
+                            fontSize={'18px'}
                             alignSelf={'end'}
                             background={'primary.400'}
-                            color={'white'}
-                            px={'46px'}
-                            py={'11px'}
-                            borderRadius={'6px'}
-                            _focus={{ outline: 0 }}>
-                            Repost
-                        </Button>
+                            color={'white'}>
+                        </TextButton>
                     </ModalFooter>
                 </ModalContent>
             </Modal>

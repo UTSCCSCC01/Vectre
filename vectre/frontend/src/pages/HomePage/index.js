@@ -31,7 +31,7 @@ const samplePostData = [
       profilePic: "https://img.seadn.io/files/ed6633d0685d1ad5b2aa13d5d36c1149.png?fit=max&w=600",
       verified: false
     },
-    postId: "00002",
+    postID: "00002",
     likes: "120",
     comment: "2",
     community: "DEvilSh0es",
@@ -47,7 +47,7 @@ const samplePostData = [
       profilePic: "https://www.cheatsheet.com/wp-content/uploads/2016/11/tyrion-tywin-1024x683.jpg",
       verified: true
     },
-    postId: "00003",
+    postID: "00003",
     likes: "4.2k",
     comment: "420",
     community: "GOT",
@@ -66,7 +66,7 @@ const samplePostData = [
     likes: "30.2m",
     comment: "43k",
     community: "Meowz",
-    postId: "00002",
+    postID: "00002",
     repostPostID: "00004",
     repostPost: {
       timestamp: "1:43 PM · May 9, 2022",
@@ -81,7 +81,7 @@ const samplePostData = [
       comment: "420",
       community: "GOT",
       imageURL: "https://api.time.com/wp-content/uploads/2016/05/tyrion-game-of-thrones-peter-dinklage.jpeg",
-      postId: "00004",
+      postID: "00004",
       repostPostID: null,
       edited: false
     },

@@ -23,9 +23,7 @@ const RepostComponent = ({
                 py={'15px'}
                 cursor={'pointer'}
                 onClick={((e) => {
-                    if (item.postId) {
-                        window.location = `/post/${item.postId}`;
-                    }
+                    window.location = `/post/${item.postID}`;
                     e.stopPropagation();
                 })}>
                 <Stack gap={'4px'}>
