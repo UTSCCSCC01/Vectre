@@ -67,7 +67,7 @@ const DashboardMid = ({
                         color={'primary.400'}
                         bg={'white'}
                         _focus={{ outline: 0 }}>
-                        No NFTs Currently Set on the Dashboard
+                        No NFTs currently displayed
                     </Button>
                 </Flex>
             }

@@ -169,7 +169,7 @@ function DashboardEditModal({
                                     color={'primary.400'}
                                     bg={'white'}
                                     _focus={{ outline: 0 }}>
-                                    No NFTs Found! :(
+                                    No NFTs found! :(
                                 </Button>
                             </Flex>
                         }

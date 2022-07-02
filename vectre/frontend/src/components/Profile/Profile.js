@@ -110,11 +110,13 @@ class Profile extends React.Component {
                                 </Button>
                             </>
                         }
-                        <Dashboard
-                            loggedInUser={this.props.loggedInUser}
-                            profileWalletAddress={this.props.profileWalletAddress}
-                            currentDashboard={this.props.user.dashboard}
-                        />
+                        {this.props.user.dashboard !== "[]" ?
+                            <Dashboard
+                                loggedInUser={this.props.loggedInUser}
+                                profileWalletAddress={this.props.profileWalletAddress}
+                                currentDashboard={this.props.user.dashboard}
+                            /> : null
+                        }
                     </>
                 }
             </div>
