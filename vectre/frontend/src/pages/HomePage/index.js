@@ -1,4 +1,4 @@
-import AppWrapper from "../../components/AppWrapper/AppWrapper";
+import ContentWIthNavContainer from "../../components/Containers/ContentWIthNavContainer";
 import PostComponent from "../../components/PostComponent/PostComponent";
 import {
   Box,
@@ -12,13 +12,14 @@ const samplePostData = [
     author: {
       walletAddress: "0x15f209074682937c58ca031ebb43d64fa98d97b8",
       username: "Evan Keast",
-      profilePic: "https://s3-alpha-sig.figma.com/img/a8fa/df5e/3d73d21b956a4ddcdd287a204b4ea1a0?Expires=1655683200&Signature=HU~fkoIdFxhBi0fN3DE0jROXrUgLrrcUANO7LV1MpiSGyHQntrmgUKuDu~tPHvKw2WaDY5cz0rBSg~UsSMzCGpZ4A38v4HF7~IdzHdvjBqgXkx2dDigRhMezfi6DH9p38YHJQnHJOz2eduoMR3vPZJQ4UIPm9uZOjczzZUnCx6O~CVKefcmHb8icodO0PiQcPbTUEsnSKf1U4Pu2dgT-tPqGAcPVKOpLOaa8MfyxYk4T8SfpxPjjZGKA9aeWrSdn-xt385i6xTMhR24XIqKxmc59DGbzS7H5U2Oo-g2xDDAj5YUddpKmrdHMhecdqemp3J1ObEDmp-Uv9svqFB0xhA__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
+      profilePic: "https://media-exp1.licdn.com/dms/image/C5603AQFr-8Qlf9kXdw/profile-displayphoto-shrink_200_200/0/1641631597302?e=1655942400&v=beta&t=wrB9-3aglTbvD9K2AZ6pd7pk3JreaD6kZVdw-SdEABY",
       verified: true
     },
-    like: "942",
+    postId: "00001",
+    likes: "942",
     comment: "50",
     community: "Doodles",
-    imageURL: "https://s3-alpha-sig.figma.com/img/8480/cbbd/2c3b477fd04e371685a1a428f77036c0?Expires=1655683200&Signature=XtRJtUk4kxmfht0yVjTZqaTt~0BqjWEwYsPa6VF0yw2X7krernxjkWP5Zp~fRdkBVIgydMJ1snfY8xAuXCoMogiQWG0cOF88eypSMEn9Mgm9FKhHvzVFGKffnTLiKJY3WhafIh2E5wMRan61TIkb14uut2u5OINSmUNJNVRmO0S1vgEVz~LS~ynNa8s8t7bIrTa3c327HqtKeAx7LSox8I4cJs94MD8XeoDl8FRLgGWQSyE4yZFfGHyMuGj7BbXMX84zFnNgYh5sG-4oJ5xZKY98MUpHhyikzcUXaE6rDFot9SDx68ohBWc6o20o6dwKbvw6LcdYODFmg9KA0XyrFg__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
+    imageURL: "https://pbs.twimg.com/media/FTSfCnTXoAEyhOp?format=jpg&name=small",
     edited: false
   },
   {
@@ -27,13 +28,14 @@ const samplePostData = [
     author: {
       walletAddress: "0x15f209074682937c58ca031ebb43d64fa98d97b8",
       username: "clegfx",
-      profilePic: "https://s3-alpha-sig.figma.com/img/5496/6ae3/dd9c04fcaf22eff661bce1a09756726f?Expires=1655683200&Signature=FsYzI17asOXKTxOs6UOlgMLJqCVksLEq~Ade4-b8R7DE7R7MZ9~8CDUqplj1N-2VgMGq~4vXO4JtsJuUIRBMRW0PtPDfZu3YJHiuYR176-yR8JHC4oNiD4znX8xmYt-mG2jypG7-p8jeBdDCTZ5bImbCJsz3hm3QfRuP0eFFcbLKgzpmoROBPExbolFL4x99QXRkbHRLx4IRfPw1Pu8rCbjGgrUUiH3UCtQx1gUQJh0Gg~PXYVUJQMZWab22Szd~A6SfLD7n6osbH~mmJ1iQIM-IPWmF0PlUz8Hlu6-6nGihAr2jvU8QJD6rOrfn71NDlQGNZlPhUSy4I8saU1zahA__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
+      profilePic: "https://img.seadn.io/files/ed6633d0685d1ad5b2aa13d5d36c1149.png?fit=max&w=600",
       verified: false
     },
-    like: "120",
+    postId: "00002",
+    likes: "120",
     comment: "2",
     community: "DEvilSh0es",
-    imageURL: "https://s3-alpha-sig.figma.com/img/4a52/9efc/ac9b22129dabcc5fa938049d915eb8dd?Expires=1655683200&Signature=EN23b9hrMsT4brdEavlbENDWWfMSixjuWayZbk1~PIU7Z39OuWLEcNUOz8AWnoCw0-oka8ldkmyiz7NMjQFc2W5jg9fgzHN-nGw~LfzHNbdQ53L6VQjkUGEygFYieT0FEWjtvUJ07me5Nmj2B1Q7GUHHG1eN0-kQxf4uWleH~vCmdFEpT5V-7lgJNb4j-mVmTwXPGUGtD9n7CVMuMPJa9d2Zxz3RsByW2QONfInGVreusO7bBzqP195WPl48vvCp2hqPGhv7HB0uf65C6pX6xvRjAsS5VenEchrF9OBk7luVi0hmxNtUohH2zCoCqpFUrCs-RN-xLjAfFUnq~34nEw__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
+    imageURL: "https://img.businessoffashion.com/resizer/26N-gpJby-rUwge6lNFDShJpi4k=/arc-photo-businessoffashion/eu-central-1-prod/public/WWEPZDRDRNGXVNWWY2RB722GPE.png",
     edited: false
   },
   {
@@ -45,7 +47,8 @@ const samplePostData = [
       profilePic: "https://www.cheatsheet.com/wp-content/uploads/2016/11/tyrion-tywin-1024x683.jpg",
       verified: true
     },
-    like: "4.2k",
+    postId: "00003",
+    likes: "4.2k",
     comment: "420",
     community: "GOT",
     imageURL: "https://api.time.com/wp-content/uploads/2016/05/tyrion-game-of-thrones-peter-dinklage.jpeg",
@@ -70,7 +73,7 @@ const samplePostData = [
 
 const HomePage = () => {
   return (
-    <AppWrapper>
+    <ContentWIthNavContainer>
       <Box py={'60px'} maxWidth={'4xl'} margin={'0 auto'}>
         <Stack alignSelf={'center'} gap={'36px'}>
           {/* Add posts below */}
@@ -85,7 +88,7 @@ const HomePage = () => {
           }
         </Stack>
       </Box>
-    </AppWrapper>
+    </ContentWIthNavContainer>
   );
 }
 

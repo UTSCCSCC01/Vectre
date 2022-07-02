@@ -7,8 +7,8 @@ import {
     getLoginNonce,
     loginUser,
 } from "../../redux/actions/users";
-import {connect} from "react-redux";
-import {nonceSelector} from "../../redux/selectors/users";
+import { connect } from "react-redux";
+import { nonceSelector } from "../../redux/selectors/users";
 
 // Components
 import PreLoginNavBar from "./PreLogin/PreLoginNavBar";
@@ -19,9 +19,12 @@ class Login extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            wallet_address: "",
+            walletAddress: "",
             nonce: "",
             connecting: false,
+            connected: false,
+            registered: false,
+            isRegisterModalOpen: true,
         }
     }
 
@@ -29,6 +32,7 @@ class Login extends React.Component {
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.nonce !== this.props.nonce) {
+            this.setState({registered: true})
             this.signNonce()
         }
     }
@@ -36,19 +40,28 @@ class Login extends React.Component {
     isMetamaskInstalled = () => { return window.ethereum !== undefined }
 
     connectMetamask = async () => {
-        this.setState({connecting: true})
-        if (window.ethereum) {
-            await window.ethereum.request({
-                method: "eth_requestAccounts"
-            })
-                .then(accounts => {
-                    const wallet_address = accounts[0]
-                    this.setState({wallet_address: wallet_address})
-                    this.props.getLoginNonce(wallet_address)
+        if (!this.state.connected) {
+            this.setState({connecting: true})
+            if (window.ethereum) {
+                await window.ethereum.request({
+                    method: "eth_requestAccounts"
                 })
-                .catch(error => { console.log(error) }) // TODO: Handle when user did not login with their wallet
+                    .then(accounts => {
+                        const walletAddress = accounts[0]
+                        this.setState({
+                            walletAddress: walletAddress,
+                            connected: walletAddress !== null
+                        })
+                        this.props.getLoginNonce(walletAddress)
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    }) // TODO: Handle when user did not login with their wallet
+            }
+            this.setState({connecting: false})
+        } else {
+            this.setState({isRegisterModalOpen: true})
         }
-        this.setState({connecting: false})
     }
 
     signNonce = async () => {
@@ -57,37 +70,46 @@ class Login extends React.Component {
 
             await window.ethereum.request({
                 method: 'personal_sign',
-                params: [message, this.state.wallet_address]
+                params: [message, this.state.walletAddress]
             })
                 .then(signature => {
-                    this.props.loginUser(this.state.wallet_address, signature, (href) => { window.location.href = href})
+                    this.props.loginUser(this.state.walletAddress, signature, (href) => { window.location.href = href })
                 })
-                .catch(error => { // TODO: Handle when user cancels signing page
-                    console.log(error)
+                .catch(error => { // User cancels signing page
                     window.location.reload()
                 })
         }
     }
 
     handleCreateUser = (newUser) => {
-        this.props.createUser(newUser, (href) => { window.location.href = href})
+        this.props.createUser(newUser, (href) => { window.location.href = href })
     }
 
-    render () {
+    handleOpenRegisterModal = () => {
+        this.setState({ isRegisterModalOpen: true })
+    }
+    handleCloseRegisterModal = () => {
+        this.setState({ isRegisterModalOpen: false })
+    }
+
+    render() {
         return (
             <div>
                 <PreLoginNavBar />
                 <PreLogin
                     connecting={this.state.connecting}
-                    connected={this.state.wallet_address !== ""}
+                    connected={this.state.connected}
+                    registered={this.state.registered}
                     connectAccount={this.connectMetamask}
-                    signNonce={this.signNonce}
                     isMetamaskInstalled={this.isMetamaskInstalled}
                 />
-                {(this.state.wallet_address !== "" && this.props.nonce === "") ?
+                {(this.state.walletAddress !== "" && this.props.nonce === "") ?
                     <RegisterUser
                         createUser={this.handleCreateUser}
-                        wallet_address={this.state.wallet_address}
+                        walletAddress={this.state.walletAddress}
+                        isModalOpen={this.state.isRegisterModalOpen}
+                        openModal={this.handleOpenRegisterModal}
+                        closeModal={this.handleCloseRegisterModal}
                     /> : null
                 }
             </div>

@@ -6,22 +6,6 @@ import {
 
 import RepostComponent from '../RepostComponent/RepostComponent';
 
-const sampleRepostData = {
-    timestamp: "1:43 PM · May 9, 2022",
-    text: "Saw a dragon today. Wow!",
-    author: {
-        walletAddress: "0x15f209074682937c58ca031ebb43d64fa98d97b8",
-        username: "Deadly Dwarf",
-        profilePic: "https://www.cheatsheet.com/wp-content/uploads/2016/11/tyrion-tywin-1024x683.jpg",
-        verified: true
-    },
-    like: "4.2k",
-    comment: "420",
-    community: "GOT",
-    imageURL: "https://api.time.com/wp-content/uploads/2016/05/tyrion-game-of-thrones-peter-dinklage.jpeg",
-    edited: false
-}
-
 const PostMidComponent = ({
     item,
     onOpen
@@ -41,17 +25,20 @@ const PostMidComponent = ({
                 {item.text}
             </Flex>
             {
-                item.repost ? (
+                item.isRepost ? (
                     <Stack
                         display={'inline-flex'}>
-                        <RepostComponent item={sampleRepostData} />
+                        <RepostComponent item={item.repostData} />
                     </Stack>
                 ) : (
                     <Stack
                         display={item.imageURL ? 'inline-flex' : 'none'}>
                         <Image
                             cursor={'pointer'}
-                            onClick={onOpen}
+                            onClick={((e) => {
+                                onOpen();
+                                e.stopPropagation();
+                            })}
                             src={item.imageURL}
                             fit={'cover'}
                             overflow={'hidden'}
