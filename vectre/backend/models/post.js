@@ -272,9 +272,9 @@ const getPostByID = function (session, walletAddress, postID) {
 }
 
 // returns true if there is already a like
-const checkIfAlreadyLiked = function (session, postID, body) {
+const checkIfAlreadyLiked = function (session, postID, walletAddress) {
     const query = [
-        `MATCH (u:User{walletAddress: '${body.walletAddress}'})-[r:LIKED]->(p:Post{postID:'${postID}'})`,
+        `MATCH (u:User {walletAddress: '${walletAddress}'})-[r:LIKED]->(p:Post{postID:'${postID}'})`,
         `RETURN r`
     ].join('\n');
 
@@ -294,95 +294,71 @@ const checkIfAlreadyLiked = function (session, postID, body) {
         });
 }
 
-const likePost = function (session, postID, body) {
-    if (!body.walletAddress) {
-        throw {
-            success: false,
-            message: 'Invalid properties in request body'
-        }
-    }
+const likePost = function (session, postID, walletAddress) {
     const query = [
         `MATCH (p:Post)`,
         `WHERE p.postID = '${postID}'`,
         `SET p.likes = p.likes + 1`,
         `WITH (p)`,
         `MATCH (u:User)`,
-        `WHERE u.walletAddress = '${body.walletAddress}'`,
+        `WHERE u.walletAddress = '${walletAddress}'`,
         `MERGE (u)-[r:LIKED]->(p)`
     ].join('\n');
 
-    return checkIfAlreadyLiked(session, postID, body)
+    return checkIfAlreadyLiked(session, postID, walletAddress)
         .then((result) => {
             if (!result.alreadyLiked) {
                 return session.run(query)
-                    .then((result) => {
+                    .then((result2) => {
                         return {
                             success: true,
-                            message: "Successfully liked Post"
+                            message: "Successfully liked post"
                         }
                     })
-                    .catch((error) => {
-                        throw {
-                            success: false,
-                            message: "Failed to like Post",
-                            error: error
-                        }
-                    });
-            }
-            return {
-                success: false,
-                message: "Post was already liked",
+            } else {
+                throw {
+                    success: false,
+                    message: "Post was already liked",
+                }
             }
         })
         .catch((error) => {
             throw {
                 success: false,
-                message: "Failed to like Post",
+                message: "Failed to like post",
                 error: error
             }
         })
 };
 
-const unlikePost = function (session, postID, body) {
-    if (!body.walletAddress) {
-        throw {
-            success: false,
-            message: 'Invalid properties in request body'
-        }
-    }
+const unlikePost = function (session, postID, walletAddress) {
     const query = [
-        `MATCH (u:User {walletAddress: '${body.walletAddress}'})-[r:LIKED]->(p: Post {postID: '${postID}'})`,
+        `MATCH (u:User {walletAddress: '${walletAddress}'})-[r:LIKED]->(p: Post {postID: '${postID}'})`,
         `SET p.likes = p.likes - 1`,
         `DELETE r`
     ].join('\n');
 
-    return checkIfAlreadyLiked(session, postID, body)
+    return checkIfAlreadyLiked(session, postID, walletAddress)
         .then((result) => {
             if (result.alreadyLiked) {
                 return session.run(query)
                     .then((result) => {
                         return {
                             success: true,
-                            message: "Successfully unliked Post"
+                            message: "Successfully unliked post"
                         }
                     })
-                    .catch((error) => {
-                        throw {
-                            success: false,
-                            message: "Failed to unlike Post",
-                            error: error
-                        }
-                    });
-            }
-            return {
-                success: false,
-                message: "Post was not already liked",
+            } else {
+                throw {
+                    success: false,
+                    message: "Post was already unliked",
+                }
             }
         })
         .catch((error) => {
             throw {
                 success: false,
-                message: "Failed to unlike Post",
+                message: "Failed to unlike post",
                 error: error
             }
         })

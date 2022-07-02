@@ -34,37 +34,34 @@ router.get('/:postID', storeWalletAddressFromToken, (req, res, next) => {
         .catch((error) => res.send(error))
 })
 
+// Post interactions (like/comment):
+// POST /posts/{postID}/like
+router.post('/:postID/like', authenticateToken, (req, res, next) => {
+    Post.likePost(dbUtils.getSession(req), req.params.postID, req.walletAddress)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
+// POST /posts/{postID}/unlike
+router.post('/:postID/unlike', authenticateToken, (req, res, next) => {
+    Post.unlikePost(dbUtils.getSession(req), req.params.postID, req.walletAddress)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
+// GET /posts/{postID}/checkLike
+router.get('/:postID/checkLike', authenticateToken, (req, res, next) => {
+    Post.checkIfAlreadyLiked(dbUtils.getSession(req), req.params.postID, req.walletAddress)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
+// GET /posts/{postID}/likes
+router.get('/:postID/likes', (req, res, next) => {
+    Post.getLikesOnPost(dbUtils.getSession(req), req.params.postID)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
 // GET /posts/{postID}/comments
 router.get('/:postID/comments', storeWalletAddressFromToken, (req, res, next) => {
     Post.getCommentsByPost(dbUtils.getSession(req), req.walletAddress, req.params.postID)
-        .then((result) => res.send(result))
-        .catch((error) => res.send(error))
-})
-
-// GET /posts/{postID}/checkLike
-router.get('/:postID/checkLike', authenticateToken, (req, res, next) => {
-    Post.checkIfAlreadyLiked(dbUtils.getSession(req), req.params.postID, req.body)
-        .then((result) => res.send(result))
-        .catch((error) => res.send(error))
-})
-
-// POST /posts/{postID}/like
-router.post('/:postID/like', authenticateToken, (req, res, next) => {
-    Post.likePost(dbUtils.getSession(req), req.params.postID, req.body)
-        .then((result) => res.send(result))
-        .catch((error) => res.send(error))
-})
-
-// POST /posts/{postID}/unlike
-router.post('/:postID/unlike', authenticateToken, (req, res, next) => {
-    Post.unlikePost(dbUtils.getSession(req), req.params.postID, req.body)
-        .then((result) => res.send(result))
-        .catch((error) => res.send(error))
-})
-
-// GET /posts/{postID}/likes
-router.get('/:postID/likes', authenticateToken, (req, res, next) => {
-    Post.getLikesOnPost(dbUtils.getSession(req), req.params.postID)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
