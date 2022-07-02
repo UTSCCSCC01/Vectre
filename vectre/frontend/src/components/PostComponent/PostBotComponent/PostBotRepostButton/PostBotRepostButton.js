@@ -1,5 +1,6 @@
 import {
-    useDisclosure
+    useDisclosure,
+    Tooltip
 } from '@chakra-ui/react';
 import { AiOutlineRetweet } from 'react-icons/ai';
 import IconSquareButton from '../../../Buttons/IconSquareButton/IconSquareButton';
@@ -13,13 +14,16 @@ const PostBotRepostButton = ({
     // const dispatch = useDispatch();
     return (
         <>
-            <IconSquareButton
-                display={item.parent ? 'none' : 'inline-flex'}
-                icon={<AiOutlineRetweet size="1.5rem" />}
-                onClick={(e) => {
-                    onOpen();
-                    e.stopPropagation();
-                }} />
+            <Tooltip label='Cannot repost a repost 🤯' placement='bottom' shouldWrapChildren>
+                <IconSquareButton
+                    isDisabled={item.repostPostID ? true : false}
+                    display={item.parent ? 'none' : 'inline-flex'}
+                    icon={<AiOutlineRetweet size="1.5rem" />}
+                    onClick={(e) => {
+                        onOpen();
+                        e.stopPropagation();
+                    }} />
+            </Tooltip>
             <RepostModal item={item} isOpen={isOpen} onClose={onClose} />
         </>
     );
