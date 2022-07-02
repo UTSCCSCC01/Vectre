@@ -25,10 +25,10 @@ const PostMidComponent = ({
                 {item.text}
             </Flex>
             {
-                item.isRepost ? (
+                item.repostPostID ? (
                     <Stack
                         display={'inline-flex'}>
-                        <RepostComponent item={item.repostData} />
+                        <RepostComponent item={item.repostPost} />
                     </Stack>
                 ) : (
                     <Stack

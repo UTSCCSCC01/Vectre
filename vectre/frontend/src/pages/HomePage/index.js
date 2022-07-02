@@ -66,20 +66,23 @@ const samplePostData = [
     likes: "30.2m",
     comment: "43k",
     community: "Meowz",
-    isRepost: true,
-    repostData: {
+    postId: "00002",
+    repostPostID: "00004",
+    repostPost: {
       timestamp: "1:43 PM · May 9, 2022",
       text: "Saw a dragon today. Wow!",
       author: {
         walletAddress: "0x15f209074682937c58ca031ebb43d64fa98d97b8",
         username: "Deadly Dwarf",
         profilePic: "https://www.cheatsheet.com/wp-content/uploads/2016/11/tyrion-tywin-1024x683.jpg",
-        verified: true
+        verified: false
       },
       like: "4.2k",
       comment: "420",
       community: "GOT",
       imageURL: "https://api.time.com/wp-content/uploads/2016/05/tyrion-game-of-thrones-peter-dinklage.jpeg",
+      postId: "00004",
+      repostPostID: null,
       edited: false
     },
     edited: false

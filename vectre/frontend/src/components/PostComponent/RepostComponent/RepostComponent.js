@@ -20,7 +20,14 @@ const RepostComponent = ({
                 border={'3px solid #C6DBFF'}
                 borderRadius={'6px'}
                 px={'18px'}
-                py={'15px'}>
+                py={'15px'}
+                cursor={'pointer'}
+                onClick={((e) => {
+                    if (item.postId) {
+                        window.location = `/post/${item.postId}`;
+                    }
+                    e.stopPropagation();
+                })}>
                 <Stack gap={'4px'}>
                     <PostTopComponent item={item} />
                     <PostMidComponent item={item} onOpen={onOpen} />
