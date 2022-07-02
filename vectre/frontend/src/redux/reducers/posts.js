@@ -33,7 +33,8 @@ const posts = (state = initialState, action) => {
                 ...state,
                 post: {
                     ...state.post,
-                    likes: state.post.likes + 1
+                    likes: state.post.likes + 1,
+                    alreadyLiked: true
                 }
             }
         case DO_UNLIKE:
@@ -47,7 +48,8 @@ const posts = (state = initialState, action) => {
                 ...state,
                 post: {
                     ...state.post,
-                    likes: state.post.likes - 1
+                    likes: state.post.likes - 1,
+                    alreadyLiked: false
                 }
             }
         default:
