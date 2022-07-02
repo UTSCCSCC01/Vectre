@@ -23,7 +23,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 const corsOptions = {
-    origin: config.frontend_base_url,
+    origin: config.frontendBaseUrl,
     credentials: true
 }
 app.use(cors(corsOptions))
@@ -33,12 +33,12 @@ app.use('/users', usersRouter);
 app.use('/posts', postRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -51,7 +51,7 @@ app.use(function(err, req, res, next) {
 // close neo4j-driver when node.js app exits
 app.use(function neo4jSessionCleanup(req, res, next) {
     res.on('finish', function () {
-        if(req.neo4jSession) {
+        if (req.neo4jSession) {
             req.neo4jSession.close();
             delete req.neo4jSession;
         }

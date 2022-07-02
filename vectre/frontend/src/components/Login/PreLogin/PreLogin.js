@@ -81,11 +81,16 @@ class PreLogin extends React.Component {
                                     _focus={{outline: 0}}
                                     border={'2px solid rgba(59, 130, 246, 0.54)'}
                                     onClick={this.handleConnectButton}
-                                    disabled={this.props.connecting || this.props.connected}
+                                    disabled={this.props.connecting}
                                 >
                                     {this.props.isMetamaskInstalled() ?
                                         (this.props.connecting ? "Connecting with Metamask..." :
-                                            (this.props.connected ? "Connected Metamask wallet!" : "Connect with Metamask"))
+                                            (this.props.connected ?
+                                                (this.props.registered ? "Login with Metamask" : "Register with Metamask")
+                                                    :
+                                                    "Connect with Metamask"
+                                            )
+                                        )
                                         :
                                         "Install Metamask"}
                                 </Button>

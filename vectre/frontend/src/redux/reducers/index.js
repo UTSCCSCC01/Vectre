@@ -1,13 +1,12 @@
 import { combineReducers } from 'redux';
 import users from "./users";
-import login from "./login";
-import create from "./create";
+import posts from "./posts";
+import toast from "./toast";
 
-const createRootReducer = combineReducers({
-    // insert reducers
+const createRootReducer = combineReducers({ // Insert reducers
     users,
-    login,
-    create
+    posts,
+    toast
 });
 
 export default createRootReducer;

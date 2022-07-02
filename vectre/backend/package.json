@@ -19,6 +19,7 @@
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
     "morgan": "~1.9.1",
+    "nanoid": "^3.0.0",
     "neo4j-driver": "^4.4.5",
     "nodemon": "^2.0.16"
   }
