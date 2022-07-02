@@ -4,7 +4,6 @@ import React from "react";
 import PropTypes from 'prop-types';
 import { connect } from "react-redux";
 import {
-    getLoggedInUser,
     getUser,
     updateUser,
     followUser,
@@ -33,7 +32,6 @@ class Profile extends React.Component {
 
     componentDidMount() {
         this.props.getUser(this.props.profileWalletAddress) // Profile owner
-        this.props.getLoggedInUser()
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.loggedInUser !== this.props.loggedInUser) {
@@ -45,23 +43,23 @@ class Profile extends React.Component {
     handleCloseModal = () => { this.setState({ isModalOpen: false }) }
 
     handleUpdateUser = (newUser) => {
-        this.props.updateUser(this.props.loggedInUser.walletAddress, newUser, (href) => { window.location.href = href })
+        this.props.updateUser(this.props.loggedInUser.walletAddress, newUser)
     }
     handleFollowUser = () => {
         if (this.state.following) { // Unfollow
-            this.props.unfollowUser(this.props.profileWalletAddress, (href) => { window.location.href = href})
+            this.props.unfollowUser(this.props.profileWalletAddress)
         } else { // Follow
-            this.props.followUser(this.props.profileWalletAddress, (href) => { window.location.href = href})
+            this.props.followUser(this.props.profileWalletAddress)
         }
     }
 
     render() {
         return (
             <div>
-                <h1><b>Profile:</b></h1>
                 {!this.props.user.walletAddress ? `User ${this.props.profileWalletAddress} does not exist!`
                     :
                     <>
+                        <h1><b>Profile:</b></h1>
                         <div>
                             <b>walletAddress:</b> {this.props.user.walletAddress} <br></br>
                             <b>username:</b> @{this.props.user.username} <br></br>
@@ -118,7 +116,6 @@ class Profile extends React.Component {
 }
 
 const actionCreators = {
-    getLoggedInUser,
     getUser,
     updateUser,
     followUser,

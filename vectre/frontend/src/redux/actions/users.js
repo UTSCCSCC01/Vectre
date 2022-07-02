@@ -62,20 +62,17 @@ export const createUser = (user, redirectWindow) => ({
     redirectWindow
 })
 
-export const updateUser = (walletAddress, updatedUser, redirectWindow) => ({
+export const updateUser = (walletAddress, updatedUser) => ({
     type: UPDATE_USER,
     walletAddress,
-    updatedUser,
-    redirectWindow
+    updatedUser
 })
 
-export const followUser = (walletAddressToFollow, redirectWindow) => ({
+export const followUser = (walletAddressToFollow,) => ({
     type: FOLLOW_USER,
-    walletAddressToFollow,
-    redirectWindow
+    walletAddressToFollow
 })
-export const unfollowUser = (walletAddressToUnfollow, redirectWindow) => ({
+export const unfollowUser = (walletAddressToUnfollow) => ({
     type: UNFOLLOW_USER,
-    walletAddressToUnfollow,
-    redirectWindow
+    walletAddressToUnfollow
 })
