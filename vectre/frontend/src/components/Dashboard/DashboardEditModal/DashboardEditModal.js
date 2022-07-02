@@ -111,29 +111,41 @@ const nft_preset = [
 function handleSelectDelete(selectedList, nftItem, setSelectedList) {
     var newSelectedList = [];
     selectedList.map((element) => {
-        if (element !== nftItem) {
+        if (element == nftItem) {
+        }
+        else {
             newSelectedList.push(element);
         }
     })
     setSelectedList(newSelectedList)
-    console.log(selectedList);
 }
 
 function handleSelectAdd(selectedList, nftItem, setSelectedList) {
 
-    if (!selectedList.some(item => item.tokenID == nftItem.tokenID)) {
-        selectedList.push(nftItem);
+    var newSelectedList = []
+    var contains = false;
+
+    if (selectedList.length == 0) {
+        newSelectedList.push(nftItem);
+        setSelectedList(newSelectedList);
+        return;
     }
 
-    // var contains = false;
-    // selectedList.map((element) => {
-    //     if (element === nftItem) {
-    //         contains = true;
-    //     }
-    // })
-    // if (!contains) setSelectedList(selectedList.push(nftItem))
+    selectedList.map((element) => {
+        if (element == nftItem) {
+            console.log(element)
+            contains = true;
+        }
+        else {
+            newSelectedList.push(element);
+        }
+    })
 
-    console.log(selectedList);
+    if (contains == false) {
+        newSelectedList.push(nftItem);
+    }
+
+    setSelectedList(newSelectedList)
 }
 
 function DashboardEditModal({

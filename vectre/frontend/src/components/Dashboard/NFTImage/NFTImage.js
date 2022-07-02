@@ -3,8 +3,6 @@ import {
    useBoolean,
    Image
 } from "@chakra-ui/react"
-import { showToast } from "../../../redux/actions/toast";
-import { TOAST_STATUSES } from "../../../redux/constants/toast";
 
 const NFTImage = ({
    handleSelectAdd,
@@ -25,7 +23,7 @@ const NFTImage = ({
          height={'200px'}
          border={selected ? '5px var(--chakra-colors-primary-400) solid' : '2px rgba(200, 200, 200, 0.6) solid'}
          onClick={() => {
-            if (selectedList.length < 3) {
+            if (selectedList.length < 3 || (selectedList.length == 3 && selected == true)) {
                setSelected.toggle();
                console.log(!selected);
                if (!selected == true) {
@@ -37,8 +35,7 @@ const NFTImage = ({
                   handleSelectDelete(selectedList, nftItem, setSelectedList);
                }
             }
-         }
-         }
+         }}
       />
    )
 }
