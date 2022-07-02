@@ -36,7 +36,8 @@ const createUserPost = function (session, authorWalletAddress, body) {
                         .then((result2) => {
                             return {
                                 success: true,
-                                message: "Successfully created repost"
+                                message: "Successfully created repost",
+                                newPostID: postID
                             }
                         })
                         .catch((error) => {
@@ -73,7 +74,8 @@ const createUserPost = function (session, authorWalletAddress, body) {
             .then((result) => {
                 return {
                     success: true,
-                    message: "Successfully created post"
+                    message: "Successfully created post",
+                    newPostID: postID
                 }
             })
             .catch((error) => {
