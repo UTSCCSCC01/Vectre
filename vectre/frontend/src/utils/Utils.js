@@ -1,4 +1,6 @@
 import Moment from 'moment';
+import DEFAULT_AVATAR from "../assets/images/default-avatar.png"
+import DEFAULT_BANNER from "../assets/images/default-banner.png"
 
 // assumes isoString is valid
 export const formatISO = (isoString) => {
@@ -21,3 +23,12 @@ export const within24 = (isoString) => {
     const postTime = Moment(isoString);
     return currentTime.diff(postTime, 'hours') <= 24;
 };
+
+export const getAvatarOrDefault = (avatarLink) => {
+    if (!avatarLink || avatarLink === "") return DEFAULT_AVATAR
+    else return avatarLink
+}
+export const getBannerOrDefault = (bannerLink) => {
+    if (!bannerLink || bannerLink === "") return DEFAULT_BANNER
+    else return bannerLink
+}

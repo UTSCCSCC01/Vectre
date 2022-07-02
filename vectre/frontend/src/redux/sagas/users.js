@@ -108,6 +108,7 @@ function* updateUser(action) {
         const response = yield call(putRequest, BASE_API_URL + USERS.UPDATE_USER.replace("{walletAddress}", action.walletAddress), action.updatedUser), responseData = response[1]
         if (responseData.success) {
             yield put(getUser(action.walletAddress))
+            yield put(getLoggedInUser())
             yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))

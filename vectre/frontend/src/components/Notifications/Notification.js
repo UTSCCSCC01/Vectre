@@ -9,11 +9,11 @@ import {
 import './Notification.css'
 import { FaCommentAlt, FaHeart } from 'react-icons/fa'
 import { ImUserPlus } from 'react-icons/im'
-import DEFAULT_PROFILE_PICTURE from "../../assets/images/default_profile_pic.jpg"
 
 // Redux
 import { connect } from "react-redux";
 import { readNotification } from "../../redux/actions/notification";
+import {getAvatarOrDefault} from "../../utils/Utils";
 
 const NOTIFICATION_ACTIONS = {
   "like": {
@@ -63,8 +63,7 @@ class Notification extends React.Component {
         </Flex>
         <Spacer />
         <Flex className='notif-tag'>
-            {/* TODO: add avatar from props.userProfile instead. */}
-            <Avatar src={DEFAULT_PROFILE_PICTURE}
+            <Avatar src={getAvatarOrDefault(this.props.fromUser.profilePic)}
               size="sm"
               mx="15px"
             />
