@@ -74,7 +74,12 @@ function DashboardEditModal({
         dispatch(getNFT(loggedInUser.walletAddress))
     }, [loggedInUser])
 
-    const nft = useSelector(nftSelector);
+    const nftList = useSelector(nftSelector);
+    var nftListNew = '';
+    if (nftList.length !== 0) {
+        nftListNew = nftList;
+    }
+    const nft = nftListNew;
 
     return (
         <>
@@ -130,24 +135,44 @@ function DashboardEditModal({
                                 Select Up to 3 NFTs for the Dashboard!
                             </Button>
                         </Flex>
-                        <Grid templateColumns='repeat(3, 1fr)' gap={6}>
-                            {
-                                nft.map((nftItem, i) => {
-                                    return (
-                                        <Box
-                                            key={i}>
-                                            <NFTImage
-                                                handleSelectDelete={handleSelectDelete}
-                                                handleSelectAdd={handleSelectAdd}
-                                                selectedList={selectedList}
-                                                setSelectedList={setSelectedList}
-                                                nftItem={nftItem}
-                                            />
-                                        </Box>
-                                    )
-                                })
-                            }
-                        </Grid>
+                        {nft.length !== 0 ?
+                            <>
+                                <Grid templateColumns='repeat(3, 1fr)' gap={6}>
+                                    {
+                                        nft.map((nftItem, i) => {
+                                            return (
+                                                <Box
+                                                    key={i}>
+                                                    <NFTImage
+                                                        handleSelectDelete={handleSelectDelete}
+                                                        handleSelectAdd={handleSelectAdd}
+                                                        selectedList={selectedList}
+                                                        setSelectedList={setSelectedList}
+                                                        nftItem={nftItem}
+                                                    />
+                                                </Box>
+                                            )
+                                        })
+                                    }
+                                </Grid>
+                            </> :
+                            <Flex flexDirection={'row'} alignContent={'center'} justifyContent={'center'}>
+                                <Button
+                                    display={{ base: 'none', lg: 'inline-flex' }}
+                                    marginTop={'150px'}
+                                    marginBottom={'150px'}
+                                    fontSize={'18px'}
+                                    fontWeight={700}
+                                    alignSelf={'center'}
+                                    _hover={{ textDecoration: "none" }}
+                                    alignItems={'center'}
+                                    color={'primary.400'}
+                                    bg={'white'}
+                                    _focus={{ outline: 0 }}>
+                                    No NFTs Found! :(
+                                </Button>
+                            </Flex>
+                        }
                     </ModalBody>
                     <ModalFooter>
                         <Button

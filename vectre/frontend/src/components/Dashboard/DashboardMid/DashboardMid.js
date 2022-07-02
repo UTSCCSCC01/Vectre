@@ -1,7 +1,9 @@
 import {
     Box,
     Image,
-    Grid
+    Grid,
+    Flex,
+    Button,
 } from '@chakra-ui/react';
 
 const dashboard_preset = "";
@@ -51,7 +53,23 @@ const DashboardMid = ({
                             })
                         }
                     </Grid>
-                </> : null
+                </> :
+                <Flex flexDirection={'row'} alignContent={'center'} justifyContent={'center'}>
+                    <Button
+                        display={{ base: 'none', lg: 'inline-flex' }}
+                        marginTop={'150px'}
+                        marginBottom={'150px'}
+                        fontSize={'18px'}
+                        fontWeight={700}
+                        alignSelf={'center'}
+                        _hover={{ textDecoration: "none" }}
+                        alignItems={'center'}
+                        color={'primary.400'}
+                        bg={'white'}
+                        _focus={{ outline: 0 }}>
+                        No NFTs Currently Set on the Dashboard
+                    </Button>
+                </Flex>
             }
         </Box>
     );
