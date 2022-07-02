@@ -386,22 +386,21 @@ const unfollowUser = (session, walletAddress, walletAddressToUnfollow) => {
     }
 }
 
-
-const getNFT = (wallet_address) => { // Gets all NFTs of a User using OpenSea API.
-    return fetch(`https://testnets-api.opensea.io/api/v1/assets?owner=${wallet_address}&order_direction=desc&offset=0&limit=20&include_orders=false`)
+const getNFT = (walletAddress) => { // Gets all NFTs of a User using OpenSea API.
+    return fetch(`https://testnets-api.opensea.io/api/v1/assets?owner=${walletAddress}&order_direction=desc&offset=0&limit=20&include_orders=false`)
         .then(res => res.json())
         .then(json => {
             if (_.isEmpty(json.assets)){
                 return {
                     success: false,
                     nft: null,
-                    message: `Failed to retrieve NFTs for user with wallet address ${wallet_address}`
+                    message: `Failed to retrieve NFTs for user with wallet address ${walletAddress}`
                 }
             }
             return {
                 success: true,
                 nft: json.assets,
-                message: `Successfully retrieved NFTs for user with wallet address ${wallet_address}`
+                message: `Successfully retrieved NFTs for user with wallet address ${walletAddress}`
             }
         }).catch((error) => {
             throw {
@@ -412,14 +411,14 @@ const getNFT = (wallet_address) => { // Gets all NFTs of a User using OpenSea AP
         })
 }
 
-const getDashboard = (session, wallet_address) => { // Gets the NFTs in the dashboard of a User.
-    const query =  `MATCH (user:User {wallet_address: "${wallet_address}" }) RETURN user.dashboard`
+const getDashboard = (session, walletAddress) => { // Gets the NFTs in the dashboard of a User.
+    const query =  `MATCH (user:User {walletAddress: "${walletAddress}" }) RETURN user.dashboard`
     return session.run(query)
         .then((results) => {
             if (_.isEmpty(results.records)) {
                 throw {
                     success: false,
-                    message: `User with wallet address ${wallet_address} does not exist`
+                    message: `User with wallet address ${walletAddress} does not exist`
                 }
             } else {
                 return {
@@ -437,13 +436,13 @@ const getDashboard = (session, wallet_address) => { // Gets the NFTs in the dash
 }
 
 const updateDashboard = (session, body) => {  // Sets the NFTs in the dashboard of a User.
-    const query = `MATCH (user:User {wallet_address:"${body.wallet_address}"}) SET user.dashboard = "${body.dashboard}" RETURN user`;
+    const query = `MATCH (user:User {walletAddress:"${body.walletAddress}"}) SET user.dashboard = "${body.dashboard}" RETURN user`;
     return session.run(query)
         .then((results) => {
             if (_.isEmpty(results.records)) {
                 throw {
                     success: false,
-                    message: `User with wallet address ${wallet_address} does not exist`
+                    message: `User with wallet address ${walletAddress} does not exist`
                 }
             } else {
                 return {
