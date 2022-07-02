@@ -69,11 +69,4 @@ router.get('/:postID/likes', authenticateToken, (req, res, next) => {
         .catch((error) => res.send(error))
 })
 
-// POST /posts/repost
-router.post('/repost', authenticateToken, (req, res, next) => {
-    Post.repostPost(dbUtils.getSession(req), req.body)
-        .then((result) => res.send(result))
-        .catch((error) => res.send(error))
-})
-
 module.exports = router;
