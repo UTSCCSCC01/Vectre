@@ -109,7 +109,7 @@ class Profile extends React.Component {
                                 </Button>
                             </>
                         }
-                        {this.props.user.dashboard !== "[]" ?
+                        {(this.props.loggedInUser.walletAddress === this.props.profileWalletAddress || this.props.user.dashboard !== "[]") ? // Only show empty dashboard if its your own
                             <Dashboard
                                 loggedInUser={this.props.loggedInUser}
                                 profileWalletAddress={this.props.profileWalletAddress}
