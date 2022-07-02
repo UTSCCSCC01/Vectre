@@ -59,7 +59,7 @@ const DashboardMid = ({
                         display={{ base: 'none', lg: 'inline-flex' }}
                         marginTop={'150px'}
                         marginBottom={'150px'}
-                        fontSize={'18px'}
+                        fontSize={'15px'}
                         fontWeight={700}
                         alignSelf={'center'}
                         _hover={{ textDecoration: "none" }}
@@ -67,7 +67,7 @@ const DashboardMid = ({
                         color={'primary.400'}
                         bg={'white'}
                         _focus={{ outline: 0 }}>
-                        No NFTs Currently Set on the Dashboard
+                        No NFTs Currently Displayed
                     </Button>
                 </Flex>
             }
