@@ -15,9 +15,15 @@ const createUserPost = function (session, authorWalletAddress, body) {
     const imageString = body.imageURL ? `, imageURL: '${body.imageURL}'` : ""; // imageURL is optional on a post
 
     if (body.repostPostID) { // Repost
-        return getPostByID(session, null, repostPostID) // Note: walletAddress here is null means alreadyLiked will not show for
+        return getPostByID(session, null, body.repostPostID) // Note: walletAddress here is null means alreadyLiked will not show for
             .then((result) => {
                 if (result.success) {
+                    if (result.post.repostPostID) { // Prevent repost of repost
+                        throw {
+                            success: false,
+                            message: "Cannot create repost of repost"
+                        }
+                    }
                     const query = [
                         `CREATE (p:Post {postID: '${postID}', repostPostID: '${body.repostPostID}', text: '${body.text}', author: '${authorWalletAddress}', edited: false, timestamp: '${date}', likes: 0, parent: null ${imageString}})`,
                         `WITH (p)`,
