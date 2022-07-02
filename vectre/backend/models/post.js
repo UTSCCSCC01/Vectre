@@ -15,7 +15,7 @@ const createUserPost = function (session, authorWalletAddress, body) {
     const imageString = body.imageURL ? `, imageURL: '${body.imageURL}'` : ""; // imageURL is optional on a post
 
     if (body.repostPostID) { // Repost
-        return getPostByID(session, null, ) // Note: walletAddress here is null means alreadyLiked will not show for
+        return getPostByID(session, null, repostPostID) // Note: walletAddress here is null means alreadyLiked will not show for
             .then((result) => {
                 if (result.success) {
                     const query = [
@@ -237,16 +237,18 @@ const getPostByID = function (session, walletAddress, postID) {
             }
 
             if (walletAddress !== null) {
-                return checkIfAlreadyLiked(session, postID, { walletAddress: walletAddress })
+                return checkIfAlreadyLiked(session, postID, walletAddress)
                     .then((result2) => {
                         if (result2.alreadyLiked) {
                             post.alreadyLiked = true;
+                            console.log(post)
                             return {
                                 success: true,
                                 post: post
                             }
                         }
                         post.alreadyLiked = false;
+                        console.log(post)
                         return {
                             success: true,
                             post: post
