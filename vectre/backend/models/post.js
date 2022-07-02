@@ -2,6 +2,7 @@ const _ = require('lodash');
 const Post = require('./neo4j/post')
 const User = require('./neo4j/user')
 const { nano } = require('../utils/Utils')
+const Notification = require("../models/notification")
 
 const createUserPost = function (session, authorWalletAddress, body) {
     if (!body.text) {
@@ -15,7 +16,7 @@ const createUserPost = function (session, authorWalletAddress, body) {
     const imageString = body.imageURL ? `, imageURL: '${body.imageURL}'` : ""; // imageURL is optional on a post
 
     if (body.repostPostID) { // Repost
-        return getPostByID(session, null, body.repostPostID) // Note: walletAddress here is null means alreadyLiked will not show for
+        return getPostByID(session, null, body.repostPostID)
             .then((result) => {
                 if (result.success) {
                     if (result.post.repostPostID) { // Prevent repost of repost
@@ -99,20 +100,25 @@ const createUserComment = function (session, authorWalletAddress, postID, body) 
         `WITH (p)`,
         `MATCH (u:User), (parent:Post)`,
         `WHERE u.walletAddress = '${authorWalletAddress}' AND parent.postID = '${postID}'`,
-        `CREATE (u)-[r:POSTED]->(p), (p)-[r2:COMMENTED_ON]->(parent)`
+        `CREATE (u)-[r:POSTED]->(p), (p)-[r2:COMMENTED_ON]->(parent)`,
+        `RETURN parent`
     ].join('\n');
 
     return session.run(query)
         .then((result) => {
-            return {
-                success: true,
-                message: "Successfully created Comment"
-            }
+            var parentAuthor = new Post(result.records[0].get('parent')).author
+            return Notification.create(session, "comment", parentAuthor, authorWalletAddress, commentPostID)
+                .then((result2) => {
+                    return {
+                        success: true,
+                        message: "Successfully created comment"
+                    }
+                })
         })
         .catch((error) => {
             throw {
                 success: false,
-                message: "Failed to create Comment",
+                message: "Failed to create comment",
                 error: error
             }
         });
@@ -312,7 +318,8 @@ const likePost = function (session, postID, walletAddress) {
         `WITH (p)`,
         `MATCH (u:User)`,
         `WHERE u.walletAddress = '${walletAddress}'`,
-        `MERGE (u)-[r:LIKED]->(p)`
+        `MERGE (u)-[r:LIKED]->(p)`,
+        `RETURN p`
     ].join('\n');
 
     return checkIfAlreadyLiked(session, postID, walletAddress)
@@ -320,16 +327,19 @@ const likePost = function (session, postID, walletAddress) {
             if (!result.alreadyLiked) {
                 return session.run(query)
                     .then((result2) => {
-                        return {
-                            success: true,
-                            message: "Successfully liked post"
-                        }
+                        var postAuthor = new Post(result2.records[0].get('p')).author
+                        return Notification.create(session, "like", postAuthor, walletAddress, postID)
+                            .then((result3) => {
+                                return {
+                                    success: true,
+                                    message: "Successfully liked post",
+                                }
+                            })
                     })
-            } else {
-                throw {
-                    success: false,
-                    message: "Post was already liked",
-                }
+            }
+            return {
+                success: false,
+                message: "Post was already liked",
             }
         })
         .catch((error) => {

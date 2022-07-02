@@ -1,8 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
-const User = require('../models/user');
-const Post = require('../models/post');
+const User = require('../models/user'),
+    Post = require('../models/post'),
+    Notification = require('../models/notification');
 const dbUtils = require('../utils/neo4j/dbUtils');
 const { authenticateToken } = require("../utils/auth");
 
@@ -25,6 +26,20 @@ router.get('/:walletAddress/posts', (req, res, next) => {
     Post.getPostsByUser(dbUtils.getSession(req), req.params.walletAddress)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
+});
+
+// GET /users/{walletAddress}/notifications
+router.get('/:walletAddress/notifications', authenticateToken, (req, res, next) => {
+    if (req.walletAddress === req.params.walletAddress) {
+        Notification.getUserNotifications(dbUtils.getSession(req), req.params.walletAddress)
+            .then((result) => res.send(result))
+            .catch((error) => res.send(error))
+    } else {
+        res.status(403).send({
+            success: false,
+            message: "You do not have access to get this User's notifications"
+        })
+    }
 });
 
 // POST /users/register

@@ -3,13 +3,17 @@ import {
     STORE_USERS,
     STORE_LOGGED_IN_USER,
     STORE_LOGIN_NONCE,
+    STORE_NOTIFICATIONS,
+    STORE_UNREADSTATUS,
 } from "../constants/users";
 
 const initialState = {
     user: {},
     users: [],
     loggedInUser: {},
-    nonce: ""
+    nonce: "",
+    notifications: [],
+    unreadStatus: false,
 }
 
 const users = (state = initialState, action) => {
@@ -33,6 +37,16 @@ const users = (state = initialState, action) => {
             return {
                 ...state,
                 nonce: action.nonce
+            }
+        case STORE_NOTIFICATIONS:
+            return {
+                ...state,
+                notifications: action.notifications
+            }
+        case STORE_UNREADSTATUS:
+        return {
+                ...state,
+                unreadStatus: action.unreadStatus
             }
         default:
             return state

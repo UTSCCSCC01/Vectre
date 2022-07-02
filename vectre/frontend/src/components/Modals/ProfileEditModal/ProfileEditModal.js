@@ -19,8 +19,7 @@ import {
 } from "@chakra-ui/react"
 import { FaUser } from 'react-icons/fa'
 import { ReactComponent as EditIcon } from "../../../assets/icons/edit-icon.svg";
-import DEFAULT_PROFILE_PICTURE from '../../../assets/images/default_profile_pic.jpg';
-import DEFAULT_BANNER from '../../../assets/images/default_banner.jpg';
+import {getAvatarOrDefault, getBannerOrDefault} from "../../../utils/Utils";
 
 class ProfileEditModal extends React.Component {
     constructor(props) {
@@ -96,14 +95,14 @@ class ProfileEditModal extends React.Component {
                                         marginLeft={'-60px'}>
                                         <Image
                                             border={'5px solid white'}
-                                            src={this.props.loggedInUser.profilePic ? this.props.loggedInUser.profilePic : DEFAULT_PROFILE_PICTURE}
+                                            src={getAvatarOrDefault(this.props.loggedInUser.profilePic)}
                                             fit={'cover'}
                                             overflow={'hidden'}
                                             borderRadius={'full'}
                                             boxSize={'120px'}/>
                                     </Box>
                                     <Image
-                                        src={this.props.loggedInUser.bgImageURL ? this.props.loggedInUser.bgImageURL : DEFAULT_BANNER}
+                                        src={getBannerOrDefault(this.props.loggedInUser.bgImageURL)}
                                         fit={'cover'}
                                         overflow={'hidden'}
                                         borderRadius={'6px'}
