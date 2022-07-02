@@ -4,7 +4,12 @@ import {
     storeUsers,
     storeLoginNonce,
     storeLoggedInUser,
-    storeUser, getUser, storeNFT,
+    storeUser,
+    storeNFT,
+    storeNotifications,
+    storeUnreadStatus,
+    getUser,
+    getLoggedInUser,
 } from "../actions/users";
 import {
     GET_LOGIN_NONCE,
@@ -14,6 +19,7 @@ import {
     GET_LOGGED_IN_USER,
     CREATE_USER,
     UPDATE_USER,
+    GET_NOTIFICATIONS,
     FOLLOW_USER,
     UNFOLLOW_USER,
     GET_NFT,
@@ -48,7 +54,7 @@ function* loginUser(action) {
     }
 }
 
-function* getLoggedInUser() {
+function* getLoggedInUserSaga() {
     try {
         const response = yield call(getRequest, BASE_API_URL + USERS.GET_LOGGED_IN_USER), responseData = response[1]
         if (responseData.success)
@@ -123,6 +129,7 @@ function* updateUser(action) {
         const response = yield call(putRequest, BASE_API_URL + USERS.UPDATE_USER.replace("{walletAddress}", action.walletAddress), action.updatedUser), responseData = response[1]
         if (responseData.success) {
             yield put(getUser(action.walletAddress))
+            yield put(getLoggedInUser())
             yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
@@ -153,6 +160,7 @@ function* followUser(action) {
         const response = yield call(postRequest, BASE_API_URL + USERS.FOLLOW_USER.replace("{walletAddress}", action.walletAddressToFollow), {}), responseData = response[1]
         if (responseData.success) {
             yield put(getUser(action.walletAddressToFollow))
+            yield put(getLoggedInUser())
             yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
@@ -167,6 +175,7 @@ function* unfollowUser(action) {
         const response = yield call(postRequest, BASE_API_URL + USERS.UNFOLLOW_USER.replace("{walletAddress}", action.walletAddressToUnfollow), {}), responseData = response[1]
         if (responseData.success) {
             yield put(getUser(action.walletAddressToUnfollow))
+            yield put(getLoggedInUser())
             yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
@@ -177,15 +186,31 @@ function* unfollowUser(action) {
     }
 }
 
+function* getNotifications(action) {
+    try {
+        const response = yield call(getRequest, BASE_API_URL + USERS.GET_NOTIFICATIONS.replace("{walletAddress}", action.walletAddress)), responseData = response[1]
+        if (responseData.success) {
+            yield put(storeNotifications(responseData.notifications))
+            yield put(storeUnreadStatus(responseData.unread))
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+    } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get notifications"))
+        console.log(error)
+    }
+}
+
 function* usersSaga() {
     yield takeLatest(GET_LOGIN_NONCE, getLoginNonce)
     yield takeLatest(LOGIN_USER, loginUser)
-    yield takeLatest(GET_LOGGED_IN_USER, getLoggedInUser)
+    yield takeLatest(GET_LOGGED_IN_USER, getLoggedInUserSaga)
     yield takeLatest(GET_USER, getUserSaga)
     yield takeLatest(GET_NFT, getNFT)
     yield takeLatest(GET_USERS, getUsers)
     yield takeLatest(CREATE_USER, createUser)
     yield takeLatest(UPDATE_USER, updateUser)
+    yield takeLatest(GET_NOTIFICATIONS, getNotifications)
     yield takeLatest(FOLLOW_USER, followUser)
     yield takeLatest(UNFOLLOW_USER, unfollowUser)
     yield takeLatest(UPDATE_DASHBOARD, updateDashboard)
