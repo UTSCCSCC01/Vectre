@@ -13,6 +13,9 @@ export const USERS = {
     UNFOLLOW_USER: "/users/{walletAddress}/unfollow",
 
     GET_NOTIFICATIONS: "/users/{walletAddress}/notifications",
+
+    GET_NFT: "/users/{walletAddress}/nft",
+    UPDATE_DASHBOARD: "/users/{walletAddress}/updateDashboard",
 }
 
 export const POSTS = {

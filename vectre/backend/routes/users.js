@@ -26,7 +26,20 @@ router.get('/:walletAddress/posts', (req, res, next) => {
     Post.getPostsByUser(dbUtils.getSession(req), req.params.walletAddress)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
-});
+})
+
+// GET /users/{walletAddress}/nft
+router.get('/:walletAddress/nft', (req, res) => {
+    User.getNFT(req.params.walletAddress)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
+// GET /users/{walletAddress}/dashboard
+router.get('/:walletAddress/dashboard', (req, res) => {
+    User.getDashboard(dbUtils.getSession(req), req.params.walletAddress)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
 
 // GET /users/{walletAddress}/notifications
 router.get('/:walletAddress/notifications', authenticateToken, (req, res, next) => {
@@ -68,6 +81,13 @@ router.get('/:walletAddress/posts', (req, res, next) => {
 router.post('/login', (req, res) => {
     const setTokenInCookie = (token) => { res.cookie('token', token, { maxAge: 1000 * 60 * 60 * 24 * 7, httpOnly: true }) } // Expires in 7 days
     User.login(dbUtils.getSession(req), req.body.walletAddress, req.body.signedNonce, setTokenInCookie)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
+
+// POST /users/updateDashboard
+router.post('/:walletAddress/updateDashboard', (req, res) => {
+    User.updateDashboard(dbUtils.getSession(req), req.params.walletAddress, req.body)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })

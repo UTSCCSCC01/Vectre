@@ -20,6 +20,7 @@ import {
     Link,
 } from "@chakra-ui/react";
 import ProfileEditModal from "../Modals/ProfileEditModal/ProfileEditModal";
+import Dashboard from "../Dashboard/Dashboard"
 
 class Profile extends React.Component {
     constructor(props) {
@@ -35,7 +36,7 @@ class Profile extends React.Component {
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.loggedInUser !== this.props.loggedInUser) {
-            this.setState({following: this.props.loggedInUser.following.includes(this.props.profileWalletAddress)})
+            this.setState({ following: this.props.loggedInUser.following.includes(this.props.profileWalletAddress) })
         }
     }
 
@@ -107,6 +108,13 @@ class Profile extends React.Component {
                                     {this.state.following ? "Unfollow" : "Follow"}
                                 </Button>
                             </>
+                        }
+                        {(this.props.loggedInUser.walletAddress === this.props.profileWalletAddress || this.props.user.dashboard !== "[]") ? // Only show empty dashboard if its your own
+                            <Dashboard
+                                loggedInUser={this.props.loggedInUser}
+                                profileWalletAddress={this.props.profileWalletAddress}
+                                currentDashboard={this.props.user.dashboard}
+                            /> : null
                         }
                     </>
                 }

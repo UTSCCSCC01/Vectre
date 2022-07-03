@@ -3,7 +3,8 @@ const User = require('./neo4j/user')
 const Notification = require('../models/notification');
 const config = require('../config');
 const jwt = require('jsonwebtoken')
-const ethUtil = require('ethereumjs-util')
+const ethUtil = require('ethereumjs-util');
+const fetch = (url) => import('node-fetch').then(({default: fetch}) => fetch(url));
 
 const getAll = (session) => { // Returns all Users
     const query = "MATCH (user:User) RETURN user";
@@ -434,7 +435,7 @@ const unfollowUser = (session, walletAddress, walletAddressToUnfollow) => {
                                 message: "Successfully unfollowed user"
                             }
                         })
-                    }
+                }
             })
             .catch((error) => {
                 throw {
@@ -451,6 +452,75 @@ const unfollowUser = (session, walletAddress, walletAddressToUnfollow) => {
     }
 }
 
+const getNFT = (walletAddress) => { // Gets all NFTs of a User using OpenSea API.
+    return fetch(`https://testnets-api.opensea.io/api/v1/assets?owner=${walletAddress}&order_direction=desc&offset=0&limit=20&include_orders=false`)
+        .then(res => {
+            if (res.status !== 200) {
+                throw {
+                    success: false,
+                    message: "Failed to retrieve NFTs"
+                }
+            }
+            return res.json()
+        })
+        .then(json => {
+            if (_.isEmpty(json.assets)) {
+                return { // User has no NFTs
+                    success: true,
+                    nft: [],
+                    message: "User has no NFTs"
+                }
+            }
+
+            var asset_list = [];
+            for (let i = 0; i < json.assets.length; i++) {
+                var jsonObj = {
+                    tokenID: json.assets[i].id,
+                    name: json.assets[i].asset_contract.name, //change 'asset_contract.name' -> 'name' once OpenSea Mainnet API is received.
+                    imageURL: json.assets[i].image_url,
+                    contractAddress: json.assets[i].asset_contract.address,
+                }
+                asset_list.push(jsonObj);
+            }
+
+            return {
+                success: true,
+                nft: asset_list,
+                message: `Successfully retrieved user's NFTs`
+            }
+        }).catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to get user's NFTs",
+                error: error.message
+            }
+        })
+}
+
+const updateDashboard = (session, walletAddress, body) => {  // Sets the NFTs in the dashboard of a User.
+    const query = `MATCH (user:User {walletAddress:"${walletAddress}"}) SET user.dashboard = "${body.dashboard}" RETURN user`;
+    return session.run(query)
+        .then((results) => {
+            if (_.isEmpty(results.records)) {
+                throw {
+                    success: false,
+                    message: `User with wallet address ${walletAddress} does not exist`
+                }
+            } else {
+                return {
+                    success: true,
+                    user: new User(results.records[0].get('user')),
+                    message: `Successfully updated dashboard!`
+                }
+            }
+        }).catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to update Dashboard.",
+                error: error.message
+            }
+        })
+}
 
 module.exports = {
     getAll,
@@ -458,10 +528,13 @@ module.exports = {
     register,
     getNonce,
     login,
+    updateUser,
     updateProfile,
     delete: deleteUser,
     getFollowing,
     getFollowers,
     follow: followUser,
     unfollow: unfollowUser,
+    getNFT,
+    updateDashboard
 }
