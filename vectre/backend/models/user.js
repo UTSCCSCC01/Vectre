@@ -66,32 +66,61 @@ const getByWalletAddress = (session, walletAddress) => {
 }
 
 const register = (session, body, setTokenInCookie) => { // Creates User from body data
-    const bio = body.bio ? body.bio : ""
-    const query = `CREATE (user:User {name: '${body.name}', username: '${body.username}', walletAddress: '${body.walletAddress}', bio: '${bio}', nonce: '${generateNonce()}'});`
-    return session.run(query)
-        .then((results) => {
-            const accessToken = jwt.sign(body.walletAddress, config.jwtSecretToken)
-            setTokenInCookie(accessToken)
-
-            return {
-                success: true,
-                message: "Created user"
-            }
+    if (!(/^[0-9a-zA-Z_.-]+$/.test(body.username))) {
+        return new Promise((resolve) => {
+            resolve({
+                success: false,
+                message: "Username can only contain letters, numbers, dashes, underscores, or periods"
+            })
         })
-        .catch((error) => {
-            if (error.message.includes("already exists with label `User` and property `username`")) {
-                console.log("test")
+    } else if (body.username.length > 32) {
+        return new Promise((resolve) => {
+            resolve({
+                success: false,
+                message: "Username must be less than 32 characters"
+            })
+        })
+    } else if (body.name.length > 32) {
+        return new Promise((resolve) => {
+            resolve({
+                success: false,
+                message: "Name must be less than 32 characters"
+            })
+        })
+    } else if (body.bio.length > 500) {
+        return new Promise((resolve) => {
+            resolve({
+                success: false,
+                message: "Bio must be less than 500 characters"
+            })
+        })
+    } else {
+        const bio = body.bio ? body.bio : ""
+        const query = `CREATE (user:User {name: '${body.name}', username: '${body.username}', walletAddress: '${body.walletAddress}', bio: '${bio}', nonce: '${generateNonce()}'});`
+        return session.run(query)
+            .then((results) => {
+                const accessToken = jwt.sign(body.walletAddress, config.jwtSecretToken)
+                setTokenInCookie(accessToken)
+
+                return {
+                    success: true,
+                    message: "Created user"
+                }
+            })
+            .catch((error) => {
+                if (error.message.includes("already exists with label `User` and property `username`")) {
+                    throw {
+                        success: false,
+                        message: "Username already in use"
+                    }
+                }
                 throw {
                     success: false,
-                    message: "Username already in use"
+                    message: "Failed to create user",
+                    error: error.message
                 }
-            }
-            throw {
-                success: false,
-                message: "Failed to create user",
-                error: error.message
-            }
-        })
+            })
+    }
 }
 
 function generateNonce() {
@@ -191,8 +220,40 @@ const updateUser = function (session, wallet, filter, newUser) {
     // Check for non empty fields
     const nonEmpty = ["username", "name"]
     for (let f of nonEmpty) {
-        if ((f in newUser) && newUser[f] == "") {
-            throw { success: false, message: `Field ${f} is empty.` }
+        if ((f in newUser)) {
+            if (newUser[f] == "") {
+                throw {success: false, message: `Field ${f} is empty.`}
+            }
+
+            if (f === "username") {
+                let username = newUser[f]
+                if (!(/^[0-9a-zA-Z_.-]+$/.test(username))) {
+                    throw {
+                        success: false,
+                        message: "Username can only contain letters, numbers, dashes, underscores, or periods"
+                    }
+                } else if (username.length > 32) {
+                    throw {
+                        success: false,
+                        message: "Username must be less than 32 characters"
+                    }
+                }
+            } else if (f === "name") {
+                let name = newUser[f]
+                if (name.length > 32) {
+                    throw {
+                        success: false,
+                        message: "Name must be less than 32 characters"
+                    }
+                }
+            }
+        }
+    }
+
+    if (newUser["bio"] != "" && newUser["bio"].length > 500) {
+        throw {
+            success: false,
+            message: "Bio must be less than 500 characters"
         }
     }
 
@@ -244,7 +305,7 @@ const updateProfile = function (session, wallet, newProf) {
             throw {
                 success: false,
                 error: error.message,
-                message: "Error while editing. Please try again."
+                message: error.message
             }
         })
 }

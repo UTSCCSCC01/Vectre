@@ -14,28 +14,78 @@ const createUserPost = function (session, authorWalletAddress, body) {
     const postID = nano()
     const date = new Date().toISOString()
     const imageString = body.imageURL ? `, imageURL: '${body.imageURL}'` : ""; // imageURL is optional on a post
-    const query = [
-        `CREATE (p:Post {postID: '${postID}', text: '${body.text}', author: '${authorWalletAddress}', edited: false, timestamp: '${date}', likes: 0, parent: null ${imageString}})`,
-        `WITH (p)`,
-        `MATCH (u:User)`,
-        `WHERE u.walletAddress = '${authorWalletAddress}'`,
-        `CREATE (u)-[r:POSTED]->(p)`
-    ].join('\n');
 
-    return session.run(query)
-        .then((result) => {
-            return {
-                success: true,
-                message: "Successfully created Post"
-            }
-        })
-        .catch((error) => {
-            throw {
-                success: false,
-                message: "Failed to create Post",
-                error: error
-            }
-        });
+    if (body.repostPostID) { // Repost
+        return getPostByID(session, null, body.repostPostID)
+            .then((result) => {
+                if (result.success) {
+                    if (result.post.repostPostID) { // Prevent repost of repost
+                        throw {
+                            success: false,
+                            message: "Cannot create repost of repost"
+                        }
+                    }
+                    const query = [
+                        `CREATE (p:Post {postID: '${postID}', repostPostID: '${body.repostPostID}', text: '${body.text}', author: '${authorWalletAddress}', edited: false, timestamp: '${date}', likes: 0, parent: null ${imageString}})`,
+                        `WITH (p)`,
+                        `MATCH (u:User {walletAddress: '${authorWalletAddress}'}), (repost:Post {postID: '${body.repostPostID}'})`,
+                        `CREATE (u)-[r:POSTED]->(p)`
+                    ].join('\n');
+
+                    return session.run(query)
+                        .then((result2) => {
+                            return {
+                                success: true,
+                                message: "Successfully created repost",
+                                newPostID: postID
+                            }
+                        })
+                        .catch((error) => {
+                            throw {
+                                success: false,
+                                message: "Failed to create repost",
+                                error: error
+                            }
+                        });
+                } else {
+                    throw {
+                        success: false,
+                        message: result.message
+                    }
+                }
+            })
+            .catch((error) => {
+                throw {
+                    success: false,
+                    message: "Failed to create repost",
+                    error: error
+                }
+            });
+    } else {
+        const query = [
+            `CREATE (p:Post {postID: '${postID}', text: '${body.text}', author: '${authorWalletAddress}', edited: false, timestamp: '${date}', likes: 0, parent: null ${imageString}})`,
+            `WITH (p)`,
+            `MATCH (u:User)`,
+            `WHERE u.walletAddress = '${authorWalletAddress}'`,
+            `CREATE (u)-[r:POSTED]->(p)`
+        ].join('\n');
+
+        return session.run(query)
+            .then((result) => {
+                return {
+                    success: true,
+                    message: "Successfully created post",
+                    newPostID: postID
+                }
+            })
+            .catch((error) => {
+                throw {
+                    success: false,
+                    message: "Failed to create post",
+                    error: error
+                }
+            });
+    }
 };
 
 const createUserComment = function (session, authorWalletAddress, postID, body) {
@@ -179,30 +229,31 @@ const getCommentsByPost = function (session, walletAddress, postID) {
 const getPostByID = function (session, walletAddress, postID) {
     const query = [
         `MATCH (author:User)-[:POSTED]->(post:Post {postID:'${postID}'})`,
+        `OPTIONAL MATCH (repost:Post)`,
+        `WHERE repost.postID = post.repostPostID`,
+        `OPTIONAL MATCH (repostAuthor:User)`,
+        `WHERE repostAuthor.walletAddress = repost.author`,
         `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
         `WHERE post.author = author.walletAddress`,
-        `RETURN DISTINCT author, post, count(c) AS comment`
+        `RETURN DISTINCT author, post, count(c) AS comment, repost, repostAuthor`
     ].join('\n');
 
     return session.run(query)
-        .then((results) => {
-            let post = {};
-            results.records.forEach((record) => {
-                post = new Post(record.get('post'))
-                post.author = new User(record.get('author'))
-                post.comment = String(record.get("comment").low);
-            })
-
-            // hardcoded values (since some values have not been implemented yet)
-            // TODO remove this and change the query when the things below are implemented
-            if (post !== {}) {
-                post.community = "notarealcommunity";
+        .then((result) => {
+            let queryRecord = result.records[0]
+            var post = new Post(queryRecord.get('post'))
+            post.author = new User(queryRecord.get('author'))
+            post.comment = String(queryRecord.get("comment").low);
+            post.community = "notarealcommunity" // TOOD: Unhardcode this value
+            if (post.repostPostID) {
+                post.repostPost = new Post(queryRecord.get('repost'))
+                post.repostPost.author = new User(queryRecord.get('repostAuthor'))
             }
 
             if (walletAddress !== null) {
-                return checkIfAlreadyLiked(session, postID, { walletAddress: walletAddress })
-                    .then((result) => {
-                        if (result.alreadyLiked) {
+                return checkIfAlreadyLiked(session, postID, walletAddress)
+                    .then((result2) => {
+                        if (result2.alreadyLiked) {
                             post.alreadyLiked = true;
                             return {
                                 success: true,
@@ -232,15 +283,16 @@ const getPostByID = function (session, walletAddress, postID) {
         .catch((error) => {
             throw {
                 success: false,
-                message: "Failed to get posts"
+                message: "Failed to get posts",
+                error: error
             }
         });
 }
 
 // returns true if there is already a like
-const checkIfAlreadyLiked = function (session, postID, body) {
+const checkIfAlreadyLiked = function (session, postID, walletAddress) {
     const query = [
-        `MATCH (u:User{walletAddress: '${body.walletAddress}'})-[r:LIKED]->(p:Post{postID:'${postID}'})`,
+        `MATCH (u:User {walletAddress: '${walletAddress}'})-[r:LIKED]->(p:Post{postID:'${postID}'})`,
         `RETURN r`
     ].join('\n');
 
@@ -260,31 +312,25 @@ const checkIfAlreadyLiked = function (session, postID, body) {
         });
 }
 
-const likePost = function (session, postID, body) {
-    if (!body.walletAddress) {
-        throw {
-            success: false,
-            message: 'Invalid properties in request body'
-        }
-    }
+const likePost = function (session, postID, walletAddress) {
     const query = [
         `MATCH (p:Post)`,
         `WHERE p.postID = '${postID}'`,
         `SET p.likes = p.likes + 1`,
         `WITH (p)`,
         `MATCH (u:User)`,
-        `WHERE u.walletAddress = '${body.walletAddress}'`,
+        `WHERE u.walletAddress = '${walletAddress}'`,
         `MERGE (u)-[r:LIKED]->(p)`,
         `RETURN p`
     ].join('\n');
 
-    return checkIfAlreadyLiked(session, postID, body)
+    return checkIfAlreadyLiked(session, postID, walletAddress)
         .then((result) => {
             if (!result.alreadyLiked) {
                 return session.run(query)
                     .then((result2) => {
                         var postAuthor = new Post(result2.records[0].get('p')).author
-                        return Notification.create(session, "like", postAuthor, body.walletAddress, postID)
+                        return Notification.create(session, "like", postAuthor, walletAddress, postID)
                             .then((result3) => {
                                 return {
                                     success: true,
@@ -301,52 +347,40 @@ const likePost = function (session, postID, body) {
         .catch((error) => {
             throw {
                 success: false,
-                message: "Failed to like Post",
+                message: "Failed to like post",
                 error: error
             }
         })
 };
 
-const unlikePost = function (session, postID, body) {
-    if (!body.walletAddress) {
-        throw {
-            success: false,
-            message: 'Invalid properties in request body'
-        }
-    }
+const unlikePost = function (session, postID, walletAddress) {
     const query = [
-        `MATCH (u:User {walletAddress: '${body.walletAddress}'})-[r:LIKED]->(p: Post {postID: '${postID}'})`,
+        `MATCH (u:User {walletAddress: '${walletAddress}'})-[r:LIKED]->(p: Post {postID: '${postID}'})`,
         `SET p.likes = p.likes - 1`,
         `DELETE r`
     ].join('\n');
 
-    return checkIfAlreadyLiked(session, postID, body)
+    return checkIfAlreadyLiked(session, postID, walletAddress)
         .then((result) => {
             if (result.alreadyLiked) {
                 return session.run(query)
                     .then((result) => {
                         return {
                             success: true,
-                            message: "Successfully unliked Post"
+                            message: "Successfully unliked post"
                         }
                     })
-                    .catch((error) => {
-                        throw {
-                            success: false,
-                            message: "Failed to unlike Post",
-                            error: error
-                        }
-                    });
-            }
-            return {
-                success: false,
-                message: "Post was not already liked",
+            } else {
+                throw {
+                    success: false,
+                    message: "Post was already unliked",
+                }
             }
         })
         .catch((error) => {
             throw {
                 success: false,
-                message: "Failed to unlike Post",
+                message: "Failed to unlike post",
                 error: error
             }
         })
@@ -376,7 +410,6 @@ const getLikesOnPost = function (session, postID) {
             }
         });
 }
-
 
 module.exports = {
     createUserPost,

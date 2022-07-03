@@ -9,9 +9,10 @@ import {
 import {
     GET_POST,
     GET_COMMENTS,
-    POST_COMMENT,
+    CREATE_COMMENT,
     POST_LIKE,
-    POST_UNLIKE
+    POST_UNLIKE,
+    CREATE_REPOST
 } from "../constants/posts";
 import {
     BASE_API_URL,
@@ -19,6 +20,21 @@ import {
 } from "../constants/endpoints";
 import { showToast } from "../actions/toast";
 import { TOAST_STATUSES } from "../constants/toast";
+
+function* createRepost(action) {
+    try {
+        const response = yield call(postRequest, BASE_API_URL + POSTS.CREATE_REPOST, action.repostData), responseData = response[1]
+        if (responseData.success) {
+            yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
+            yield put(action.redirectWindow("/post/" + responseData.newPostID))
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+    } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to create repost"))
+        console.log(error)
+    }
+}
 
 function* getPostSaga(action) {
     try {
@@ -48,9 +64,9 @@ function* getCommentsSaga(action) {
     }
 }
 
-function* postComment(action) {
+function* createComment(action) {
     try {
-        const response = yield call(postRequest, BASE_API_URL + POSTS.POST_COMMENT.replace("{postID}", action.postID), action.comment), responseData = response[1]
+        const response = yield call(postRequest, BASE_API_URL + POSTS.CREATE_COMMENT.replace("{postID}", action.postID), action.comment), responseData = response[1]
         if (responseData.success) {
             yield put(getPost(action.postID))
             yield put(getComments(action.postID))
@@ -66,7 +82,7 @@ function* postComment(action) {
 
 function* postLike(action) {
     try {
-        const response = yield call(postRequest, BASE_API_URL + POSTS.POST_LIKE.replace("{postID}", action.postID), action.walletAddress), responseData = response[1]
+        const response = yield call(postRequest, BASE_API_URL + POSTS.POST_LIKE.replace("{postID}", action.postID)), responseData = response[1]
         if (responseData.success) {
             yield put(doLike(action.postID, action.walletAddress, action.isComment));
         } else {
@@ -80,7 +96,7 @@ function* postLike(action) {
 
 function* postUnlike(action) {
     try {
-        const response = yield call(postRequest, BASE_API_URL + POSTS.POST_UNLIKE.replace("{postID}", action.postID), action.walletAddress), responseData = response[1]
+        const response = yield call(postRequest, BASE_API_URL + POSTS.POST_UNLIKE.replace("{postID}", action.postID)), responseData = response[1]
         if (responseData.success) {
             yield put(doUnlike(action.postID, action.walletAddress, action.isComment));
         } else {
@@ -93,9 +109,10 @@ function* postUnlike(action) {
 }
 
 function* postsSaga() {
+    yield takeLatest(CREATE_REPOST, createRepost)
     yield takeLatest(GET_POST, getPostSaga)
     yield takeLatest(GET_COMMENTS, getCommentsSaga)
-    yield takeLatest(POST_COMMENT, postComment)
+    yield takeLatest(CREATE_COMMENT, createComment)
     yield takeLatest(POST_LIKE, postLike)
     yield takeLatest(POST_UNLIKE, postUnlike)
 }

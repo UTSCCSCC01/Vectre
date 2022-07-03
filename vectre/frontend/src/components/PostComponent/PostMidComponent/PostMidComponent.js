@@ -4,6 +4,8 @@ import {
     Image
 } from '@chakra-ui/react';
 
+import RepostComponent from '../RepostComponent/RepostComponent';
+
 const PostMidComponent = ({
     item,
     onOpen
@@ -22,20 +24,29 @@ const PostMidComponent = ({
                 alignItems={'center'}>
                 {item.text}
             </Flex>
-            <Stack
-                display={item.imageURL ? 'inline-flex' : 'none'}>
-                <Image
-                    cursor={'pointer'}
-                    onClick={((e) => {
-                        onOpen();
-                        e.stopPropagation();
-                    })}
-                    src={item.imageURL}
-                    fit={'cover'}
-                    overflow={'hidden'}
-                    borderRadius={'6px'}
-                    height={'250px'} />
-            </Stack>
+            {
+                item.repostPostID ? (
+                    <Stack
+                        display={'inline-flex'}>
+                        <RepostComponent item={item.repostPost} />
+                    </Stack>
+                ) : (
+                    <Stack
+                        display={item.imageURL ? 'inline-flex' : 'none'}>
+                        <Image
+                            cursor={'pointer'}
+                            onClick={((e) => {
+                                onOpen();
+                                e.stopPropagation();
+                            })}
+                            src={item.imageURL}
+                            fit={'cover'}
+                            overflow={'hidden'}
+                            borderRadius={'6px'}
+                            height={'250px'} />
+                    </Stack>
+                )
+            }
         </>
     );
 };

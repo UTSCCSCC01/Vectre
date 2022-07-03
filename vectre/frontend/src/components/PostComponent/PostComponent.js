@@ -27,7 +27,7 @@ const PostComponent = ({
                 _hover={{ border: "1px solid rgba(59, 130, 246, 0.4)" }}
                 cursor={window.location.toString().includes('home') ? 'pointer' : 'default'}
                 onClick={(() => {
-                    if (item.postId && !item.parent && window.location.toString().includes('home')) window.location = `/post/${item.postId}`;
+                    if (item.postID && !item.parent && window.location.toString().includes('home')) window.location = `/post/${item.postID}`;
                 })}>
                 <Stack gap={'4px'}>
                     <PostTopComponent item={item} />
