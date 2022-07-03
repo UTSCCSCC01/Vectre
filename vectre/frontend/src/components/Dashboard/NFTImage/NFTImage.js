@@ -28,17 +28,17 @@ const NFTImage = ({
          height={'200px'}
          border={selected ? '5px var(--chakra-colors-primary-400) solid' : '2px rgba(200, 200, 200, 0.6) solid'}
          onClick={() => {
-            if (selectedList.length < 3 || (selectedList.length == 3 && selected == true)) {
+            if (selectedList.length < 3 || (selectedList.length === 3 && selected === true)) {
                setSelected.toggle();
-               if (!selected == true) {
+               if (!selected === true) {
                   handleSelectAdd(selectedList, nftItem, setSelectedList);
                }
                else {
                   handleSelectDelete(selectedList, nftItem, setSelectedList);
                }
             }
-            if (selectedList.length == 3 && selected == false) {
-               dispatch(showToast(TOAST_STATUSES.ERROR, "Select a Maximum of 3 NFTs"));
+            if (selectedList.length === 3 && selected === false) {
+               dispatch(showToast(TOAST_STATUSES.ERROR, "Select a maximum of three NFTs"));
             }
          }}
       />

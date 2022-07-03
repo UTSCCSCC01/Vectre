@@ -143,6 +143,8 @@ function* updateDashboard(action) {
         const response = yield call(postRequest, BASE_API_URL + USERS.UPDATE_DASHBOARD.replace("{walletAddress}", action.walletAddress), { dashboard: action.dashboard }), responseData = response[1]
         if (responseData.success) {
             yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
+            yield put(getUser(action.walletAddress))
+            action.resetSelectedList()
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }

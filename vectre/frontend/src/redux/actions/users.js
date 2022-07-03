@@ -98,10 +98,11 @@ export const storeUnreadStatus = (unreadStatus) => ({
     unreadStatus
 })
 
-export const updateDashboard = (walletAddress, dashboard) => ({
+export const updateDashboard = (walletAddress, dashboard, resetSelectedList) => ({
     type: UPDATE_DASHBOARD,
     walletAddress,
-    dashboard
+    dashboard,
+    resetSelectedList
 })
 
 export const followUser = (walletAddressToFollow,) => ({
