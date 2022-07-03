@@ -21,6 +21,7 @@
     "morgan": "~1.9.1",
     "nanoid": "^3.0.0",
     "neo4j-driver": "^4.4.5",
+    "node-fetch": "^3.2.6",
     "nodemon": "^2.0.16"
   }
 }

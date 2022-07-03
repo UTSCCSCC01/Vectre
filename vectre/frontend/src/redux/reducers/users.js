@@ -5,6 +5,7 @@ import {
     STORE_LOGIN_NONCE,
     STORE_NOTIFICATIONS,
     STORE_UNREADSTATUS,
+    STORE_NFT,
 } from "../constants/users";
 
 const initialState = {
@@ -14,6 +15,7 @@ const initialState = {
     nonce: "",
     notifications: [],
     unreadStatus: false,
+    nft: []
 }
 
 const users = (state = initialState, action) => {
@@ -44,9 +46,14 @@ const users = (state = initialState, action) => {
                 notifications: action.notifications
             }
         case STORE_UNREADSTATUS:
-        return {
+            return {
                 ...state,
                 unreadStatus: action.unreadStatus
+            }
+        case STORE_NFT:
+            return {
+                ...state,
+                nft: action.nft
             }
         default:
             return state
