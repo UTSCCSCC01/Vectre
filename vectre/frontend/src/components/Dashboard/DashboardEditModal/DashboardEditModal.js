@@ -46,7 +46,6 @@ function handleSelectAdd(selectedList, nftItem, setSelectedList) {
 
     selectedList.map((element) => {
         if (element == nftItem) {
-            console.log(element)
             contains = true;
         }
         else {
@@ -181,8 +180,6 @@ function DashboardEditModal({
                                     const dashboard = JSON.stringify(selectedList).replace(/"/g, "'");
                                     dispatch(updateDashboard(loggedInUser.walletAddress, dashboard))
                                     onClose();
-                                } else {
-                                    console.log("Unable to Update Dashboard [EditModal]");
                                 }
                                 e.stopPropagation();
                             }}

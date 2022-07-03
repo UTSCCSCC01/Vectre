@@ -30,13 +30,10 @@ const NFTImage = ({
          onClick={() => {
             if (selectedList.length < 3 || (selectedList.length == 3 && selected == true)) {
                setSelected.toggle();
-               console.log(!selected);
                if (!selected == true) {
-                  console.log("added item: " + nftItem.tokenID)
                   handleSelectAdd(selectedList, nftItem, setSelectedList);
                }
                else {
-                  console.log("removed item: " + nftItem.tokenID)
                   handleSelectDelete(selectedList, nftItem, setSelectedList);
                }
             }

@@ -95,9 +95,7 @@ function* getUsers() {
 function* getNFT(action) {
     try {
         const response = yield call(getRequest, BASE_API_URL + USERS.GET_NFT.replace("{walletAddress}", action.walletAddress)), responseData = response[1]
-        console.log(response);
         if (responseData.success) {
-            console.log(responseData.nft)
             yield put(storeNFT(responseData.nft))
         }
         else {
@@ -143,7 +141,6 @@ function* updateUser(action) {
 function* updateDashboard(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + USERS.UPDATE_DASHBOARD.replace("{walletAddress}", action.walletAddress), { dashboard: action.dashboard }), responseData = response[1]
-        console.log(response)
         if (responseData.success) {
             yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
         } else {
