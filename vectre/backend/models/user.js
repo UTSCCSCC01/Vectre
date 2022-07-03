@@ -4,6 +4,7 @@ const Notification = require('../models/notification');
 const config = require('../config');
 const jwt = require('jsonwebtoken')
 const ethUtil = require('ethereumjs-util');
+const fetch = (url) => import('node-fetch').then(({default: fetch}) => fetch(url));
 
 const getAll = (session) => { // Returns all Users
     const query = "MATCH (user:User) RETURN user";
@@ -373,7 +374,7 @@ const unfollowUser = (session, walletAddress, walletAddressToUnfollow) => {
                                 message: "Successfully unfollowed user"
                             }
                         })
-                    }
+                }
             })
             .catch((error) => {
                 throw {
@@ -392,31 +393,51 @@ const unfollowUser = (session, walletAddress, walletAddressToUnfollow) => {
 
 const getNFT = (walletAddress) => { // Gets all NFTs of a User using OpenSea API.
     return fetch(`https://testnets-api.opensea.io/api/v1/assets?owner=${walletAddress}&order_direction=desc&offset=0&limit=20&include_orders=false`)
-        .then(res => res.json())
-        .then(json => {
-            if (_.isEmpty(json.assets)){
-                return {
+        .then(res => {
+            if (res.status !== 200) {
+                throw {
                     success: false,
-                    nft: null,
-                    message: `Failed to retrieve NFTs for user with wallet address ${walletAddress}`
+                    message: "Failed to retrieve NFTs"
                 }
             }
+            return res.json()
+        })
+        .then(json => {
+            if (_.isEmpty(json.assets)) {
+                return { // User has no NFTs
+                    success: true,
+                    nft: [],
+                    message: "User has no NFTs"
+                }
+            }
+
+            var asset_list = [];
+            for (let i = 0; i < json.assets.length; i++) {
+                var jsonObj = {
+                    tokenID: json.assets[i].id,
+                    name: json.assets[i].asset_contract.name, //change 'asset_contract.name' -> 'name' once OpenSea Mainnet API is received.
+                    imageURL: json.assets[i].image_url,
+                    contractAddress: json.assets[i].asset_contract.address,
+                }
+                asset_list.push(jsonObj);
+            }
+
             return {
                 success: true,
-                nft: json.assets,
-                message: `Successfully retrieved NFTs for user with wallet address ${walletAddress}`
+                nft: asset_list,
+                message: `Successfully retrieved user's NFTs`
             }
         }).catch((error) => {
             throw {
                 success: false,
-                message: "Failed to get User's NFTs.",
+                message: "Failed to get user's NFTs",
                 error: error.message
             }
         })
 }
 
-const getDashboard = (session, walletAddress) => { // Gets the NFTs in the dashboard of a User.
-    const query =  `MATCH (user:User {walletAddress: "${walletAddress}" }) RETURN user.dashboard`
+const updateDashboard = (session, walletAddress, body) => {  // Sets the NFTs in the dashboard of a User.
+    const query = `MATCH (user:User {walletAddress:"${walletAddress}"}) SET user.dashboard = "${body.dashboard}" RETURN user`;
     return session.run(query)
         .then((results) => {
             if (_.isEmpty(results.records)) {
@@ -427,37 +448,14 @@ const getDashboard = (session, walletAddress) => { // Gets the NFTs in the dashb
             } else {
                 return {
                     success: true,
-                    user_dashboard: results.records[0].get('user.dashboard')
+                    user: new User(results.records[0].get('user')),
+                    message: `Successfully updated dashboard!`
                 }
             }
         }).catch((error) => {
             throw {
                 success: false,
-                message: "Failed to get User",
-                error: error.message
-            }
-        })
-}
-
-const updateDashboard = (session, body) => {  // Sets the NFTs in the dashboard of a User.
-    const query = `MATCH (user:User {walletAddress:"${body.walletAddress}"}) SET user.dashboard = "${body.dashboard}" RETURN user`;
-    return session.run(query)
-        .then((results) => {
-            if (_.isEmpty(results.records)) {
-                throw {
-                    success: false,
-                    message: `User with wallet address ${walletAddress} does not exist`
-                }
-            } else {
-                return {
-                    success: true,
-                    user: new User(results.records[0].get('user'))
-                }
-            }
-        }).catch((error) => {
-            throw {
-                success: false,
-                message: "Failed to get User",
+                message: "Failed to update Dashboard.",
                 error: error.message
             }
         })
@@ -477,6 +475,5 @@ module.exports = {
     follow: followUser,
     unfollow: unfollowUser,
     getNFT,
-    getDashboard,
     updateDashboard
 }

@@ -86,10 +86,10 @@ router.post('/login', (req, res) => {
 })
 
 // POST /users/updateDashboard
-router.post('/updateDashboard', (req, res) => {
-    User.updateDashboard(dbUtils.getSession(req), req.body)
-    .then((result) => res.send(result))
-    .catch((error) => res.send(error))
+router.post('/:walletAddress/updateDashboard', (req, res) => {
+    User.updateDashboard(dbUtils.getSession(req), req.params.walletAddress, req.body)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
 })
 
 // GET /users/login/currentUser
