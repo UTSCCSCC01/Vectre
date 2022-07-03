@@ -7,5 +7,27 @@ export const USERS = {
 
     GET_USERS: "/users",
     CREATE_USER: "/users/register",
-    UPDATE_USER: "/users/{wallet_address}/update",
+    UPDATE_USER: "/users/{walletAddress}/update",
+
+    FOLLOW_USER: "/users/{walletAddress}/follow",
+    UNFOLLOW_USER: "/users/{walletAddress}/unfollow",
+
+    GET_NOTIFICATIONS: "/users/{walletAddress}/notifications",
+
+    GET_NFT: "/users/{walletAddress}/nft",
+    UPDATE_DASHBOARD: "/users/{walletAddress}/updateDashboard",
+}
+
+export const POSTS = {
+    CREATE_POST: "/posts/create",
+    GET_POST: "/posts/{postID}",
+    CREATE_REPOST: "/posts/create",
+    CREATE_COMMENT: "/posts/create/{postID}/comment",
+    GET_COMMENTS: "/posts/{postID}/comments",
+    POST_LIKE: "/posts/{postID}/like",
+    POST_UNLIKE: "/posts/{postID}/unlike",
+}
+
+export const NOTIF = {
+    READ_NOTIFICATION: "/notifications/{notificationID}/read"
 }

@@ -13,8 +13,7 @@ import {
     Button,
     Flex,
     Text,
-    Textarea,
-    useToast
+    Textarea
 } from "@chakra-ui/react"
 import { FaUser } from 'react-icons/fa'
 
@@ -25,12 +24,8 @@ class RegisterUser extends React.Component {
             username: "",
             name: "",
             bio: "",
-            isModalOpen: true
         }
     }
-
-    handleOpenModal = () => { this.setState({isModalOpen: true}) }
-    handleCloseModal = () => { this.setState({isModalOpen: false}) }
 
     handleRegisterSubmit = (event) => {
         event.preventDefault();
@@ -38,18 +33,18 @@ class RegisterUser extends React.Component {
             name: event.target.name.value,
             username: event.target.username.value,
             bio: event.target.bio.value,
-            wallet_address: this.props.wallet_address
+            walletAddress: this.props.walletAddress
         }
         this.props.createUser(newUser)
-        this.handleCloseModal()
+        this.props.closeModal()
     }
 
-    render () {
+    render() {
         return (
             <>
                 <Modal
-                    isOpen={this.state.isModalOpen}
-                    onClose={this.handleCloseModal}
+                    isOpen={this.props.isModalOpen}
+                    onClose={this.props.closeModal}
                     isCentered
                     color={'primary.400'}
                     size={'3xl'}>
@@ -60,15 +55,15 @@ class RegisterUser extends React.Component {
                     <ModalContent
                         py={'40px'}>
                         <ModalHeader
-                            px={{base: '24px', md: '64px'}}>
+                            px={{ base: '24px', md: '64px' }}>
                             <ModalCloseButton
                                 color={'primary.400'}
                                 top={4}
                                 left={4}
                                 transform={'scale(1.8)'}
-                                _focus={{outline: 0}}
-                                _hover={{background: 'white'}}
-                                _active={{background: 'white'}}
+                                _focus={{ outline: 0 }}
+                                _hover={{ background: 'white' }}
+                                _active={{ background: 'white' }}
                             />
                             <Flex
                                 justifyContent={'center'}
@@ -81,12 +76,12 @@ class RegisterUser extends React.Component {
                                     mr="15px">
                                     Register User
                                 </Text>
-                                <FaUser size={'2rem'}/>
+                                <FaUser size={'2rem'} />
                             </Flex>
                         </ModalHeader>
 
                         <ModalBody
-                            px={{base: '24px', md: '64px'}}>
+                            px={{ base: '24px', md: '64px' }}>
                             <form
                                 id="setup-form"
                                 onSubmit={this.handleRegisterSubmit}
@@ -108,7 +103,7 @@ class RegisterUser extends React.Component {
                                         fontSize={'18px'}
                                         bg={'rgba(198, 219, 255, 0.32)'}
                                         border={'none'}
-                                        _placeholder={{fontWeight: '700', color: 'sub.400'}}/>
+                                        _placeholder={{ fontWeight: '700', color: 'sub.400' }} />
                                 </FormControl>
                                 <FormControl
                                     isRequired
@@ -127,7 +122,7 @@ class RegisterUser extends React.Component {
                                         fontSize={'18px'}
                                         bg={'rgba(198, 219, 255, 0.32)'}
                                         border={'none'}
-                                        _placeholder={{fontWeight: '700', color: 'sub.400'}}/>
+                                        _placeholder={{ fontWeight: '700', color: 'sub.400' }} />
                                 </FormControl>
                                 <FormControl
                                     pt={'24px'}>
@@ -148,16 +143,16 @@ class RegisterUser extends React.Component {
                                         resize={'none'}
                                         size={'md'}
                                         minHeight={'140px'}
-                                        _placeholder={{fontWeight: '700', color: 'sub.400'}}/>
+                                        _placeholder={{ fontWeight: '700', color: 'sub.400' }} />
                                 </FormControl>
                             </form>
                         </ModalBody>
                         <ModalFooter
                             pt={'24px'}
-                            px={{base: '24px', md: '64px'}}>
+                            px={{ base: '24px', md: '64px' }}>
                             <FormControl isReadOnly>
                                 <FormLabel
-                                    htmlFor='wallet_address'
+                                    htmlFor='walletAddress'
                                     color={'primary.400'}
                                     fontWeight={700}
                                     fontSize={'20px'}
@@ -165,13 +160,13 @@ class RegisterUser extends React.Component {
                                     Wallet Address:
                                 </FormLabel>
                                 <Input
-                                    id='wallet_address'
-                                    placeholder={this.props.wallet_address}
+                                    id='walletAddress'
+                                    placeholder={this.props.walletAddress}
                                     disabled={true}
                                     fontSize={'18px'}
                                     bg={'rgba(198, 219, 255, 0.32)'}
                                     border={'none'}
-                                    _placeholder={{fontWeight: '700', color: 'sub.400'}}/>
+                                    _placeholder={{ fontWeight: '700', color: 'sub.400' }} />
                             </FormControl>
                             <Button
                                 type={"submit"}

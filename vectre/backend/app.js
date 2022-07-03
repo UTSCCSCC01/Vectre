@@ -6,9 +6,11 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+// Routes
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var postRouter = require('./routes/post')
+var usersRouter = require('./routes/users'),
+    postsRouter = require('./routes/posts'),
+    notificationsRouter = require('./routes/notifications')
 
 var app = express();
 
@@ -23,22 +25,23 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 const corsOptions = {
-    origin: config.frontend_base_url,
+    origin: config.frontendBaseUrl,
     credentials: true
 }
 app.use(cors(corsOptions))
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/posts', postRouter);
+app.use('/posts', postsRouter);
+app.use('/notifications', notificationsRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -51,7 +54,7 @@ app.use(function(err, req, res, next) {
 // close neo4j-driver when node.js app exits
 app.use(function neo4jSessionCleanup(req, res, next) {
     res.on('finish', function () {
-        if(req.neo4jSession) {
+        if (req.neo4jSession) {
             req.neo4jSession.close();
             delete req.neo4jSession;
         }
