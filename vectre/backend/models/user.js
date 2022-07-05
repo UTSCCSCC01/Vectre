@@ -270,14 +270,14 @@ const updateUser = function (session, walletAddress, filter, newUser) {
         }
     }
 
-    const userString = JSON.stringify(filteredUser).replace(/"([^"]+)":/g, '$1:')
     const query = `MATCH (u: User {walletAddress: $walletAddress})
-        SET u += ${userString}
+        SET u += $filteredUser
         RETURN u`
 
     // Apply changes to Neo4j
     return session.run(query, {
-        walletAddress: walletAddress
+        walletAddress: walletAddress,
+        filteredUser: filteredUser
     })
         .then(results => {
             if (_.isEmpty(results.records)) {
@@ -290,7 +290,15 @@ const updateUser = function (session, walletAddress, filter, newUser) {
                 success: true,
                 message: "Edit success"
             }
-        }).catch(error => { throw error })
+        })
+        .catch(error => {
+            console.log(error)
+            throw {
+                success: false,
+                message: "Failed to update user",
+                error: error.message
+            }
+        })
 }
 
 const updateProfile = function (session, walletAddress, newProf) {
