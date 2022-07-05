@@ -169,10 +169,18 @@ const update = function (session, walletAddress, postID, body) {
         });
 }
 
-const getPostsByUser = function (session, walletAddress) {
+const getPostsByUser = function (session, walletAddress, profileWalletAddress) {
     const query = [
-        `MATCH (:User {walletAddress:'${walletAddress}'})-[:POSTED]->(post:Post)`,
-        `RETURN DISTINCT post`,
+        `MATCH (author:User{walletAddress:'${profileWalletAddress}'})-[:POSTED]->(post:Post)`,
+        `WHERE post.parent IS NULL`,
+        `OPTIONAL MATCH (repost:Post)`,
+        `WHERE repost.postID = post.repostPostID`,
+        `OPTIONAL MATCH (repostAuthor:User)`,
+        `WHERE repostAuthor.walletAddress = repost.author`,
+        `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
+        `WHERE post.author = author.walletAddress`,
+        `OPTIONAL MATCH (user:User{walletAddress:"${walletAddress}"})-[l:LIKED]->(post)`,
+        `RETURN DISTINCT author, post, count(c) AS comment, count(l) AS likes, repost, repostAuthor`,
         `ORDER BY post.timestamp DESC`
     ].join('\n');
 
@@ -180,7 +188,15 @@ const getPostsByUser = function (session, walletAddress) {
         .then((results) => {
             let posts = []
             results.records.forEach((record) => {
-                posts.push(new Post(record.get('post')))
+                postRecord = new Post(record.get('post'))
+                postRecord.author = new User(record.get('author'))
+                postRecord.alreadyLiked = record.get('likes').low > 0;
+                postRecord.community = "notarealcommunity" // TOOD: Unhardcode this value
+                if (postRecord.repostPostID) {
+                    postRecord.repostPost = new Post(record.get('repost'))
+                    postRecord.repostPost.author = new User(record.get('repostAuthor'))
+                }
+                posts.push(postRecord)
             })
             return {
                 success: true,
