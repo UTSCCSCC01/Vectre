@@ -26,6 +26,7 @@ export const POSTS = {
     GET_COMMENTS: "/posts/{postID}/comments",
     POST_LIKE: "/posts/{postID}/like",
     POST_UNLIKE: "/posts/{postID}/unlike",
+    GET_PROFILE_POSTS: "/users/{walletAddress}/posts",
 }
 
 export const NOTIF = {
