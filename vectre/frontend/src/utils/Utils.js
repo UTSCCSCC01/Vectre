@@ -16,6 +16,14 @@ export const formatLikes = (num) => {
     return num.toString();
 };
 
+// assumes walletAddress is valid
+export const formatWalletAddress = (walletAddress) => {
+    if (walletAddress === undefined) {
+        return "Not a valid wallet address";
+    }
+    return walletAddress.slice(0, 4) + "..." + walletAddress.slice(-4);
+};
+
 // assumes isoString is valid
 // checks if isoString is within 24 hours of current time
 export const within24 = (isoString) => {
