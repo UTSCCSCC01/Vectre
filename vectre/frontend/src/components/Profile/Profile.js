@@ -17,6 +17,7 @@ import {
 // Components
 import Dashboard from "../Dashboard/Dashboard"
 import ProfileUserDetails from "./ProfileUserDetails/ProfileUserDetails";
+import ProfilePosts from "./ProfilePosts/ProfilePosts";
 
 class Profile extends React.Component {
     constructor(props) {
@@ -64,6 +65,7 @@ class Profile extends React.Component {
                                 currentDashboard={this.props.user.dashboard}
                             /> : null
                         }
+                        <ProfilePosts props={this.props} />
                     </>
                 }
             </div>
