@@ -215,6 +215,7 @@ const getPostsByUser = function (session, walletAddress, profileWalletAddress) {
             results.records.forEach((record) => {
                 postRecord = new Post(record.get('post'))
                 postRecord.author = new User(record.get('author'))
+                postRecord.comment = String(record.get('comment').low);
                 postRecord.alreadyLiked = record.get('likes').low > 0;
                 postRecord.community = "notarealcommunity" // TOOD: Unhardcode this value
                 if (postRecord.repostPostID) {
