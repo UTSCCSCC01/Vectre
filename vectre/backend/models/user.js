@@ -32,8 +32,10 @@ const getByWalletAddress = (session, walletAddress) => {
      * @param wallet address of the user for searching
      * @returns an object with a boolean field 'success', field 'user' that holds the user object, and field 'message'.
      */
-    const query = `MATCH (user: User {walletAddress : '${walletAddress}'}) RETURN user`
-    return session.run(query)
+    const query = `MATCH (user: User {walletAddress : $walletAddress}) RETURN user`
+    return session.run(query, {
+        walletAddress: walletAddress
+    })
         .then((results) => {
             if (_.isEmpty(results.records)) {
                 throw {
@@ -95,9 +97,14 @@ const register = (session, body, setTokenInCookie) => { // Creates User from bod
             })
         })
     } else {
-        const bio = body.bio ? body.bio : ""
-        const query = `CREATE (user:User {name: '${body.name}', username: '${body.username}', walletAddress: '${body.walletAddress}', bio: '${bio}', nonce: '${generateNonce()}'});`
-        return session.run(query)
+        const query = `CREATE (user:User {name: $name, username: $username, walletAddress: $walletAddress, bio: $bio, nonce: $nonce});`
+        return session.run(query, {
+            name: body.name,
+            username: body.username,
+            walletAddress: body.walletAddress,
+            bio: body.bio ? body.bio : "",
+            nonce: generateNonce()
+        })
             .then((results) => {
                 const accessToken = jwt.sign(body.walletAddress, config.jwtSecretToken)
                 setTokenInCookie(accessToken)
@@ -171,7 +178,13 @@ const login = (session, walletAddress, signedNonce, setTokenInCookie) => { // Lo
                             if (validateSignedNonce(walletAddress, response.nonce, signedNonce)) {
                                 const accessToken = jwt.sign(walletAddress, config.jwtSecretToken)
                                 setTokenInCookie(accessToken)
-                                session.run(`MATCH (u: User {walletAddress : '${walletAddress}'}) SET u.nonce = '${generateNonce()}'`) // Regenerate nonce
+
+                                // Regenerate nonce
+                                const regenerateNonceQuery = `MATCH (u: User {walletAddress: $walletAddress}) SET u.nonce = $nonce`
+                                session.run(regenerateNonceQuery, {
+                                    walletAddress: walletAddress,
+                                    nonce: generateNonce()
+                                })
 
                                 return {
                                     success: true,
@@ -195,13 +208,13 @@ const login = (session, walletAddress, signedNonce, setTokenInCookie) => { // Lo
         .catch((error) => { return error })
 }
 
-const updateUser = function (session, wallet, filter, newUser) {
+const updateUser = function (session, walletAddress, filter, newUser) {
     /**
-     * Update the user object with matching `wallet` on Neo4j using fields from
+     * Update the user object with matching `walletAddress` on Neo4j using fields from
      * `newUser` after being filtered by `filter`.
      *
      * @param neo4j session.
-     * @param wallet address of the user.
+     * @param walletAddress address of the user.
      * @param array containing string of keys to modify on Neo4j.
      * @param object containing new information, should contain keys in `filter`.
      * @returns an object with a boolean field 'success' and field 'message'.
@@ -257,13 +270,15 @@ const updateUser = function (session, wallet, filter, newUser) {
         }
     }
 
-    const userString = JSON.stringify(filteredUser).replace(/"([^"]+)":/g, '$1:')
-    const query = `MATCH (u: User { walletAddress : \"${wallet}\"})
-        SET u += ${userString}
+    const query = `MATCH (u: User {walletAddress: $walletAddress})
+        SET u += $filteredUser
         RETURN u`
 
     // Apply changes to Neo4j
-    return session.run(query)
+    return session.run(query, {
+        walletAddress: walletAddress,
+        filteredUser: filteredUser
+    })
         .then(results => {
             if (_.isEmpty(results.records)) {
                 return {
@@ -275,28 +290,39 @@ const updateUser = function (session, wallet, filter, newUser) {
                 success: true,
                 message: "Edit success"
             }
-        }).catch(error => { throw error })
+        })
+        .catch(error => {
+            console.log(error)
+            throw {
+                success: false,
+                message: "Failed to update user",
+                error: error.message
+            }
+        })
 }
 
-const updateProfile = function (session, wallet, newProf) {
+const updateProfile = function (session, walletAddress, newProf) {
     /**
      * Update the user profile of the wallet owner using newProf object.
      *
      * @param neo4j session.
-     * @param wallet address of the user.
+     * @param walletAddress address of the user.
      * @param object containing new profile, must include following fields: name, username, bio.
      * @returns an object with a boolean field 'success' and field 'message' if success is false.
      */
     const searchUsernameQuery = `MATCH (u: User) 
-        WHERE u.username = \"${newProf.username}\" 
-        AND (NOT u.walletAddress = \"${wallet}\") RETURN u`;
-    return session.run(searchUsernameQuery)
+        WHERE u.username = $newUsername 
+        AND (NOT u.walletAddress = $walletAddress) RETURN u`;
+    return session.run(searchUsernameQuery, {
+        newUsername: newProf.username,
+        walletAddress: walletAddress
+    })
         .then(existence => {
             if (!_.isEmpty(existence.records)) { // Check for existing username
                 return { success: false, message: "Username already exists." }
             } else {
                 const profileFilter = ["name", "username", "bio"]
-                return updateUser(session, wallet, profileFilter, newProf)
+                return updateUser(session, walletAddress, profileFilter, newProf)
                     .then(response => { return response })
                     .catch(error => { throw error })
             }
@@ -311,8 +337,10 @@ const updateProfile = function (session, wallet, newProf) {
 }
 
 const deleteUser = (session, walletAddress) => {
-    const query = `MATCH (user:User {walletAddress: '${walletAddress}'}) DETACH DELETE user`
-    return session.run(query)
+    const query = `MATCH (user:User {walletAddress: $walletAddress}) DETACH DELETE user`
+    return session.run(query, {
+        walletAddress: walletAddress
+    })
         .then((results) => {
             return {
                 success: true,
@@ -329,8 +357,10 @@ const deleteUser = (session, walletAddress) => {
 }
 
 const getFollowing = (session, walletAddress) => { // Returns list of Users followed by User w/ walletAddress
-    const query = `MATCH (u: User)-[r:FOLLOWS]->(followed: User) WHERE u.walletAddress='${walletAddress}' RETURN followed.walletAddress`;
-    return session.run(query)
+    const query = `MATCH (u: User)-[r:FOLLOWS]->(followed: User) WHERE u.walletAddress=$walletAddress RETURN followed.walletAddress`;
+    return session.run(query, {
+        walletAddress: walletAddress
+    })
         .then((results) => {
             let users = []
             results.records.forEach((record) => {
@@ -351,8 +381,10 @@ const getFollowing = (session, walletAddress) => { // Returns list of Users foll
         });
 }
 const getFollowers = (session, walletAddress) => { // Returns list of Users following User w/ walletAddress
-    const query = `MATCH (u: User)<-[r:FOLLOWS]-(following: User) WHERE u.walletAddress='${walletAddress}' RETURN following.walletAddress`;
-    return session.run(query)
+    const query = `MATCH (u: User)<-[r:FOLLOWS]-(following: User) WHERE u.walletAddress=$walletAddress RETURN following.walletAddress`;
+    return session.run(query, {
+        walletAddress: walletAddress
+    })
         .then((results) => {
             let users = []
             results.records.forEach((record) => {
@@ -373,14 +405,16 @@ const getFollowers = (session, walletAddress) => { // Returns list of Users foll
 }
 const followUser = (session, walletAddress, walletAddressToFollow) => {
     if (walletAddress !== walletAddressToFollow) {
-        // Creates User from body data
-        const query = `match(a:User), (b:User)
-        where a.walletAddress="${walletAddress}" AND b.walletAddress="${walletAddressToFollow}"
-        create((a)-[r:FOLLOWS]->(b))`;
+        const query = `MATCH (a:User), (b:User)
+        WHERE a.walletAddress=$walletAddress AND b.walletAddress=$walletAddressToFollow
+        CREATE (a)-[r:FOLLOWS]->(b)`;
 
-        const queryExist = `match((a:User{walletAddress:"${walletAddress}"})-[r:FOLLOWS]->(b:User{walletAddress:"${walletAddressToFollow}"})) return r`;
+        const queryExist = `MATCH (a:User{walletAddress: $walletAddress})-[r:FOLLOWS]->(b:User{walletAddress: $walletAddressToFollow}) RETURN r`;
 
-        return session.run(queryExist)
+        return session.run(queryExist, {
+            walletAddress: walletAddress,
+            walletAddressToFollow: walletAddressToFollow,
+        })
             .then((exist) => {
                 if (!_.isEmpty(exist.records)) {
                     throw {
@@ -388,7 +422,10 @@ const followUser = (session, walletAddress, walletAddressToFollow) => {
                         message: "You already follow this user"
                     }
                 } else {
-                    return session.run(query)
+                    return session.run(query, {
+                        walletAddress: walletAddress,
+                        walletAddressToFollow: walletAddressToFollow,
+                    })
                         .then((result) => {
                             return Notification.create(session, "follow", walletAddressToFollow, walletAddress, null)
                                 .then((result2) => {
@@ -416,11 +453,14 @@ const followUser = (session, walletAddress, walletAddressToFollow) => {
 }
 const unfollowUser = (session, walletAddress, walletAddressToUnfollow) => {
     if (walletAddress !== walletAddressToUnfollow) {
-        const query = `match((a:User{walletAddress:"${walletAddress}"})-[r:FOLLOWS]->(b:User{walletAddress:"${walletAddressToUnfollow}"})) delete r`;
+        const query = `MATCH (a:User{walletAddress: $walletAddress})-[r:FOLLOWS]->(b:User{walletAddress: $walletAddressToUnfollow}) DELETE r`;
 
-        const queryExist = `match((a:User{walletAddress:"${walletAddress}"})-[r:FOLLOWS]->(b:User{walletAddress:"${walletAddressToUnfollow}"})) return r`;
+        const queryExist = `MATCH (a:User{walletAddress: $walletAddress})-[r:FOLLOWS]->(b:User{walletAddress: $walletAddressToUnfollow}) RETURN r`;
 
-        return session.run(queryExist)
+        return session.run(queryExist, {
+            walletAddress: walletAddress,
+            walletAddressToUnfollow: walletAddressToUnfollow,
+        })
             .then((exist) => {
                 if (_.isEmpty(exist.records)) {
                     throw {
@@ -428,7 +468,10 @@ const unfollowUser = (session, walletAddress, walletAddressToUnfollow) => {
                         message: "You do not follow this user"
                     }
                 } else {
-                    return session.run(query)
+                    return session.run(query, {
+                        walletAddress: walletAddress,
+                        walletAddressToUnfollow: walletAddressToUnfollow,
+                    })
                         .then((results) => {
                             return {
                                 success: true,
@@ -498,8 +541,11 @@ const getNFT = (walletAddress) => { // Gets all NFTs of a User using OpenSea API
 }
 
 const updateDashboard = (session, walletAddress, body) => {  // Sets the NFTs in the dashboard of a User.
-    const query = `MATCH (user:User {walletAddress:"${walletAddress}"}) SET user.dashboard = "${body.dashboard}" RETURN user`;
-    return session.run(query)
+    const query = `MATCH (user:User {walletAddress: $walletAddress}) SET user.dashboard = $dashboard RETURN user`;
+    return session.run(query, {
+        walletAddress: walletAddress,
+        dashboard: body.dashboard
+    })
         .then((results) => {
             if (_.isEmpty(results.records)) {
                 throw {

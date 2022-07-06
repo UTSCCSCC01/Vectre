@@ -12,8 +12,7 @@ const createUserPost = function (session, authorWalletAddress, body) {
         }
     }
     const postID = nano()
-    const date = new Date().toISOString()
-    const imageString = body.imageURL ? `, imageURL: '${body.imageURL}'` : ""; // imageURL is optional on a post
+    const timestamp = new Date().toISOString()
 
     if (body.repostPostID) { // Repost
         return getPostByID(session, null, body.repostPostID)
@@ -26,13 +25,20 @@ const createUserPost = function (session, authorWalletAddress, body) {
                         }
                     }
                     const query = [
-                        `CREATE (p:Post {postID: '${postID}', repostPostID: '${body.repostPostID}', text: '${body.text}', author: '${authorWalletAddress}', edited: false, timestamp: '${date}', likes: 0, parent: null ${imageString}})`,
+                        `CREATE (p:Post {postID: $postID, repostPostID: $repostPostID, text: $text, imageURL: $imageURL, author: $author, timestamp: $timestamp, likes: 0, edited: false, parent: null})`,
                         `WITH (p)`,
-                        `MATCH (u:User {walletAddress: '${authorWalletAddress}'}), (repost:Post {postID: '${body.repostPostID}'})`,
+                        `MATCH (u:User {walletAddress: $author}), (repost:Post {postID: $repostPostID})`,
                         `CREATE (u)-[r:POSTED]->(p)`
                     ].join('\n');
 
-                    return session.run(query)
+                    return session.run(query, {
+                        postID: postID,
+                        repostPostID: body.repostPostID,
+                        text: body.text,
+                        imageURL: body.imageURL ? body.imageURL : null, // optional
+                        author: authorWalletAddress,
+                        timestamp: timestamp
+                    })
                         .then((result2) => {
                             return {
                                 success: true,
@@ -63,14 +69,20 @@ const createUserPost = function (session, authorWalletAddress, body) {
             });
     } else {
         const query = [
-            `CREATE (p:Post {postID: '${postID}', text: '${body.text}', author: '${authorWalletAddress}', edited: false, timestamp: '${date}', likes: 0, parent: null ${imageString}})`,
+            `CREATE (p:Post {postID: $postID, text: $text, imageURL: $imageURL, author: $author, timestamp: $timestamp, likes: 0, edited: false, parent: null})`,
             `WITH (p)`,
             `MATCH (u:User)`,
-            `WHERE u.walletAddress = '${authorWalletAddress}'`,
+            `WHERE u.walletAddress = $author`,
             `CREATE (u)-[r:POSTED]->(p)`
         ].join('\n');
 
-        return session.run(query)
+        return session.run(query, {
+            postID: postID,
+            text: body.text,
+            imageURL: body.imageURL ? body.imageURL : null, // optional
+            author: authorWalletAddress,
+            timestamp: timestamp
+        })
             .then((result) => {
                 return {
                     success: true,
@@ -96,17 +108,23 @@ const createUserComment = function (session, authorWalletAddress, postID, body) 
         }
     }
     const commentPostID = nano()
-    const date = new Date().toISOString()
+    const timestamp = new Date().toISOString()
     const query = [
-        `CREATE (p:Post {postID: '${commentPostID}', text: '${body.text}', author: '${authorWalletAddress}', edited: false, timestamp: '${date}', parent: '${postID}', likes: 0})`,
+        `CREATE (p:Post {postID: $commentPostID, text: $text, author: $authorWalletAddress, timestamp: $timestamp, likes: 0, edited: false, parent: $parentPostID})`,
         `WITH (p)`,
         `MATCH (u:User), (parent:Post)`,
-        `WHERE u.walletAddress = '${authorWalletAddress}' AND parent.postID = '${postID}'`,
+        `WHERE u.walletAddress = $authorWalletAddress AND parent.postID = $parentPostID`,
         `CREATE (u)-[r:POSTED]->(p), (p)-[r2:COMMENTED_ON]->(parent)`,
         `RETURN parent`
     ].join('\n');
 
-    return session.run(query)
+    return session.run(query, {
+        commentPostID: commentPostID,
+        parentPostID: postID,
+        text: body.text,
+        authorWalletAddress: authorWalletAddress,
+        timestamp: timestamp
+    })
         .then((result) => {
             var parentAuthor = new Post(result.records[0].get('parent')).author
             return Notification.create(session, "comment", parentAuthor, authorWalletAddress, commentPostID)
@@ -133,15 +151,19 @@ const update = function (session, walletAddress, postID, body) {
             message: 'Post must contain a text field'
         }
     }
-    const date = new Date().toISOString()
-    const imageString = body.imageURL ? `, p.imageURL = '${body.imageURL}'` : ""; // imageURL is optional on a post
+    const timestamp = new Date().toISOString()
     const query = [
-        `MATCH (p:Post {postID: '${postID}'})`,
-        `SET p.text = '${body.text}' ${imageString}, p.edited = true, p.timestamp = '${date}'`,
+        `MATCH (p:Post {postID: $postID})`,
+        `SET p.text=$text, p.imageURL=$imageURL, p.edited=true, p.timestamp = $timestamp`,
         `RETURN p`
     ].join('\n');
 
-    return session.run(query)
+    return session.run(query, {
+        postID: postID,
+        text: body.text,
+        imageURL: body.imageURL ? body.imageURL : null, // optional
+        timestamp: timestamp
+    })
         .then((result) => {
             if (_.isEmpty(result.records)) {
                 throw {
@@ -171,7 +193,7 @@ const update = function (session, walletAddress, postID, body) {
 
 const getPostsByUser = function (session, walletAddress, profileWalletAddress) {
     const query = [
-        `MATCH (author:User{walletAddress:'${profileWalletAddress}'})-[:POSTED]->(post:Post)`,
+        `MATCH (author:User{walletAddress:$profileWalletAddress})-[:POSTED]->(post:Post)`,
         `WHERE post.parent IS NULL`,
         `OPTIONAL MATCH (repost:Post)`,
         `WHERE repost.postID = post.repostPostID`,
@@ -179,12 +201,15 @@ const getPostsByUser = function (session, walletAddress, profileWalletAddress) {
         `WHERE repostAuthor.walletAddress = repost.author`,
         `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
         `WHERE post.author = author.walletAddress`,
-        `OPTIONAL MATCH (user:User{walletAddress:"${walletAddress}"})-[l:LIKED]->(post)`,
+        `OPTIONAL MATCH (user:User{walletAddress:$walletAddress})-[l:LIKED]->(post)`,
         `RETURN DISTINCT author, post, count(c) AS comment, count(l) AS likes, repost, repostAuthor`,
         `ORDER BY post.timestamp DESC`
     ].join('\n');
 
-    return session.run(query)
+    return session.run(query, {
+        profileWalletAddress: profileWalletAddress,
+        walletAddress: walletAddress
+    })
         .then((results) => {
             let posts = []
             results.records.forEach((record) => {
@@ -213,14 +238,17 @@ const getPostsByUser = function (session, walletAddress, profileWalletAddress) {
 
 const getCommentsByPost = function (session, walletAddress, postID) {
     const query = [
-        `MATCH (:Post {postID:'${postID}'})<-[:COMMENTED_ON]-(comment:Post)<-[:POSTED]-(author:User)`,
-        `OPTIONAL MATCH (user:User{walletAddress:"${walletAddress}"})-[l:LIKED]->(comment)`,
+        `MATCH (:Post {postID: $postID})<-[:COMMENTED_ON]-(comment:Post)<-[:POSTED]-(author:User)`,
+        `OPTIONAL MATCH (user:User{walletAddress: $walletAddress})-[l:LIKED]->(comment)`,
         `WHERE comment.author = author.walletAddress`,
         `RETURN DISTINCT author, comment, count(l) AS likes`,
         `ORDER BY comment.timestamp DESC`
     ].join('\n');
 
-    return session.run(query)
+    return session.run(query, {
+        walletAddress: walletAddress,
+        postID: postID
+    })
         .then((results) => {
             let comments = []
             results.records.forEach((record) => {
@@ -244,7 +272,7 @@ const getCommentsByPost = function (session, walletAddress, postID) {
 
 const getPostByID = function (session, walletAddress, postID) {
     const query = [
-        `MATCH (author:User)-[:POSTED]->(post:Post {postID:'${postID}'})`,
+        `MATCH (author:User)-[:POSTED]->(post:Post {postID: $postID})`,
         `OPTIONAL MATCH (repost:Post)`,
         `WHERE repost.postID = post.repostPostID`,
         `OPTIONAL MATCH (repostAuthor:User)`,
@@ -254,7 +282,9 @@ const getPostByID = function (session, walletAddress, postID) {
         `RETURN DISTINCT author, post, count(c) AS comment, repost, repostAuthor`
     ].join('\n');
 
-    return session.run(query)
+    return session.run(query, {
+        postID: postID
+    })
         .then((result) => {
             let queryRecord = result.records[0]
             var post = new Post(queryRecord.get('post'))
@@ -308,11 +338,14 @@ const getPostByID = function (session, walletAddress, postID) {
 // returns true if there is already a like
 const checkIfAlreadyLiked = function (session, postID, walletAddress) {
     const query = [
-        `MATCH (u:User {walletAddress: '${walletAddress}'})-[r:LIKED]->(p:Post{postID:'${postID}'})`,
+        `MATCH (u:User {walletAddress: $walletAddress})-[r:LIKED]->(p:Post{postID: $postID})`,
         `RETURN r`
     ].join('\n');
 
-    return session.run(query)
+    return session.run(query, {
+        walletAddress: walletAddress,
+        postID: postID
+    })
         .then((result) => {
             return {
                 success: true,
@@ -331,11 +364,11 @@ const checkIfAlreadyLiked = function (session, postID, walletAddress) {
 const likePost = function (session, postID, walletAddress) {
     const query = [
         `MATCH (p:Post)`,
-        `WHERE p.postID = '${postID}'`,
+        `WHERE p.postID=$postID`,
         `SET p.likes = p.likes + 1`,
         `WITH (p)`,
         `MATCH (u:User)`,
-        `WHERE u.walletAddress = '${walletAddress}'`,
+        `WHERE u.walletAddress=$walletAddress`,
         `MERGE (u)-[r:LIKED]->(p)`,
         `RETURN p`
     ].join('\n');
@@ -343,7 +376,10 @@ const likePost = function (session, postID, walletAddress) {
     return checkIfAlreadyLiked(session, postID, walletAddress)
         .then((result) => {
             if (!result.alreadyLiked) {
-                return session.run(query)
+                return session.run(query, {
+                    walletAddress: walletAddress,
+                    postID: postID
+                })
                     .then((result2) => {
                         var postAuthor = new Post(result2.records[0].get('p')).author
                         return Notification.create(session, "like", postAuthor, walletAddress, postID)
@@ -371,7 +407,7 @@ const likePost = function (session, postID, walletAddress) {
 
 const unlikePost = function (session, postID, walletAddress) {
     const query = [
-        `MATCH (u:User {walletAddress: '${walletAddress}'})-[r:LIKED]->(p: Post {postID: '${postID}'})`,
+        `MATCH (u:User {walletAddress: $walletAddress})-[r:LIKED]->(p: Post {postID: $postID})`,
         `SET p.likes = p.likes - 1`,
         `DELETE r`
     ].join('\n');
@@ -379,7 +415,10 @@ const unlikePost = function (session, postID, walletAddress) {
     return checkIfAlreadyLiked(session, postID, walletAddress)
         .then((result) => {
             if (result.alreadyLiked) {
-                return session.run(query)
+                return session.run(query, {
+                    walletAddress: walletAddress,
+                    postID: postID
+                })
                     .then((result) => {
                         return {
                             success: true,
@@ -404,11 +443,13 @@ const unlikePost = function (session, postID, walletAddress) {
 
 const getLikesOnPost = function (session, postID) {
     const query = [
-        `MATCH (u:User )-[likes:LIKED]->(post:Post {postID : '${postID}'})`,
+        `MATCH (u:User)-[likes:LIKED]->(post:Post {postID : $postID})`,
         `RETURN count(likes) as likes`
     ].join('\n');
 
-    return session.run(query)
+    return session.run(query, {
+        postID: postID
+    })
         .then((results) => {
             let users = []
             results.records.forEach((record) => {

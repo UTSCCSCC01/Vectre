@@ -36,8 +36,15 @@ function create(session, action, toUser, fromUser, postID=null) {
     }
 
     const notificationID = nano(), timestamp = new Date().toISOString()
-    const query = `CREATE (notif:Notification {notificationID: '${notificationID}', toUser: '${toUser}', fromUser: '${fromUser}', action: '${action}', postID: '${postID}', timestamp: '${timestamp}', read: false});`
-    return session.run(query)
+    const query = `CREATE (notif:Notification {notificationID: $notificationID, toUser: $toUser, fromUser: $fromUser, action: $action, postID: $postID, timestamp: $timestamp, read: false})`
+    return session.run(query, {
+        notificationID: notificationID,
+        toUser: toUser,
+        fromUser: fromUser,
+        action: action,
+        postID: postID,
+        timestamp: timestamp,
+    })
         .then((results) => {
             return {
                 success: true,
@@ -55,12 +62,14 @@ function create(session, action, toUser, fromUser, postID=null) {
 
 const read = function (session, readerWalletAddress, notificationID) {
     const query = [
-        `MATCH (notif:Notification {notificationID: '${notificationID}'})`,
+        `MATCH (notif:Notification {notificationID: $notificationID})`,
         `SET notif.read = true`,
         `RETURN notif`,
     ].join('\n');
 
-    return session.run(query)
+    return session.run(query, {
+        notificationID: notificationID
+    })
         .then((results) => {
             if (_.isEmpty(results.records)) {
                 throw {
@@ -85,7 +94,7 @@ const read = function (session, readerWalletAddress, notificationID) {
 
 const getUserNotifications = function (session, walletAddress) {
     const query = [
-        `MATCH (notification:Notification {toUser:'${walletAddress}'})`,
+        `MATCH (notification:Notification {toUser: $walletAddress})`,
         `WITH notification`,
         `MATCH (fromUser:User)`,
         `WHERE fromUser.walletAddress = notification.fromUser`,
@@ -93,7 +102,9 @@ const getUserNotifications = function (session, walletAddress) {
         `ORDER BY notification.timestamp DESC`
     ].join('\n');
 
-    return session.run(query)
+    return session.run(query, {
+        walletAddress: walletAddress
+    })
         .then((results) => {
             let notifications = [], hasUnreadNotif = false
             results.records.forEach((record) => {
