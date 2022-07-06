@@ -39,7 +39,7 @@ const PostPage = () => {
                         post.length !== 0 ? (
                             <>
                                 <PostComponent item={post[0]} />
-                                {loggedInUser.walletAddress ? (<UserCommentComponent item={{ author: loggedInUser }} />) : (<UserCommentNotLoggedInComponent />)}
+                                {loggedInUser.walletAddress ? (<UserCommentComponent item={{ author: loggedInUser }} isComment={post[0].parent !== null} />) : (<UserCommentNotLoggedInComponent />)}
                                 <PostCommentsComponent comments={comments} />
                             </>
                         ) : (

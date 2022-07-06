@@ -21,7 +21,7 @@ const PostBotComponent = ({
             <Flex gap={'10px'}>
                 <PostBotLikeButton item={item} />
                 <TextButton
-                    display={item.comment ? 'inline-flex' : 'none'}
+                    display={item.comment && !item.parent ? 'inline-flex' : 'none'}
                     text={`${item.comment} Commments`}
                     rightIcon={<FaCommentAlt size="1.1rem" />}
                     onClick={(e) => {
