@@ -2,13 +2,19 @@ import {
     Image,
     Box,
     Flex,
-    Text
+    Text,
+    Tooltip
 } from "@chakra-ui/react"
+
 import { getAvatarOrDefault, getBannerOrDefault, formatWalletAddress } from "../../../../utils/Utils";
+import { useDispatch } from "react-redux";
+import { showToast } from "../../../../redux/actions/toast";
+import { TOAST_STATUSES } from "../../../../redux/constants/toast"
 
 const ProfileUserDetailsTopComponent = ({
     props
 }) => {
+    const dispatch = useDispatch();
     return (
         <>
             <Flex
@@ -58,15 +64,24 @@ const ProfileUserDetailsTopComponent = ({
                     fontSize={'12px'}>
                     <Text fontSize={'24px'} lineHeight={'31.25px'}>{props.user.name}</Text>
                     <Text>@{props.user.username}</Text>
-                    <Text
-                        color={'rgba(105, 123, 152, 1)'}
+                    <Box
                         position={'absolute'}
                         bottom={'0px'}
                         right={'0px'}
-                        pb={'12px'}
-                        pr={'11px'}>
-                        &#123; {formatWalletAddress(props.user.walletAddress)} &#125;
-                    </Text>
+                        mb={'12px'}
+                        mr={'11px'}
+                        cursor={'pointer'}
+                        onClick={() => {
+                            navigator.clipboard.writeText(props.user.walletAddress);
+                            dispatch(showToast(TOAST_STATUSES.SUCCESS, "Copied wallet address to clipboard"));
+                        }}>
+                        <Tooltip fontSize={'small'} placement={'top'} label={"Copy"} aria-label='tooltip'>
+                            <Text
+                                color={'rgba(105, 123, 152, 1)'}>
+                                &#123; {formatWalletAddress(props.user.walletAddress)} &#125;
+                            </Text>
+                        </Tooltip>
+                    </Box>
                 </Flex>
             </Flex>
         </>
