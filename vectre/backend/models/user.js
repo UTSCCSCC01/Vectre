@@ -357,14 +357,14 @@ const deleteUser = (session, walletAddress) => {
 }
 
 const getFollowing = (session, walletAddress) => { // Returns list of Users followed by User w/ walletAddress
-    const query = `MATCH (u: User)-[r:FOLLOWS]->(followed: User) WHERE u.walletAddress=$walletAddress RETURN followed.walletAddress`;
+    const query = `MATCH (u: User)-[r:FOLLOWS]->(followed: User) WHERE u.walletAddress=$walletAddress RETURN followed`;
     return session.run(query, {
         walletAddress: walletAddress
     })
         .then((results) => {
             let users = []
             results.records.forEach((record) => {
-                users.push(record.get('followed.walletAddress'))
+                users.push(new User(record.get('followed')))
             })
             return {
                 success: true,
@@ -372,7 +372,6 @@ const getFollowing = (session, walletAddress) => { // Returns list of Users foll
             }
         })
         .catch((error) => {
-            console.log(error)
             throw {
                 success: false,
                 message: "Failed to get followed users",
@@ -381,14 +380,14 @@ const getFollowing = (session, walletAddress) => { // Returns list of Users foll
         });
 }
 const getFollowers = (session, walletAddress) => { // Returns list of Users following User w/ walletAddress
-    const query = `MATCH (u: User)<-[r:FOLLOWS]-(following: User) WHERE u.walletAddress=$walletAddress RETURN following.walletAddress`;
+    const query = `MATCH (u: User)<-[r:FOLLOWS]-(following: User) WHERE u.walletAddress=$walletAddress RETURN following`;
     return session.run(query, {
         walletAddress: walletAddress
     })
         .then((results) => {
             let users = []
             results.records.forEach((record) => {
-                users.push(record.get('following.walletAddress'))
+                users.push(new User(record.get('following')))
             })
             return {
                 success: true,

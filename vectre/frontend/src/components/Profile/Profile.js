@@ -33,7 +33,9 @@ class Profile extends React.Component {
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.loggedInUser !== this.props.loggedInUser) {
-            this.setState({ following: this.props.loggedInUser.following.includes(this.props.profileWalletAddress) })
+            this.setState({
+                following: this.props.loggedInUser.following.some(following => following.walletAddress === this.props.profileWalletAddress)
+            })
         }
     }
 
