@@ -5,13 +5,32 @@ import {
     Spacer,
     Text
 } from "@chakra-ui/react";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import DefaultAvatar from "../../../../assets/images/default-avatar.png"
+import { followUser, unfollowUser } from "../../../../redux/actions/users";
+import { loggedInUserSelector } from "../../../../redux/selectors/users";
 import TextButton from "../../../Buttons/TextButton/TextButton";
+
+const handleFollowClick = (walletAddress, profileWalletAddress, alreadyFollowed, setAlreadyFollowed, dispatch) => {
+    if (!alreadyFollowed) {
+        dispatch(followUser(walletAddress, profileWalletAddress, () => { setAlreadyFollowed(!alreadyFollowed) }));
+    }
+    else {
+        dispatch(unfollowUser(walletAddress, profileWalletAddress, () => { setAlreadyFollowed(!alreadyFollowed) }));
+    }
+}
 
 const FollowUserCard = ({
     user,
+    type,
     onClose
 }) => {
+    const { walletAddress: profileWalletAddress } = useParams();
+    const loggedInUser = useSelector(loggedInUserSelector);
+    const [alreadyFollowed, setAlreadyFollowed] = useState(loggedInUser.following.some((liUser) => { return liUser.walletAddress === user.walletAddress }));
+    const dispatch = useDispatch();
     return (
         <>
             <Flex
@@ -52,13 +71,19 @@ const FollowUserCard = ({
                     </Flex>
                 </Link>
                 <Spacer />
-                <TextButton
-                    bg={'primary.400'}
-                    color={'white'}
-                    px={'20px'}
-                    fontSize={'15px'}
-                    fontWeight={700}
-                    text={"Follow"} />
+                {
+                    loggedInUser.walletAddress !== user.walletAddress ?
+                        <TextButton
+                            bg={alreadyFollowed ? "primary.400" : 'white'}
+                            color={alreadyFollowed ? "white" : 'primary.400'}
+                            px={'20px'}
+                            fontSize={'15px'}
+                            fontWeight={700}
+                            text={alreadyFollowed ? "Following" : "Follow"}
+                            onClick={() => {
+                                handleFollowClick(user.walletAddress, profileWalletAddress, alreadyFollowed, setAlreadyFollowed, dispatch);
+                            }} /> : <></>
+                }
             </Flex>
         </>
     );

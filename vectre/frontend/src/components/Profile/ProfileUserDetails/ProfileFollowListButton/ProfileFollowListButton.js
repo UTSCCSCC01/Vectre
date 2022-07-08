@@ -20,7 +20,7 @@ const ProfileFollowListButton = ({
                 bg={'rgba(246, 250, 255, 1)'}
                 text={followList.length + ' ' + type}
                 onClick={onOpen} />
-            <ProfileFollowListModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} followList={followList} />
+            <ProfileFollowListModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} followList={followList} type={type} />
         </>
     )
 }

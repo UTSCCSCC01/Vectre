@@ -47,9 +47,9 @@ class Profile extends React.Component {
     }
     handleFollowUser = () => {
         if (this.state.following) { // Unfollow
-            this.props.unfollowUser(this.props.profileWalletAddress)
+            this.props.unfollowUser(this.props.profileWalletAddress, this.props.profileWalletAddress)
         } else { // Follow
-            this.props.followUser(this.props.profileWalletAddress)
+            this.props.followUser(this.props.profileWalletAddress, this.props.profileWalletAddress)
         }
     }
 

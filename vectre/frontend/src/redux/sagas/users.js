@@ -162,8 +162,9 @@ function* followUser(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + USERS.FOLLOW_USER.replace("{walletAddress}", action.walletAddressToFollow), {}), responseData = response[1]
         if (responseData.success) {
-            yield put(getUser(action.walletAddressToFollow))
+            yield put(getUser(action.profileWalletAddress))
             yield put(getLoggedInUser())
+            if (action.toggleFollowList) action.toggleFollowList()
             yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
@@ -177,8 +178,9 @@ function* unfollowUser(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + USERS.UNFOLLOW_USER.replace("{walletAddress}", action.walletAddressToUnfollow), {}), responseData = response[1]
         if (responseData.success) {
-            yield put(getUser(action.walletAddressToUnfollow))
+            yield put(getUser(action.profileWalletAddress))
             yield put(getLoggedInUser())
+            if (action.toggleFollowList) action.toggleFollowList()
             yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
