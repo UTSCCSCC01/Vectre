@@ -40,7 +40,8 @@ const PostPage = () => {
                         <>
                             <PostComponent item={post} />
                             {loggedInUser.walletAddress ? (<UserCommentComponent item={{ author: loggedInUser }} />) : (<UserCommentNotLoggedInComponent />)}
-                            <PostCommentsComponent id="comments" comments={comments} />
+                            <div id="comments"></div>
+                            <PostCommentsComponent comments={comments} />
                         </>
                         : <Box>Post does not exist!</Box>
                     }
