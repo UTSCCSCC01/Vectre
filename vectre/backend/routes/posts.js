@@ -8,10 +8,9 @@ const { authenticateToken, storeWalletAddressFromToken } = require("../utils/aut
 // Posts
 // GET /posts/feed
 router.get('/feed', authenticateToken, (req, res, next) => {
-    const walletAddress = req.walletAddress
-    const start = req.body.start? req.body.start : 0;
-    const size = req.body.size? req.body.size : 10;
-    Post.getUserFeed(dbUtils.getSession(req), walletAddress, start, size)
+    const start = req.body.start? req.body.start : 0,
+        size = req.body.size? req.body.size : 10;
+    Post.getUserFeed(dbUtils.getSession(req), req.walletAddress, start, size)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })

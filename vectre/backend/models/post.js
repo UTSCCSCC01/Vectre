@@ -452,19 +452,49 @@ const getLikesOnPost = function (session, postID) {
 }
 
 const getUserFeed = function (session, walletAddress, start, size) {
+    if (start < 0) {
+        throw {
+            success: false,
+            message: "Start index must be non-negative"
+        }
+    } else if (size < 0) {
+        throw {
+            success: false,
+            message: "Size must be non-negative"
+        }
+    }
+
     const query = [
-        `MATCH (u: User {walletAddress: '${walletAddress}'})-[:FOLLOWS]->(b:User)-[:POSTED]->(p: Post)`,
-        `RETURN DISTINCT p`,
-        `ORDER BY p.timestamp DESC`,
-        `SKIP ${start}`,
-        `LIMIT ${size}`
+        `MATCH (currentUser: User {walletAddress: $walletAddress})-[:FOLLOWS]->(followedUser:User)-[:POSTED]->(post: Post)`,
+        `WHERE post.parent IS NULL`, // Prevent comments in feed
+        `OPTIONAL MATCH (currentUser)-[l:LIKED]->(post)`,
+        `OPTIONAL MATCH (repost:Post)`,
+        `WHERE repost.postID = post.repostPostID`,
+        `OPTIONAL MATCH (repostAuthor:User)`,
+        `WHERE repostAuthor.walletAddress = repost.author`,
+        `RETURN DISTINCT currentUser, followedUser, post, repost, repostAuthor, count(l) AS likes`,
+        `ORDER BY post.timestamp DESC`,
+        `SKIP toInteger($start)`,
+        `LIMIT toInteger($size)`
     ].join('\n');
 
-    return session.run(query)
+    return session.run(query, {
+        walletAddress: walletAddress,
+        start: start,
+        size: size
+    })
         .then((results) => {
             let posts = []
             results.records.forEach((record) => {
-                posts.push(new Post(record.get('p')))
+                let post = new Post(record.get("post"))
+                post.author = new User(record.get("followedUser"))
+                post.alreadyLiked = record.get('likes').low > 0
+                if (post.repostPostID) {
+                    post.repostPost = new Post(record.get('repost'))
+                    post.repostPost.author = new User(record.get('repostAuthor'))
+                }
+
+                posts.push(post)
             })
             return {
                 success: true,
@@ -474,7 +504,7 @@ const getUserFeed = function (session, walletAddress, start, size) {
         .catch((error) => {
             throw {
                 success: false,
-                message: "Failed to get posts",
+                message: "Failed to get feed",
                 error: error
             }
         });
