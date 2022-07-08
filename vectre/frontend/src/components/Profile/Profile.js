@@ -36,7 +36,9 @@ class Profile extends React.Component {
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.loggedInUser !== this.props.loggedInUser) {
-            this.setState({ following: this.props.loggedInUser.following.includes(this.props.profileWalletAddress) })
+            this.setState({
+                following: this.props.loggedInUser.following.some(following => following.walletAddress === this.props.profileWalletAddress)
+            })
         }
     }
 
@@ -69,17 +71,17 @@ class Profile extends React.Component {
 
                             <br></br>
                             <b>Following</b>: <br></br>
-                            {this.props.user.following.map(walletAddress =>
+                            {this.props.user.following.map(following =>
                                 <>
-                                    - <Link href={"/user/" + walletAddress}>{walletAddress}</Link><br></br>
+                                    - <Link href={"/user/" + following.walletAddress}>@{following.username}</Link><br></br>
                                 </>
                             )}
 
                             <br></br>
                             <b>Followers</b>: <br></br>
-                            {this.props.user.followers.map(walletAddress =>
+                            {this.props.user.followers.map(follower =>
                                 <>
-                                    - <Link href={"/user/" + walletAddress}>{walletAddress}</Link><br></br>
+                                    - <Link href={"/user/" + follower.walletAddress}>@{follower.username}</Link><br></br>
                                 </>
                             )}
                             <br></br>
