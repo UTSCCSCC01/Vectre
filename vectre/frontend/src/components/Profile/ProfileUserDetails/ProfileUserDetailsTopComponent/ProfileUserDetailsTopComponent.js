@@ -7,14 +7,12 @@ import {
 } from "@chakra-ui/react"
 
 import { getAvatarOrDefault, getBannerOrDefault, formatWalletAddress } from "../../../../utils/Utils";
-import { useDispatch } from "react-redux";
-import { showToast } from "../../../../redux/actions/toast";
-import { TOAST_STATUSES } from "../../../../redux/constants/toast"
+import React, { useState } from "react";
 
 const ProfileUserDetailsTopComponent = ({
     props
 }) => {
-    const dispatch = useDispatch();
+    const [copied, setCopied] = useState(false);
     return (
         <>
             <Flex
@@ -73,10 +71,11 @@ const ProfileUserDetailsTopComponent = ({
                         cursor={'pointer'}
                         onClick={() => {
                             navigator.clipboard.writeText(props.user.walletAddress);
-                            dispatch(showToast(TOAST_STATUSES.SUCCESS, "Copied wallet address to clipboard"));
+                            setCopied(true);
                         }}>
-                        <Tooltip fontSize={'small'} placement={'top'} label={"Copy"} aria-label='tooltip'>
+                        <Tooltip fontSize={'small'} placement={'top'} label={!copied ? "Copy" : "Copied!"} closeOnClick={false} aria-label='tooltip'>
                             <Text
+                                onMouseLeave={() => { setTimeout(() => { setCopied(false) }, 300) }}
                                 color={'rgba(105, 123, 152, 1)'}>
                                 &#123; {formatWalletAddress(props.user.walletAddress)} &#125;
                             </Text>
