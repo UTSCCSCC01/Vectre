@@ -273,7 +273,7 @@ const getPostByID = function (session, walletAddress, postID) {
             var post = new Post(queryRecord.get('post'))
             post.author = new User(queryRecord.get('author'))
             post.comment = String(queryRecord.get("comment").low);
-            post.community = "notarealcommunity" // TOOD: Unhardcode this value
+            post.community = "notarealcommunity" // TODO: Unhardcode this value
             if (post.repostPostID) {
                 post.repostPost = new Post(queryRecord.get('repost'))
                 post.repostPost.author = new User(queryRecord.get('repostAuthor'))
@@ -468,11 +468,12 @@ const getUserFeed = function (session, walletAddress, start, size) {
         `MATCH (currentUser: User {walletAddress: $walletAddress})-[:FOLLOWS]->(followedUser:User)-[:POSTED]->(post: Post)`,
         `WHERE post.parent IS NULL`, // Prevent comments in feed
         `OPTIONAL MATCH (currentUser)-[l:LIKED]->(post)`,
+        `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
         `OPTIONAL MATCH (repost:Post)`,
         `WHERE repost.postID = post.repostPostID`,
         `OPTIONAL MATCH (repostAuthor:User)`,
         `WHERE repostAuthor.walletAddress = repost.author`,
-        `RETURN DISTINCT currentUser, followedUser, post, repost, repostAuthor, count(l) AS likes`,
+        `RETURN DISTINCT currentUser, followedUser, post, repost, repostAuthor, count(l) AS likes, count(c) AS comment`,
         `ORDER BY post.timestamp DESC`,
         `SKIP toInteger($start)`,
         `LIMIT toInteger($size)`
@@ -488,6 +489,8 @@ const getUserFeed = function (session, walletAddress, start, size) {
             results.records.forEach((record) => {
                 let post = new Post(record.get("post"))
                 post.author = new User(record.get("followedUser"))
+                post.comment = String(record.get("comment").low);
+                post.community = "notarealcommunity" // TODO: Unhardcode this value
                 post.alreadyLiked = record.get('likes').low > 0
                 if (post.repostPostID) {
                     post.repostPost = new Post(record.get('repost'))
