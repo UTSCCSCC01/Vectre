@@ -24,6 +24,7 @@ import {
 } from "../constants/endpoints";
 import { showToast } from "../actions/toast";
 import { TOAST_STATUSES } from "../constants/toast";
+import { doneLoading, showLoading } from "../../redux/actions/loading";
 
 function* createRepost(action) {
     try {
@@ -42,11 +43,14 @@ function* createRepost(action) {
 
 function* getPostSaga(action) {
     try {
+        yield put(showLoading(true))
         const response = yield call(getRequest, BASE_API_URL + POSTS.GET_POST.replace("{postID}", action.postID)), responseData = response[1]
         if (responseData.success) {
             yield put(storePost(responseData.post))
+            yield put(showLoading(false))
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+            yield put(showLoading(false))
         }
     } catch (error) {
         yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get post"))
