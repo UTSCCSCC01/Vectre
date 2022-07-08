@@ -2,6 +2,9 @@ export const CREATE_POST = "CREATE_POST"
 export const GET_POST = "GET_POST"
 export const STORE_POST = "STORE_POST"
 
+export const GET_FEED = "GET_FEED"
+export const STORE_FEED = "STORE_FEED"
+
 export const CREATE_REPOST = "CREATE_REPOST"
 
 export const CREATE_COMMENT = "CREATE_COMMENT"

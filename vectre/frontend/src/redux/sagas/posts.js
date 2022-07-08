@@ -4,7 +4,10 @@ import {
     storePost,
     storeComments,
     doLike,
-    doUnlike, getPost, getComments
+    doUnlike,
+    getPost,
+    getComments,
+    storeFeed,
 } from "../actions/posts";
 import {
     GET_POST,
@@ -12,7 +15,8 @@ import {
     CREATE_COMMENT,
     POST_LIKE,
     POST_UNLIKE,
-    CREATE_REPOST
+    CREATE_REPOST,
+    GET_FEED,
 } from "../constants/posts";
 import {
     BASE_API_URL,
@@ -64,6 +68,20 @@ function* getCommentsSaga(action) {
     }
 }
 
+function* getFeed() {
+    try {
+        const response = yield call(getRequest, BASE_API_URL + POSTS.GET_FEED), responseData = response[1]
+        if (responseData.success) {
+            yield put(storeFeed(responseData.posts))
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+    } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get feed"))
+        console.log(error)
+    }
+}
+
 function* createComment(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + POSTS.CREATE_COMMENT.replace("{postID}", action.postID), action.comment), responseData = response[1]
@@ -84,7 +102,7 @@ function* postLike(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + POSTS.POST_LIKE.replace("{postID}", action.postID)), responseData = response[1]
         if (responseData.success) {
-            yield put(doLike(action.postID, action.walletAddress, action.isComment));
+            yield put(doLike(action.postID, action.walletAddress, action.isComment, action.fromFeed));
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }
@@ -98,7 +116,7 @@ function* postUnlike(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + POSTS.POST_UNLIKE.replace("{postID}", action.postID)), responseData = response[1]
         if (responseData.success) {
-            yield put(doUnlike(action.postID, action.walletAddress, action.isComment));
+            yield put(doUnlike(action.postID, action.walletAddress, action.isComment, action.fromFeed));
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }
@@ -112,6 +130,7 @@ function* postsSaga() {
     yield takeLatest(CREATE_REPOST, createRepost)
     yield takeLatest(GET_POST, getPostSaga)
     yield takeLatest(GET_COMMENTS, getCommentsSaga)
+    yield takeLatest(GET_FEED, getFeed)
     yield takeLatest(CREATE_COMMENT, createComment)
     yield takeLatest(POST_LIKE, postLike)
     yield takeLatest(POST_UNLIKE, postUnlike)

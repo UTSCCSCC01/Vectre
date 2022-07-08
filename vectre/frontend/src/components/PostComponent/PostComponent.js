@@ -11,9 +11,12 @@ import PostModalComponent from './PostModalComponent/PostModalComponent';
 
 const PostComponent = ({
     item,
+    fromFeed=false,
     ...otherProps
 }) => {
     const { isOpen, onClose, onOpen } = useDisclosure();
+
+    const isPostClickable = item.postID && window.location.toString().includes('home')
     return (
         <>
             <Box
@@ -24,15 +27,13 @@ const PostComponent = ({
                 borderRadius={'6px'}
                 px={'18px'}
                 py={'15px'}
-                _hover={{ border: "1px solid rgba(59, 130, 246, 0.4)" }}
-                cursor={window.location.toString().includes('home') ? 'pointer' : 'default'}
-                onClick={(() => {
-                    if (item.postID && !item.parent && window.location.toString().includes('home')) window.location = `/post/${item.postID}`;
-                })}>
+                _hover={isPostClickable ? { border: "1px solid rgba(59, 130, 246, 0.4)" } : ""}
+                cursor={isPostClickable ? 'pointer' : 'default'}
+                onClick={() => { if (isPostClickable) window.location = `/post/${item.postID}`}}>
                 <Stack gap={'4px'}>
                     <PostTopComponent item={item} />
                     <PostMidComponent item={item} onOpen={onOpen} />
-                    <PostBotComponent item={item} />
+                    <PostBotComponent item={item} fromFeed={fromFeed}/>
                 </Stack>
                 {otherProps.children}
             </Box>

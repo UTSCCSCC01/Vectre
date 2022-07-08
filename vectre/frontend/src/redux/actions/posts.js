@@ -2,6 +2,8 @@ import {
     CREATE_POST,
     GET_POST,
     STORE_POST,
+    GET_FEED,
+    STORE_FEED,
     CREATE_REPOST,
     GET_COMMENTS,
     STORE_COMMENTS,
@@ -26,6 +28,15 @@ export const storePost = (post) => ({
     type: STORE_POST,
     post
 })
+
+export const getFeed = () => ({
+    type: GET_FEED
+})
+export const storeFeed = (posts) => ({
+    type: STORE_FEED,
+    posts
+})
+
 export const createRepost = (repostData, redirectWindow) => ({
     type: CREATE_REPOST,
     repostData,
@@ -50,29 +61,33 @@ export const storeComments = (comments) => ({
 })
 
 // Like
-export const postLike = (postID, walletAddress, isComment) => ({
+export const postLike = (postID, walletAddress, isComment, fromFeed) => ({
     type: POST_LIKE,
     postID,
     walletAddress,
     isComment,
+    fromFeed
 })
-export const postUnlike = (postID, walletAddress, isComment) => ({
+export const postUnlike = (postID, walletAddress, isComment, fromFeed) => ({
     type: POST_UNLIKE,
     postID,
     walletAddress,
     isComment,
+    fromFeed
 })
 
 // Internal actions for updating like counter
-export const doLike = (postID, walletAddress, isComment) => ({
+export const doLike = (postID, walletAddress, isComment, fromFeed) => ({
     type: DO_LIKE,
     postID,
     walletAddress,
-    isComment
+    isComment,
+    fromFeed
 })
-export const doUnlike = (postID, walletAddress, isComment) => ({
+export const doUnlike = (postID, walletAddress, isComment, fromFeed) => ({
     type: DO_UNLIKE,
     postID,
     walletAddress,
-    isComment
+    isComment,
+    fromFeed
 })
