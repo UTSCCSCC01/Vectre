@@ -6,6 +6,16 @@ const Post = require('../models/post');
 const { authenticateToken, storeWalletAddressFromToken } = require("../utils/auth");
 
 // Posts
+// GET /posts/feed
+router.get('/feed', authenticateToken, (req, res, next) => {
+    const walletAddress = req.walletAddress
+    const start = req.body.start? req.body.start : 0;
+    const size = req.body.size? req.body.size : 10;
+    Post.getUserFeed(dbUtils.getSession(req), walletAddress, start, size)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
+
 // POST /posts/create
 router.post('/create', authenticateToken, (req, res, next) => {
     Post.createUserPost(dbUtils.getSession(req), req.walletAddress, req.body)
@@ -24,7 +34,6 @@ router.get('/:postID', storeWalletAddressFromToken, (req, res, next) => {
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
-
 
 // Post interactions (like/comment):
 // Comment
