@@ -1,8 +1,10 @@
 const _ = require('lodash')
 const User = require('./neo4j/user')
+const Notification = require('../models/notification');
 const config = require('../config');
 const jwt = require('jsonwebtoken')
-const ethUtil = require('ethereumjs-util')
+const ethUtil = require('ethereumjs-util');
+const fetch = (url) => import('node-fetch').then(({default: fetch}) => fetch(url));
 
 const getAll = (session) => { // Returns all Users
     const query = "MATCH (user:User) RETURN user";
@@ -17,7 +19,7 @@ const getAll = (session) => { // Returns all Users
         .catch((error) => {
             throw {
                 success: false,
-                message: "Failed to get Users"
+                message: "Failed to get users"
             }
         });
 }
@@ -30,13 +32,15 @@ const getByWalletAddress = (session, walletAddress) => {
      * @param wallet address of the user for searching
      * @returns an object with a boolean field 'success', field 'user' that holds the user object, and field 'message'.
      */
-    const query = `MATCH (user: User {walletAddress : '${walletAddress}'}) RETURN user`
-    return session.run(query)
+    const query = `MATCH (user: User {walletAddress : $walletAddress}) RETURN user`
+    return session.run(query, {
+        walletAddress: walletAddress
+    })
         .then((results) => {
             if (_.isEmpty(results.records)) {
                 throw {
                     success: false,
-                    message: `User with wallet address ${walletAddress} does not exist`
+                    message: `User does not exist`
                 }
             } else {
                 let user = new User(results.records[0].get('user'))
@@ -49,7 +53,7 @@ const getByWalletAddress = (session, walletAddress) => {
                                 user.followers = followerResult.followers
                                 return {
                                     success: true,
-                                        user: user
+                                    user: user
                                 }
                             })
                     })
@@ -57,30 +61,73 @@ const getByWalletAddress = (session, walletAddress) => {
         }).catch((error) => {
             throw {
                 success: false,
-                message: "Failed to get User",
+                message: "Failed to get user",
                 error: error.message
             }
         })
 }
 
-const register = (session, body) => { // Creates User from body data
-    const bio = body.bio ? body.bio : ""
-    const query = `CREATE (user:User {name: '${body.name}', username: '${body.username}', walletAddress: '${body.walletAddress}', bio: '${bio}', nonce: '${generateNonce()}'});`
-    return session.run(query)
-        .then((results) => {
-            return {
-                success: true,
-                // user: new User(results.records[0].get('user'))
-                message: "Created User"
-            }
-        })
-        .catch((error) => {
-            throw {
+const register = (session, body, setTokenInCookie) => { // Creates User from body data
+    if (!(/^[0-9a-zA-Z_.-]+$/.test(body.username))) {
+        return new Promise((resolve) => {
+            resolve({
                 success: false,
-                message: "Failed to create User",
-                error: error.message
-            }
+                message: "Username can only contain letters, numbers, dashes, underscores, or periods"
+            })
         })
+    } else if (body.username.length > 32) {
+        return new Promise((resolve) => {
+            resolve({
+                success: false,
+                message: "Username must be less than 32 characters"
+            })
+        })
+    } else if (body.name.length > 32) {
+        return new Promise((resolve) => {
+            resolve({
+                success: false,
+                message: "Name must be less than 32 characters"
+            })
+        })
+    } else if (body.bio.length > 500) {
+        return new Promise((resolve) => {
+            resolve({
+                success: false,
+                message: "Bio must be less than 500 characters"
+            })
+        })
+    } else {
+        const query = `CREATE (user:User {name: $name, username: $username, walletAddress: $walletAddress, bio: $bio, nonce: $nonce});`
+        return session.run(query, {
+            name: body.name,
+            username: body.username,
+            walletAddress: body.walletAddress,
+            bio: body.bio ? body.bio : "",
+            nonce: generateNonce()
+        })
+            .then((results) => {
+                const accessToken = jwt.sign(body.walletAddress, config.jwtSecretToken)
+                setTokenInCookie(accessToken)
+
+                return {
+                    success: true,
+                    message: "Created user"
+                }
+            })
+            .catch((error) => {
+                if (error.message.includes("already exists with label `User` and property `username`")) {
+                    throw {
+                        success: false,
+                        message: "Username already in use"
+                    }
+                }
+                throw {
+                    success: false,
+                    message: "Failed to create user",
+                    error: error.message
+                }
+            })
+    }
 }
 
 function generateNonce() {
@@ -130,13 +177,18 @@ const login = (session, walletAddress, signedNonce, setTokenInCookie) => { // Lo
                         if (response.success) {
                             if (validateSignedNonce(walletAddress, response.nonce, signedNonce)) {
                                 const accessToken = jwt.sign(walletAddress, config.jwtSecretToken)
-
-                                // TODO: Regenerate nonce
                                 setTokenInCookie(accessToken)
+
+                                // Regenerate nonce
+                                const regenerateNonceQuery = `MATCH (u: User {walletAddress: $walletAddress}) SET u.nonce = $nonce`
+                                session.run(regenerateNonceQuery, {
+                                    walletAddress: walletAddress,
+                                    nonce: generateNonce()
+                                })
 
                                 return {
                                     success: true,
-                                    authorizationToken: accessToken
+                                    message: "Successfully logged in"
                                 }
                             } else {
                                 throw {
@@ -156,13 +208,13 @@ const login = (session, walletAddress, signedNonce, setTokenInCookie) => { // Lo
         .catch((error) => { return error })
 }
 
-const updateUser = function (session, wallet, filter, newUser) {
+const updateUser = function (session, walletAddress, filter, newUser) {
     /**
-     * Update the user object with matching `wallet` on Neo4j using fields from
+     * Update the user object with matching `walletAddress` on Neo4j using fields from
      * `newUser` after being filtered by `filter`.
      *
      * @param neo4j session.
-     * @param wallet address of the user.
+     * @param walletAddress address of the user.
      * @param array containing string of keys to modify on Neo4j.
      * @param object containing new information, should contain keys in `filter`.
      * @returns an object with a boolean field 'success' and field 'message'.
@@ -181,51 +233,96 @@ const updateUser = function (session, wallet, filter, newUser) {
     // Check for non empty fields
     const nonEmpty = ["username", "name"]
     for (let f of nonEmpty) {
-        if ((f in newUser) && newUser[f] == "") {
-            throw { success: false, message: `Field ${f} is empty.` }
+        if ((f in newUser)) {
+            if (newUser[f] == "") {
+                throw {success: false, message: `Field ${f} is empty.`}
+            }
+
+            if (f === "username") {
+                let username = newUser[f]
+                if (!(/^[0-9a-zA-Z_.-]+$/.test(username))) {
+                    throw {
+                        success: false,
+                        message: "Username can only contain letters, numbers, dashes, underscores, or periods"
+                    }
+                } else if (username.length > 32) {
+                    throw {
+                        success: false,
+                        message: "Username must be less than 32 characters"
+                    }
+                }
+            } else if (f === "name") {
+                let name = newUser[f]
+                if (name.length > 32) {
+                    throw {
+                        success: false,
+                        message: "Name must be less than 32 characters"
+                    }
+                }
+            }
         }
     }
 
-    const userString = JSON.stringify(filteredUser).replace(/"([^"]+)":/g, '$1:')
-    const query = `MATCH (u: User { walletAddress : \"${wallet}\"})
-        SET u += ${userString}
+    if (newUser["bio"] != "" && newUser["bio"].length > 500) {
+        throw {
+            success: false,
+            message: "Bio must be less than 500 characters"
+        }
+    }
+
+    const query = `MATCH (u: User {walletAddress: $walletAddress})
+        SET u += $filteredUser
         RETURN u`
 
     // Apply changes to Neo4j
-    return session.run(query)
+    return session.run(query, {
+        walletAddress: walletAddress,
+        filteredUser: filteredUser
+    })
         .then(results => {
             if (_.isEmpty(results.records)) {
                 return {
                     success: false,
-                    message: "Edit failed, wallet does not exist."
+                    message: "Edit failed, wallet does not exist"
                 }
             }
             return {
                 success: true,
-                message: "Edit success."
+                message: "Edit success"
             }
-        }).catch(error => { throw error })
+        })
+        .catch(error => {
+            console.log(error)
+            throw {
+                success: false,
+                message: "Failed to update user",
+                error: error.message
+            }
+        })
 }
 
-const updateProfile = function (session, wallet, newProf) {
+const updateProfile = function (session, walletAddress, newProf) {
     /**
      * Update the user profile of the wallet owner using newProf object.
      *
      * @param neo4j session.
-     * @param wallet address of the user.
+     * @param walletAddress address of the user.
      * @param object containing new profile, must include following fields: name, username, bio.
      * @returns an object with a boolean field 'success' and field 'message' if success is false.
      */
     const searchUsernameQuery = `MATCH (u: User) 
-        WHERE u.username = \"${newProf.username}\" 
-        AND (NOT u.walletAddress = \"${wallet}\") RETURN u`;
-    return session.run(searchUsernameQuery)
+        WHERE u.username = $newUsername 
+        AND (NOT u.walletAddress = $walletAddress) RETURN u`;
+    return session.run(searchUsernameQuery, {
+        newUsername: newProf.username,
+        walletAddress: walletAddress
+    })
         .then(existence => {
             if (!_.isEmpty(existence.records)) { // Check for existing username
                 return { success: false, message: "Username already exists." }
             } else {
                 const profileFilter = ["name", "username", "bio"]
-                return updateUser(session, wallet, profileFilter, newProf)
+                return updateUser(session, walletAddress, profileFilter, newProf)
                     .then(response => { return response })
                     .catch(error => { throw error })
             }
@@ -234,32 +331,36 @@ const updateProfile = function (session, wallet, newProf) {
             throw {
                 success: false,
                 error: error.message,
-                message: "Error while editing. Please try again."
+                message: error.message
             }
         })
 }
 
 const deleteUser = (session, walletAddress) => {
-    const query = `MATCH (user:User {walletAddress: '${walletAddress}'}) DETACH DELETE user`
-    return session.run(query)
+    const query = `MATCH (user:User {walletAddress: $walletAddress}) DETACH DELETE user`
+    return session.run(query, {
+        walletAddress: walletAddress
+    })
         .then((results) => {
             return {
                 success: true,
-                message: "Deleted User"
+                message: "Deleted user"
             }
         })
         .catch((error) => {
             throw {
                 success: false,
-                message: "Failed to delete User",
+                message: "Failed to delete user",
                 error: error.message
             }
         })
 }
 
 const getFollowing = (session, walletAddress) => { // Returns list of Users followed by User w/ walletAddress
-    const query = `MATCH (u: User)-[r:FOLLOWS]->(followed: User) WHERE u.walletAddress='${walletAddress}' RETURN followed.walletAddress`;
-    return session.run(query)
+    const query = `MATCH (u: User)-[r:FOLLOWS]->(followed: User) WHERE u.walletAddress=$walletAddress RETURN followed.walletAddress`;
+    return session.run(query, {
+        walletAddress: walletAddress
+    })
         .then((results) => {
             let users = []
             results.records.forEach((record) => {
@@ -274,14 +375,16 @@ const getFollowing = (session, walletAddress) => { // Returns list of Users foll
             console.log(error)
             throw {
                 success: false,
-                message: "Failed to get followed Users",
+                message: "Failed to get followed users",
                 error: error.message
             }
         });
 }
 const getFollowers = (session, walletAddress) => { // Returns list of Users following User w/ walletAddress
-    const query = `MATCH (u: User)<-[r:FOLLOWS]-(following: User) WHERE u.walletAddress='${walletAddress}' RETURN following.walletAddress`;
-    return session.run(query)
+    const query = `MATCH (u: User)<-[r:FOLLOWS]-(following: User) WHERE u.walletAddress=$walletAddress RETURN following.walletAddress`;
+    return session.run(query, {
+        walletAddress: walletAddress
+    })
         .then((results) => {
             let users = []
             results.records.forEach((record) => {
@@ -295,21 +398,23 @@ const getFollowers = (session, walletAddress) => { // Returns list of Users foll
         .catch((error) => {
             throw {
                 success: false,
-                message: "Failed to get following Users",
+                message: "Failed to get following users",
                 error: error.message
             }
         })
 }
 const followUser = (session, walletAddress, walletAddressToFollow) => {
     if (walletAddress !== walletAddressToFollow) {
-        // Creates User from body data
-        const query = `match(a:User), (b:User)
-        where a.walletAddress="${walletAddress}" AND b.walletAddress="${walletAddressToFollow}"
-        create((a)-[r:FOLLOWS]->(b))`;
+        const query = `MATCH (a:User), (b:User)
+        WHERE a.walletAddress=$walletAddress AND b.walletAddress=$walletAddressToFollow
+        CREATE (a)-[r:FOLLOWS]->(b)`;
 
-        const queryExist = `match((a:User{walletAddress:"${walletAddress}"})-[r:FOLLOWS]->(b:User{walletAddress:"${walletAddressToFollow}"})) return r`;
+        const queryExist = `MATCH (a:User{walletAddress: $walletAddress})-[r:FOLLOWS]->(b:User{walletAddress: $walletAddressToFollow}) RETURN r`;
 
-        return session.run(queryExist)
+        return session.run(queryExist, {
+            walletAddress: walletAddress,
+            walletAddressToFollow: walletAddressToFollow,
+        })
             .then((exist) => {
                 if (!_.isEmpty(exist.records)) {
                     throw {
@@ -317,12 +422,18 @@ const followUser = (session, walletAddress, walletAddressToFollow) => {
                         message: "You already follow this user"
                     }
                 } else {
-                    return session.run(query)
-                        .then((results) => {
-                            return {
-                                success: true,
-                                message: "Successfully followed user",
-                            }
+                    return session.run(query, {
+                        walletAddress: walletAddress,
+                        walletAddressToFollow: walletAddressToFollow,
+                    })
+                        .then((result) => {
+                            return Notification.create(session, "follow", walletAddressToFollow, walletAddress, null)
+                                .then((result2) => {
+                                    return {
+                                        success: true,
+                                        message: "Successfully followed user",
+                                    }
+                                })
                         })
                 }
             })
@@ -342,11 +453,14 @@ const followUser = (session, walletAddress, walletAddressToFollow) => {
 }
 const unfollowUser = (session, walletAddress, walletAddressToUnfollow) => {
     if (walletAddress !== walletAddressToUnfollow) {
-        const query = `match((a:User{walletAddress:"${walletAddress}"})-[r:FOLLOWS]->(b:User{walletAddress:"${walletAddressToUnfollow}"})) delete r`;
+        const query = `MATCH (a:User{walletAddress: $walletAddress})-[r:FOLLOWS]->(b:User{walletAddress: $walletAddressToUnfollow}) DELETE r`;
 
-        const queryExist = `match((a:User{walletAddress:"${walletAddress}"})-[r:FOLLOWS]->(b:User{walletAddress:"${walletAddressToUnfollow}"})) return r`;
+        const queryExist = `MATCH (a:User{walletAddress: $walletAddress})-[r:FOLLOWS]->(b:User{walletAddress: $walletAddressToUnfollow}) RETURN r`;
 
-        return session.run(queryExist)
+        return session.run(queryExist, {
+            walletAddress: walletAddress,
+            walletAddressToUnfollow: walletAddressToUnfollow,
+        })
             .then((exist) => {
                 if (_.isEmpty(exist.records)) {
                     throw {
@@ -354,14 +468,17 @@ const unfollowUser = (session, walletAddress, walletAddressToUnfollow) => {
                         message: "You do not follow this user"
                     }
                 } else {
-                    return session.run(query)
+                    return session.run(query, {
+                        walletAddress: walletAddress,
+                        walletAddressToUnfollow: walletAddressToUnfollow,
+                    })
                         .then((results) => {
                             return {
                                 success: true,
                                 message: "Successfully unfollowed user"
                             }
                         })
-                    }
+                }
             })
             .catch((error) => {
                 throw {
@@ -378,6 +495,78 @@ const unfollowUser = (session, walletAddress, walletAddressToUnfollow) => {
     }
 }
 
+const getNFT = (walletAddress) => { // Gets all NFTs of a User using OpenSea API.
+    return fetch(`https://testnets-api.opensea.io/api/v1/assets?owner=${walletAddress}&order_direction=desc&offset=0&limit=20&include_orders=false`)
+        .then(res => {
+            if (res.status !== 200) {
+                throw {
+                    success: false,
+                    message: "Failed to retrieve NFTs"
+                }
+            }
+            return res.json()
+        })
+        .then(json => {
+            if (_.isEmpty(json.assets)) {
+                return { // User has no NFTs
+                    success: true,
+                    nft: [],
+                    message: "User has no NFTs"
+                }
+            }
+
+            var asset_list = [];
+            for (let i = 0; i < json.assets.length; i++) {
+                var jsonObj = {
+                    tokenID: json.assets[i].id,
+                    name: json.assets[i].asset_contract.name, //change 'asset_contract.name' -> 'name' once OpenSea Mainnet API is received.
+                    imageURL: json.assets[i].image_url,
+                    contractAddress: json.assets[i].asset_contract.address,
+                }
+                asset_list.push(jsonObj);
+            }
+
+            return {
+                success: true,
+                nft: asset_list,
+                message: `Successfully retrieved user's NFTs`
+            }
+        }).catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to get user's NFTs",
+                error: error.message
+            }
+        })
+}
+
+const updateDashboard = (session, walletAddress, body) => {  // Sets the NFTs in the dashboard of a User.
+    const query = `MATCH (user:User {walletAddress: $walletAddress}) SET user.dashboard = $dashboard RETURN user`;
+    return session.run(query, {
+        walletAddress: walletAddress,
+        dashboard: body.dashboard
+    })
+        .then((results) => {
+            if (_.isEmpty(results.records)) {
+                throw {
+                    success: false,
+                    message: `User with wallet address ${walletAddress} does not exist`
+                }
+            } else {
+                return {
+                    success: true,
+                    user: new User(results.records[0].get('user')),
+                    message: `Successfully updated dashboard!`
+                }
+            }
+        }).catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to update Dashboard.",
+                error: error.message
+            }
+        })
+}
 
 module.exports = {
     getAll,
@@ -385,10 +574,13 @@ module.exports = {
     register,
     getNonce,
     login,
+    updateUser,
     updateProfile,
     delete: deleteUser,
     getFollowing,
     getFollowers,
     follow: followUser,
     unfollow: unfollowUser,
+    getNFT,
+    updateDashboard
 }

@@ -1,11 +1,11 @@
 var express = require('express');
 var router = express.Router();
 
-const User = require('../models/user');
-const Post = require('../models/post');
+const User = require('../models/user'),
+    Post = require('../models/post'),
+    Notification = require('../models/notification');
 const dbUtils = require('../utils/neo4j/dbUtils');
 const { authenticateToken } = require("../utils/auth");
-const { rest } = require('lodash');
 
 // GET /users
 router.get('/', (req, res, next) => {
@@ -26,11 +26,39 @@ router.get('/:walletAddress/posts', (req, res, next) => {
     Post.getPostsByUser(dbUtils.getSession(req), req.params.walletAddress)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
+})
+
+// GET /users/{walletAddress}/nft
+router.get('/:walletAddress/nft', (req, res) => {
+    User.getNFT(req.params.walletAddress)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
+// GET /users/{walletAddress}/dashboard
+router.get('/:walletAddress/dashboard', (req, res) => {
+    User.getDashboard(dbUtils.getSession(req), req.params.walletAddress)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
+
+// GET /users/{walletAddress}/notifications
+router.get('/:walletAddress/notifications', authenticateToken, (req, res, next) => {
+    if (req.walletAddress === req.params.walletAddress) {
+        Notification.getUserNotifications(dbUtils.getSession(req), req.params.walletAddress)
+            .then((result) => res.send(result))
+            .catch((error) => res.send(error))
+    } else {
+        res.status(403).send({
+            success: false,
+            message: "You do not have access to get this User's notifications"
+        })
+    }
 });
 
 // POST /users/register
 router.post('/register', (req, res) => {
-    User.register(dbUtils.getSession(req), req.body)
+    const setTokenInCookie = (token) => { res.cookie('token', token, { maxAge: 1000 * 60 * 60 * 24 * 7, httpOnly: true }) } // Expires in 7 days
+    User.register(dbUtils.getSession(req), req.body, setTokenInCookie)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
@@ -53,6 +81,13 @@ router.get('/:walletAddress/posts', (req, res, next) => {
 router.post('/login', (req, res) => {
     const setTokenInCookie = (token) => { res.cookie('token', token, { maxAge: 1000 * 60 * 60 * 24 * 7, httpOnly: true }) } // Expires in 7 days
     User.login(dbUtils.getSession(req), req.body.walletAddress, req.body.signedNonce, setTokenInCookie)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
+
+// POST /users/updateDashboard
+router.post('/:walletAddress/updateDashboard', (req, res) => {
+    User.updateDashboard(dbUtils.getSession(req), req.params.walletAddress, req.body)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })

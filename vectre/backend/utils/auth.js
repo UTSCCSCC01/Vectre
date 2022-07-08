@@ -21,6 +21,18 @@ const authenticateToken = (req, res, next) => {
     }
 }
 
+const storeWalletAddressFromToken = (req, res, next) => {
+    req.walletAddress = null
+    const token = req.cookies.token
+    if (token) {
+        jwt.verify(token, config.jwtSecretToken, (error, walletAddress) => {
+            if (!error) req.walletAddress = walletAddress
+        })
+    }
+    next()
+}
+
 module.exports = {
-    authenticateToken
+    authenticateToken,
+    storeWalletAddressFromToken
 }

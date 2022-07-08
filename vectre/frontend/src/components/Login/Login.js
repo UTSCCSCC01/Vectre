@@ -22,6 +22,9 @@ class Login extends React.Component {
             walletAddress: "",
             nonce: "",
             connecting: false,
+            connected: false,
+            registered: false,
+            isRegisterModalOpen: true,
         }
     }
 
@@ -29,6 +32,7 @@ class Login extends React.Component {
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.nonce !== this.props.nonce) {
+            this.setState({registered: true})
             this.signNonce()
         }
     }
@@ -36,19 +40,28 @@ class Login extends React.Component {
     isMetamaskInstalled = () => { return window.ethereum !== undefined }
 
     connectMetamask = async () => {
-        this.setState({ connecting: true })
-        if (window.ethereum) {
-            await window.ethereum.request({
-                method: "eth_requestAccounts"
-            })
-                .then(accounts => {
-                    const walletAddress = accounts[0]
-                    this.setState({ walletAddress: walletAddress })
-                    this.props.getLoginNonce(walletAddress)
+        if (!this.state.connected) {
+            this.setState({connecting: true})
+            if (window.ethereum) {
+                await window.ethereum.request({
+                    method: "eth_requestAccounts"
                 })
-                .catch(error => { console.log(error) }) // TODO: Handle when user did not login with their wallet
+                    .then(accounts => {
+                        const walletAddress = accounts[0]
+                        this.setState({
+                            walletAddress: walletAddress,
+                            connected: walletAddress !== null
+                        })
+                        this.props.getLoginNonce(walletAddress)
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    }) // TODO: Handle when user did not login with their wallet
+            }
+            this.setState({connecting: false})
+        } else {
+            this.setState({isRegisterModalOpen: true})
         }
-        this.setState({ connecting: false })
     }
 
     signNonce = async () => {
@@ -62,8 +75,7 @@ class Login extends React.Component {
                 .then(signature => {
                     this.props.loginUser(this.state.walletAddress, signature, (href) => { window.location.href = href })
                 })
-                .catch(error => { // TODO: Handle when user cancels signing page
-                    console.log(error)
+                .catch(error => { // User cancels signing page
                     window.location.reload()
                 })
         }
@@ -73,21 +85,31 @@ class Login extends React.Component {
         this.props.createUser(newUser, (href) => { window.location.href = href })
     }
 
+    handleOpenRegisterModal = () => {
+        this.setState({ isRegisterModalOpen: true })
+    }
+    handleCloseRegisterModal = () => {
+        this.setState({ isRegisterModalOpen: false })
+    }
+
     render() {
         return (
             <div>
                 <PreLoginNavBar />
                 <PreLogin
                     connecting={this.state.connecting}
-                    connected={this.state.walletAddress !== ""}
+                    connected={this.state.connected}
+                    registered={this.state.registered}
                     connectAccount={this.connectMetamask}
-                    signNonce={this.signNonce}
                     isMetamaskInstalled={this.isMetamaskInstalled}
                 />
                 {(this.state.walletAddress !== "" && this.props.nonce === "") ?
                     <RegisterUser
                         createUser={this.handleCreateUser}
                         walletAddress={this.state.walletAddress}
+                        isModalOpen={this.state.isRegisterModalOpen}
+                        openModal={this.handleOpenRegisterModal}
+                        closeModal={this.handleCloseRegisterModal}
                     /> : null
                 }
             </div>

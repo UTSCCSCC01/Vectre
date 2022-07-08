@@ -10,8 +10,14 @@ import {
     UPDATE_USER,
     GET_LOGGED_IN_USER,
     STORE_LOGGED_IN_USER,
+    GET_NOTIFICATIONS,
+    STORE_NOTIFICATIONS,
+    STORE_UNREADSTATUS,
     FOLLOW_USER,
     UNFOLLOW_USER,
+    GET_NFT,
+    UPDATE_DASHBOARD,
+    STORE_NFT,
 } from "../constants/users";
 
 // Login
@@ -28,6 +34,15 @@ export const loginUser = (walletAddress, signedNonce, redirectWindow) => ({
     walletAddress,
     signedNonce,
     redirectWindow
+})
+
+export const getNFT = (walletAddress) => ({
+    type: GET_NFT,
+    walletAddress
+})
+export const storeNFT = (nft) => ({
+    type: STORE_NFT,
+    nft
 })
 
 export const getUser = (walletAddress) => ({
@@ -62,20 +77,39 @@ export const createUser = (user, redirectWindow) => ({
     redirectWindow
 })
 
-export const updateUser = (walletAddress, updatedUser, redirectWindow) => ({
+export const updateUser = (walletAddress, updatedUser) => ({
     type: UPDATE_USER,
     walletAddress,
-    updatedUser,
-    redirectWindow
+    updatedUser
 })
 
-export const followUser = (walletAddressToFollow, redirectWindow) => ({
-    type: FOLLOW_USER,
-    walletAddressToFollow,
-    redirectWindow
+export const getNotifications = (walletAddress) => ({
+    type: GET_NOTIFICATIONS,
+    walletAddress
 })
-export const unfollowUser = (walletAddressToUnfollow, redirectWindow) => ({
+
+export const storeNotifications = (notifications) => ({
+    type: STORE_NOTIFICATIONS,
+    notifications
+})
+
+export const storeUnreadStatus = (unreadStatus) => ({
+    type: STORE_UNREADSTATUS,
+    unreadStatus
+})
+
+export const updateDashboard = (walletAddress, dashboard, resetSelectedList) => ({
+    type: UPDATE_DASHBOARD,
+    walletAddress,
+    dashboard,
+    resetSelectedList
+})
+
+export const followUser = (walletAddressToFollow,) => ({
+    type: FOLLOW_USER,
+    walletAddressToFollow
+})
+export const unfollowUser = (walletAddressToUnfollow) => ({
     type: UNFOLLOW_USER,
-    walletAddressToUnfollow,
-    redirectWindow
+    walletAddressToUnfollow
 })

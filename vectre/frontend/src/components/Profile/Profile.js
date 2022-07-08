@@ -4,7 +4,6 @@ import React from "react";
 import PropTypes from 'prop-types';
 import { connect } from "react-redux";
 import {
-    getLoggedInUser,
     getUser,
     updateUser,
     followUser,
@@ -21,6 +20,7 @@ import {
     Link,
 } from "@chakra-ui/react";
 import ProfileEditModal from "../Modals/ProfileEditModal/ProfileEditModal";
+import Dashboard from "../Dashboard/Dashboard"
 
 class Profile extends React.Component {
     constructor(props) {
@@ -33,11 +33,10 @@ class Profile extends React.Component {
 
     componentDidMount() {
         this.props.getUser(this.props.profileWalletAddress) // Profile owner
-        this.props.getLoggedInUser()
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.loggedInUser !== this.props.loggedInUser) {
-            this.setState({following: this.props.loggedInUser.following.includes(this.props.profileWalletAddress)})
+            this.setState({ following: this.props.loggedInUser.following.includes(this.props.profileWalletAddress) })
         }
     }
 
@@ -45,23 +44,23 @@ class Profile extends React.Component {
     handleCloseModal = () => { this.setState({ isModalOpen: false }) }
 
     handleUpdateUser = (newUser) => {
-        this.props.updateUser(this.props.loggedInUser.walletAddress, newUser, (href) => { window.location.href = href })
+        this.props.updateUser(this.props.loggedInUser.walletAddress, newUser)
     }
     handleFollowUser = () => {
         if (this.state.following) { // Unfollow
-            this.props.unfollowUser(this.props.profileWalletAddress, (href) => { window.location.href = href})
+            this.props.unfollowUser(this.props.profileWalletAddress)
         } else { // Follow
-            this.props.followUser(this.props.profileWalletAddress, (href) => { window.location.href = href})
+            this.props.followUser(this.props.profileWalletAddress)
         }
     }
 
     render() {
         return (
             <div>
-                <h1><b>Profile:</b></h1>
                 {!this.props.user.walletAddress ? `User ${this.props.profileWalletAddress} does not exist!`
                     :
                     <>
+                        <h1><b>Profile:</b></h1>
                         <div>
                             <b>walletAddress:</b> {this.props.user.walletAddress} <br></br>
                             <b>username:</b> @{this.props.user.username} <br></br>
@@ -110,6 +109,13 @@ class Profile extends React.Component {
                                 </Button>
                             </>
                         }
+                        {(this.props.loggedInUser.walletAddress === this.props.profileWalletAddress || this.props.user.dashboard !== "[]") ? // Only show empty dashboard if its your own
+                            <Dashboard
+                                loggedInUser={this.props.loggedInUser}
+                                profileWalletAddress={this.props.profileWalletAddress}
+                                currentDashboard={this.props.user.dashboard}
+                            /> : null
+                        }
                     </>
                 }
             </div>
@@ -118,7 +124,6 @@ class Profile extends React.Component {
 }
 
 const actionCreators = {
-    getLoggedInUser,
     getUser,
     updateUser,
     followUser,
