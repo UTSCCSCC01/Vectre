@@ -5,7 +5,8 @@ const Community = module.exports = function (_node) {
         "communityID": _node.properties["communityID"],
         "name": _node.properties["name"],
         "bio": _node.properties["bio"],
-        "NFTgroup": _node.properties["NFTgroup"],
         "memberCount": _node.properties["memberCount"].low,
+        "profilePic": _node.properties["profilePic"] ? _node.properties["profilePic"] : null,
+        "banner": _node.properties["banner"] ? _node.properties["banner"] : null,
     })
 }
