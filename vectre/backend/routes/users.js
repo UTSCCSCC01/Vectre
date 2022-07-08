@@ -21,6 +21,13 @@ router.get('/:walletAddress', (req, res) => {
         .catch((error) => res.send(error))
 })
 
+// GET /users/search/{searchVal}
+router.get('/search/:searchVal', (req, res) => {
+    User.search(dbUtils.getSession(req), req.params.searchVal)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
+
 // GET /users/{walletAddress}/posts
 router.get('/:walletAddress/posts', (req, res, next) => {
     Post.getPostsByUser(dbUtils.getSession(req), req.params.walletAddress)
