@@ -26,8 +26,7 @@ const PostBotComponent = ({
                     text={`${item.comment} Commments`}
                     rightIcon={<FaCommentAlt size="1.1rem" />}
                     onClick={(e) => {
-                        // comment
-                        console.log("comment")
+                        window.location = `/post/${item.postID}#comments`
                         e.stopPropagation();
                     }} />
                 <IconSquareButton
