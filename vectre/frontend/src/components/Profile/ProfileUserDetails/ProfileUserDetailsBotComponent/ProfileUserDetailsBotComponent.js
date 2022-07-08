@@ -7,6 +7,7 @@ import {
 import TextButton from "../../../Buttons/TextButton/TextButton";
 
 import ProfileEditModal from "../../../Modals/ProfileEditModal/ProfileEditModal";
+import ProfileFollowListButton from "../ProfileFollowListButton/ProfileFollowListButton";
 
 const SampleIconLinks = [
     {
@@ -78,21 +79,8 @@ const ProfileUserDetailsBotComponent = ({
                     <Flex
                         alignContent={'center'}
                         gap={'16px'}>
-                        <TextButton
-                            px={'17.5px'}
-                            fontSize={'18px'}
-                            fontWeight={700}
-                            color={'primary.400'}
-                            bg={'rgba(246, 250, 255, 1)'}
-                            text={props.user.followers.length + ' Followers'} />
-                        <TextButton
-                            px={'17.5px'}
-                            fontSize={'18px'}
-                            fontWeight={700}
-                            color={'primary.400'}
-                            bg={'rgba(246, 250, 255, 1)'}
-                            text={props.user.following.length + ' Following'} />
-
+                        <ProfileFollowListButton followList={props.user.followers} type={'Followers'} />
+                        <ProfileFollowListButton followList={props.user.following} type={'Following'} />
                         {/* Display edit profile is logged in user is same as profile being viewed */}
                         {
                             props.loggedInUser.walletAddress === props.profileWalletAddress ?
