@@ -13,15 +13,6 @@ router.post('/:walletAddress/userCreate', (req, res, nex) => {
         .catch(error => res.send(error))
 })
 
-// POST /community/update
-router.post('/:communityID/update', (req, res, next) => {
-    Community.update(dbUtils.getSession(req), req.params.communityID, req.body)
-        .then(result => {
-            res.send(result)
-        })
-        .catch(error => res.send(error))
-})
-
 // POST /community/:communityID/userUpdate
 router.post('/:communityID/userUpdate', (req, res, next) => {
     const wallet = '0xb4b6d5ea8dad4673a42605d915cdde12c281282e'
@@ -30,9 +21,16 @@ router.post('/:communityID/userUpdate', (req, res, next) => {
         .catch(error => res.send(error))
 })
 
-// GET /community/get
-router.get('/:communityID', (req, res, next) => {
+// GET /community/get/:communityID
+router.get('/get/:communityID', (req, res, next) => {
     Community.get(dbUtils.getSession(req), req.params.communityID)
+        .then(result => res.send(result))
+        .catch(error => res.send(error))
+})
+
+// GET /community/getAll
+router.get('/getAll', (req, res, next) => {
+    Community.getAll(dbUtils.getSession(req))
         .then(result => res.send(result))
         .catch(error => res.send(error))
 })

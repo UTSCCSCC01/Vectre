@@ -51,7 +51,7 @@ const update = function(session, communityID, updated) {
         communityID: communityID,
         updated: updated
     }).then(result => {
-        if (_.isEmpty(result.records)){
+        if (_.isEmpty(result.records)){     // in userUpdate, there is already a check for this.
             throw {
                 message: 'Community does not exist',
             }
@@ -70,7 +70,8 @@ const get = function(session, communityID) {
         communityID: communityID
     }).then(result => {
         if (_.isEmpty(result.records)){
-            throw {
+            return {
+                success: false,
                 message: "Community does not exist"
             }
         }
@@ -85,6 +86,28 @@ const get = function(session, communityID) {
         throw {
             success: false,
             message: "Failed to fetch community",
+            error: error.message
+        }
+    })
+}
+
+const getAll = function(session) {
+    const query = 'MATCH (c: Community) RETURN c'
+    return session.run(query)
+    .then(result => {
+        let communities = []
+        result.records.forEach(record => {
+            communities.push(new Community(record.get('c')))
+        })
+        return {
+            success: true,
+            communities: communities
+        }
+    })
+    .catch(error => {
+        throw {
+            success: false,
+            message: "Failed to fetch all communities",
             error: error.message
         }
     })
@@ -206,8 +229,8 @@ const userUpdate = function(session, walletAddress, communityID, body) {
 }
 
 module.exports = {
-    update,
     get,
+    getAll,
     userCreate,
-    userUpdate
+    userUpdate,
 }
