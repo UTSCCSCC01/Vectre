@@ -22,6 +22,14 @@ router.post('/:communityID/update', (req, res, next) => {
         .catch(error => res.send(error))
 })
 
+// POST /community/:communityID/userUpdate
+router.post('/:communityID/userUpdate', (req, res, next) => {
+    const wallet = '0xb4b6d5ea8dad4673a42605d915cdde12c281282e'
+    Community.userUpdate(dbUtils.getSession(req), wallet, req.params.communityID, req.body)
+        .then(result => res.send(result))
+        .catch(error => res.send(error))
+})
+
 // GET /community/get
 router.get('/:communityID', (req, res, next) => {
     Community.get(dbUtils.getSession(req), req.params.communityID)

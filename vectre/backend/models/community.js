@@ -1,7 +1,5 @@
 const _ = require('lodash')
-const community = require('./neo4j/community')
 const Community = require('./neo4j/community')
-const User = require('./neo4j/user')
 
 ///////////////////////////// NEO4j methods ////////////////////////////////////
 const create = function(session, ownerWalletAddress, newCommunity) {
@@ -10,6 +8,7 @@ const create = function(session, ownerWalletAddress, newCommunity) {
         'CREATE (c: Community {communityID: $communityID, name: $name, bio: $bio, memberCount: 0, profilePic: $profilePic, banner: $banner})',
         'SET c.memberCount = c.memberCount + 1',
         'CREATE (o)-[:JOINS]->(c)',
+        'CREATE (o)-[:MODERATES]->(c)',
         'CREATE (o)-[link: OWNS]->(c)',
         'RETURN link'
     ].join("\n")
@@ -24,7 +23,10 @@ const create = function(session, ownerWalletAddress, newCommunity) {
     })
     .then(result => {
         if (_.isEmpty(result.records)){
-            throw { message: "User does not exist." }
+            return { 
+                success: false,
+                message: "User does not exist."
+            }
         } else {
             return {
                 success: true,
@@ -34,16 +36,12 @@ const create = function(session, ownerWalletAddress, newCommunity) {
         }
     }).catch(error => {
         if (error.message.includes('already exists with label `Community` and property `communityID`')) {
-            throw {
+            return {
                 success: false,
                 message: "Community already exists."
             }
         }
-        throw {
-            success: false,
-            message: "Failed to create community.",
-            error: error.message
-        }
+        throw error
     }) 
 }
 
@@ -62,12 +60,6 @@ const update = function(session, communityID, updated) {
             success: true,
             message: 'Successfully updated community',
             communityID: communityID
-        }
-    }).catch(error => {
-        throw {
-            success: false,
-            message: "Failed to update community",
-            error: error
         }
     })
 }
@@ -94,6 +86,31 @@ const get = function(session, communityID) {
             success: false,
             message: "Failed to fetch community",
             error: error.message
+        }
+    })
+}
+
+const isEditor = function(session, walletAddress, communityID) {
+    const queries = [
+        'MATCH (u: User {walletAddress: $walletAddress}) MATCH (c: Community {communityID: $communityID}) RETURN u, c',
+        'MATCH (u: User {walletAddress: $walletAddress})-[mod_link: MODERATES]->(c: Community {communityID: $communityID}) RETURN mod_link'
+    ]
+    const format = {
+        walletAddress: walletAddress,
+        communityID: communityID
+    }
+
+    return session.run(queries[0], format)
+    .then(existence => {
+        if (_.isEmpty(existence.records)) {
+            throw {
+                message: "User or Community does not exist."
+            }
+        } else {
+            return session.run(queries[1], format)
+            .then(result => {
+                return !(_.isEmpty(result.records))
+            })
         }
     })
 }
@@ -137,29 +154,60 @@ const communityValidate = function(community) {
 }
 
 const userCreate = function(session, ownerWalletAddress, body) {
-        return communityValidate(body)
+    return communityValidate(body)
         .then(validateResult => {
             if (validateResult.success) {
                 return create(session, ownerWalletAddress, body)
-                .then(createResult => {
-                    if (createResult.success) {
-                        return createResult
-                    }
-                })
-                .catch(error => {
-                    throw error
-                })
             } else {
                 return validateResult
             }
         })
         .catch(error => {
-            throw error
+            throw {
+                success: false,
+                message: "Failed to create Community",
+                error: error.message
+            }
         })
+}
+
+const userUpdate = function(session, walletAddress, communityID, body) {
+    return communityValidate(body)
+    .then(validateResult => {
+        if (validateResult.success) {
+            return isEditor(session, walletAddress, communityID)
+            .then(editable => {
+                if (editable) {
+                    return update(session, communityID, body)
+                } else {
+                    return { 
+                        success: false,
+                        message: "User does not have the permission to edit this community"
+                    }
+                }
+            })
+        } else {
+            return validateResult
+        }
+    })
+    .catch(error => {
+        if (error.message = "User or Community does not exist.") {
+            return {
+                success: false,
+                message: error.message
+            }
+        }
+        throw {
+            success: false,
+            message: "Failed to edit the community",
+            error: error.message
+        }
+    })
 }
 
 module.exports = {
     update,
     get,
-    userCreate
+    userCreate,
+    userUpdate
 }
