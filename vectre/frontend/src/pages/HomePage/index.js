@@ -1,4 +1,5 @@
 import ContentWIthNavContainer from "../../components/Containers/ContentWIthNavContainer";
+import ContentWithSideButtons from "../../components/Containers/ContentWithSideButtons"; 
 import PostComponent from "../../components/PostComponent/PostComponent";
 import {
   Box,
@@ -90,22 +91,34 @@ const samplePostData = [
 ]
 
 const HomePage = () => {
+
+  const sideButtonsList = [
+    {
+      link: "", 
+      text: "Filter/Sort Feed", 
+      func: () => {
+      }
+    }
+  ]
+
   return (
     <ContentWIthNavContainer>
-      <Box py={'60px'} maxWidth={'4xl'} margin={'0 auto'}>
-        <Stack alignSelf={'center'} gap={'36px'}>
-          {/* Add posts below */}
-          {
-            samplePostData.map((item, i) => {
-              return (
-                <Box key={i}>
-                  <PostComponent item={item} />
-                </Box>
-              )
-            })
-          }
-        </Stack>
-      </Box>
+          <ContentWithSideButtons sideButtonsList={sideButtonsList}>
+          <Box py={'60px'} maxWidth={'4xl'} margin={'0 auto'}>
+            <Stack alignSelf={'center'} gap={'36px'}>
+              {/* Add posts below */}
+              {
+                samplePostData.map((item, i) => {
+                  return (
+                    <Box key={i}>
+                      <PostComponent item={item} />
+                    </Box>
+                  )
+                })
+              }
+            </Stack>
+          </Box>
+      </ContentWithSideButtons>
     </ContentWIthNavContainer>
   );
 }
