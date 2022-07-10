@@ -1,9 +1,11 @@
 import ContentWIthNavContainer from "../../components/Containers/ContentWIthNavContainer";
 import ContentWithSideButtons from "../../components/Containers/ContentWithSideButtons"; 
 import PostComponent from "../../components/PostComponent/PostComponent";
+import FilterSortingModal from "../../components/Modals/FilterSortingModal/FilterSortingModal"
 import {
   Box,
-  Stack
+  Stack,
+  useDisclosure
 } from '@chakra-ui/react'
 
 const samplePostData = [
@@ -97,13 +99,16 @@ const HomePage = () => {
       link: "", 
       text: "Filter/Sort Feed", 
       func: () => {
+        onOpen(); 
       }
     }
   ]
 
+  const {isOpen, onOpen, onClose} = useDisclosure(); 
+
   return (
     <ContentWIthNavContainer>
-          <ContentWithSideButtons sideButtonsList={sideButtonsList}>
+        <ContentWithSideButtons sideButtonsList={sideButtonsList}>
           <Box py={'60px'} maxWidth={'4xl'} margin={'0 auto'}>
             <Stack alignSelf={'center'} gap={'36px'}>
               {/* Add posts below */}
@@ -118,6 +123,7 @@ const HomePage = () => {
               }
             </Stack>
           </Box>
+          <FilterSortingModal isOpen={isOpen} onClose={onClose} imageURL={""} />
       </ContentWithSideButtons>
     </ContentWIthNavContainer>
   );
