@@ -73,7 +73,7 @@ const ProfileUserDetailsTopComponent = ({
                             navigator.clipboard.writeText(props.user.walletAddress);
                             setCopied(true);
                         }}>
-                        <Tooltip fontSize={'small'} placement={'top'} label={!copied ? "Copy" : "Copied!"} closeOnClick={false} aria-label='tooltip'>
+                        <Tooltip fontSize={'small'} placement={'top'} label={!copied ? "Click to copy wallet address" : "Copied!"} closeOnClick={false} aria-label='tooltip'>
                             <Text
                                 onMouseLeave={() => { setTimeout(() => { setCopied(false) }, 300) }}
                                 color={'rgba(105, 123, 152, 1)'}>

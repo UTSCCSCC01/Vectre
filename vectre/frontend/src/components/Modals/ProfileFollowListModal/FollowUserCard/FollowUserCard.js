@@ -60,7 +60,7 @@ const FollowUserCard = ({
                             color={'primary.400'}
                             fontSize={'13px'}
                             fontWeight={400}>
-                            @{user.username}
+                            <b>@{user.username}</b>
                         </Text>
                         <Text
                             color={'sub.400'}
