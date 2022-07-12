@@ -31,6 +31,7 @@ import {
 } from "../constants/endpoints";
 import { TOAST_STATUSES } from "../constants/toast";
 import { showToast } from "../actions/toast";
+import { showLoading } from "../../redux/actions/loading";
 
 // Login
 function* getLoginNonce(action) {
@@ -67,11 +68,14 @@ function* getLoggedInUserSaga() {
 
 function* getUserSaga(action) {
     try {
+        yield put(showLoading(true))
         const response = yield call(getRequest, BASE_API_URL + USERS.GET_USERS + `/${action.walletAddress}`), responseData = response[1]
         if (responseData.success) {
             yield put(storeUser(responseData.user))
+            yield put(showLoading(false))
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+            yield put(showLoading(false))
         }
     } catch (error) {
         yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get user"))
@@ -158,8 +162,9 @@ function* followUser(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + USERS.FOLLOW_USER.replace("{walletAddress}", action.walletAddressToFollow), {}), responseData = response[1]
         if (responseData.success) {
-            yield put(getUser(action.walletAddressToFollow))
+            yield put(getUser(action.profileWalletAddress))
             yield put(getLoggedInUser())
+            if (action.toggleFollowList) action.toggleFollowList()
             yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
@@ -173,8 +178,9 @@ function* unfollowUser(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + USERS.UNFOLLOW_USER.replace("{walletAddress}", action.walletAddressToUnfollow), {}), responseData = response[1]
         if (responseData.success) {
-            yield put(getUser(action.walletAddressToUnfollow))
+            yield put(getUser(action.profileWalletAddress))
             yield put(getLoggedInUser())
+            if (action.toggleFollowList) action.toggleFollowList()
             yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
