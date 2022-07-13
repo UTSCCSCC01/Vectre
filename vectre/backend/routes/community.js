@@ -1,48 +1,37 @@
 var express = require('express');
 var router = express.Router();
 
-const Community = require('../models/community')
+const Community = require('../models/community');
+const { authenticateToken } = require('../utils/auth');
 const dbUtils = require('../utils/neo4j/dbUtils');
 
 // Temp
 
-// POST /community/:walletAddress/userCreate       -- should go into user instead.
-router.post('/:walletAddress/userCreate', (req, res, nex) => {
-    Community.userCreate(dbUtils.getSession(req), req.params.walletAddress, req.body)
+// POST /community/create
+router.post('/create', authenticateToken, (req, res, nex) => {
+    Community.userCreate(dbUtils.getSession(req), req.walletAddress, req.body)
         .then(result => res.send(result))
         .catch(error => res.send(error))
 })
 
-// POST /community/:communityID/userUpdate -- should go into user instead.
-router.post('/:communityID/userUpdate', (req, res, next) => {
-    const wallet = '0101'
-    Community.userUpdate(dbUtils.getSession(req), wallet, req.params.communityID, req.body)
+// POST /community/:communityID/update
+router.post('/:communityID/update', authenticateToken, (req, res, next) => {
+    Community.userUpdate(dbUtils.getSession(req), req.walletAddress, req.params.communityID, req.body)
         .then(result => res.send(result))
         .catch(error => res.send(error))
 })
 
-// POST /community/join/:communityID
-router.post('/:walletAddress/joins/:communityID', (req, res, next) => {
-    Community.addMember(dbUtils.getSession(req), req.params.walletAddress, req.params.communityID)
+// POST /community/:communityID/join
+router.post('/:communityID/join', authenticateToken, (req, res, next) => {
+    Community.addMember(dbUtils.getSession(req), req.walletAddress, req.params.communityID)
         .then(result => res.send(result))
         .catch(error => res.send(error))
 })
 
-// POST /community/:communityID/promote/:walletAddress
-router.post('/:communityID/promote/:walletAddress', (req, res, next) => {
-    
-    Community.promoteMember(dbUtils.getSession(req), req.params.walletAddress, req.params.communityID)
-        .then(result => res.send(result))
-        .catch(error => res.send(error))
-})
-
-// POST /community/:communityID/demote/:walletAddress
-router.post('/:communityID/demote/:walletAddress', (req, res, next) => {
-    Community.demoteModerator(dbUtils.getSession(req), req.params.walletAddress, req.params.communityID)
-        .then(result => {
-            console.log(result)
-            res.send(result)
-        })
+// POST /community/:communityID/leave
+router.post('/:communityID/leave', authenticateToken, (req, res, next) => {
+    Community.removeMember(dbUtils.getSession(req), req.walletAddress, req.params.communityID)
+        .then(result => { res.send(result) })
         .catch(error => res.send(error))
 })
 
@@ -53,19 +42,19 @@ router.get('/getAll', (req, res, next) => {
         .catch(error => res.send(error))
 })
 
-// GET /community/get/:communityID
-router.get('/get/:communityID', (req, res, next) => {
+// GET /community/:communityID
+router.get('/:communityID', (req, res, next) => {
     Community.get(dbUtils.getSession(req), req.params.communityID)
         .then(result => res.send(result))
         .catch(error => res.send(error))
 })
 
-// GET /community/getMembers/:communityID
-router.get('/getMembers/:communityID', (req, res, next) => {
-    Community.getRole(dbUtils.getSession(req), req.params.communityID, "member")
+// In consideration
+// GET /community/:communityID/:role
+router.get('/:communityID/:role', (req, res, next) => {
+    Community.getRole(dbUtils.getSession(req), req.params.communityID, req.params.role)
         .then(result => res.send(result))
         .catch(error => res.send(error))
 })
-
 
 module.exports = router

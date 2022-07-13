@@ -288,7 +288,7 @@ const addMember = function(session, walletAddress, communityID) {
     .catch(error => {
         throw {
             success: false,
-            message: "Failed to join community",
+            message: "Failed to add User to Community",
             error: error.message
         }
     })
@@ -305,7 +305,7 @@ const promoteMember = function(session, walletAddress, communityID) {
     .then(memberCheck => {
         if (memberCheck.success) {
             if (memberCheck.result) {
-                return isRole(session, walletAddress, communityID)
+                return isRole(session, walletAddress, communityID, "moderator")
                 .then(moderatorCheck => {
                     if (moderatorCheck.result) {
                         // Member is already a moderator
@@ -386,6 +386,71 @@ const demoteModerator = function(session, walletAddress, communityID) {
     })
 }
 
+const removeMember = function(session, walletAddress, communityID) {
+    const queries = [ 
+        [
+            'MATCH (u: User {walletAddress: $walletAddress})-[mod_link:MODERATES]->(c: Community {communityID: $communityID})',
+            'MATCH (u: User {walletAddress: $walletAddress})-[mem_link:JOINS]->(c: Community {communityID: $communityID})',
+            'SET c.memberCount = toInteger(c.memberCount - 1)',
+            'DELETE mod_link, mem_link'
+        ].join("\n"),
+        [  
+            'MATCH (u: User {walletAddress: $walletAddress})-[mem_link:JOINS]->(c: Community {communityID: $communityID})',
+            'SET c.memberCount = toInteger(c.memberCount - 1)',
+            'DELETE mem_link'
+        ].join("\n")
+    ]
+
+    const format = {
+        walletAddress: walletAddress,
+        communityID: communityID
+    }
+
+    const successReturn = {
+        success: true,
+        message: "Successfully remove User from Community"
+    }
+
+    return isRole(session, walletAddress, communityID, "moderator")
+    .then(moderatorCheck => {
+        if (moderatorCheck.success) {
+            if (moderatorCheck.result) {
+                // User is a moderator, use query 0 and 1 to remove
+                return session.run(queries[0], format)
+                .then(result => { return successReturn })
+            
+            } else {
+                // Check if User is a member
+                return isRole(session, walletAddress, communityID, "member")
+                .then(memberCheck => {
+                    if (memberCheck.result) {
+                        // User is a member, use query 1 to remove
+                        return session.run(queries[1], format)
+                        .then(result => { return successReturn })
+                    
+                    } else{
+                        // User is not a Member of community
+                        return {
+                            success: false,
+                            message: "User is not a Member of Community"
+                        }
+                    }
+                })
+            }
+        } else {
+            // User or Community does not exist
+            return moderatorCheck
+        }
+    })
+    .catch(error => {
+        throw {
+            success: false,
+            message: "Failed to remove User from Community",
+            error: error.message
+        }
+    })
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 const userCreate = function(session, ownerWalletAddress, body) {
@@ -445,9 +510,7 @@ module.exports = {
     getAll,
     userCreate,
     userUpdate,
-    isRole,
     getRole,
     addMember,
-    promoteMember,
-    demoteModerator
+    removeMember
 }
