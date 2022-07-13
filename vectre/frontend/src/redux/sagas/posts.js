@@ -4,7 +4,10 @@ import {
     storePost,
     storeComments,
     doLike,
-    doUnlike, getPost, getComments
+    doUnlike,
+    getPost,
+    getComments,
+    storeProfilePost,
 } from "../actions/posts";
 import {
     GET_POST,
@@ -12,7 +15,8 @@ import {
     CREATE_COMMENT,
     POST_LIKE,
     POST_UNLIKE,
-    CREATE_REPOST
+    CREATE_REPOST,
+    GET_PROFILE_POSTS,
 } from "../constants/posts";
 import {
     BASE_API_URL,
@@ -20,6 +24,7 @@ import {
 } from "../constants/endpoints";
 import { showToast } from "../actions/toast";
 import { TOAST_STATUSES } from "../constants/toast";
+import { doneLoading, showLoading } from "../../redux/actions/loading";
 
 function* createRepost(action) {
     try {
@@ -38,11 +43,14 @@ function* createRepost(action) {
 
 function* getPostSaga(action) {
     try {
+        yield put(showLoading(true))
         const response = yield call(getRequest, BASE_API_URL + POSTS.GET_POST.replace("{postID}", action.postID)), responseData = response[1]
         if (responseData.success) {
             yield put(storePost(responseData.post))
+            yield put(showLoading(false))
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+            yield put(showLoading(false))
         }
     } catch (error) {
         yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get post"))
@@ -108,6 +116,20 @@ function* postUnlike(action) {
     }
 }
 
+function* getProfilePosts(action) {
+    try {
+        const response = yield call(getRequest, BASE_API_URL + POSTS.GET_PROFILE_POSTS.replace("{walletAddress}", action.walletAddress)), responseData = response[1]
+        if (responseData.success) {
+            yield put(storeProfilePost(responseData.posts))
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+    } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get posts for this profile"))
+        console.log(error)
+    }
+}
+
 function* postsSaga() {
     yield takeLatest(CREATE_REPOST, createRepost)
     yield takeLatest(GET_POST, getPostSaga)
@@ -115,6 +137,7 @@ function* postsSaga() {
     yield takeLatest(CREATE_COMMENT, createComment)
     yield takeLatest(POST_LIKE, postLike)
     yield takeLatest(POST_UNLIKE, postUnlike)
+    yield takeLatest(GET_PROFILE_POSTS, getProfilePosts)
 }
 
 export default postsSaga
