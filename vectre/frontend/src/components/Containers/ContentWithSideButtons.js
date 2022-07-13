@@ -18,7 +18,7 @@ const ContentWithSideButtons = ({
             margin={'0 auto'}>
             <Grid
                 gridTemplateColumns={{ base: "", lg: '12vw auto 12vw' }}
-                columnGap={'50px'}>
+                columnGap={'30px'}>
                 <GridItem>
                     <Stack gap={'15px'}>
                         {
