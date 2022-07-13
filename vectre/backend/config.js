@@ -11,7 +11,7 @@ const config = {
     },
     "jwtSecretToken": process.env.JWT_SECRET_TOKEN,
     "imgur": {
-        "clientID" : "93e7bda34aac36a"
+        "clientID" : process.env.IMGUR_CLIENT_ID
     }
 }
 
