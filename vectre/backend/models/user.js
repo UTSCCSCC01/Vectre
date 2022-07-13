@@ -4,7 +4,6 @@ const Notification = require('../models/notification');
 const config = require('../config');
 const jwt = require('jsonwebtoken')
 const ethUtil = require('ethereumjs-util');
-const fetch = (url) => import('node-fetch').then(({default: fetch}) => fetch(url));
 
 const getAll = (session) => { // Returns all Users
     const query = "MATCH (user:User) RETURN user";
@@ -17,9 +16,12 @@ const getAll = (session) => { // Returns all Users
             return { success: true, users: users }
         })
         .catch((error) => {
+            console.log(error)
+            console.log(config.neo4j)
             throw {
                 success: false,
-                message: "Failed to get users"
+                message: "Failed to get users",
+                error: error.message
             }
         });
 }

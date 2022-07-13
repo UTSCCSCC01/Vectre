@@ -1,6 +1,5 @@
 const config = require('../config')
 const clientID = config.imgur.clientID
-const fetch = (url) => import('node-fetch').then(({default: fetch}) => fetch(url));
 
 function upload(body) {
     if(!body.data) {
