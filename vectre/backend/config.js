@@ -9,7 +9,10 @@ const config = {
         username: process.env.NEO4J_DB_USERNAME,
         password: process.env.NEO4J_DB_PASSWORD,
     },
-    "jwtSecretToken": process.env.JWT_SECRET_TOKEN
+    "jwtSecretToken": process.env.JWT_SECRET_TOKEN,
+    "imgur": {
+        "clientID" : "93e7bda34aac36a"
+    }
 }
 
 module.exports = config;
