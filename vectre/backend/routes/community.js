@@ -5,8 +5,15 @@ const Community = require('../models/community');
 const { authenticateToken } = require('../utils/auth');
 const dbUtils = require('../utils/neo4j/dbUtils');
 
-// Temp
+// Test
+router.post('/test', (req, res, next) => {
+    let walletAddress = "0101"
+    Community.communityUpdate(dbUtils.getSession(req), walletAddress, "newCOM2", req.body)
+        .then(result => res.send(result))
+        .catch(error => res.send(error))
+})
 
+// Main
 // POST /community/create
 router.post('/create', authenticateToken, (req, res, nex) => {
     Community.communityCreate(dbUtils.getSession(req), req.walletAddress, req.body)

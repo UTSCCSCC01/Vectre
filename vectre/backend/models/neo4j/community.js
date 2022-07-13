@@ -8,5 +8,11 @@ const Community = module.exports = function (_node) {
         "memberCount": _node.properties["memberCount"].low,
         "profilePic": _node.properties["profilePic"] ? _node.properties["profilePic"] : null,
         "banner": _node.properties["banner"] ? _node.properties["banner"] : null,
+
+        "discordLink": _node.properties["discordLink"] ? _node.properties["discordLink"] : null,
+        "instagramLink": _node.properties["instagramLink"] ? _node.properties["instagramLink"] : null,
+        "twitterLink": _node.properties["twitterLink"] ? _node.properties["twitterLink"] : null,
+        "websiteLink": _node.properties["instagwebsiteLinkamLink"] ? _node.properties["websiteLink"] : null,
+        "ethLink": _node.properties["ethLink"] ? _node.properties["ethLink"] : null
     })
 }

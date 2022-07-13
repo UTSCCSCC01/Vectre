@@ -11,13 +11,24 @@ const ROLE_LINKS = {
 
 // helper functions
 const filterBody = function(body) {
-    filter = ["communityID", "name", "bio", "profilePic", "banner"]
+    if (_.isEmpty(body)) return body
+
+    filter = ["communityID", "name", "bio", "profilePic", "banner", "discordLink", "instagramLink", "twitterLink", "websiteLink", "ethLink"]
     return Object.fromEntries(Object.entries(body).
         filter(([key, value]) => filter.includes(key)))
 } 
 
 const communityValidate = function(community) {
     const required = ["communityID", "name", "bio"]
+    
+    if (_.isEmpty(community)){
+        return new Promise(resolve => {
+            throw {
+                message: "Provided body is empty."
+            }
+        })
+    }
+    
     for (let r of required) {
         if (!(r in community)) {
             return new Promise(resolve => {
@@ -76,21 +87,30 @@ const communityValidate = function(community) {
 const create = function(session, ownerWalletAddress, newCommunity) {
     const query = [
         'MATCH (o: User {walletAddress: $owner})',
-        'CREATE (c: Community {communityID: $communityID, name: $name, bio: $bio, memberCount: 0, profilePic: $profilePic, banner: $banner})',
-        'SET c.memberCount = toInteger(c.memberCount + 1)',
+        'CREATE (c: Community $format)',
+        'SET c.memberCount = toInteger(1)',
         'CREATE (o)-[:JOINS]->(c)',
         'CREATE (o)-[:MODERATES]->(c)',
         'CREATE (o)-[link: OWNS]->(c)',
         'RETURN link'
     ].join("\n")
 
-    return session.run(query, {
-        owner: ownerWalletAddress,
+    const communityFormat = {
         communityID: newCommunity.communityID,
         name: newCommunity.name,
         bio: newCommunity.bio,
         profilePic: newCommunity.profilePic ? newCommunity.profilePic : null,
         banner: newCommunity.banner ? newCommunity.banner : null,
+        discordLink: newCommunity.discordLink ? newCommunity.discordLink : null,
+        instagramLink: newCommunity.instagramLink ? newCommunity.instagramLink : null,
+        twitterLink: newCommunity.twitterLink ? newCommunity.twitterLink : null,
+        websiteLink: newCommunity.websiteLink ? newCommunity.websiteLink : null,
+        ethLink: newCommunity.ethLink ? newCommunity.ethLink : null,
+    }
+
+    return session.run(query, {
+        owner: ownerWalletAddress,
+        format: communityFormat
     })
     .then(result => {
         if (_.isEmpty(result.records)){
