@@ -451,6 +451,58 @@ const removeMember = function(session, walletAddress, communityID) {
     })
 }
 
+const getRolesOfUsers = function (session, walletAddress, communityID) {
+    const query = [
+        'MATCH (u: User {walletAddress: $walletAddress})-[r]->(c: Community {communityID: $communityID})',
+        'RETURN type(r)'
+    ].join("\n")
+
+    const LINK_ROLES = {
+        "JOINS": "member",
+        "MODERATES": "moderator",
+        "OWNS": "owner"    
+    }
+
+    return isRole(session, walletAddress, communityID, "member")
+    .then(memberCheck => {
+        if (memberCheck.success) {
+            if (memberCheck.result) {
+                // do query to find all roles
+                return session.run(query, {
+                    walletAddress: walletAddress,
+                    communityID: communityID
+                })
+                .then(result => {
+                    let roles = []
+                    result.records.forEach(record => {
+                        roles.push(LINK_ROLES[record.get('type(r)')])
+                    })
+                    return {
+                        success: true,
+                        roles: roles
+                    }
+                })
+
+            } else {
+                // User is not a member of Community
+                return {
+                    success: false,
+                    message: "User is not a Member of Community"
+                }
+            }
+        } else {
+            // User or Community does not exist
+            return memberCheck
+        }
+    }).catch(error => {
+        throw {
+            success: false,
+            message: "Failed to get all roles of User in Community",
+            error: error.message
+        }
+    })
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 const communityCreate = function(session, ownerWalletAddress, body) {
@@ -512,5 +564,6 @@ module.exports = {
     communityUpdate,
     getUsersByRole,
     addMember,
-    removeMember
+    removeMember,
+    getRolesOfUsers
 }
