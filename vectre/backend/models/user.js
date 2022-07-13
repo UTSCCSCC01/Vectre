@@ -16,8 +16,6 @@ const getAll = (session) => { // Returns all Users
             return { success: true, users: users }
         })
         .catch((error) => {
-            console.log(error)
-            console.log(config.neo4j)
             throw {
                 success: false,
                 message: "Failed to get users",
