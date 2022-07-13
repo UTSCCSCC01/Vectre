@@ -9,14 +9,14 @@ const dbUtils = require('../utils/neo4j/dbUtils');
 
 // POST /community/create
 router.post('/create', authenticateToken, (req, res, nex) => {
-    Community.userCreate(dbUtils.getSession(req), req.walletAddress, req.body)
+    Community.communityCreate(dbUtils.getSession(req), req.walletAddress, req.body)
         .then(result => res.send(result))
         .catch(error => res.send(error))
 })
 
 // POST /community/:communityID/update
 router.post('/:communityID/update', authenticateToken, (req, res, next) => {
-    Community.userUpdate(dbUtils.getSession(req), req.walletAddress, req.params.communityID, req.body)
+    Community.communityUpdate(dbUtils.getSession(req), req.walletAddress, req.params.communityID, req.body)
         .then(result => res.send(result))
         .catch(error => res.send(error))
 })
@@ -50,9 +50,9 @@ router.get('/:communityID', (req, res, next) => {
 })
 
 // In consideration
-// GET /community/:communityID/:role
-router.get('/:communityID/:role', (req, res, next) => {
-    Community.getRole(dbUtils.getSession(req), req.params.communityID, req.params.role)
+// GET /community/:communityID/members
+router.get('/:communityID/members', (req, res, next) => {
+    Community.getUsersByRole(dbUtils.getSession(req), req.params.communityID, "members")
         .then(result => res.send(result))
         .catch(error => res.send(error))
 })

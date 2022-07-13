@@ -217,7 +217,7 @@ const isRole = function(session, walletAddress, communityID, role) {
     })
 }
 
-const getRole = function(session, communityID, role) {    
+const getUsersByRole = function(session, communityID, role) {    
     const queries = [
         'MATCH (c: Community {communityID: $communityID}) RETURN c',
         `MATCH (u: User)-[:${ROLE_LINKS[role]}]->(c: Community {communityID: $communityID}) RETURN u`
@@ -453,7 +453,7 @@ const removeMember = function(session, walletAddress, communityID) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-const userCreate = function(session, ownerWalletAddress, body) {
+const communityCreate = function(session, ownerWalletAddress, body) {
     let filtered = filterBody(body)
     return communityValidate(filtered)
         .then(validateResult => {
@@ -472,7 +472,7 @@ const userCreate = function(session, ownerWalletAddress, body) {
         })
 }
 
-const userUpdate = function(session, walletAddress, communityID, body) {
+const communityUpdate = function(session, walletAddress, communityID, body) {
     let filtered = filterBody(body)
     return communityValidate(filtered)
     .then(validateResult => {
@@ -508,9 +508,9 @@ const userUpdate = function(session, walletAddress, communityID, body) {
 module.exports = {
     get,
     getAll,
-    userCreate,
-    userUpdate,
-    getRole,
+    communityCreate,
+    communityUpdate,
+    getUsersByRole,
     addMember,
     removeMember
 }
