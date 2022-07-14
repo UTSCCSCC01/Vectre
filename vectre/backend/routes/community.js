@@ -48,7 +48,7 @@ router.get('/:communityID', (req, res, next) => {
         .catch(error => res.send(error))
 })
 
-// GET /communities/:communityID/rolesOf/:walletAddress
+// GET /communities/:communityID/members/:walletAddress/roles
 router.get("/:communityID/members/:walletAddress/roles", (req, res, next) => {
     Community.getRolesOfUsers(dbUtils.getSession(req), req.params.walletAddress, req.params.communityID)
         .then(result => res.send(result))
