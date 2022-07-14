@@ -1,6 +1,7 @@
 import {
     GET_COMMUNITY,
     STORE_COMMUNITY,
+    UPDATE_COMMUNITY,
     GET_ROLES_LOGGED_IN_USER,
     STORE_ROLES_LOGGED_IN_USER,
     JOIN_COMMUNITY,
@@ -14,6 +15,13 @@ export const getCommunity = (communityID) => ({
 export const storeCommunity = (community) => ({
     type: STORE_COMMUNITY,
     community
+})
+
+export const updateCommunity = (communityID, community, redirectWindow) => ({
+    type: UPDATE_COMMUNITY,
+    communityID,
+    community,
+    redirectWindow
 })
 
 export const getRolesOfLoggedInUser = (communityID, walletAddress) => ({

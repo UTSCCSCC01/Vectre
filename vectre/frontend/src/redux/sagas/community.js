@@ -9,6 +9,7 @@ import { TOAST_STATUSES } from "../constants/toast";
 import { showLoading } from "../../redux/actions/loading";
 import {
     GET_COMMUNITY,
+    UPDATE_COMMUNITY,
     GET_ROLES_LOGGED_IN_USER,
     JOIN_COMMUNITY,
     LEAVE_COMMUNITY
@@ -28,6 +29,20 @@ function* getCommunitySaga(action) {
         }
     } catch (error) {
         yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get community"))
+        console.log(error)
+    }
+}
+
+function* updateCommunitySaga(action) {
+    try {
+        const response = yield call(postRequest, BASE_API_URL + COMMUNITY.UPDATE_COMMUNITY.replace("{communityID}", action.communityID), action.community), responseData = response[1]
+        if (responseData.success) {
+            yield put(action.redirectWindow(`/c/${responseData.communityID}`))
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+    } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to update community"))
         console.log(error)
     }
 }
@@ -76,6 +91,7 @@ function* leaveCommunity(action) {
 
 function* communitySaga() {
     yield takeLatest(GET_COMMUNITY, getCommunitySaga)
+    yield takeLatest(UPDATE_COMMUNITY, updateCommunitySaga)
     yield takeLatest(GET_ROLES_LOGGED_IN_USER, getRolesOfLoggedInUser)
     yield takeLatest(JOIN_COMMUNITY, joinCommunity)
     yield takeLatest(LEAVE_COMMUNITY, leaveCommunity)

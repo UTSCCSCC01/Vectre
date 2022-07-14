@@ -13,12 +13,16 @@ import FormInput from "../FormInput/FormInput";
 import FormTextArea from "../FormTextArea/FormTextArea";
 import StyledModalHeader from "../StyledModalHeader/StyledModalHeader";
 import BannerProfilePicWrapper from "../BannerProfilePicWrapper/BannerProfilePicWrapper";
+import { useDispatch } from "react-redux";
+import { updateCommunity } from "../../../redux/actions/community";
+import { redirectWindow } from "../../../utils/Utils";
 
 const CommunityProfileEditModal = ({
     communityData,
     isOpen,
     onClose
 }) => {
+    const dispatch = useDispatch();
     return (
         <>
             <Modal
@@ -51,7 +55,8 @@ const CommunityProfileEditModal = ({
                                     websiteLink: event.target.websiteLink.value,
                                     ethLink: event.target.ethLink.value,
                                 }
-                                console.log(updatedCommunity)
+                                dispatch(updateCommunity(communityData.communityID, updatedCommunity, redirectWindow))
+                                onClose();
                             }}
                         >
                             <BannerProfilePicWrapper
