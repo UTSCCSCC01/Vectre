@@ -1,6 +1,7 @@
 import {
     Flex,
-    Box
+    Box,
+    useDisclosure
 } from "@chakra-ui/react"
 import IconLink from "../../../Buttons/IconLink/IconLink";
 import TextButton from "../../../Buttons/TextButton/TextButton";
@@ -11,11 +12,13 @@ import { VscGlobe } from 'react-icons/vsc'
 
 import { loggedInUserRolesSelector } from "../../../../redux/selectors/community";
 import { useSelector } from 'react-redux';
+import CommunityProfileEditModal from "../../../Modals/CommunityProfileEditModal/CommunityProfileEditModal";
 
 const ProfileCommunityDetailsBotComponent = ({
     communityData
 }) => {
     const loggedInUserRoles = useSelector(loggedInUserRolesSelector);
+    const { isOpen, onOpen, onClose } = useDisclosure();
     return (
         <>
             <Flex
@@ -78,7 +81,8 @@ const ProfileCommunityDetailsBotComponent = ({
                             color={'white'}
                             bg={'primary.400'}
                             text={'Edit'}
-                            onClick={() => { console.log("Edit") }} />
+                            onClick={() => { onOpen() }} />
+                        <CommunityProfileEditModal isOpen={isOpen} onClose={onClose} communityData={communityData} />
                         {
                             !loggedInUserRoles.includes("member") ? (
                                 <TextButton
