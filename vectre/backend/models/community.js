@@ -246,9 +246,9 @@ const isRole = function (session, walletAddress, communityID, role) {
 
     if (!communityID || !walletAddress) {
         return new Promise(resolve => {
-            return {
-                isEmpty: true
-            }
+            resolve({
+                emptyInput: true
+            })
         })
     }
 
@@ -256,7 +256,7 @@ const isRole = function (session, walletAddress, communityID, role) {
         .then(existence => {
             if (_.isEmpty(existence.records)) {
                 return {
-                    isEmpty: false,
+                    emptyInput: false,
                     success: false,
                     message: "User or Community does not exist."
                 }
@@ -264,7 +264,7 @@ const isRole = function (session, walletAddress, communityID, role) {
                 return session.run(queries[1], format)
                     .then(result => {
                         return {
-                            isEmpty: false,
+                            emptyInput: false,
                             success: true,
                             result: !(_.isEmpty(result.records))
                         }
@@ -560,7 +560,7 @@ const getRolesOfUsers = function (session, walletAddress, communityID) {
 
 /**
  * This procedure is called exclusively in createUserPost(). Assuming 
- * walletAddress and postID do exist.
+ * comunityID and postID do exist, and post author has the member role.
  */
 const linkPost = function(session, walletAddress, postID, communityID) {
     const query = [
@@ -569,26 +569,9 @@ const linkPost = function(session, walletAddress, postID, communityID) {
         'MERGE (p)-[:POSTED_TO]->(c)'
     ].join("\n")
     
-    isRole(session, walletAddress, communityID, "member")
-    .then(memberCheck => {
-        if (memberCheck.success) {
-            if (memberCheck.result) {
-                session.run(query, {
-                    postID: postID,
-                    communityID: communityID
-                })
-            } else {
-                throw {
-                    success: false,
-                    mesesage: "User is not a Member of Community"
-                }
-            }
-        } else {
-            throw {
-                success: false,
-                message: "Community does not exist"
-            }
-        }
+    session.run(query, {
+        postID: postID,
+        communityID: communityID
     })
 }
 

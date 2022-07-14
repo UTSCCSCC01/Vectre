@@ -17,7 +17,7 @@ const createPost = function (session, authorWalletAddress, body) {
 
     return Community.isRole(session, authorWalletAddress, body.communityID, "member")
     .then(memberCheck => {
-        if (!memberCheck.isEmpty) {
+        if (!memberCheck.emptyInput) {
             if (memberCheck.success) {
                 if (!memberCheck.result) {
                     // Author is not a member of Community

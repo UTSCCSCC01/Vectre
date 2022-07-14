@@ -2,17 +2,8 @@ var express = require('express');
 var router = express.Router();
 
 const Community = require('../models/community');
-const Post = require('../models/post')
 const { authenticateToken } = require('../utils/auth');
 const dbUtils = require('../utils/neo4j/dbUtils');
-
-// Test
-router.post('/test', (req, res, next) => {
-    let walletAddress = "0101"
-    Post.createPost(dbUtils.getSession(req), walletAddress, req.body)
-        .then(result => res.send(result))
-        .catch(error => res.send(error))
-})
 
 // Main
 // POST /community/create
