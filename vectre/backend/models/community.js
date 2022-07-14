@@ -34,7 +34,7 @@ const communityValidate = function(community) {
             return new Promise(resolve => {
                 resolve({ 
                     success: false, 
-                    message: `Community misses field ${f}.` 
+                    message: `Community misses field ${r}.` 
                 })
             })
         }
@@ -42,7 +42,7 @@ const communityValidate = function(community) {
             return new Promise(resolve => {
                 resolve({ 
                     success: false, 
-                    message: `Community field ${f} is not String.`
+                    message: `Community field ${r} is not String.`
                 })
             })
         }
@@ -129,7 +129,7 @@ const create = function(session, ownerWalletAddress, newCommunity) {
         if (error.message.includes('already exists with label `Community` and property `communityID`')) {
             return {
                 success: false,
-                message: "Community already exists."
+                message: "communityID already exists."
             }
         }
         throw error
@@ -156,6 +156,14 @@ const update = function(session, communityID, updated) {
             message: 'Successfully updated community',
             communityID: communityID
         }
+    }).catch(error => {
+        if (error.message.includes('New data does not satisfy Constraint')) {
+            return {
+                success: false,
+                message: "communityID already exists."
+            }
+        }
+        throw error;
     })
 }
 
@@ -242,7 +250,6 @@ const getUsersByRole = function(session, communityID, role) {
         'MATCH (c: Community {communityID: $communityID}) RETURN c',
         `MATCH (u: User)-[:${ROLE_LINKS[role]}]->(c: Community {communityID: $communityID}) RETURN u`
     ]
-    console.log(queries[1])
     
     return session.run(queries[0], { communityID: communityID })
     .then(existence => {
