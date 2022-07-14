@@ -9,9 +9,11 @@ import { TOAST_STATUSES } from "../constants/toast";
 import { showLoading } from "../../redux/actions/loading";
 import {
     GET_COMMUNITY,
-    GET_ROLES_LOGGED_IN_USER
+    GET_ROLES_LOGGED_IN_USER,
+    JOIN_COMMUNITY,
+    LEAVE_COMMUNITY
 } from "../constants/community";
-import { storeCommunity, storeRolesOfLoggedInUser } from "../actions/community";
+import { getCommunity, storeCommunity, storeRolesOfLoggedInUser } from "../actions/community";
 
 function* getCommunitySaga(action) {
     try {
@@ -39,7 +41,35 @@ function* getRolesOfLoggedInUser(action) {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }
     } catch (error) {
-        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get community"))
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get roles of current user"))
+        console.log(error)
+    }
+}
+
+function* joinCommunity(action) {
+    try {
+        const response = yield call(postRequest, BASE_API_URL + COMMUNITY.JOIN_COMMUNITY.replace("{communityID}", action.communityID)), responseData = response[1]
+        if (responseData.success) {
+            yield put(getCommunity(action.communityID))
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+    } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to join community"))
+        console.log(error)
+    }
+}
+
+function* leaveCommunity(action) {
+    try {
+        const response = yield call(postRequest, BASE_API_URL + COMMUNITY.LEAVE_COMMUNITY.replace("{communityID}", action.communityID)), responseData = response[1]
+        if (responseData.success) {
+            yield put(getCommunity(action.communityID))
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+    } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to leave community"))
         console.log(error)
     }
 }
@@ -47,6 +77,8 @@ function* getRolesOfLoggedInUser(action) {
 function* communitySaga() {
     yield takeLatest(GET_COMMUNITY, getCommunitySaga)
     yield takeLatest(GET_ROLES_LOGGED_IN_USER, getRolesOfLoggedInUser)
+    yield takeLatest(JOIN_COMMUNITY, joinCommunity)
+    yield takeLatest(LEAVE_COMMUNITY, leaveCommunity)
 }
 
 export default communitySaga

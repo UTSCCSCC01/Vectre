@@ -11,13 +11,15 @@ import { AiFillInstagram } from 'react-icons/ai'
 import { VscGlobe } from 'react-icons/vsc'
 
 import { loggedInUserRolesSelector } from "../../../../redux/selectors/community";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import CommunityProfileEditModal from "../../../Modals/CommunityProfileEditModal/CommunityProfileEditModal";
+import { joinCommunity, leaveCommunity } from "../../../../redux/actions/community";
 
 const ProfileCommunityDetailsBotComponent = ({
     communityData
 }) => {
     const loggedInUserRoles = useSelector(loggedInUserRolesSelector);
+    const dispatch = useDispatch();
     const { isOpen, onOpen, onClose } = useDisclosure();
     return (
         <>
@@ -92,7 +94,7 @@ const ProfileCommunityDetailsBotComponent = ({
                                     color={'white'}
                                     bg={'primary.400'}
                                     text={'Join'}
-                                    onClick={() => { console.log("Join") }} />
+                                    onClick={() => { dispatch(joinCommunity(communityData.communityID)) }} />
                             ) : (
                                 <TextButton
                                     px={'17.5px'}
@@ -101,7 +103,7 @@ const ProfileCommunityDetailsBotComponent = ({
                                     color={'white'}
                                     bg={'primary.400'}
                                     text={'Leave'}
-                                    onClick={() => { console.log("Leave") }} />
+                                    onClick={() => { dispatch(leaveCommunity(communityData.communityID)) }} />
                             )
                         }
                     </Flex>
