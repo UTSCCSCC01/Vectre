@@ -16,3 +16,18 @@ const Community = module.exports = function (_node) {
         "ethLink": _node.properties["ethLink"] ? _node.properties["ethLink"] : null
     })
 }
+
+export const ROLES = {
+    MEMBER: {
+        type: "member",
+        relationship: "JOINS"
+    },
+    MODERATOR: {
+        type: "moderator",
+        relationship: "MODERATES"
+    },
+    OWNER: {
+        type: "owner",
+        relationship: "OWNS"
+    }
+}

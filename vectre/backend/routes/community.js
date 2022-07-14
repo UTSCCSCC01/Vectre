@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 const Community = require('../models/community');
+const {ROLES} = require("../models/neo4j/community");
 const { authenticateToken } = require('../utils/auth');
 const dbUtils = require('../utils/neo4j/dbUtils');
 
@@ -58,7 +59,7 @@ router.get("/:communityID/members/:walletAddress/roles", (req, res, next) => {
 // In consideration
 // GET /communities/:communityID/members
 router.get('/:communityID/members', (req, res, next) => {
-    Community.getUsersByRole(dbUtils.getSession(req), req.params.communityID, "member")
+    Community.getUsersByRole(dbUtils.getSession(req), req.params.communityID, ROLES.MEMBER)
         .then(result => res.send(result))
         .catch(error => res.send(error))
 })

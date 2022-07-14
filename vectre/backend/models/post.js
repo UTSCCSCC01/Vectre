@@ -5,8 +5,6 @@ const { nano } = require('../utils/Utils')
 const Notification = require("../models/notification")
 const Community = require("./community")
 
-const ROLES={MEMBER: "member"}
-
 const createPost = function (session, authorWalletAddress, body) {
     if (!body.text) {
         throw {

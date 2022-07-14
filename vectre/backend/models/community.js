@@ -1,19 +1,13 @@
 const _ = require('lodash')
 const Community = require('./neo4j/community')
+const {ROLES} = require("./neo4j/community");
 const User = require('./neo4j/user')
-
-// Neo4j role links
-const ROLE_LINKS = {
-    member: "JOINS",
-    moderator: "MODERATES",
-    owner: "OWNS"
-}
 
 // helper functions
 const filterBody = function (body) {
     if (_.isEmpty(body)) return body
 
-    filter = ["communityID", "name", "bio", "profilePic", "banner", "discordLink", "instagramLink", "twitterLink", "websiteLink", "ethLink"]
+    const filter = ["communityID", "name", "bio", "profilePic", "banner", "discordLink", "instagramLink", "twitterLink", "websiteLink", "ethLink"]
     return Object.fromEntries(Object.entries(body).
         filter(([key, value]) => filter.includes(key)))
 }
@@ -237,7 +231,7 @@ const getAll = function (session) {
 const isRole = function (session, walletAddress, communityID, role) {
     const queries = [
         'MATCH (u: User {walletAddress: $walletAddress}) MATCH (c: Community {communityID: $communityID}) RETURN u, c',
-        `MATCH (u: User {walletAddress: $walletAddress})-[link: ${ROLE_LINKS[role]}]->(c: Community {communityID: $communityID}) RETURN link`
+        `MATCH (u: User {walletAddress: $walletAddress})-[link: ${ROLES[role].relationship}]->(c: Community {communityID: $communityID}) RETURN link`
     ]
     const format = {
         walletAddress: walletAddress,
@@ -276,7 +270,7 @@ const isRole = function (session, walletAddress, communityID, role) {
 const getUsersByRole = function (session, communityID, role) {
     const queries = [
         'MATCH (c: Community {communityID: $communityID}) RETURN c',
-        `MATCH (u: User)-[:${ROLE_LINKS[role]}]->(c: Community {communityID: $communityID}) RETURN u`
+        `MATCH (u: User)-[:${ROLES[role].relationship}]->(c: Community {communityID: $communityID}) RETURN u`
     ]
 
     return session.run(queries[0], { communityID: communityID })
@@ -317,7 +311,7 @@ const addMember = function (session, walletAddress, communityID) {
         'SET c.memberCount = toInteger(c.memberCount + 1)'
     ].join('\n')
 
-    return isRole(session, walletAddress, communityID, "member")
+    return isRole(session, walletAddress, communityID, ROLES.MEMBER.type)
         .then(alreadyMember => {
             if (alreadyMember.success) {
                 if (alreadyMember.result) {
@@ -356,11 +350,11 @@ const promoteMember = function (session, walletAddress, communityID) {
         'MERGE (u)-[:MODERATES]->(c)'
     ].join("\n")
 
-    return isRole(session, walletAddress, communityID, "member")
+    return isRole(session, walletAddress, communityID, ROLES.MEMBER.type)
         .then(memberCheck => {
             if (memberCheck.success) {
                 if (memberCheck.result) {
-                    return isRole(session, walletAddress, communityID, "moderator")
+                    return isRole(session, walletAddress, communityID, ROLES.MODERATOR.type)
                         .then(moderatorCheck => {
                             if (moderatorCheck.result) {
                                 // Member is already a moderator
@@ -406,7 +400,7 @@ const demoteModerator = function (session, walletAddress, communityID) {
         'DELETE link'
     ].join("\n")
 
-    return isRole(session, walletAddress, communityID, "moderator")
+    return isRole(session, walletAddress, communityID, ROLES.MODERATOR.type)
         .then(moderatorCheck => {
             if (moderatorCheck.success) {
                 if (moderatorCheck.result) {
@@ -466,7 +460,7 @@ const removeMember = function (session, walletAddress, communityID) {
         message: "Successfully remove User from Community"
     }
 
-    return isRole(session, walletAddress, communityID, "moderator")
+    return isRole(session, walletAddress, communityID, ROLES.MODERATOR.type)
         .then(moderatorCheck => {
             if (moderatorCheck.success) {
                 if (moderatorCheck.result) {
@@ -476,7 +470,7 @@ const removeMember = function (session, walletAddress, communityID) {
 
                 } else {
                     // Check if User is a member
-                    return isRole(session, walletAddress, communityID, "member")
+                    return isRole(session, walletAddress, communityID, ROLES.MEMBER.type)
                         .then(memberCheck => {
                             if (memberCheck.result) {
                                 // User is a member, use query 1 to remove
@@ -513,12 +507,12 @@ const getRolesOfUsers = function (session, walletAddress, communityID) {
     ].join("\n")
 
     const LINK_ROLES = {
-        "JOINS": "member",
-        "MODERATES": "moderator",
-        "OWNS": "owner"
+        "JOINS": ROLES.MEMBER,
+        "MODERATES": ROLES.MODERATOR,
+        "OWNS": ROLES.OWNER
     }
 
-    return isRole(session, walletAddress, communityID, "member")
+    return isRole(session, walletAddress, communityID, ROLES.MEMBER.type)
         .then(memberCheck => {
             if (memberCheck.success) {
                 if (memberCheck.result) {
@@ -602,7 +596,7 @@ const communityUpdate = function (session, walletAddress, communityID, body) {
     return communityValidate(filtered)
         .then(validateResult => {
             if (validateResult.success) {
-                return isRole(session, walletAddress, communityID, "moderator")
+                return isRole(session, walletAddress, communityID, ROLES.MODERATOR.type)
                     .then(moderator => {
                         if (moderator.success) {
                             if (moderator.result) {
