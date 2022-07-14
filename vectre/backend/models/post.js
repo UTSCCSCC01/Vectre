@@ -17,7 +17,7 @@ const createPost = function (session, authorWalletAddress, body) {
     const postID = nano()
     const timestamp = new Date().toISOString()
 
-    return Community.isRole(session, authorWalletAddress, body.communityID, ROLES[MEMBER])
+    return Community.isRole(session, authorWalletAddress, body.communityID, ROLES.MEMBER)
     .then(memberCheck => {
         if (!memberCheck.emptyInput) {
             if (memberCheck.success) {
