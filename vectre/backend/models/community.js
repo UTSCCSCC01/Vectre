@@ -12,10 +12,6 @@ const filterBody = function (body) {
         filter(([key, value]) => filter.includes(key)))
 }
 
-const lowerCommunityID = function(body) {
-    body.communityID = body.communityID.toLowerCase()
-}
-
 const communityValidate = function (community) {
     const required = ["communityID", "name"]
 
@@ -96,6 +92,21 @@ const communityValidate = function (community) {
 }
 
 ///////////////////////////// NEO4j methods ////////////////////////////////////
+const exists = function(session, cID) {
+    const query = [
+        'MATCH (c: Community)',
+        'WHERE toLower(c.communityID) = toLower($cID)',
+        'RETURN c'
+    ].join("\n")
+
+    return session.run(query, {cID: cID})
+    .then(result => {
+        return {
+            result: !(_.isEmpty(result.records))
+        }
+    }) 
+}
+
 const create = function (session, ownerWalletAddress, newCommunity) {
     const query = [
         'MATCH (o: User {walletAddress: $owner})',
@@ -137,14 +148,6 @@ const create = function (session, ownerWalletAddress, newCommunity) {
                     communityID: newCommunity.communityID
                 }
             }
-        }).catch(error => {
-            if (error.message.includes('already exists with label `Community` and property `communityID`')) {
-                return {
-                    success: false,
-                    message: "Community already exists."
-                }
-            }
-            throw error
         })
 }
 
@@ -163,14 +166,6 @@ const update = function (session, communityID, updated) {
             message: 'Successfully updated community',
             communityID: communityID
         }
-    }).catch(error => {
-        if (error.message.includes('New data does not satisfy Constraint')) {
-            return {
-                success: false,
-                message: "communityID already exists."
-            }
-        }
-        throw error;
     })
 }
 
@@ -571,8 +566,17 @@ const communityCreate = function (session, ownerWalletAddress, body) {
     return communityValidate(filtered)
         .then(validateResult => {
             if (validateResult.success) {
-                lowerCommunityID(filtered)
-                return create(session, ownerWalletAddress, filtered)
+                return exists(session, body.communityID)
+                .then(idCheck => {
+                    if (idCheck.result) {
+                        return {
+                            success: false,
+                            message: "communityID is already in used."
+                        }
+                    } else {
+                        return create(session, ownerWalletAddress, filtered)
+                    }
+                })
             } else {
                 return validateResult
             }
@@ -595,8 +599,17 @@ const communityUpdate = function (session, walletAddress, communityID, body) {
                     .then(moderator => {
                         if (moderator.success) {
                             if (moderator.result) {
-                                lowerCommunityID(filtered)
-                                return update(session, communityID, filtered)
+                                return exists(session, body.communityID)
+                                .then(idCheck => {
+                                    if (idCheck.result && ( body.communityID.toLowerCase() !== communityID.toLowerCase())) {
+                                        return {
+                                            success: false,
+                                            message: "communityID is already in used."
+                                        }
+                                    } else {
+                                        return update(session, communityID, filtered)
+                                    }
+                                })
                             } else {
                                 return {
                                     success: false,
