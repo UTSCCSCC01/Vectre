@@ -12,7 +12,8 @@ import {
     CREATE_COMMENT,
     POST_LIKE,
     POST_UNLIKE,
-    CREATE_REPOST
+    CREATE_REPOST,
+    UPDATE_SORTING
 } from "../constants/posts";
 import {
     BASE_API_URL,
@@ -20,6 +21,20 @@ import {
 } from "../constants/endpoints";
 import { showToast } from "../actions/toast";
 import { TOAST_STATUSES } from "../constants/toast";
+
+function* getSortedFeed(action){
+    try{
+        const response = yield call(getRequest, BASE_API_URL + POSTS.GET_FEED + "?feedSorting=" + action.feedSorting), responseData = response[1]
+        if(responseData.success){
+            yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
+            yield put(action.redirectWindow("/home/" + responseData.posts))
+        }else{
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+    }catch(error){
+        yield put(showToast(TOAST_STATUSES.ERROR, "Could not get sorted feed"))
+    }
+}
 
 function* createRepost(action) {
     try {
@@ -109,6 +124,7 @@ function* postUnlike(action) {
 }
 
 function* postsSaga() {
+    yield takeLatest(UPDATE_SORTING, getSortedFeed)
     yield takeLatest(CREATE_REPOST, createRepost)
     yield takeLatest(GET_POST, getPostSaga)
     yield takeLatest(GET_COMMENTS, getCommentsSaga)
