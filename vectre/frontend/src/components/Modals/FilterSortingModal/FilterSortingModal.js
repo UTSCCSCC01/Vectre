@@ -24,7 +24,7 @@ const PostModalComponent = ({
                 onClose={onClose}
                 isCentered
                 color={'primary.400'}
-                size={'4xl'}>
+                size={'2xl'}>
                 <ModalOverlay
                     bg={'rgba(255, 255, 255, 0.01)'}
                     backdropFilter='blur(20px)'
@@ -44,18 +44,19 @@ const PostModalComponent = ({
                         />
                     </ModalHeader>
                     <ModalBody
-                        px={{ base: '24px', md: '32px' }} alignItems={"center"}>
-                        <Flex direction={"y"} gap="32px">
+                        px={{ base: '24px', md: '32px' }} >
+                        <Flex direction={"y"} gap="32px" justifyContent={"center"}>
                             <Stack>
                                 <h1 >Filter by</h1>
-                                <Button onClick={onClose}>Posts with Photos? </Button>
-                                <Button onClick={onClose}>Posts with Photos? </Button>
-                                <Button onClick={onClose}>Posts with Photos? </Button>
-                                <Button onClick={onClose}>Posts with Photos? </Button>
+                                <Button onClick={onClose}>Long Reads </Button>
+                                <Button onClick={onClose}>Short Reads </Button>
+                                <Button onClick={onClose}>With Images </Button>
+                                <Button onClick={onClose}>Without Images </Button>
                             </Stack>
                             <Stack>
                                 <h1>Sort By</h1>
                                 <Button onClick={onClose}>Upload Date</Button>
+                                <Button onClick={onClose}>Number of Likes</Button>
                             </Stack>
                         </Flex>
                     </ModalBody>
