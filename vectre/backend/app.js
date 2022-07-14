@@ -35,7 +35,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/posts', postsRouter);
 app.use('/notifications', notificationsRouter);
-app.use('/community', communityRouter);
+app.use('/communities', communityRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -5,6 +5,8 @@ const { nano } = require('../utils/Utils')
 const Notification = require("../models/notification")
 const Community = require("./community")
 
+const ROLES={MEMBER: "member"}
+
 const createPost = function (session, authorWalletAddress, body) {
     if (!body.text) {
         throw {
@@ -15,7 +17,7 @@ const createPost = function (session, authorWalletAddress, body) {
     const postID = nano()
     const timestamp = new Date().toISOString()
 
-    return Community.isRole(session, authorWalletAddress, body.communityID, "member")
+    return Community.isRole(session, authorWalletAddress, body.communityID, ROLES[MEMBER])
     .then(memberCheck => {
         if (!memberCheck.emptyInput) {
             if (memberCheck.success) {
