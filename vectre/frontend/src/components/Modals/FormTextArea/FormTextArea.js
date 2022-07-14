@@ -7,6 +7,7 @@ import {
 const FormTextArea = ({
     inputID,
     inputDefaultValue,
+    inputPlaceholderValue,
     inputLabelText,
     isRequired
 }) => {
@@ -24,7 +25,8 @@ const FormTextArea = ({
             </FormLabel>
             <Textarea
                 id={inputID}
-                defaultValue={inputDefaultValue}
+                defaultValue={inputDefaultValue ? inputDefaultValue : ""}
+                placeholder={inputPlaceholderValue ? inputPlaceholderValue : ""}
                 fontSize={'18px'}
                 bg={'rgba(198, 219, 255, 0.32)'}
                 border={'none'}

@@ -7,6 +7,7 @@ import {
 const FormInput = ({
     inputID,
     inputDefaultValue,
+    inputPlaceholderValue,
     inputLabelText,
     isRequired
 }) => {
@@ -24,10 +25,12 @@ const FormInput = ({
             </FormLabel>
             <Input
                 id={inputID}
-                defaultValue={inputDefaultValue}
+                defaultValue={inputDefaultValue ? inputDefaultValue : ""}
+                placeholder={inputPlaceholderValue ? inputPlaceholderValue : ""}
                 fontSize={'18px'}
                 bg={'rgba(198, 219, 255, 0.32)'}
-                border={'none'} />
+                border={'none'}
+                _placeholder={{ fontWeight: '700', color: 'sub.400' }} />
         </FormControl>
     )
 }

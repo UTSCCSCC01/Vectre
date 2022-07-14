@@ -20,7 +20,8 @@ import { redirectWindow } from "../../../utils/Utils";
 const CommunityProfileEditModal = ({
     communityData,
     isOpen,
-    onClose
+    onClose,
+    isEdit
 }) => {
     const dispatch = useDispatch();
     return (
@@ -38,11 +39,11 @@ const CommunityProfileEditModal = ({
                 />
                 <ModalContent
                     py={'40px'}>
-                    <StyledModalHeader headerText={'Edit Community'} icon={<FaUserFriends size={'2rem'} />} />
+                    <StyledModalHeader headerText={isEdit ? 'Edit Community' : 'Create a Community'} icon={<FaUserFriends size={'2rem'} />} />
                     <ModalBody
                         px={{ base: '24px', md: '64px' }}>
                         <form
-                            id="community-setup-form"
+                            id="community-edit-form"
                             onSubmit={(event) => {
                                 event.preventDefault();
                                 let updatedCommunity = {
@@ -55,7 +56,12 @@ const CommunityProfileEditModal = ({
                                     websiteLink: event.target.websiteLink.value,
                                     ethLink: event.target.ethLink.value,
                                 }
-                                dispatch(updateCommunity(communityData.communityID, updatedCommunity, redirectWindow))
+                                if (isEdit) {
+                                    dispatch(updateCommunity(communityData.communityID, updatedCommunity, redirectWindow))
+                                }
+                                else {
+                                    console.log("creating!")
+                                }
                                 onClose();
                             }}
                         >
@@ -72,17 +78,34 @@ const CommunityProfileEditModal = ({
                                     rightIcon={<EditIcon />}
                                     _focus={{ outline: 0 }}
                                     disabled={true}> {/* TODO: Implement edit avatar/banner */}
-                                    Edit
+                                    {isEdit ? "Edit" : "Choose"}
                                 </Button>
                             </BannerProfilePicWrapper>
-                            <FormInput inputID={'name'} inputLabelText={'Name:'} inputDefaultValue={communityData.name} isRequired={true} />
-                            <FormInput inputID={'communityID'} inputLabelText={'Community ID:'} inputDefaultValue={communityData.communityID} isRequired={true} />
-                            <FormInput inputID={'discordLink'} inputLabelText={'Discord Link:'} inputDefaultValue={communityData.discordLink} />
-                            <FormInput inputID={'instagramLink'} inputLabelText={'Instagram Link:'} inputDefaultValue={communityData.instagramLink} />
-                            <FormInput inputID={'twitterLink'} inputLabelText={'Twitter Link:'} inputDefaultValue={communityData.twitterLink} />
-                            <FormInput inputID={'websiteLink'} inputLabelText={'Website Link:'} inputDefaultValue={communityData.websiteLink} />
-                            <FormInput inputID={'ethLink'} inputLabelText={'Etherscan Link:'} inputDefaultValue={communityData.ethLink} />
-                            <FormTextArea inputID={'bio'} inputLabelText={'Bio:'} inputDefaultValue={communityData.bio} />
+                            {
+                                isEdit ? (
+                                    <>
+                                        <FormInput inputID={'name'} inputLabelText={'Community Name:'} inputDefaultValue={communityData.name} isRequired={true} />
+                                        <FormInput inputID={'communityID'} inputLabelText={'Community ID:'} inputDefaultValue={communityData.communityID} isRequired={true} />
+                                        <FormTextArea inputID={'bio'} inputLabelText={'Bio:'} inputDefaultValue={communityData.bio} />
+                                        <FormInput inputID={'websiteLink'} inputLabelText={'Website Link:'} inputDefaultValue={communityData.websiteLink} />
+                                        <FormInput inputID={'ethLink'} inputLabelText={'Smart Contract Link:'} inputDefaultValue={communityData.ethLink} />
+                                        <FormInput inputID={'discordLink'} inputLabelText={'Discord Link:'} inputDefaultValue={communityData.discordLink} />
+                                        <FormInput inputID={'twitterLink'} inputLabelText={'Twitter Link:'} inputDefaultValue={communityData.twitterLink} />
+                                        <FormInput inputID={'instagramLink'} inputLabelText={'Instagram Link:'} inputDefaultValue={communityData.instagramLink} />
+                                    </>
+                                ) : (
+                                    <>
+                                        <FormInput inputID={'name'} inputLabelText={'Community Name:'} inputPlaceholderValue={"Add a Community Name"} isRequired={true} />
+                                        <FormInput inputID={'communityID'} inputLabelText={'Community ID:'} inputPlaceholderValue={"Add a Community ID, a username for your community!"} isRequired={true} />
+                                        <FormTextArea inputID={'bio'} inputLabelText={'Bio:'} inputPlaceholderValue={"Add a bio, and tell us more about the community you are creating."} />
+                                        <FormInput inputID={'websiteLink'} inputLabelText={'Website Link:'} inputPlaceholderValue={"Link to the community website?"} />
+                                        <FormInput inputID={'ethLink'} inputLabelText={'Smart Contract Link:'} inputPlaceholderValue={"Link to the smart contract?"} />
+                                        <FormInput inputID={'discordLink'} inputLabelText={'Discord Link:'} inputPlaceholderValue={"Link to the discord community?"} />
+                                        <FormInput inputID={'twitterLink'} inputLabelText={'Twitter Link:'} inputPlaceholderValue={"Link to the twitter account?"} />
+                                        <FormInput inputID={'instagramLink'} inputLabelText={'Instagram Link:'} inputPlaceholderValue={"Link to the instagram account?"} />
+                                    </>
+                                )
+                            }
                         </form>
                     </ModalBody>
                     <ModalFooter
@@ -90,7 +113,7 @@ const CommunityProfileEditModal = ({
                         px={{ base: '24px', md: '74px' }}>
                         <Button
                             type={"submit"}
-                            form={"community-setup-form"}
+                            form={"community-edit-form"}
                             alignSelf={'end'}
                             ml={'32px'}
                             background={'primary.400'}
@@ -99,7 +122,7 @@ const CommunityProfileEditModal = ({
                             py={'11px'}
                             borderRadius={'6px'}
                             _focus={{ outline: 0 }}>
-                            Save
+                            {isEdit ? "Save" : "Create"}
                         </Button>
                     </ModalFooter>
                 </ModalContent>
