@@ -10,7 +10,14 @@ import {
     POST_UNLIKE,
     DO_LIKE,
     DO_UNLIKE,
+    UPDATE_SORTING,
 } from "../constants/posts";
+
+// Feedsorting
+export const sortFeed = (feedSorting) => ({
+    type: UPDATE_SORTING, 
+    feedSorting
+})
 
 // Posts
 export const createPost = (text, imageURL) => ({
@@ -31,6 +38,7 @@ export const createRepost = (repostData, redirectWindow) => ({
     repostData,
     redirectWindow
 })
+
 
 // Post interactions:
 // Comments

@@ -2,16 +2,26 @@ import {
     STORE_POST,
     STORE_COMMENTS,
     DO_LIKE,
-    DO_UNLIKE
+    DO_UNLIKE, 
+    UPLOAD_DATE_ASC,
+    UPDATE_SORTING
 } from "../constants/posts";
 
 const initialState = {
     post: {},
-    comments: []
+    comments: [], 
+
+    feedSorting: UPLOAD_DATE_ASC, 
 }
 
 const posts = (state = initialState, action) => {
     switch (action.type) {
+        case UPDATE_SORTING: 
+            return {
+                ...state, 
+                feedSorting: action.feedSorting
+            }
+
         case STORE_POST:
             return {
                 ...state,

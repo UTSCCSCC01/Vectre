@@ -11,12 +11,22 @@ import {
     ButtonGroup, 
 
 } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+
+import {UPDATE_SORTING, UPLOAD_DATE_ASC, UPLOAD_DATE_DESC, NUMBER_OF_LIKES_ASC, NUMBER_OF_LIKES_DESC } from "../../../redux/constants/posts";
+import { useDispatch } from "react-redux"; 
+import { sortFeed } from "../../../redux/actions/posts";
+
 
 const PostModalComponent = ({
     isOpen,
     onClose,
 }) => {
+    const dispatch = useDispatch()
+    function dispatchCall(feedSorting){
+        dispatch(sortFeed(feedSorting)); 
+        onClose(); 
+    }
+
     return (
         <>
             <Modal
@@ -47,16 +57,11 @@ const PostModalComponent = ({
                         px={{ base: '24px', md: '32px' }} >
                         <Flex direction={"y"} gap="32px" justifyContent={"center"}>
                             <Stack>
-                                <h1 >Filter by</h1>
-                                <Button onClick={onClose}>Long Reads </Button>
-                                <Button onClick={onClose}>Short Reads </Button>
-                                <Button onClick={onClose}>With Images </Button>
-                                <Button onClick={onClose}>Without Images </Button>
-                            </Stack>
-                            <Stack>
                                 <h1>Sort By</h1>
-                                <Button onClick={onClose}>Upload Date</Button>
-                                <Button onClick={onClose}>Number of Likes</Button>
+                                <Button onClick={() => {dispatchCall(UPLOAD_DATE_ASC)}}>Latest to Oldest</Button>
+                                <Button onClick={() => {dispatchCall(UPLOAD_DATE_DESC)}}>Oldest to Latest</Button>
+                                <Button onClick={() => {dispatchCall(NUMBER_OF_LIKES_ASC)}}>Most Liked to Least Liked</Button>
+                                <Button onClick={() => {dispatchCall(NUMBER_OF_LIKES_DESC)}}>Least Liked to Most Liked</Button>
                             </Stack>
                         </Flex>
                     </ModalBody>
