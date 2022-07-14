@@ -64,7 +64,7 @@ const communityValidate = function (community) {
         return new Promise((resolve) => {
             resolve({
                 success: false,
-                message: "name must not be"
+                message: "name must not be empty"
             })
         })
     } else if (community.communityID.length > 32) {
@@ -158,11 +158,6 @@ const update = function (session, communityID, updated) {
         communityID: communityID,
         updated: updated
     }).then(result => {
-        if (_.isEmpty(result.records)) {     // in userUpdate, there is already a check for this.
-            throw {
-                message: 'Community does not exist',
-            }
-        }
         return {
             success: true,
             message: 'Successfully updated community',
