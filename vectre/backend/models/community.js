@@ -10,25 +10,25 @@ const ROLE_LINKS = {
 }
 
 // helper functions
-const filterBody = function(body) {
+const filterBody = function (body) {
     if (_.isEmpty(body)) return body
 
     filter = ["communityID", "name", "bio", "profilePic", "banner", "discordLink", "instagramLink", "twitterLink", "websiteLink", "ethLink"]
     return Object.fromEntries(Object.entries(body).
         filter(([key, value]) => filter.includes(key)))
-} 
+}
 
-const communityValidate = function(community) {
+const communityValidate = function (community) {
     const required = ["communityID", "name", "bio"]
-    
-    if (_.isEmpty(community)){
+
+    if (_.isEmpty(community)) {
         return new Promise(resolve => {
             throw {
                 message: "Provided body is empty."
             }
         })
     }
-    
+
     for (let r of required) {
         if (!(r in community)) {
             return new Promise(resolve => {
@@ -78,13 +78,13 @@ const communityValidate = function(community) {
         })
     } else {
         return new Promise((resolve) => {
-            resolve({ success: true})
+            resolve({ success: true })
         })
     }
 }
 
 ///////////////////////////// NEO4j methods ////////////////////////////////////
-const create = function(session, ownerWalletAddress, newCommunity) {
+const create = function (session, ownerWalletAddress, newCommunity) {
     const query = [
         'MATCH (o: User {walletAddress: $owner})',
         'CREATE (c: Community $format)',
@@ -112,31 +112,31 @@ const create = function(session, ownerWalletAddress, newCommunity) {
         owner: ownerWalletAddress,
         format: communityFormat
     })
-    .then(result => {
-        if (_.isEmpty(result.records)){
-            return { 
-                success: false,
-                message: "User does not exist."
+        .then(result => {
+            if (_.isEmpty(result.records)) {
+                return {
+                    success: false,
+                    message: "User does not exist."
+                }
+            } else {
+                return {
+                    success: true,
+                    message: "Successfully created a community.",
+                    communityID: newCommunity.communityID
+                }
             }
-        } else {
-            return {
-                success: true,
-                message: "Successfully created a community.",
-                communityID: newCommunity.communityID
+        }).catch(error => {
+            if (error.message.includes('already exists with label `Community` and property `communityID`')) {
+                return {
+                    success: false,
+                    message: "Community already exists."
+                }
             }
-        }
-    }).catch(error => {
-        if (error.message.includes('already exists with label `Community` and property `communityID`')) {
-            return {
-                success: false,
-                message: "communityID already exists."
-            }
-        }
-        throw error
-    }) 
+            throw error
+        })
 }
 
-const update = function(session, communityID, updated) {
+const update = function (session, communityID, updated) {
     const query = [
         'MATCH (c: Community {communityID: $communityID})',
         'SET c += $updated RETURN c'
@@ -146,7 +146,7 @@ const update = function(session, communityID, updated) {
         communityID: communityID,
         updated: updated
     }).then(result => {
-        if (_.isEmpty(result.records)){     // in userUpdate, there is already a check for this.
+        if (_.isEmpty(result.records)) {     // in userUpdate, there is already a check for this.
             throw {
                 message: 'Community does not exist',
             }
@@ -167,12 +167,12 @@ const update = function(session, communityID, updated) {
     })
 }
 
-const get = function(session, communityID) {
+const get = function (session, communityID) {
     const query = 'MATCH (c: Community {communityID: $communityID} ) RETURN c'
     return session.run(query, {
         communityID: communityID
     }).then(result => {
-        if (_.isEmpty(result.records)){
+        if (_.isEmpty(result.records)) {
             return {
                 success: false,
                 message: "Community does not exist"
@@ -184,7 +184,7 @@ const get = function(session, communityID) {
                 success: true,
                 community: community
             }
-        }   
+        }
     }).catch(error => {
         throw {
             success: false,
@@ -194,29 +194,29 @@ const get = function(session, communityID) {
     })
 }
 
-const getAll = function(session) {
+const getAll = function (session) {
     const query = 'MATCH (c: Community) RETURN c'
     return session.run(query)
-    .then(result => {
-        let communities = []
-        result.records.forEach(record => {
-            communities.push(new Community(record.get('c')))
+        .then(result => {
+            let communities = []
+            result.records.forEach(record => {
+                communities.push(new Community(record.get('c')))
+            })
+            return {
+                success: true,
+                communities: communities
+            }
         })
-        return {
-            success: true,
-            communities: communities
-        }
-    })
-    .catch(error => {
-        throw {
-            success: false,
-            message: "Failed to fetch all communities",
-            error: error.message
-        }
-    })
+        .catch(error => {
+            throw {
+                success: false,
+                message: "Failed to fetch all communities",
+                error: error.message
+            }
+        })
 }
 
-const isRole = function(session, walletAddress, communityID, role) {
+const isRole = function (session, walletAddress, communityID, role) {
     const queries = [
         'MATCH (u: User {walletAddress: $walletAddress}) MATCH (c: Community {communityID: $communityID}) RETURN u, c',
         `MATCH (u: User {walletAddress: $walletAddress})-[link: ${ROLE_LINKS[role]}]->(c: Community {communityID: $communityID}) RETURN link`
@@ -227,61 +227,61 @@ const isRole = function(session, walletAddress, communityID, role) {
     }
 
     return session.run(queries[0], format)
-    .then(existence => {
-        if (_.isEmpty(existence.records)) {
-            return {
-                success: false,
-                message: "User or Community does not exist."
-            }
-        } else {
-            return session.run(queries[1], format)
-            .then(result => {
+        .then(existence => {
+            if (_.isEmpty(existence.records)) {
                 return {
-                    success: true,
-                    result: !(_.isEmpty(result.records))
+                    success: false,
+                    message: "User or Community does not exist."
                 }
-            })
-        }
-    })
+            } else {
+                return session.run(queries[1], format)
+                    .then(result => {
+                        return {
+                            success: true,
+                            result: !(_.isEmpty(result.records))
+                        }
+                    })
+            }
+        })
 }
 
-const getUsersByRole = function(session, communityID, role) {    
+const getUsersByRole = function (session, communityID, role) {
     const queries = [
         'MATCH (c: Community {communityID: $communityID}) RETURN c',
         `MATCH (u: User)-[:${ROLE_LINKS[role]}]->(c: Community {communityID: $communityID}) RETURN u`
     ]
-    
+
     return session.run(queries[0], { communityID: communityID })
-    .then(existence => {
-        if (_.isEmpty(existence.records)) {
-            return {
-                success: false,
-                message: "Community does not exist"
-            }
-        } else {
-            return session.run(queries[1], { communityID: communityID })
-            .then(result => {
-                let users = []
-                result.records.forEach(record => {
-                    users.push(new User(record.get('u')))
-                })
-                let returnObject = {
-                    success: true
+        .then(existence => {
+            if (_.isEmpty(existence.records)) {
+                return {
+                    success: false,
+                    message: "Community does not exist"
                 }
-                returnObject[role] = users
-                return returnObject
-            })
-        }
-    }).catch(error => {
-        throw {
-            success: false,
-            message: `Failed to get all ${role}s of Community`,
-            error: error.message
-        }
-    }) 
+            } else {
+                return session.run(queries[1], { communityID: communityID })
+                    .then(result => {
+                        let users = []
+                        result.records.forEach(record => {
+                            users.push(new User(record.get('u')))
+                        })
+                        let returnObject = {
+                            success: true
+                        }
+                        returnObject[role] = users
+                        return returnObject
+                    })
+            }
+        }).catch(error => {
+            throw {
+                success: false,
+                message: `Failed to get all ${role}s of Community`,
+                error: error.message
+            }
+        })
 }
 
-const addMember = function(session, walletAddress, communityID) {
+const addMember = function (session, walletAddress, communityID) {
     const query = [
         'MATCH (u: User {walletAddress: $walletAddress})',
         'MATCH (c: Community {communityID: $communityID})',
@@ -290,138 +290,138 @@ const addMember = function(session, walletAddress, communityID) {
     ].join('\n')
 
     return isRole(session, walletAddress, communityID, "member")
-    .then(alreadyMember => {
-        if (alreadyMember.success) {
-            if (alreadyMember.result) {
-                return {
-                    success: false,
-                    message: "User is already a member of Community."
-                }
-            } else {
-                return session.run(query, {
-                    walletAddress: walletAddress,
-                    communityID: communityID
-                }).then(result => {
+        .then(alreadyMember => {
+            if (alreadyMember.success) {
+                if (alreadyMember.result) {
                     return {
-                        success: true,
-                        message: "Successfully joined community"
+                        success: false,
+                        message: "User is already a member of Community."
                     }
-                })
+                } else {
+                    return session.run(query, {
+                        walletAddress: walletAddress,
+                        communityID: communityID
+                    }).then(result => {
+                        return {
+                            success: true,
+                            message: "Successfully joined community"
+                        }
+                    })
+                }
+            } else {    // User or Community does not exist.
+                return alreadyMember
             }
-        } else {    // User or Community does not exist.
-            return alreadyMember
-        }
-    })
-    .catch(error => {
-        throw {
-            success: false,
-            message: "Failed to add User to Community",
-            error: error.message
-        }
-    })
+        })
+        .catch(error => {
+            throw {
+                success: false,
+                message: "Failed to add User to Community",
+                error: error.message
+            }
+        })
 }
 
-const promoteMember = function(session, walletAddress, communityID) {
+const promoteMember = function (session, walletAddress, communityID) {
     const query = [
         'MATCH (u: User {walletAddress: $walletAddress} )',
         'MATCH (c: Community {communityID: $communityID})',
         'MERGE (u)-[:MODERATES]->(c)'
     ].join("\n")
-    
+
     return isRole(session, walletAddress, communityID, "member")
-    .then(memberCheck => {
-        if (memberCheck.success) {
-            if (memberCheck.result) {
-                return isRole(session, walletAddress, communityID, "moderator")
-                .then(moderatorCheck => {
-                    if (moderatorCheck.result) {
-                        // Member is already a moderator
-                        return {
-                            success: false,
-                            message: "User is already a Moderator of Community."
-                        }
-                    } else {
-                        // Run query to promote member.
-                        return session.run(query, {
-                            walletAddress: walletAddress,
-                            communityID: communityID
-                        }).then(result => {
-                            return {
-                                success: true,
-                                message: "Successfully promote User to Moderator of Community"
+        .then(memberCheck => {
+            if (memberCheck.success) {
+                if (memberCheck.result) {
+                    return isRole(session, walletAddress, communityID, "moderator")
+                        .then(moderatorCheck => {
+                            if (moderatorCheck.result) {
+                                // Member is already a moderator
+                                return {
+                                    success: false,
+                                    message: "User is already a Moderator of Community."
+                                }
+                            } else {
+                                // Run query to promote member.
+                                return session.run(query, {
+                                    walletAddress: walletAddress,
+                                    communityID: communityID
+                                }).then(result => {
+                                    return {
+                                        success: true,
+                                        message: "Successfully promote User to Moderator of Community"
+                                    }
+                                })
                             }
                         })
+                } else {
+                    return {
+                        success: false,
+                        message: "User is not a Member of Community."
                     }
-                })
-            } else {
-                return {
-                    success: false,
-                    message: "User is not a Member of Community."
                 }
+            } else {
+                return member
             }
-        } else {
-            return member
-        }
-    })
-    .catch(error => {
-        throw {
-            success: false,
-            message: "Failed to promote User to Moderator of Community",
-            error: error.message
-        }
-    })
+        })
+        .catch(error => {
+            throw {
+                success: false,
+                message: "Failed to promote User to Moderator of Community",
+                error: error.message
+            }
+        })
 }
 
-const demoteModerator = function(session, walletAddress, communityID) {
+const demoteModerator = function (session, walletAddress, communityID) {
     const query = [
         'MATCH (u: User {walletAddress: $walletAddress})-[link:MODERATES]->(c: Community {communityID: $communityID})',
         'DELETE link'
     ].join("\n")
 
     return isRole(session, walletAddress, communityID, "moderator")
-    .then(moderatorCheck => {
-        if (moderatorCheck.success) {
-            if (moderatorCheck.result) {
-                // demote the moderator
-                return session.run(query, {
-                    walletAddress: walletAddress,
-                    communityID: communityID
-                }).then(result => {
+        .then(moderatorCheck => {
+            if (moderatorCheck.success) {
+                if (moderatorCheck.result) {
+                    // demote the moderator
+                    return session.run(query, {
+                        walletAddress: walletAddress,
+                        communityID: communityID
+                    }).then(result => {
+                        return {
+                            success: true,
+                            message: "Successfully demote User to Member of Community"
+                        }
+                    })
+                } else {
+                    // user is not a moderator, thus, may not be a member
                     return {
-                        success: true,
-                        message: "Successfully demote User to Member of Community"
+                        success: false,
+                        message: "User is not a Moderator of Community"
                     }
-                })
-            } else {
-                // user is not a moderator, thus, may not be a member
-                return {
-                    success: false,
-                    message: "User is not a Moderator of Community"
                 }
+            } else {
+                // User or Community does not exist
+                return moderatorCheck
             }
-        } else {
-            // User or Community does not exist
-            return moderatorCheck
-        }
-    })
-    .catch(error => {
-        throw {
-            success: false,
-            message: "Failed to demote User to Member of Community",
-            error: error.message
-        }
-    })
+        })
+        .catch(error => {
+            throw {
+                success: false,
+                message: "Failed to demote User to Member of Community",
+                error: error.message
+            }
+        })
 }
 
-const removeMember = function(session, walletAddress, communityID) {
-    const queries = [ 
+const removeMember = function (session, walletAddress, communityID) {
+    const queries = [
         [
             'MATCH (u: User {walletAddress: $walletAddress})-[mod_link:MODERATES]->(c: Community {communityID: $communityID})',
             'MATCH (u: User {walletAddress: $walletAddress})-[mem_link:JOINS]->(c: Community {communityID: $communityID})',
             'SET c.memberCount = toInteger(c.memberCount - 1)',
             'DELETE mod_link, mem_link'
         ].join("\n"),
-        [  
+        [
             'MATCH (u: User {walletAddress: $walletAddress})-[mem_link:JOINS]->(c: Community {communityID: $communityID})',
             'SET c.memberCount = toInteger(c.memberCount - 1)',
             'DELETE mem_link'
@@ -439,43 +439,43 @@ const removeMember = function(session, walletAddress, communityID) {
     }
 
     return isRole(session, walletAddress, communityID, "moderator")
-    .then(moderatorCheck => {
-        if (moderatorCheck.success) {
-            if (moderatorCheck.result) {
-                // User is a moderator, use query 0 and 1 to remove
-                return session.run(queries[0], format)
-                .then(result => { return successReturn })
-            
-            } else {
-                // Check if User is a member
-                return isRole(session, walletAddress, communityID, "member")
-                .then(memberCheck => {
-                    if (memberCheck.result) {
-                        // User is a member, use query 1 to remove
-                        return session.run(queries[1], format)
+        .then(moderatorCheck => {
+            if (moderatorCheck.success) {
+                if (moderatorCheck.result) {
+                    // User is a moderator, use query 0 and 1 to remove
+                    return session.run(queries[0], format)
                         .then(result => { return successReturn })
-                    
-                    } else{
-                        // User is not a Member of community
-                        return {
-                            success: false,
-                            message: "User is not a Member of Community"
-                        }
-                    }
-                })
+
+                } else {
+                    // Check if User is a member
+                    return isRole(session, walletAddress, communityID, "member")
+                        .then(memberCheck => {
+                            if (memberCheck.result) {
+                                // User is a member, use query 1 to remove
+                                return session.run(queries[1], format)
+                                    .then(result => { return successReturn })
+
+                            } else {
+                                // User is not a Member of community
+                                return {
+                                    success: false,
+                                    message: "User is not a Member of Community"
+                                }
+                            }
+                        })
+                }
+            } else {
+                // User or Community does not exist
+                return moderatorCheck
             }
-        } else {
-            // User or Community does not exist
-            return moderatorCheck
-        }
-    })
-    .catch(error => {
-        throw {
-            success: false,
-            message: "Failed to remove User from Community",
-            error: error.message
-        }
-    })
+        })
+        .catch(error => {
+            throw {
+                success: false,
+                message: "Failed to remove User from Community",
+                error: error.message
+            }
+        })
 }
 
 const getRolesOfUsers = function (session, walletAddress, communityID) {
@@ -487,52 +487,52 @@ const getRolesOfUsers = function (session, walletAddress, communityID) {
     const LINK_ROLES = {
         "JOINS": "member",
         "MODERATES": "moderator",
-        "OWNS": "owner"    
+        "OWNS": "owner"
     }
 
     return isRole(session, walletAddress, communityID, "member")
-    .then(memberCheck => {
-        if (memberCheck.success) {
-            if (memberCheck.result) {
-                // do query to find all roles
-                return session.run(query, {
-                    walletAddress: walletAddress,
-                    communityID: communityID
-                })
-                .then(result => {
-                    let roles = []
-                    result.records.forEach(record => {
-                        roles.push(LINK_ROLES[record.get('type(r)')])
+        .then(memberCheck => {
+            if (memberCheck.success) {
+                if (memberCheck.result) {
+                    // do query to find all roles
+                    return session.run(query, {
+                        walletAddress: walletAddress,
+                        communityID: communityID
                     })
-                    return {
-                        success: true,
-                        roles: roles
-                    }
-                })
+                        .then(result => {
+                            let roles = []
+                            result.records.forEach(record => {
+                                roles.push(LINK_ROLES[record.get('type(r)')])
+                            })
+                            return {
+                                success: true,
+                                roles: roles
+                            }
+                        })
 
-            } else {
-                // User is not a member of Community
-                return {
-                    success: false,
-                    message: "User is not a Member of Community"
+                } else {
+                    // User is not a member of Community
+                    return {
+                        success: false,
+                        message: "User is not a Member of Community"
+                    }
                 }
+            } else {
+                // User or Community does not exist
+                return memberCheck
             }
-        } else {
-            // User or Community does not exist
-            return memberCheck
-        }
-    }).catch(error => {
-        throw {
-            success: false,
-            message: "Failed to get all roles of User in Community",
-            error: error.message
-        }
-    })
+        }).catch(error => {
+            throw {
+                success: false,
+                message: "Failed to get all roles of User in Community",
+                error: error.message
+            }
+        })
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-const communityCreate = function(session, ownerWalletAddress, body) {
+const communityCreate = function (session, ownerWalletAddress, body) {
     let filtered = filterBody(body)
     return communityValidate(filtered)
         .then(validateResult => {
@@ -551,37 +551,37 @@ const communityCreate = function(session, ownerWalletAddress, body) {
         })
 }
 
-const communityUpdate = function(session, walletAddress, communityID, body) {
+const communityUpdate = function (session, walletAddress, communityID, body) {
     let filtered = filterBody(body)
     return communityValidate(filtered)
-    .then(validateResult => {
-        if (validateResult.success) {
-            return isRole(session, walletAddress, communityID, "moderator")
-            .then(moderator => {
-                if (moderator.success) {
-                    if (moderator.result) {
-                        return update(session, communityID, filtered)
-                    } else {
-                        return { 
-                            success: false,
-                            message: "User does not have the permission to edit this community"
+        .then(validateResult => {
+            if (validateResult.success) {
+                return isRole(session, walletAddress, communityID, "moderator")
+                    .then(moderator => {
+                        if (moderator.success) {
+                            if (moderator.result) {
+                                return update(session, communityID, filtered)
+                            } else {
+                                return {
+                                    success: false,
+                                    message: "User does not have the permission to edit this community"
+                                }
+                            }
+                        } else {
+                            return moderator
                         }
-                    }  
-                } else {
-                    return moderator
-                }
-            })
-        } else {
-            return validateResult
-        }
-    })
-    .catch(error => {
-        throw {
-            success: false,
-            message: "Failed to edit the community",
-            error: error.message
-        }
-    })
+                    })
+            } else {
+                return validateResult
+            }
+        })
+        .catch(error => {
+            throw {
+                success: false,
+                message: "Failed to edit the community",
+                error: error.message
+            }
+        })
 }
 
 module.exports = {
