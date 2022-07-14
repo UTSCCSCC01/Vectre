@@ -17,7 +17,7 @@ const Community = module.exports = function (_node) {
     })
 }
 
-export const ROLES = {
+module.exports.ROLES = {
     MEMBER: {
         type: "member",
         relationship: "JOINS"
