@@ -33,6 +33,12 @@ router.get('/:walletAddress/dashboard', (req, res) => {
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
+// GET /users/{walletAddress}/funds
+router.get('/:walletAddress/funds', (req, res) => {
+    User.getFunds(req.params.walletAddress)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
 
 // GET /users/{walletAddress}/notifications
 router.get('/:walletAddress/notifications', authenticateToken, (req, res, next) => {
