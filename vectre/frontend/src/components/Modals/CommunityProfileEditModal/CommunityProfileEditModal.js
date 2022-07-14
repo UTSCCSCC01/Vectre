@@ -14,7 +14,7 @@ import FormTextArea from "../FormTextArea/FormTextArea";
 import StyledModalHeader from "../StyledModalHeader/StyledModalHeader";
 import BannerProfilePicWrapper from "../BannerProfilePicWrapper/BannerProfilePicWrapper";
 import { useDispatch } from "react-redux";
-import { updateCommunity } from "../../../redux/actions/community";
+import { createCommunity, updateCommunity } from "../../../redux/actions/community";
 import { redirectWindow } from "../../../utils/Utils";
 
 const CommunityProfileEditModal = ({
@@ -58,11 +58,11 @@ const CommunityProfileEditModal = ({
                                 }
                                 if (isEdit) {
                                     dispatch(updateCommunity(communityData.communityID, updatedCommunity, redirectWindow))
+                                    onClose();
                                 }
                                 else {
-                                    console.log("creating!")
+                                    dispatch(createCommunity(updatedCommunity, redirectWindow))
                                 }
-                                onClose();
                             }}
                         >
                             <BannerProfilePicWrapper

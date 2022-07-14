@@ -1,4 +1,5 @@
 import {
+    CREATE_COMMUNITY,
     GET_COMMUNITY,
     STORE_COMMUNITY,
     UPDATE_COMMUNITY,
@@ -7,6 +8,12 @@ import {
     JOIN_COMMUNITY,
     LEAVE_COMMUNITY
 } from "../constants/community";
+
+export const createCommunity = (community, redirectWindow) => ({
+    type: CREATE_COMMUNITY,
+    community,
+    redirectWindow
+})
 
 export const getCommunity = (communityID) => ({
     type: GET_COMMUNITY,

@@ -8,6 +8,7 @@ import { showToast } from "../actions/toast";
 import { TOAST_STATUSES } from "../constants/toast";
 import { showLoading } from "../../redux/actions/loading";
 import {
+    CREATE_COMMUNITY,
     GET_COMMUNITY,
     UPDATE_COMMUNITY,
     GET_ROLES_LOGGED_IN_USER,
@@ -15,6 +16,20 @@ import {
     LEAVE_COMMUNITY
 } from "../constants/community";
 import { getCommunity, storeCommunity, storeRolesOfLoggedInUser } from "../actions/community";
+
+function* createCommunitySaga(action) {
+    try {
+        const response = yield call(postRequest, BASE_API_URL + COMMUNITY.CREATE_COMMUNITY, action.community), responseData = response[1]
+        if (responseData.success) {
+            yield put(action.redirectWindow(`/c/${responseData.communityID}`))
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+    } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to create community"))
+        console.log(error)
+    }
+}
 
 function* getCommunitySaga(action) {
     try {
@@ -95,6 +110,7 @@ function* leaveCommunity(action) {
 }
 
 function* communitySaga() {
+    yield takeLatest(CREATE_COMMUNITY, createCommunitySaga)
     yield takeLatest(GET_COMMUNITY, getCommunitySaga)
     yield takeLatest(UPDATE_COMMUNITY, updateCommunitySaga)
     yield takeLatest(GET_ROLES_LOGGED_IN_USER, getRolesOfLoggedInUser)
