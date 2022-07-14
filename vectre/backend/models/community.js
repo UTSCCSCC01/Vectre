@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const { getRelationshipFromRole } = require('../utils/Utils');
 const Community = require('./neo4j/community')
-const {ROLES} = require("./neo4j/community");
+const { ROLES } = require("./neo4j/community");
 const User = require('./neo4j/user')
 
 // helper functions
@@ -27,16 +27,16 @@ const communityValidate = function (community) {
     for (let r of required) {
         if (!(r in community)) {
             return new Promise(resolve => {
-                resolve({ 
-                    success: false, 
-                    message: `Community misses field ${r}.` 
+                resolve({
+                    success: false,
+                    message: `Community misses field ${r}.`
                 })
             })
         }
         if (typeof community[r] !== 'string') {
             return new Promise(resolve => {
-                resolve({ 
-                    success: false, 
+                resolve({
+                    success: false,
                     message: `Community field ${r} is not String.`
                 })
             })
@@ -93,19 +93,19 @@ const communityValidate = function (community) {
 }
 
 ///////////////////////////// NEO4j methods ////////////////////////////////////
-const exists = function(session, cID) {
+const exists = function (session, cID) {
     const query = [
         'MATCH (c: Community)',
         'WHERE toLower(c.communityID) = toLower($cID)',
         'RETURN c'
     ].join("\n")
 
-    return session.run(query, {cID: cID})
-    .then(result => {
-        return {
-            result: !(_.isEmpty(result.records))
-        }
-    }) 
+    return session.run(query, { cID: cID })
+        .then(result => {
+            return {
+                result: !(_.isEmpty(result.records))
+            }
+        })
 }
 
 const create = function (session, ownerWalletAddress, newCommunity) {
@@ -122,7 +122,7 @@ const create = function (session, ownerWalletAddress, newCommunity) {
     const communityFormat = {
         communityID: newCommunity.communityID,
         name: newCommunity.name,
-        bio: newCommunity.bio ? newCommunity.bio: null,
+        bio: newCommunity.bio ? newCommunity.bio : null,
         profilePic: newCommunity.profilePic ? newCommunity.profilePic : null,
         banner: newCommunity.banner ? newCommunity.banner : null,
         discordLink: newCommunity.discordLink ? newCommunity.discordLink : null,
@@ -402,7 +402,7 @@ const demoteModerator = function (session, walletAddress, communityID) {
                     }).then(result => {
                         return {
                             success: true,
-                            message: "Successfully demote User to Member of Community"
+                            message: "Successfully demoted User to Member of Community"
                         }
                     })
                 } else {
@@ -448,7 +448,7 @@ const removeMember = function (session, walletAddress, communityID) {
 
     const successReturn = {
         success: true,
-        message: "Successfully remove User from Community"
+        message: "Successfully removed User from Community"
     }
 
     return isRole(session, walletAddress, communityID, ROLES.MODERATOR.type)
@@ -515,7 +515,7 @@ const getRolesOfUsers = function (session, walletAddress, communityID) {
                         .then(result => {
                             let roles = []
                             result.records.forEach(record => {
-                                roles.push(LINK_ROLES[record.get('type(r)')])
+                                roles.push(LINK_ROLES[record.get('type(r)')].type)
                             })
                             return {
                                 success: true,
@@ -547,13 +547,13 @@ const getRolesOfUsers = function (session, walletAddress, communityID) {
  * This procedure is called exclusively in createUserPost(). Assuming 
  * comunityID and postID do exist, and post author has the member role.
  */
-const linkPost = function(session, walletAddress, postID, communityID) {
+const linkPost = function (session, walletAddress, postID, communityID) {
     const query = [
         'MATCH (p: Post {postID: $postID})',
         'MATCH (c: Community {communityID: $communityID})',
         'MERGE (p)-[:POSTED_TO]->(c)'
     ].join("\n")
-    
+
     session.run(query, {
         postID: postID,
         communityID: communityID
@@ -568,16 +568,16 @@ const communityCreate = function (session, ownerWalletAddress, body) {
         .then(validateResult => {
             if (validateResult.success) {
                 return exists(session, body.communityID)
-                .then(idCheck => {
-                    if (idCheck.result) {
-                        return {
-                            success: false,
-                            message: `Community ID ${body.communityID} has already been taken.`
+                    .then(idCheck => {
+                        if (idCheck.result) {
+                            return {
+                                success: false,
+                                message: `Community ID ${body.communityID} has already been taken.`
+                            }
+                        } else {
+                            return create(session, ownerWalletAddress, filtered)
                         }
-                    } else {
-                        return create(session, ownerWalletAddress, filtered)
-                    }
-                })
+                    })
             } else {
                 return validateResult
             }
@@ -601,16 +601,16 @@ const communityUpdate = function (session, walletAddress, communityID, body) {
                         if (moderator.success) {
                             if (moderator.result) {
                                 return exists(session, body.communityID)
-                                .then(idCheck => {
-                                    if (idCheck.result && ( body.communityID.toLowerCase() !== communityID.toLowerCase())) {
-                                        return {
-                                            success: false,
-                                            message: `Community ID ${body.communityID} has already been taken.`
+                                    .then(idCheck => {
+                                        if (idCheck.result && (body.communityID.toLowerCase() !== communityID.toLowerCase())) {
+                                            return {
+                                                success: false,
+                                                message: `Community ID ${body.communityID} has already been taken.`
+                                            }
+                                        } else {
+                                            return update(session, communityID, filtered)
                                         }
-                                    } else {
-                                        return update(session, communityID, filtered)
-                                    }
-                                })
+                                    })
                             } else {
                                 return {
                                     success: false,
