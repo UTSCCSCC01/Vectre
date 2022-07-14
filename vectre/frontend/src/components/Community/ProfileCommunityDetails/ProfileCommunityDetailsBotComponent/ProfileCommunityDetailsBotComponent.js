@@ -9,9 +9,13 @@ import { FaDiscord, FaTwitter, FaEthereum } from 'react-icons/fa'
 import { AiFillInstagram } from 'react-icons/ai'
 import { VscGlobe } from 'react-icons/vsc'
 
+import { loggedInUserRolesSelector } from "../../../../redux/selectors/community";
+import { useSelector } from 'react-redux';
+
 const ProfileCommunityDetailsBotComponent = ({
     communityData
 }) => {
+    const loggedInUserRoles = useSelector(loggedInUserRolesSelector);
     return (
         <>
             <Flex
@@ -67,13 +71,35 @@ const ProfileCommunityDetailsBotComponent = ({
                             bg={'rgba(246, 250, 255, 1)'}
                             text={`${communityData.memberCount} Members`} />
                         <TextButton
+                            display={loggedInUserRoles.includes("moderator") ? "initial" : "none"}
                             px={'17.5px'}
                             fontSize={'18px'}
                             fontWeight={700}
                             color={'white'}
                             bg={'primary.400'}
                             text={'Edit'}
-                            onClick={() => { console.log("Edit!") }} />
+                            onClick={() => { console.log("Edit") }} />
+                        {
+                            !loggedInUserRoles.includes("member") ? (
+                                <TextButton
+                                    px={'17.5px'}
+                                    fontSize={'18px'}
+                                    fontWeight={700}
+                                    color={'white'}
+                                    bg={'primary.400'}
+                                    text={'Join'}
+                                    onClick={() => { console.log("Join") }} />
+                            ) : (
+                                <TextButton
+                                    px={'17.5px'}
+                                    fontSize={'18px'}
+                                    fontWeight={700}
+                                    color={'white'}
+                                    bg={'primary.400'}
+                                    text={'Leave'}
+                                    onClick={() => { console.log("Leave") }} />
+                            )
+                        }
                     </Flex>
                 </Flex>
             </Flex>
