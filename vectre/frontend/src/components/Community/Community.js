@@ -3,7 +3,9 @@ import ProfileCommunityDetails from "./ProfileCommunityDetails/ProfileCommunityD
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { communitySelector } from "../../redux/selectors/community";
-import { getCommunity } from "../../redux/actions/community";
+import { getCommunity, getRolesOfLoggedInUser } from "../../redux/actions/community";
+import { loggedInUserSelector } from "../../redux/selectors/users";
+import { getLoggedInUser } from "../../redux/actions/users";
 
 const communitySideButtonsList = [
     {
@@ -24,8 +26,11 @@ const Community = ({
     communityID
 }) => {
     const dispatch = useDispatch();
+    const loggedInUser = useSelector(loggedInUserSelector);
     const communityData = useSelector(communitySelector)
     useEffect(() => {
+        dispatch(getLoggedInUser());
+        dispatch(getRolesOfLoggedInUser(communityID, loggedInUser.walletAddress));
         dispatch(getCommunity(communityID));
     }, []);
 

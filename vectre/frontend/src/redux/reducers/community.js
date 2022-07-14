@@ -1,9 +1,11 @@
 import {
-    STORE_COMMUNITY
+    STORE_COMMUNITY,
+    STORE_ROLES_LOGGED_IN_USER
 } from "../constants/community";
 
 const initialState = {
-    community: {}
+    community: {},
+    loggedInUserRoles: []
 }
 
 const community = (state = initialState, action) => {
@@ -12,6 +14,11 @@ const community = (state = initialState, action) => {
             return {
                 ...state,
                 community: action.community
+            }
+        case STORE_ROLES_LOGGED_IN_USER:
+            return {
+                ...state,
+                loggedInUserRoles: action.roles
             }
         default:
             return state

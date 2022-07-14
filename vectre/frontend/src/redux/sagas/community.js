@@ -7,8 +7,11 @@ import {
 import { showToast } from "../actions/toast";
 import { TOAST_STATUSES } from "../constants/toast";
 import { showLoading } from "../../redux/actions/loading";
-import { GET_COMMUNITY } from "../constants/community";
-import { storeCommunity } from "../actions/community";
+import {
+    GET_COMMUNITY,
+    GET_ROLES_LOGGED_IN_USER
+} from "../constants/community";
+import { storeCommunity, storeRolesOfLoggedInUser } from "../actions/community";
 
 function* getCommunitySaga(action) {
     try {
@@ -27,8 +30,23 @@ function* getCommunitySaga(action) {
     }
 }
 
+function* getRolesOfLoggedInUser(action) {
+    try {
+        const response = yield call(getRequest, BASE_API_URL + COMMUNITY.GET_ROLES_LOGGED_IN_USER.replace("{communityID}", action.communityID).replace("{walletAddress}", action.walletAddress)), responseData = response[1]
+        if (responseData.success) {
+            yield put(storeRolesOfLoggedInUser(responseData.roles));
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+    } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get community"))
+        console.log(error)
+    }
+}
+
 function* communitySaga() {
     yield takeLatest(GET_COMMUNITY, getCommunitySaga)
+    yield takeLatest(GET_ROLES_LOGGED_IN_USER, getRolesOfLoggedInUser)
 }
 
 export default communitySaga
