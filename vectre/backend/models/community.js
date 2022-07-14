@@ -164,7 +164,7 @@ const update = function (session, communityID, updated) {
         return {
             success: true,
             message: 'Successfully updated community',
-            communityID: communityID
+            communityID: updated.communityID
         }
     })
 }
@@ -525,8 +525,8 @@ const getRolesOfUsers = function (session, walletAddress, communityID) {
                 } else {
                     // User is not a member of Community
                     return {
-                        success: false,
-                        message: "User is not a Member of Community"
+                        success: true,
+                        roles: []
                     }
                 }
             } else {
@@ -571,7 +571,7 @@ const communityCreate = function (session, ownerWalletAddress, body) {
                     if (idCheck.result) {
                         return {
                             success: false,
-                            message: "communityID is already in used."
+                            message: `Community ID ${body.communityID} has already been taken.`
                         }
                     } else {
                         return create(session, ownerWalletAddress, filtered)
@@ -604,7 +604,7 @@ const communityUpdate = function (session, walletAddress, communityID, body) {
                                     if (idCheck.result && ( body.communityID.toLowerCase() !== communityID.toLowerCase())) {
                                         return {
                                             success: false,
-                                            message: "communityID is already in used."
+                                            message: `Community ID ${body.communityID} has already been taken.`
                                         }
                                     } else {
                                         return update(session, communityID, filtered)
