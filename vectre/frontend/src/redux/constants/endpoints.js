@@ -32,3 +32,7 @@ export const POSTS = {
 export const NOTIF = {
     READ_NOTIFICATION: "/notifications/{notificationID}/read"
 }
+
+export const COMMUNITY = {
+    GET_COMMUNITY: "/community/{communityID}"
+}

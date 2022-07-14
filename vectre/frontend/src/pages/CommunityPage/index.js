@@ -4,10 +4,10 @@ import Community from "../../components/Community/Community";
 import { useParams } from "react-router-dom";
 
 const CommunityPage = () => {
-    const { communityName } = useParams() // Get communityName from URL
+    const { communityID } = useParams() // Get communityID from URL
     return (
         <ContentWIthNavContainer>
-            <Community communityName={communityName} />
+            <Community communityID={communityID} />
         </ContentWIthNavContainer>
     );
 };
