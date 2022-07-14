@@ -84,7 +84,7 @@ const ProfileCommunityDetailsBotComponent = ({
                             bg={'primary.400'}
                             text={'Edit'}
                             onClick={() => { onOpen() }} />
-                        <CommunityProfileEditModal isOpen={isOpen} onClose={onClose} communityData={communityData} isEdit={false} />
+                        <CommunityProfileEditModal isOpen={isOpen} onClose={onClose} communityData={communityData} isEdit={true} />
                         {
                             !loggedInUserRoles.includes("member") ? (
                                 <TextButton

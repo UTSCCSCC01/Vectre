@@ -34,9 +34,9 @@ export const NOTIF = {
 }
 
 export const COMMUNITY = {
-    GET_COMMUNITY: "/community/{communityID}",
-    UPDATE_COMMUNITY: "/community/{communityID}/update",
-    GET_ROLES_LOGGED_IN_USER: "/community/{communityID}/rolesOf/{walletAddress}",
-    JOIN_COMMUNITY: "/community/{communityID}/join",
-    LEAVE_COMMUNITY: "/community/{communityID}/leave"
+    GET_COMMUNITY: "/communities/{communityID}",
+    UPDATE_COMMUNITY: "/communities/{communityID}/update",
+    GET_ROLES_LOGGED_IN_USER: "/communities/{communityID}/members/{walletAddress}/roles",
+    JOIN_COMMUNITY: "/communities/{communityID}/join",
+    LEAVE_COMMUNITY: "/communities/{communityID}/leave"
 }

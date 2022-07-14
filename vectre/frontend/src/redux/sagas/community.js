@@ -37,7 +37,12 @@ function* updateCommunitySaga(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + COMMUNITY.UPDATE_COMMUNITY.replace("{communityID}", action.communityID), action.community), responseData = response[1]
         if (responseData.success) {
-            yield put(action.redirectWindow(`/c/${responseData.communityID}`))
+            if (responseData.communityID !== action.communityID) {
+                yield put(action.redirectWindow(`/c/${responseData.communityID}`))
+            }
+            else {
+                yield put(getCommunity(action.communityID));
+            }
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }
