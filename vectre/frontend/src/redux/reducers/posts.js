@@ -2,12 +2,13 @@ import {
     STORE_POST,
     STORE_COMMENTS,
     DO_LIKE,
-    DO_UNLIKE
+    DO_UNLIKE,
+    STORE_PROFILE_POSTS,
 } from "../constants/posts";
 
 const initialState = {
-    post: {},
-    comments: []
+    comments: [],
+    posts: []
 }
 
 const posts = (state = initialState, action) => {
@@ -15,7 +16,7 @@ const posts = (state = initialState, action) => {
         case STORE_POST:
             return {
                 ...state,
-                post: action.post
+                posts: [action.post]
             }
         case STORE_COMMENTS:
             return {
@@ -31,11 +32,7 @@ const posts = (state = initialState, action) => {
             }
             return {
                 ...state,
-                post: {
-                    ...state.post,
-                    likes: state.post.likes + 1,
-                    alreadyLiked: true
-                }
+                posts: state.posts.map((post, i) => post.postID === action.postID ? { ...post, likes: post.likes + 1, alreadyLiked: true } : post)
             }
         case DO_UNLIKE:
             if (action.isComment) {
@@ -46,11 +43,12 @@ const posts = (state = initialState, action) => {
             }
             return {
                 ...state,
-                post: {
-                    ...state.post,
-                    likes: state.post.likes - 1,
-                    alreadyLiked: false
-                }
+                posts: state.posts.map((post, i) => post.postID === action.postID ? { ...post, likes: post.likes - 1, alreadyLiked: false } : post)
+            }
+        case STORE_PROFILE_POSTS:
+            return {
+                ...state,
+                posts: action.posts
             }
         default:
             return state

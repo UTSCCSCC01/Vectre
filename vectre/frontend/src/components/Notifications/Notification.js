@@ -69,7 +69,7 @@ class Notification extends React.Component {
             />
             <Box noOfLines={1} textAlign={"left"}>
               <p>
-                <b>{this.props.fromUser.username}</b> {this.state.message}
+                <b>@{this.props.fromUser.username}</b> {this.state.message}
               </p>
             </Box>
         </Flex>

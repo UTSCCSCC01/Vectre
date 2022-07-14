@@ -36,10 +36,10 @@ const PostPage = () => {
                 <Stack alignSelf={'center'} gap={'16px'}>
                     {
                         // checks if post.author is defined first
-                        post.author !== undefined ? (
+                        post.length !== 0 ? (
                             <>
-                                <PostComponent item={post} />
-                                {loggedInUser.walletAddress ? (<UserCommentComponent item={{ author: loggedInUser }} />) : (<UserCommentNotLoggedInComponent />)}
+                                <PostComponent item={post[0]} />
+                                {loggedInUser.walletAddress ? (<UserCommentComponent item={{ author: loggedInUser }} isComment={post[0].parent !== null} />) : (<UserCommentNotLoggedInComponent />)}
                                 <PostCommentsComponent comments={comments} />
                             </>
                         ) : (
