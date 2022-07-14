@@ -21,8 +21,10 @@ const SearchPage = () => {
                             bg={'white'} 
                             placeHolder={"Looking For Something?"}>
                             </Input>
-                    <TextButton rightIcon={<HiSearch/>} color={"white"} bg={"primary.400"} px={"24"} py={"1"} text={"Search"} fontSize={"18px"} marginTop={"5px"} marginBottom={"30px"} fontWeight={700} display={"inline-flex"} flexDirection={"row"} alignSelf={"right"} />
-                </form>
+                    <Box display={"flex"} flexDirection={"column"}>
+                        <TextButton rightIcon={<HiSearch/>} color={"white"} bg={"primary.400"} px={"24"} py={"1"} text={"Search"} fontSize={"18px"} marginTop={"5px"} marginBottom={"30px"} fontWeight={700} alignSelf={"flex-end"} />
+                    </Box>
+                </form>    
                 <SearchResultContainer/>
             </Box>
         </ContentWIthNavContainer>

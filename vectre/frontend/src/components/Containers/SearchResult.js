@@ -9,11 +9,15 @@ const SearchResultContainer = ({
 
     return(
     <>
-        <Box bg={"#FFFFFFAB"} gap={"5px"} borderRadius={"6px"} px=      {"24px"} py={"1px"} padding={"10px 25px"} display={"flex"} flexDirection={"row"} alignItems={"center"} justifyContent={"center"} fontSize={"23px"} fontFamily={"DM Sans"} fontWeight={700} color={"#697B98"}>
+        <Box bg={"#FFFFFFAB"} gap={"5px"} borderRadius={"6px"} px={"24px"} py={"1px"} padding={"10px 25px"} display={"flex"} flexDirection={"row"} alignItems={"center"} justifyContent={"center"} fontSize={"23px"} fontFamily={"DM Sans"} fontWeight={700} color={"#697B98"}>
                 Explore All
                 <BsGlobe />
         </Box>
-        <IndividualSearchResult/>
+        <Box width={"100%"} display={"grid"} gridTemplateColumns={"1fr 1fr"} gridGap="24px">
+            <IndividualSearchResult/>
+            <IndividualSearchResult/>
+            <IndividualSearchResult/>
+        </Box>
     </>
     )
 };
