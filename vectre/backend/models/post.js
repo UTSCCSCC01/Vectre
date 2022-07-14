@@ -230,7 +230,8 @@ const getPostsByUser = function (session, walletAddress, profileWalletAddress) {
         `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
         `WHERE post.author = author.walletAddress`,
         `OPTIONAL MATCH (user:User{walletAddress:$walletAddress})-[l:LIKED]->(post)`,
-        `RETURN DISTINCT author, post, count(c) AS comment, count(l) AS likes, repost, repostAuthor`,
+        'OPTIONAL MATCH (post)-[:POSTED_ON]->(com: Community)'
+        `RETURN DISTINCT author, post, count(c) AS comment, count(l) AS likes, repost, repostAuthor, com.communityID`,
         `ORDER BY post.timestamp DESC`
     ].join('\n');
 
@@ -245,7 +246,7 @@ const getPostsByUser = function (session, walletAddress, profileWalletAddress) {
                 postRecord.author = new User(record.get('author'))
                 postRecord.comment = String(record.get('comment').low);
                 postRecord.alreadyLiked = record.get('likes').low > 0;
-                postRecord.community = "notarealcommunity" // TOOD: Unhardcode this value
+                postRecord.community = record.get('com.communityID') ? String(record.get('com.communityID')) : null
                 if (postRecord.repostPostID) {
                     postRecord.repostPost = new Post(record.get('repost'))
                     postRecord.repostPost.author = new User(record.get('repostAuthor'))
@@ -308,7 +309,8 @@ const getPostByID = function (session, walletAddress, postID) {
         `WHERE repostAuthor.walletAddress = repost.author`,
         `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
         `WHERE post.author = author.walletAddress`,
-        `RETURN DISTINCT author, post, count(c) AS comment, repost, repostAuthor`
+        `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
+        `RETURN DISTINCT author, post, count(c) AS comment, repost, repostAuthor, com.communityID`
     ].join('\n');
 
     return session.run(query, {
@@ -319,7 +321,7 @@ const getPostByID = function (session, walletAddress, postID) {
             var post = new Post(queryRecord.get('post'))
             post.author = new User(queryRecord.get('author'))
             post.comment = String(queryRecord.get("comment").low);
-            post.community = "notarealcommunity" // TOOD: Unhardcode this value
+            post.community = queryRecord.get('com.communityID') ? String(queryRecord.get('com.communityID')) : null
             if (post.repostPostID) {
                 post.repostPost = new Post(queryRecord.get('repost'))
                 post.repostPost.author = new User(queryRecord.get('repostAuthor'))
