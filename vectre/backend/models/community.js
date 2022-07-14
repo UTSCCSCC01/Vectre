@@ -18,8 +18,12 @@ const filterBody = function (body) {
         filter(([key, value]) => filter.includes(key)))
 }
 
+const lowerCommunityID = function(body) {
+    body.communityID = body.communityID.toLowerCase()
+}
+
 const communityValidate = function (community) {
-    const required = ["communityID", "name", "bio"]
+    const required = ["communityID", "name"]
 
     if (_.isEmpty(community)) {
         return new Promise(resolve => {
@@ -55,6 +59,20 @@ const communityValidate = function (community) {
                 message: "communityID can only contain letters, numbers, dashes, underscores, or periods"
             })
         })
+    } else if (community.communityID.length === 0) {
+        return new Promise((resolve) => {
+            resolve({
+                success: false,
+                message: "communityID must not be empty"
+            })
+        })
+    } else if (community.name.length === 0) {
+        return new Promise((resolve) => {
+            resolve({
+                success: false,
+                message: "name must not be"
+            })
+        })
     } else if (community.communityID.length > 32) {
         return new Promise((resolve) => {
             resolve({
@@ -69,7 +87,7 @@ const communityValidate = function (community) {
                 message: "Name must be less than 32 characters"
             })
         })
-    } else if (community.bio.length > 500) {
+    } else if (community.bio && community.bio.length > 500) {
         return new Promise((resolve) => {
             resolve({
                 success: false,
@@ -98,7 +116,7 @@ const create = function (session, ownerWalletAddress, newCommunity) {
     const communityFormat = {
         communityID: newCommunity.communityID,
         name: newCommunity.name,
-        bio: newCommunity.bio,
+        bio: newCommunity.bio ? newCommunity.bio: null,
         profilePic: newCommunity.profilePic ? newCommunity.profilePic : null,
         banner: newCommunity.banner ? newCommunity.banner : null,
         discordLink: newCommunity.discordLink ? newCommunity.discordLink : null,
@@ -226,10 +244,19 @@ const isRole = function (session, walletAddress, communityID, role) {
         communityID: communityID,
     }
 
+    if (!communityID || !walletAddress) {
+        return new Promise(resolve => {
+            return {
+                isEmpty: true
+            }
+        })
+    }
+
     return session.run(queries[0], format)
         .then(existence => {
             if (_.isEmpty(existence.records)) {
                 return {
+                    isEmpty: false,
                     success: false,
                     message: "User or Community does not exist."
                 }
@@ -237,6 +264,7 @@ const isRole = function (session, walletAddress, communityID, role) {
                 return session.run(queries[1], format)
                     .then(result => {
                         return {
+                            isEmpty: false,
                             success: true,
                             result: !(_.isEmpty(result.records))
                         }
@@ -530,6 +558,40 @@ const getRolesOfUsers = function (session, walletAddress, communityID) {
         })
 }
 
+/**
+ * This procedure is called exclusively in createUserPost(). Assuming 
+ * walletAddress and postID do exist.
+ */
+const linkPost = function(session, walletAddress, postID, communityID) {
+    const query = [
+        'MATCH (p: Post {postID: $postID})',
+        'MATCH (c: Community {communityID: $communityID})',
+        'MERGE (p)-[:POSTED_TO]->(c)'
+    ].join("\n")
+    
+    isRole(session, walletAddress, communityID, "member")
+    .then(memberCheck => {
+        if (memberCheck.success) {
+            if (memberCheck.result) {
+                session.run(query, {
+                    postID: postID,
+                    communityID: communityID
+                })
+            } else {
+                throw {
+                    success: false,
+                    mesesage: "User is not a Member of Community"
+                }
+            }
+        } else {
+            throw {
+                success: false,
+                message: "Community does not exist"
+            }
+        }
+    })
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 const communityCreate = function (session, ownerWalletAddress, body) {
@@ -537,6 +599,7 @@ const communityCreate = function (session, ownerWalletAddress, body) {
     return communityValidate(filtered)
         .then(validateResult => {
             if (validateResult.success) {
+                lowerCommunityID(filtered)
                 return create(session, ownerWalletAddress, filtered)
             } else {
                 return validateResult
@@ -560,6 +623,7 @@ const communityUpdate = function (session, walletAddress, communityID, body) {
                     .then(moderator => {
                         if (moderator.success) {
                             if (moderator.result) {
+                                lowerCommunityID(filtered)
                                 return update(session, communityID, filtered)
                             } else {
                                 return {
@@ -592,5 +656,7 @@ module.exports = {
     getUsersByRole,
     addMember,
     removeMember,
-    getRolesOfUsers
+    getRolesOfUsers,
+    isRole,
+    linkPost
 }

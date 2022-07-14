@@ -2,13 +2,14 @@ var express = require('express');
 var router = express.Router();
 
 const Community = require('../models/community');
+const Post = require('../models/post')
 const { authenticateToken } = require('../utils/auth');
 const dbUtils = require('../utils/neo4j/dbUtils');
 
 // Test
 router.post('/test', (req, res, next) => {
     let walletAddress = "0101"
-    Community.communityUpdate(dbUtils.getSession(req), walletAddress, "newCOM2", req.body)
+    Post.createPost(dbUtils.getSession(req), walletAddress, req.body)
         .then(result => res.send(result))
         .catch(error => res.send(error))
 })
@@ -66,7 +67,7 @@ router.get("/:communityID/rolesOf/:walletAddress", (req, res, next) => {
 // In consideration
 // GET /community/:communityID/members
 router.get('/:communityID/members', (req, res, next) => {
-    Community.getUsersByRole(dbUtils.getSession(req), req.params.communityID, "members")
+    Community.getUsersByRole(dbUtils.getSession(req), req.params.communityID, "member")
         .then(result => res.send(result))
         .catch(error => res.send(error))
 })
