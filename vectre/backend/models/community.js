@@ -1,4 +1,5 @@
-const _ = require('lodash')
+const _ = require('lodash');
+const { getRelationshipFromRole } = require('../utils/Utils');
 const Community = require('./neo4j/community')
 const {ROLES} = require("./neo4j/community");
 const User = require('./neo4j/user')
@@ -221,7 +222,7 @@ const getAll = function (session) {
 const isRole = function (session, walletAddress, communityID, role) {
     const queries = [
         'MATCH (u: User {walletAddress: $walletAddress}) MATCH (c: Community {communityID: $communityID}) RETURN u, c',
-        `MATCH (u: User {walletAddress: $walletAddress})-[link: ${ROLES[role].relationship}]->(c: Community {communityID: $communityID}) RETURN link`
+        `MATCH (u: User {walletAddress: $walletAddress})-[link: ${getRelationshipFromRole(role)}]->(c: Community {communityID: $communityID}) RETURN link`
     ]
     const format = {
         walletAddress: walletAddress,
@@ -260,7 +261,7 @@ const isRole = function (session, walletAddress, communityID, role) {
 const getUsersByRole = function (session, communityID, role) {
     const queries = [
         'MATCH (c: Community {communityID: $communityID}) RETURN c',
-        `MATCH (u: User)-[:${ROLES[role].relationship}]->(c: Community {communityID: $communityID}) RETURN u`
+        `MATCH (u: User)-[:${getRelationshipFromRole(role)}]->(c: Community {communityID: $communityID}) RETURN u`
     ]
 
     return session.run(queries[0], { communityID: communityID })
