@@ -13,6 +13,7 @@ import { useParams } from "react-router-dom";
 
 const UserCommentBotComponent = ({
     item,
+    isComment
 }) => {
     const loggedInUser = useSelector(loggedInUserSelector);
     const dispatch = useDispatch();
@@ -40,6 +41,7 @@ const UserCommentBotComponent = ({
                     >
                         <FormControl>
                             <Textarea
+                                isDisabled={isComment}
                                 id='comment'
                                 placeholder={'thoughts?'}
                                 fontSize={'18px'}
@@ -53,6 +55,7 @@ const UserCommentBotComponent = ({
                     </form>
                 </Box>
                 <Button
+                    isDisabled={isComment}
                     type={"submit"}
                     form={"user-comment-form"}
                     background={'primary.400'}

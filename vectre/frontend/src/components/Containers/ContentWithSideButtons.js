@@ -18,11 +18,14 @@ const ContentWithSideButtons = ({
             margin={'0 auto'}>
             <Grid
                 gridTemplateColumns={{ base: "", lg: '12vw auto 12vw' }}
-                columnGap={'50px'}>
+                columnGap={'30px'}>
                 <GridItem>
                     <Stack gap={'15px'}>
                         {
                             sideButtonsList.map((btn, i) => {
+                                if (btn.hidden) {
+                                    return null;
+                                }
                                 if (btn.link) {
                                     return (
                                         <ButtonLinkWrapper href={btn.link} key={i}>

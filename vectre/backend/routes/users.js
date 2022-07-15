@@ -5,7 +5,7 @@ const User = require('../models/user'),
     Post = require('../models/post'),
     Notification = require('../models/notification');
 const dbUtils = require('../utils/neo4j/dbUtils');
-const { authenticateToken } = require("../utils/auth");
+const { authenticateToken, storeWalletAddressFromToken } = require("../utils/auth");
 
 // GET /users
 router.get('/', (req, res, next) => {
@@ -17,13 +17,6 @@ router.get('/', (req, res, next) => {
 // GET /users/{walletAddress}
 router.get('/:walletAddress', (req, res) => {
     User.getByWalletAddress(dbUtils.getSession(req), req.params.walletAddress)
-        .then((result) => res.send(result))
-        .catch((error) => res.send(error))
-})
-
-// GET /users/{walletAddress}/posts
-router.get('/:walletAddress/posts', (req, res, next) => {
-    Post.getPostsByUser(dbUtils.getSession(req), req.params.walletAddress)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
@@ -71,8 +64,10 @@ router.post('/login/nonce', (req, res) => {
 })
 
 // GET /users/{walletAddress}/posts
-router.get('/:walletAddress/posts', (req, res, next) => {
-    Post.getPostsByUser(dbUtils.getSession(req), req.params.walletAddress)
+router.get('/:walletAddress/posts', storeWalletAddressFromToken, (req, res, next) => {
+    // req.walletAddress is the walletAddress from the token
+    // req.params.walletAddress is the walletAddress of another user of the profile the user (from token) is looking at
+    Post.getPostsByUser(dbUtils.getSession(req), req.walletAddress, req.params.walletAddress)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 });
