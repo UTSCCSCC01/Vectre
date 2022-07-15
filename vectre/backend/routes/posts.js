@@ -10,7 +10,7 @@ const { authenticateToken, storeWalletAddressFromToken } = require("../utils/aut
 router.post('/feed', authenticateToken, (req, res, next) => {
     const start = req.body.start ? req.body.start : 0,
         size = req.body.size ? req.body.size : 10,
-        sortType = req.body.sort ? req.body.sort : "likes",
+        sortType = req.body.sort ? req.body.sort : "timestamp",
         sortOrder = req.body.order ? req.body.order : "desc"
     Post.getUserFeed(dbUtils.getSession(req), req.walletAddress, start, size, sortType, sortOrder)
         .then((result) => res.send(result))
