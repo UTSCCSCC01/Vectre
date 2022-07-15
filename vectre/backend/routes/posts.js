@@ -17,7 +17,7 @@ router.post('/feed', authenticateToken, (req, res, next) => {
 
 // POST /posts/create
 router.post('/create', authenticateToken, (req, res, next) => {
-    Post.createUserPost(dbUtils.getSession(req), req.walletAddress, req.body)
+    Post.createPost(dbUtils.getSession(req), req.walletAddress, req.body)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
@@ -38,7 +38,7 @@ router.get('/:postID', storeWalletAddressFromToken, (req, res, next) => {
 // Comment
 // POST /posts/create/{postID}/comment
 router.post('/create/:postID/comment', authenticateToken, (req, res, next) => {
-    Post.createUserComment(dbUtils.getSession(req), req.walletAddress, req.params.postID, req.body)
+    Post.createComment(dbUtils.getSession(req), req.walletAddress, req.params.postID, req.body)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })

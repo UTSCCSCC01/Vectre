@@ -1,15 +1,15 @@
 import React from 'react'
 import ContentWIthNavContainer from "../../components/Containers/ContentWIthNavContainer";
-import Profile from "../../components/Profile/Profile";
+import Community from "../../components/Community/Community";
 import { useParams } from "react-router-dom";
 
-const ProfilePage = () => {
-    const { walletAddress } = useParams() // Get walletAddress from URL
+const CommunityPage = () => {
+    const { communityID } = useParams() // Get communityID from URL
     return (
         <ContentWIthNavContainer>
-            <Profile profileWalletAddress={walletAddress} />
+            <Community communityID={communityID} />
         </ContentWIthNavContainer>
     );
 };
 
-export default ProfilePage;
+export default CommunityPage;
