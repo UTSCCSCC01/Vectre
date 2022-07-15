@@ -1,10 +1,11 @@
 const _ = require('lodash')
 const User = require('./neo4j/user')
+const Community = require('./neo4j/community')
 const Notification = require('../models/notification');
 const config = require('../config');
 const jwt = require('jsonwebtoken')
 const ethUtil = require('ethereumjs-util');
-const fetch = (url) => import('node-fetch').then(({default: fetch}) => fetch(url));
+const fetch = (url) => import('node-fetch').then(({ default: fetch }) => fetch(url));
 
 const getAll = (session) => { // Returns all Users
     const query = "MATCH (user:User) RETURN user";
@@ -235,7 +236,7 @@ const updateUser = function (session, walletAddress, filter, newUser) {
     for (let f of nonEmpty) {
         if ((f in newUser)) {
             if (newUser[f] == "") {
-                throw {success: false, message: `Field ${f} is empty.`}
+                throw { success: false, message: `Field ${f} is empty.` }
             }
 
             if (f === "username") {
@@ -567,6 +568,38 @@ const updateDashboard = (session, walletAddress, body) => {  // Sets the NFTs in
         })
 }
 
+const getCommunitiesByUser = function (session, walletAddress) {
+    const query = [
+        'MATCH (:User{walletAddress:$walletAddress})-[:JOINS]->(community:Community)',
+        'RETURN community'
+    ].join("\n")
+
+    return session.run(query, { walletAddress: walletAddress })
+        .then(result => {
+            if (_.isEmpty(result.records)) {
+                return {
+                    success: true,
+                    communities: []
+                }
+            } else {
+                let communities = []
+                result.records.forEach(record => {
+                    communities.push(new Community(record.get('community')))
+                })
+                return {
+                    success: true,
+                    communities: communities
+                }
+            }
+        }).catch(error => {
+            throw {
+                success: false,
+                message: "Failed to retrieve communities that the user is a member of.",
+                error: error.message
+            }
+        })
+}
+
 module.exports = {
     getAll,
     getByWalletAddress,
@@ -581,5 +614,6 @@ module.exports = {
     follow: followUser,
     unfollow: unfollowUser,
     getNFT,
-    updateDashboard
+    updateDashboard,
+    getCommunitiesByUser
 }
