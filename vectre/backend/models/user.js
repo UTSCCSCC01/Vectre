@@ -324,7 +324,7 @@ const updateProfile = function (session, walletAddress, newProf) {
             } else {
                 let profileFilter = ["name", "username", "bio"]
                 if (newProf.profilePic) {
-                    imgUtils.upload(newProf.profilePic)
+                    return imgUtils.upload(newProf.profilePic)
                         .then(result => {
                             newProf.profilePic = null;
                             if (result.data.link) {
@@ -344,19 +344,7 @@ const updateProfile = function (session, walletAddress, newProf) {
                                             .then(response => { return response })
                                             .catch(error => { throw error })
                                     })
-                                    .catch(error => {
-                                        throw {
-                                            succcess: false,
-                                            message: "Could not update user"
-                                        }
-                                    })
                                 
-                            }
-                        })
-                        .catch(error => {
-                            throw {
-                                success: false,
-                                message: "Could not update user"
                             }
                         })
                 }
@@ -366,8 +354,8 @@ const updateProfile = function (session, walletAddress, newProf) {
         .catch(error => {
             throw {
                 success: false,
+                message: "Could not update user",
                 error: error.message,
-                message: error.message
             }
         })
 }
