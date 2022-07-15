@@ -108,21 +108,19 @@ export default function NavBar() {
                         spacing={6}
                         display={{ base: 'none', lg: 'flex' }}
                         alignItems={'center'}>
-                        <Link
-                            href='#'
-                            _hover={{ textDecoration: "none" }}>
-                            <Button
-                                display={{ base: 'none', lg: 'inline-flex' }}
-                                px={'17.5px'}
-                                fontSize={'18px'}
-                                fontWeight={700}
-                                color={'primary.400'}
-                                _hover={{ textDecoration: "none" }}
-                                bg={'white'}
-                                _focus={{ outline: 0 }}>
-                                {funds} ETH
-                            </Button>
-                        </Link>
+                        <Text
+                            display={{ base: 'none', lg: 'inline-flex' }}
+                            px={'25px'}
+                            py={'6px'}
+                            borderRadius={'6px'}
+                            fontSize={'18px'}
+                            fontWeight={700}
+                            color={'primary.400'}
+                            _hover={{ textDecoration: "none" }}
+                            bg={'white'}
+                            _focus={{ outline: 0 }}>
+                            {funds} ETH
+                        </Text>
                         <NotificationPopover />
                         <Link
                             href={Object.keys(loggedInUser).length === 0 ? "/login" : `/user/${loggedInUser.walletAddress}`}
