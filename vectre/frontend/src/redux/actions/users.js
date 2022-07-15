@@ -47,9 +47,8 @@ export const storeNFT = (nft) => ({
     nft
 })
 
-export const getFunds = (walletAddress) => ({
-    type: GET_FUNDS,
-    walletAddress
+export const getFunds = () => ({
+    type: GET_FUNDS
 })
 export const storeFunds = (funds) => ({
     type: STORE_FUNDS,

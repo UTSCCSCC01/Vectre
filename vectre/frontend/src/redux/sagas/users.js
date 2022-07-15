@@ -113,7 +113,7 @@ function* getNFT(action) {
     }
 }
 
-function* getFunds(action) {
+function* getFunds() {
     try {
         const response = yield call(getRequest, BASE_API_URL + USERS.GET_FUNDS), responseData = response[1]
         if (responseData.success) {
