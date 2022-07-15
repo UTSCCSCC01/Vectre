@@ -223,7 +223,7 @@ const search = (session, searchVal) => {
     const regex = `(?i).*${searchVal}.*`
     const query = [
         `MATCH (community: Community)`,
-        `WHERE community.communityID =~ $regex OR community.name =~ $regex OR community.bio =~ $regex\`,`
+        `WHERE community.communityID =~ $regex OR community.name =~ $regex OR community.bio =~ $regex`,
         `RETURN community`,
     ].join('\n');
     return session.run(query, {
