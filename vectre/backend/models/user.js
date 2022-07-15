@@ -540,7 +540,7 @@ const getNFT = (walletAddress) => { // Gets all NFTs of a User using OpenSea API
 }
 
 const getFunds = (walletAddress) => { // Gets the wallet funds of a User using Etherscan API.
-    return fetch(`https://api.etherscan.io/api?module=account&action=balance&address=${walletAddress}&tag=latest&apikey=3BM6KS2XEI6DS1WSK5FCQ897ZXKCJIVIQG`)
+    return fetch(`https://api.etherscan.io/api?module=account&action=balance&address=${walletAddress}&tag=latest&apikey=${config.etherscanToken}`)
         .then(res => {
             if (res.status !== 200) {
                 throw {
