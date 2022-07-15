@@ -22,7 +22,7 @@ const HomePage = () => {
     const sideButtonsList = [
       {
         link: "",
-        text: "Filter/Sort Feed",
+        text: "Sort Feed",
         func: () => {
           onOpen();
         }
@@ -42,7 +42,7 @@ const HomePage = () => {
     }
     useEffect(() => {
         loadFeed()
-    }, [])
+    }, [feedSortType])
 
     return (
         <ContentWIthNavContainer>

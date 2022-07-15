@@ -54,7 +54,7 @@ const PostModalComponent = ({
                         px={{ base: '24px', md: '32px' }} >
                         <Flex direction={"y"} gap="32px" justifyContent={"center"}>
                             <Stack>
-                                <h1>Sort By</h1>
+                                <h1>Sort Feed By:</h1>
                                 <Button onClick={() => {updateFeedSortType(FEED_SORT_TYPE.LIKES)}}>Most liked</Button>
                                 <Button onClick={() => {updateFeedSortType(FEED_SORT_TYPE.TIMESTAMP)}}>Newest</Button>
                             </Stack>
