@@ -11,6 +11,7 @@ import PostModalComponent from './PostModalComponent/PostModalComponent';
 
 const PostComponent = ({
     item,
+    fromFeed=false,
     ...otherProps
 }) => {
     const { isOpen, onClose, onOpen } = useDisclosure();
@@ -25,14 +26,12 @@ const PostComponent = ({
                 px={'18px'}
                 py={'15px'}
                 _hover={{ border: "1px solid rgba(59, 130, 246, 0.4)" }}
-                cursor={window.location.toString().includes('home') ? 'pointer' : 'default'}
-                onClick={(() => {
-                    if (item.postID && !item.parent && window.location.toString().includes('home')) window.location = `/post/${item.postID}`;
-                })}>
+                cursor={!item.parent ? 'pointer' : 'default'}
+                onClick={() => { if (item.postID && !item.parent) window.location = `/post/${item.postID}` }}>
                 <Stack gap={'4px'}>
                     <PostTopComponent item={item} />
                     <PostMidComponent item={item} onOpen={onOpen} />
-                    <PostBotComponent item={item} />
+                    <PostBotComponent item={item} fromFeed={fromFeed}/>
                 </Stack>
                 {otherProps.children}
             </Box>

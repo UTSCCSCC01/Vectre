@@ -105,11 +105,15 @@ export const updateDashboard = (walletAddress, dashboard, resetSelectedList) => 
     resetSelectedList
 })
 
-export const followUser = (walletAddressToFollow,) => ({
+export const followUser = (walletAddressToFollow, profileWalletAddress, toggleFollowList) => ({
     type: FOLLOW_USER,
-    walletAddressToFollow
+    walletAddressToFollow,
+    profileWalletAddress,
+    toggleFollowList
 })
-export const unfollowUser = (walletAddressToUnfollow) => ({
+export const unfollowUser = (walletAddressToUnfollow, profileWalletAddress, toggleFollowList) => ({
     type: UNFOLLOW_USER,
-    walletAddressToUnfollow
+    walletAddressToUnfollow,
+    profileWalletAddress,
+    toggleFollowList
 })
