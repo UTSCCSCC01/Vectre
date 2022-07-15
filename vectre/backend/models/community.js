@@ -3,6 +3,7 @@ const { getRelationshipFromRole } = require('../utils/Utils');
 const Community = require('./neo4j/community')
 const { ROLES } = require("./neo4j/community");
 const User = require('./neo4j/user')
+const Post = require('./neo4j/post')
 
 // helper functions
 const filterBody = function (body) {
@@ -635,12 +636,6 @@ const communityUpdate = function (session, walletAddress, communityID, body) {
 }
 
 const getCommunityFeed = function (session, communityID, start, size, sortType, sortOrder) {
-    if(!exists(session, communityID)) {
-        throw {
-            success: false,
-            message: "Community does not exist"
-        }
-    }
     sortType = sortType.toLowerCase()
     sortOrder = sortOrder.toLowerCase()
 
@@ -683,33 +678,43 @@ const getCommunityFeed = function (session, communityID, start, size, sortType, 
         `LIMIT toInteger($size)`
     ].join('\n');
 
-    return session.run(query, {
-        communityID: communityID,
-        start: start,
-        size: size
-    })
-        .then((results) => {
-            let posts = []
-            results.records.forEach((record) => {
-                let post = new Post(record.get("post"))
-                post.comment = String(record.get("comment").low);
-                if (post.repostPostID) {
-                    post.repostPost = new Post(record.get('repost'))
-                    post.repostPost.author = new User(record.get('repostAuthor'))
-                }
+    return exists(session, communityID)
+        .then(idCheck => {
+            if (idCheck.result) { // Community exists
+                return session.run(query, {
+                    communityID: communityID,
+                    start: start,
+                    size: size
+                })
+                    .then((results) => {
+                        let posts = []
+                        results.records.forEach((record) => {
+                            let post = new Post(record.get("post"))
+                            post.comment = String(record.get("comment").low);
+                            if (post.repostPostID) {
+                                post.repostPost = new Post(record.get('repost'))
+                                post.repostPost.author = new User(record.get('repostAuthor'))
+                            }
 
-                posts.push(post)
-            })
-            return {
-                success: true,
-                posts: posts
+                            posts.push(post)
+                        })
+                        return {
+                            success: true,
+                            posts: posts
+                        }
+                    })
+            } else {
+                throw {
+                    success: false,
+                    message: "Community does not exist"
+                }
             }
         })
         .catch((error) => {
             throw {
                 success: false,
                 message: "Failed to get feed",
-                error: error
+                error: error.message
             }
         });
 }
