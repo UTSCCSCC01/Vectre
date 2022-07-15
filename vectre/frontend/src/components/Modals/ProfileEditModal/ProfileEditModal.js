@@ -3,28 +3,17 @@ import {
     Modal,
     ModalOverlay,
     ModalContent,
-    ModalHeader,
-    ModalCloseButton,
     ModalBody,
-    FormControl,
-    FormLabel,
-    Input,
     ModalFooter,
-    Button,
-    Flex,
-    Text,
-    Textarea,
-    Image,
-    Box
+    Button
 } from "@chakra-ui/react"
 import { FaUser } from 'react-icons/fa'
 import { ReactComponent as EditIcon } from "../../../assets/icons/edit-icon.svg";
-import {getAvatarOrDefault, getBannerOrDefault} from "../../../utils/Utils";
-
+import FormInput from "../FormInput/FormInput";
+import FormTextArea from "../FormTextArea/FormTextArea";
+import StyledModalHeader from "../StyledModalHeader/StyledModalHeader";
+import BannerProfilePicWrapper from "../BannerProfilePicWrapper/BannerProfilePicWrapper";
 class ProfileEditModal extends React.Component {
-    constructor(props) {
-        super(props)
-    }
 
     handleProfileEditSubmit = (event) => {
         event.preventDefault();
@@ -37,7 +26,7 @@ class ProfileEditModal extends React.Component {
         this.props.closeModal()
     }
 
-    render () {
+    render() {
         return (
             <>
                 <Modal
@@ -52,61 +41,15 @@ class ProfileEditModal extends React.Component {
                     />
                     <ModalContent
                         py={'40px'}>
-                        <ModalHeader
-                            px={{base: '24px', md: '64px'}}>
-                            <ModalCloseButton
-                                color={'primary.400'}
-                                top={4}
-                                left={4}
-                                transform={'scale(1.8)'}
-                                _focus={{outline: 0}}
-                                _hover={{background: 'white'}}
-                                _active={{background: 'white'}}
-                            />
-                            <Flex
-                                justifyContent={'center'}
-                                alignItems={'center'}
-                                color={'primary.400'}
-                            >
-                                <Text
-                                    fontWeight={700}
-                                    fontSize="28px"
-                                    mr="15px">
-                                    Edit Profile
-                                </Text>
-                                <FaUser size={'2rem'}/>
-                            </Flex>
-                        </ModalHeader>
-
+                        <StyledModalHeader headerText={'Edit Profile'} icon={<FaUser size={'2rem'} />} />
                         <ModalBody
-                            px={{base: '24px', md: '64px'}}>
+                            px={{ base: '24px', md: '64px' }}>
                             <form
                                 id="setup-form"
                                 onSubmit={this.handleProfileEditSubmit}
                             >
-                                <Flex
-                                    flexDirection={'column'}
-                                    gap={'20px'}
-                                    position={'relative'}>
-                                    <Box
-                                        position={'absolute'}
-                                        top={'53%'}
-                                        left={'50%'}
-                                        marginLeft={'-60px'}>
-                                        <Image
-                                            border={'5px solid white'}
-                                            src={getAvatarOrDefault(this.props.loggedInUser.profilePic)}
-                                            fit={'cover'}
-                                            overflow={'hidden'}
-                                            borderRadius={'full'}
-                                            boxSize={'120px'}/>
-                                    </Box>
-                                    <Image
-                                        src={getBannerOrDefault(this.props.loggedInUser.bgImageURL)}
-                                        fit={'cover'}
-                                        overflow={'hidden'}
-                                        borderRadius={'6px'}
-                                        height={'200px'}/>
+                                <BannerProfilePicWrapper
+                                    data={this.props.loggedInUser}>
                                     <Button
                                         alignSelf={'end'}
                                         ml={'32px'}
@@ -115,75 +58,20 @@ class ProfileEditModal extends React.Component {
                                         px={'46px'}
                                         py={'11px'}
                                         borderRadius={'6px'}
-                                        rightIcon={<EditIcon/>}
-                                        _focus={{outline: 0}}
+                                        rightIcon={<EditIcon />}
+                                        _focus={{ outline: 0 }}
                                         disabled={true}> {/* TODO: Implement edit avatar/banner */}
                                         Edit
                                     </Button>
-                                </Flex>
-                                <FormControl
-                                    isRequired
-                                    pt={'12px'}>
-                                    <FormLabel
-                                        htmlFor='name'
-                                        color={'primary.400'}
-                                        fontWeight={700}
-                                        fontSize={'20px'}
-                                        mb={'3px'}>
-                                        Name:
-                                    </FormLabel>
-                                    <Input
-                                        id='name'
-                                        defaultValue={this.props.loggedInUser.name}
-                                        fontSize={'18px'}
-                                        bg={'rgba(198, 219, 255, 0.32)'}
-                                        border={'none'}/>
-                                </FormControl>
-                                <FormControl
-                                    isRequired
-                                    pt={'24px'}>
-                                    <FormLabel
-                                        htmlFor='username'
-                                        color={'primary.400'}
-                                        fontWeight={700}
-                                        fontSize={'20px'}
-                                        mb={'3px'}>
-                                        Username:
-                                    </FormLabel>
-                                    <Input
-                                        id='username'
-                                        defaultValue={this.props.loggedInUser.username}
-                                        fontSize={'18px'}
-                                        bg={'rgba(198, 219, 255, 0.32)'}
-                                        border={'none'}
-                                        _placeholder={{fontWeight: '700', color: 'sub.400'}}/>
-                                </FormControl>
-                                <FormControl
-                                    pt={'24px'}>
-                                    <FormLabel
-                                        htmlFor='bio'
-                                        color={'primary.400'}
-                                        fontWeight={700}
-                                        fontSize={'20px'}
-                                        mb={'3px'}>
-                                        Bio:
-                                    </FormLabel>
-                                    <Textarea
-                                        id='bio'
-                                        defaultValue={this.props.loggedInUser.bio}
-                                        fontSize={'18px'}
-                                        bg={'rgba(198, 219, 255, 0.32)'}
-                                        border={'none'}
-                                        resize={'none'}
-                                        size={'md'}
-                                        minHeight={'140px'}
-                                        _placeholder={{fontWeight: '700', color: 'sub.400'}}/>
-                                </FormControl>
+                                </BannerProfilePicWrapper>
+                                <FormInput inputID={'name'} inputDefaultValue={this.props.loggedInUser.name} inputLabelText={'Name:'} isRequired={true} />
+                                <FormInput inputID={'username'} inputDefaultValue={this.props.loggedInUser.username} inputLabelText={'Username:'} isRequired={true} />
+                                <FormTextArea inputID={'bio'} inputDefaultValue={this.props.loggedInUser.bio} inputLabelText={'Bio:'} />
                             </form>
                         </ModalBody>
                         <ModalFooter
                             pt={'24px'}
-                            px={{base: '24px', md: '64px'}}>
+                            px={{ base: '24px', md: '64px' }}>
                             <Button
                                 type={"submit"}
                                 form={"setup-form"}
@@ -194,7 +82,7 @@ class ProfileEditModal extends React.Component {
                                 px={'46px'}
                                 py={'11px'}
                                 borderRadius={'6px'}
-                                _focus={{outline: 0}}>
+                                _focus={{ outline: 0 }}>
                                 Save
                             </Button>
                         </ModalFooter>
