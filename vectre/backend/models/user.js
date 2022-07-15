@@ -4,6 +4,7 @@ const Notification = require('../models/notification');
 const config = require('../config');
 const jwt = require('jsonwebtoken')
 const ethUtil = require('ethereumjs-util');
+const imgUtils = require('../utils/images')
 
 const getAll = (session) => { // Returns all Users
     const query = "MATCH (user:User) RETURN user";
@@ -321,7 +322,24 @@ const updateProfile = function (session, walletAddress, newProf) {
             if (!_.isEmpty(existence.records)) { // Check for existing username
                 return { success: false, message: "Username already exists." }
             } else {
-                const profileFilter = ["name", "username", "bio"]
+                let profileFilter = ["name", "username", "bio"]
+                if (newProf.profilePicData) {
+                    const uploadResponse = imgUtils.upload(newProf.profilePicData)
+                    newProf.profilePic = null;
+                    if (uploadResponse.data.link) {
+                        newProf.profilePic = uploadResponse.data.link
+                        profileFilter.push("profilePic")
+                    }
+                }
+                if (newProf.profileBannerData) {
+                    const uploadResponse = imgUtils.upload(newProf.profileBannerData)
+                    newProf.profileBanner = null;
+                    if (uploadResponse.data.link) {
+                        newProf.profileBanner = uploadResponse.data.link
+                        profileFilter.push("profileBanner")
+                    }
+
+                }
                 return updateUser(session, walletAddress, profileFilter, newProf)
                     .then(response => { return response })
                     .catch(error => { throw error })
