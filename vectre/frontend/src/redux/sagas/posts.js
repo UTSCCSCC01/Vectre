@@ -70,9 +70,10 @@ function* getCommentsSaga(action) {
 
 function* getFeed(action) {
     try {
-        const response = yield call(postRequest, BASE_API_URL + POSTS.GET_FEED, {start: action.feedIndex}), responseData = response[1]
+        const defaultSize = 10
+        const response = yield call(postRequest, BASE_API_URL + POSTS.GET_FEED, {start: action.feedIndex, size: defaultSize}), responseData = response[1]
         if (responseData.success) {
-            yield put(storeFeed(responseData.posts))
+            yield put(storeFeed(responseData.posts, defaultSize))
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }

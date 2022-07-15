@@ -10,7 +10,8 @@ const initialState = {
     post: {},
     feed: [],
     feedIndex: 0,
-    comments: []
+    comments: [],
+    feedPaginationComplete: false
 }
 
 const posts = (state = initialState, action) => {
@@ -34,7 +35,8 @@ const posts = (state = initialState, action) => {
             return {
                 ...state,
                 feed: newFeed,
-                feedIndex: newFeed.length
+                feedIndex: newFeed.length,
+                feedPaginationComplete: action.requestedSize !== action.posts.length
             }
         case DO_LIKE:
             if (action.isComment) {

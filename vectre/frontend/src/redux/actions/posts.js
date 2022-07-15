@@ -33,9 +33,10 @@ export const getFeed = (feedIndex) => ({
     type: GET_FEED,
     feedIndex
 })
-export const storeFeed = (posts) => ({
+export const storeFeed = (posts, requestedSize) => ({
     type: STORE_FEED,
-    posts
+    posts,
+    requestedSize
 })
 
 export const createRepost = (repostData, redirectWindow) => ({

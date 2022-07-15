@@ -5,13 +5,14 @@ import {
     Stack
 } from '@chakra-ui/react'
 import {useDispatch, useSelector} from "react-redux";
-import {feedIndexSelector, feedSelector} from "../../redux/selectors/posts";
+import {feedIndexSelector, feedPaginationCompleteSelector, feedSelector} from "../../redux/selectors/posts";
 import {useEffect} from "react";
 import {getFeed} from "../../redux/actions/posts";
 
 const HomePage = () => {
     const feed = useSelector(feedSelector)
     const feedIndex = useSelector(feedIndexSelector)
+    const feedPaginationComplete = useSelector(feedPaginationCompleteSelector)
     const dispatch = useDispatch()
 
     function loadFeed() {
@@ -32,7 +33,7 @@ const HomePage = () => {
                             </Box>
                         )
                     })}
-                    {feed.length === feedIndex ?
+                    {feed.length === feedIndex && !feedPaginationComplete ?
                         <Button onClick={loadFeed}>Load more</Button>
                         : null}
                 </Stack>
