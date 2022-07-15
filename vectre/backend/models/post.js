@@ -2,11 +2,12 @@ const _ = require('lodash');
 const Post = require('./neo4j/post')
 const User = require('./neo4j/user')
 const { nano } = require('../utils/Utils')
+const imgUtils = require('../utils/images')
 const Notification = require("../models/notification")
 const { ROLES } = require("../models/neo4j/community");
 const Community = require("./community")
 
-const createPost = function (session, authorWalletAddress, body) {
+const createPost = function (session, authorWalletAddress, body, imageURL) {
     if (!body.text) {
         throw {
             success: false,
@@ -15,7 +16,6 @@ const createPost = function (session, authorWalletAddress, body) {
     }
     const postID = nano()
     const timestamp = new Date().toISOString()
-
     return Community.isRole(session, authorWalletAddress, body.communityID, ROLES.MEMBER.type)
         .then(memberCheck => {
             if (!memberCheck.emptyInput) {
@@ -57,7 +57,7 @@ const createPost = function (session, authorWalletAddress, body) {
                                 postID: postID,
                                 repostPostID: body.repostPostID,
                                 text: body.text,
-                                imageURL: body.imageURL ? body.imageURL : null, // optional
+                                imageURL: imageURL, // optional
                                 author: authorWalletAddress,
                                 timestamp: timestamp
                             })
@@ -89,7 +89,7 @@ const createPost = function (session, authorWalletAddress, body) {
                         throw {
                             success: false,
                             message: "Failed to create repost",
-                            error: error
+                            error: error.message
                         }
                     });
             } else {
@@ -104,7 +104,7 @@ const createPost = function (session, authorWalletAddress, body) {
                 return session.run(query, {
                     postID: postID,
                     text: body.text,
-                    imageURL: body.imageURL ? body.imageURL : null, // optional
+                    imageURL: imageURL, // optional
                     author: authorWalletAddress,
                     timestamp: timestamp
                 })
@@ -122,7 +122,7 @@ const createPost = function (session, authorWalletAddress, body) {
                         throw {
                             success: false,
                             message: "Failed to create post",
-                            error: error
+                            error: error.message
                         }
                     });
             }
