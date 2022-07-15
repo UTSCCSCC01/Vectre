@@ -516,9 +516,7 @@ const getUserFeed = function (session, walletAddress, start, size, sortType, sor
             throw {
                 success: false,
                 message: "Failed to get posts",
-                error: error,
-                orderBy,
-                order
+                error: error
             }
         });
 }
