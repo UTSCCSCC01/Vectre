@@ -14,8 +14,11 @@ const HomePage = () => {
     const feedIndex = useSelector(feedIndexSelector)
     const dispatch = useDispatch()
 
-    useEffect(() => {
+    function loadFeed() {
         dispatch(getFeed(feedIndex))
+    }
+    useEffect(() => {
+        loadFeed()
     }, [])
 
     return (
@@ -30,7 +33,7 @@ const HomePage = () => {
                         )
                     })}
                     {feed.length === feedIndex ?
-                        <Button>Load more</Button>
+                        <Button onClick={loadFeed}>Load more</Button>
                         : null}
                 </Stack>
             </Box>
