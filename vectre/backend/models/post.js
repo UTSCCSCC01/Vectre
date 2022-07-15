@@ -523,7 +523,8 @@ const getUserFeed = function (session, walletAddress, start, size) {
         `WHERE repost.postID = post.repostPostID`,
         `OPTIONAL MATCH (repostAuthor:User)`,
         `WHERE repostAuthor.walletAddress = repost.author`,
-        `RETURN DISTINCT currentUser, followedUser, post, repost, repostAuthor, count(l) AS likes, count(c) AS comment`,
+        `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
+        `RETURN DISTINCT currentUser, followedUser, post, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID`,
         `ORDER BY post.timestamp DESC`,
         `SKIP toInteger($start)`,
         `LIMIT toInteger($size)`
@@ -540,7 +541,7 @@ const getUserFeed = function (session, walletAddress, start, size) {
                 let post = new Post(record.get("post"))
                 post.author = new User(record.get("followedUser"))
                 post.comment = String(record.get("comment").low);
-                post.community = "notarealcommunity" // TODO: Unhardcode this value
+                post.community = record.get('com.communityID') ? String(record.get('com.communityID')) : null
                 post.alreadyLiked = record.get('likes').low > 0
                 if (post.repostPostID) {
                     post.repostPost = new Post(record.get('repost'))
