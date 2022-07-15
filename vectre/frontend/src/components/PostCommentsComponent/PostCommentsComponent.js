@@ -9,19 +9,14 @@ const PostCommentsComponent = ({
 }) => {
     return (
         <>
-            {/* Add Comments below */}
-            {
-                comments !== undefined ?
-                    comments.map((item, i) => {
-                        return (
-                            <Box key={i} mt={item.parent ? "0 !important" : "initial"}>
-                                <PostComponent item={item} />
-                            </Box>
-                        )
-                    })
-                    : (
-                        <Box>No Comments? 🤔 </Box>
+            {comments ? comments.map((item, i) => {
+                return (
+                        <Box id={item.postID} key={i} mt={item.parent ? "0 !important" : "initial"}>
+                            <PostComponent item={item} />
+                        </Box>
                     )
+                })
+                : <Box>No Comments? 🤔 </Box>
             }
         </>
     );

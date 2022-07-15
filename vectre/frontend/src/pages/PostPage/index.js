@@ -30,21 +30,24 @@ const PostPage = () => {
         dispatch(getComments(postID));
     }, [])
 
+    if (post.length !== 0 && post[0].parent) window.location = `/post/${post[0].parent}#${post[0].postID}`
+
     return (
         <ContentWIthNavContainer>
             <Box py={'60px'} maxWidth={'4xl'} margin={'0 auto'}>
                 <Stack alignSelf={'center'} gap={'16px'}>
-                    {
-                        // checks if post.author is defined first
-                        post.length !== 0 ? (
-                            <>
-                                <PostComponent item={post[0]} />
-                                {loggedInUser.walletAddress ? (<UserCommentComponent item={{ author: loggedInUser }} isComment={post[0].parent !== null} />) : (<UserCommentNotLoggedInComponent />)}
-                                <PostCommentsComponent comments={comments} />
-                            </>
-                        ) : (
-                            <Box>Post does not exist!</Box>
-                        )
+                    {(post.length !== 0 && post[0].author && !post[0].parent) ?
+                        <>
+                            <PostComponent item={post[0]} />
+                            {loggedInUser.walletAddress ?
+                                <UserCommentComponent
+                                    item={{ author: loggedInUser }}
+                                    isComment={post[0].parent !== null} />
+                            : <UserCommentNotLoggedInComponent /> }
+                            <div id="comments"></div>
+                            <PostCommentsComponent comments={comments} />
+                        </>
+                        : <Box>Post does not exist!</Box>
                     }
                 </Stack>
             </Box>

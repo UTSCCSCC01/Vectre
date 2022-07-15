@@ -21,6 +21,7 @@ export const USERS = {
 
 export const POSTS = {
     CREATE_POST: "/posts/create",
+    GET_FEED: "/posts/feed",
     GET_POST: "/posts/{postID}",
     CREATE_REPOST: "/posts/create",
     CREATE_COMMENT: "/posts/create/{postID}/comment",
@@ -32,4 +33,13 @@ export const POSTS = {
 
 export const NOTIF = {
     READ_NOTIFICATION: "/notifications/{notificationID}/read"
+}
+
+export const COMMUNITY = {
+    CREATE_COMMUNITY: "/communities/create",
+    GET_COMMUNITY: "/communities/{communityID}",
+    UPDATE_COMMUNITY: "/communities/{communityID}/update",
+    GET_ROLES_LOGGED_IN_USER: "/communities/{communityID}/members/{walletAddress}/roles",
+    JOIN_COMMUNITY: "/communities/{communityID}/join",
+    LEAVE_COMMUNITY: "/communities/{communityID}/leave"
 }
