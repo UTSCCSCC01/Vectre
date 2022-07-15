@@ -4,7 +4,7 @@ const Notification = require('../models/notification');
 const config = require('../config');
 const jwt = require('jsonwebtoken')
 const ethUtil = require('ethereumjs-util');
-const fetch = (url) => import('node-fetch').then(({default: fetch}) => fetch(url));
+const fetch = (url) => import('node-fetch').then(({ default: fetch }) => fetch(url));
 
 const getAll = (session) => { // Returns all Users
     const query = "MATCH (user:User) RETURN user";
@@ -235,7 +235,7 @@ const updateUser = function (session, walletAddress, filter, newUser) {
     for (let f of nonEmpty) {
         if ((f in newUser)) {
             if (newUser[f] == "") {
-                throw {success: false, message: `Field ${f} is empty.`}
+                throw { success: false, message: `Field ${f} is empty.` }
             }
 
             if (f === "username") {
@@ -539,6 +539,40 @@ const getNFT = (walletAddress) => { // Gets all NFTs of a User using OpenSea API
         })
 }
 
+const getFunds = (walletAddress) => { // Gets the wallet funds of a User using Etherscan API.
+    return fetch(`https://api.etherscan.io/api?module=account&action=balance&address=${walletAddress}&tag=latest&apikey=${config.etherscanToken}`)
+        .then(res => {
+            if (res.status !== 200) {
+                throw {
+                    success: false,
+                    message: "Failed to retrieve wallet funds."
+                }
+            }
+            return res.json()
+        })
+        .then(json => {
+            if (json.status == 0) {
+                return { // User has no NFTs
+                    success: false,
+                    message: json.message,
+                    error: json.result,
+                }
+            }
+            var walletFunds = json.result / Math.pow(10, 18);
+            return {
+                success: true,
+                walletFunds: walletFunds,
+                message: `Successfully retrieved user's wallet funds`
+            }
+        }).catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to get user's wallet funds",
+                error: error.message
+            }
+        })
+}
+
 const updateDashboard = (session, walletAddress, body) => {  // Sets the NFTs in the dashboard of a User.
     const query = `MATCH (user:User {walletAddress: $walletAddress}) SET user.dashboard = $dashboard RETURN user`;
     return session.run(query, {
@@ -581,5 +615,6 @@ module.exports = {
     follow: followUser,
     unfollow: unfollowUser,
     getNFT,
-    updateDashboard
+    updateDashboard,
+    getFunds,
 }
