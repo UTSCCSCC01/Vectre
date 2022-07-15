@@ -35,14 +35,14 @@ router.get('/:walletAddress/dashboard', (req, res) => {
 })
 // GET /users/{walletAddress}/funds
 router.get('/:walletAddress/funds', authenticateToken, (req, res) => {
-    if (req.walletAddress == req.params.walletAddress) {
-        User.getFunds(req.params.walletAddress)
+    if (req.walletAddress) {
+        User.getFunds(req.walletAddress)
             .then((result) => res.send(result))
             .catch((error) => res.send(error))
     } else {
         res.status(403).send({
             success: false,
-            message: "You do not have access to this User's wallet funds."
+            message: "You do not have access to get this User's wallet funds."
         })
     }
 })

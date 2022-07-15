@@ -552,16 +552,17 @@ const getFunds = (walletAddress) => { // Gets the wallet funds of a User using E
         })
         .then(json => {
             if (json.status == 0) {
-                return { // User has no NFTs
+                return { // failed EtherscanAPI call
                     success: false,
+                    error: json.message,
                     message: json.message,
-                    error: json.result,
                 }
             }
             var walletFunds = json.result / Math.pow(10, 18);
+            walletFunds = walletFunds.toFixed(3);
             return {
                 success: true,
-                walletFunds: walletFunds,
+                funds: walletFunds,
                 message: `Successfully retrieved user's wallet funds`
             }
         }).catch((error) => {
