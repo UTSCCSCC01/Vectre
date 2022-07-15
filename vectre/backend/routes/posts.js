@@ -4,6 +4,7 @@ var router = express.Router();
 const dbUtils = require('../utils/neo4j/dbUtils');
 const Post = require('../models/post');
 const { authenticateToken, storeWalletAddressFromToken } = require("../utils/auth");
+const { upload } = require('../utils/images');
 
 // Posts
 // POST /posts/feed
@@ -17,9 +18,19 @@ router.post('/feed', authenticateToken, (req, res, next) => {
 
 // POST /posts/create
 router.post('/create', authenticateToken, (req, res, next) => {
-    Post.createPost(dbUtils.getSession(req), req.walletAddress, req.body)
-        .then((result) => res.send(result))
-        .catch((error) => res.send(error))
+    if (body.imageData) {
+        upload(body.imageData).then((result) => {
+            Post.createPost(dbUtils.getSession(req), req.walletAddress, req.body, result.data.link)
+                .then((result) => res.send(result))
+                .catch((error) => res.send(error))
+        })
+            .catch((error) => res.send("Image upload failed"));
+    }
+    else {
+        Post.createPost(dbUtils.getSession(req), req.walletAddress, req.body, null)
+            .then((result) => res.send(result))
+            .catch((error) => res.send(error))
+    }
 })
 // POST /posts/{postID}/update
 router.post('/:postID/update', authenticateToken, (req, res, next) => {

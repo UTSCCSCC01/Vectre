@@ -12,10 +12,11 @@ function upload(imageData) {
         }
     })
         .then(response => response.json())
+        .catch(error => console.log(error))
 }
 
 function retrieve(body) {
-    if(!body.imageURL) {
+    if (!body.imageURL) {
         throw {
             success: false,
             message: "No image URL in request body"
@@ -30,7 +31,7 @@ function retrieve(body) {
         }
     })
         .then(response => response.json())
-
+        .catch(error => console.log(error))
 }
 
 function getHash(imageURL) {
