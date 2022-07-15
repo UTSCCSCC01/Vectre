@@ -37,8 +37,6 @@ router.get('/:walletAddress/dashboard', (req, res) => {
 router.get('/:walletAddress/funds', authenticateToken, (req, res) => {
     if (req.walletAddress) {
         User.getFunds(req.walletAddress)
-    if (req.walletAddress == req.params.walletAddress) {
-        User.getFunds(req.params.walletAddress)
             .then((result) => res.send(result))
             .catch((error) => res.send(error))
     } else {

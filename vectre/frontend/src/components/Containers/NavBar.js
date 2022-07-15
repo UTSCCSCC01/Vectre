@@ -117,6 +117,7 @@ export default function NavBar() {
                                 fontSize={'18px'}
                                 fontWeight={700}
                                 color={'primary.400'}
+                                _hover={{ textDecoration: "none" }}
                                 bg={'white'}
                                 _focus={{ outline: 0 }}>
                                 {funds} ETH
