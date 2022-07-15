@@ -31,9 +31,8 @@ import {
     BASE_API_URL,
     USERS
 } from "../constants/endpoints";
-import { TOAST_STATUSES } from "../constants/toast";
-import { showToast } from "../actions/toast";
-import { showLoading } from "../../redux/actions/loading";
+import { TOAST_STATUSES } from "../constants/global";
+import {showLoading, showToast} from "../actions/global";
 
 // Login
 function* getLoginNonce(action) {

@@ -7,9 +7,9 @@ import {
 } from '@chakra-ui/react'
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { loadingSelector } from "../../redux/selectors/loading"
 import { getLoggedInUser } from "../../redux/actions/users";
 import ToastContainer from "./ToastContainer";
+import {loadingSelector} from "../../redux/selectors/global";
 
 const ContentWIthNavContainer = ({
     ...otherProps

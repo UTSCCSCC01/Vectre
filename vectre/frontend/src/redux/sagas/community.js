@@ -5,9 +5,8 @@ import {
     USERS,
     COMMUNITY
 } from "../constants/endpoints";
-import { showToast } from "../actions/toast";
-import { TOAST_STATUSES } from "../constants/toast";
-import { showLoading } from "../actions/loading";
+import {showLoading, showToast} from "../actions/global";
+import { TOAST_STATUSES } from "../constants/global";
 import {
     CREATE_COMMUNITY,
     GET_COMMUNITY,
