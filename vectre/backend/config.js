@@ -12,7 +12,8 @@ const config = {
     "jwtSecretToken": process.env.JWT_SECRET_TOKEN,
     "imgur": {
         "clientID" : process.env.IMGUR_CLIENT_ID
-    }
+    },
+    "etherscanToken": process.env.ETHERSCAN_TOKEN
 }
 
 module.exports = config;

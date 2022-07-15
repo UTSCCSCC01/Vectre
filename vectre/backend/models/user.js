@@ -568,6 +568,43 @@ const getNFT = (walletAddress) => { // Gets all NFTs of a User using OpenSea API
         })
 }
 
+const getFunds = (walletAddress) => { // Gets the wallet funds of a User using Etherscan API.
+    return fetch(`https://api.etherscan.io/api?module=account&action=balance&address=${walletAddress}&tag=latest&apikey=${config.etherscanToken}`)
+        .then(res => {
+            if (res.status !== 200) {
+                throw {
+                    success: false,
+                    message: "Failed to retrieve wallet funds."
+                }
+            }
+            return res.json()
+        })
+        .then(json => {
+            if (json.status == 0) {
+                return { // failed EtherscanAPI call
+                    success: false,
+                    error: json.message,
+                    message: json.message,
+                }
+            }
+            var walletFunds = json.result / Math.pow(10, 18);
+            if (walletFunds !== 0) {
+                walletFunds = walletFunds.toFixed(3);
+            }
+            return {
+                success: true,
+                funds: walletFunds,
+                message: `Successfully retrieved user's wallet funds`
+            }
+        }).catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to get user's wallet funds",
+                error: error.message
+            }
+        })
+}
+
 const updateDashboard = (session, walletAddress, body) => {  // Sets the NFTs in the dashboard of a User.
     const query = `MATCH (user:User {walletAddress: $walletAddress}) SET user.dashboard = $dashboard RETURN user`;
     return session.run(query, {
@@ -643,5 +680,6 @@ module.exports = {
     unfollow: unfollowUser,
     getNFT,
     updateDashboard,
-    getCommunitiesByUser
+    getCommunitiesByUser,
+    getFunds,
 }

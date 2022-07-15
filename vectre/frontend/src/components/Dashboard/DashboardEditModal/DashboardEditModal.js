@@ -176,7 +176,12 @@ function DashboardEditModal({
                     <ModalFooter>
                         <Button
                             onClick={(e) => {
-                                if (selectedList.length > 0) {
+                                if (selectedList.length === 0) {
+                                    const dashboard = JSON.stringify(selectedList)
+                                    dispatch(updateDashboard(loggedInUser.walletAddress, dashboard, () => { setSelectedList([]) }))
+                                    onClose();
+                                }
+                                else if (selectedList.length > 0) {
                                     const dashboard = JSON.stringify(selectedList).replace(/"/g, "'");
                                     dispatch(updateDashboard(loggedInUser.walletAddress, dashboard, () => { setSelectedList([]) }))
                                     onClose();

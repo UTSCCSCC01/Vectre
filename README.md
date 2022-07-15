@@ -28,6 +28,7 @@ We hope that Vectre will allow web3 communities to thrive by providing a platfor
    NEO4J_DB_PASSWORD=
    JWT_SECRET_TOKEN=
    IMGUR_CLIENT_ID=
+   ETHERSCAN_TOKEN=
    ```
 4. Start backend (runs on port 8080)
    ```powershell
