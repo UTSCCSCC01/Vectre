@@ -333,7 +333,7 @@ const updateProfile = function (session, walletAddress, newProf) {
                             }
 
                             if (newProf.banner) {
-                                imgUtils.upload(newProf.banner)
+                                return imgUtils.upload(newProf.banner)
                                     .then(result2 => {
                                         newProf.banner = null;
                                         if (result2.data.link) {
