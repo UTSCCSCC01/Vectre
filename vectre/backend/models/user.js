@@ -559,7 +559,9 @@ const getFunds = (walletAddress) => { // Gets the wallet funds of a User using E
                 }
             }
             var walletFunds = json.result / Math.pow(10, 18);
-            walletFunds = walletFunds.toFixed(3);
+            if (walletFunds !== 0) {
+                walletFunds = walletFunds.toFixed(3);
+            }
             return {
                 success: true,
                 funds: walletFunds,
