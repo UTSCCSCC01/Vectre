@@ -15,10 +15,7 @@ import {
 } from "../../redux/selectors/users";
 
 // Components
-import Dashboard from "../Dashboard/Dashboard"
 import ProfileUserDetails from "./ProfileUserDetails/ProfileUserDetails";
-import ProfilePosts from "./ProfilePosts/ProfilePosts";
-
 class Profile extends React.Component {
     constructor(props) {
         super(props)
@@ -55,22 +52,12 @@ class Profile extends React.Component {
 
     render() {
         return (
-            <div>
+            <>
+                <base href={`/user/${this.props.profileWalletAddress}/`} />
                 {!this.props.user.walletAddress ? `User ${this.props.profileWalletAddress} does not exist!`
-                    :
-                    <>
-                        <ProfileUserDetails props={this.props} handleUpdateUser={this.handleUpdateUser} handleFollowUser={this.handleFollowUser} following={this.state.following} />
-                        {(this.props.loggedInUser.walletAddress === this.props.profileWalletAddress || this.props.user.dashboard !== "[]") ? // Only show empty dashboard if its your own
-                            <Dashboard
-                                loggedInUser={this.props.loggedInUser}
-                                profileWalletAddress={this.props.profileWalletAddress}
-                                currentDashboard={this.props.user.dashboard}
-                            /> : null
-                        }
-                        <ProfilePosts props={this.props} />
-                    </>
+                    : <ProfileUserDetails props={this.props} handleUpdateUser={this.handleUpdateUser} handleFollowUser={this.handleFollowUser} following={this.state.following} />
                 }
-            </div>
+            </>
         )
     }
 }

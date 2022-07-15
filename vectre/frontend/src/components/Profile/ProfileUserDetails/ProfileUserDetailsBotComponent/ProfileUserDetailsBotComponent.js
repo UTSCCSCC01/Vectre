@@ -9,21 +9,6 @@ import TextButton from "../../../Buttons/TextButton/TextButton";
 import ProfileEditModal from "../../../Modals/ProfileEditModal/ProfileEditModal";
 import ProfileFollowListButton from "../ProfileFollowListButton/ProfileFollowListButton";
 
-const SampleIconLinks = [
-    {
-        type: "instagram",
-        link: "https://www.instagram.com/peetacho/"
-    },
-    {
-        type: "website",
-        link: "https://peetacho.com/"
-    },
-    {
-        type: "github",
-        link: "https://github.com/peetacho"
-    }
-]
-
 const ProfileUserDetailsBotComponent = ({
     props,
     handleUpdateUser,
@@ -57,25 +42,7 @@ const ProfileUserDetailsBotComponent = ({
                 </Box>
                 <Flex
                     pt={'25px'}
-                    justifyContent={'space-between'}
-                    alignContent={'center'}>
-                    <Flex
-                        alignContent={'center'}
-                        flexDirection={'row'}
-                        px={'14px'}
-                        py={'10px'}
-                        color={'primary.400'}
-                        bg={'rgba(248, 250, 255, 1)'}
-                        borderRadius={'6px'}
-                        gap={'10px'}>
-                        {
-                            SampleIconLinks.map((element, i) => {
-                                return (
-                                    <Text key={i}>{element.type}</Text>
-                                )
-                            })
-                        }
-                    </Flex>
+                    alignSelf={'end'}>
                     <Flex
                         alignContent={'center'}
                         gap={'16px'}>

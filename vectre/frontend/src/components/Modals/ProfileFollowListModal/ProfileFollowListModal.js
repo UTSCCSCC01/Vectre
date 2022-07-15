@@ -17,11 +17,10 @@ const ProfileFollowListModal = ({
     followList,
     type
 }) => {
-    const [scrollBehavior, setScrollBehavior] = React.useState('inside');
     return (
         <>
             <Modal
-                scrollBehavior={scrollBehavior}
+                scrollBehavior={'inside'}
                 isOpen={isOpen}
                 onClose={onClose}
                 isCentered>
