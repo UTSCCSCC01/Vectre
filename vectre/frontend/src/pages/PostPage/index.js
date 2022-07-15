@@ -30,7 +30,7 @@ const PostPage = () => {
         dispatch(getComments(postID));
     }, [])
 
-    if (post[0].parent) window.location = `/post/${post[0].parent}#${post[0].postID}`
+    if (post.length !== 0 && post[0].parent) window.location = `/post/${post[0].parent}#${post[0].postID}`
 
     return (
         <ContentWIthNavContainer>
