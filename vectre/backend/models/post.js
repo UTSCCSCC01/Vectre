@@ -8,7 +8,6 @@ const { ROLES } = require("../models/neo4j/community");
 const Community = require("./community")
 
 const createPost = function (session, authorWalletAddress, body, imageURL) {
-    console.log(imageURL);
     if (!body.text) {
         throw {
             success: false,
