@@ -1,3 +1,4 @@
+import React, { useEffect } from "react"
 import {
     Flex,
     Text,
@@ -18,11 +19,12 @@ import { FaWallet } from 'react-icons/fa'
 import NotificationPopover from '../Notifications/NotificationPopover'
 
 import VectreIcon from '../Icons/VectreIcon'
-import { loggedInUserSelector } from "../../redux/selectors/users";
+import { fundsSelector, loggedInUserSelector } from "../../redux/selectors/users";
 import { useSelector } from "react-redux";
 
 export default function NavBar() {
     const loggedInUser = useSelector(loggedInUserSelector)
+    const funds = useSelector(fundsSelector)
     return (
         <Container maxW={'8xl'}>
             <Flex alignItems="center"
@@ -117,7 +119,7 @@ export default function NavBar() {
                                 color={'primary.400'}
                                 bg={'white'}
                                 _focus={{ outline: 0 }}>
-                                --- $ETH
+                                {funds} ETH
                             </Button>
                         </Link>
                         <NotificationPopover />
