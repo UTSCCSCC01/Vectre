@@ -52,10 +52,14 @@ const getByWalletAddress = (session, walletAddress) => {
                         return getFollowers(session, walletAddress)
                             .then((followerResult) => {
                                 user.followers = followerResult.followers
-                                return {
-                                    success: true,
-                                    user: user
-                                }
+                                return getCommunitiesByUser(session, walletAddress)
+                                    .then((communitiesResult) => {
+                                        user.communities = communitiesResult.communities
+                                        return {
+                                            success: true,
+                                            user: user
+                                        }
+                                    })
                             })
                     })
             }
