@@ -7,8 +7,9 @@ import {
 } from '@chakra-ui/react'
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { loggedInUserSelector } from "../../redux/selectors/users";
 import { loadingSelector } from "../../redux/selectors/loading"
-import { getLoggedInUser } from "../../redux/actions/users";
+import { getLoggedInUser, getFunds } from "../../redux/actions/users";
 import ToastContainer from "./ToastContainer";
 
 const ContentWIthNavContainer = ({
@@ -16,8 +17,10 @@ const ContentWIthNavContainer = ({
 }) => {
     const isLoading = useSelector(loadingSelector);
     const dispatch = useDispatch()
+
     useEffect(() => {
         dispatch(getLoggedInUser())
+        dispatch(getFunds())
     }, [])
 
     return (
