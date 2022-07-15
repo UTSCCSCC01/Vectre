@@ -180,8 +180,7 @@ const get = function (session, communityID) {
                 success: false,
                 message: "Community does not exist"
             }
-        }
-        else {
+        } else {
             let community = new Community(result.records[0].get('c'))
             return {
                 success: true,
@@ -232,7 +231,7 @@ const search = (session, searchVal) => {
         .then((results) => {
             let communities = []
             results.records.forEach((record) => {
-                communities.push(new User(record.get('community')))
+                communities.push(new Community(record.get('community')))
             })
             return {
                 success: true,

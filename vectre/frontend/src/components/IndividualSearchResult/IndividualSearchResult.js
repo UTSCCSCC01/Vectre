@@ -10,8 +10,16 @@ import {
 import {TextButton} from "../Buttons/TextButton/TextButton"
 import { getAvatarOrDefault, getBannerOrDefault } from "../../utils/Utils";
 
-const IndividualSearchResult = ({username}) => {
+const IndividualSearchResult = ({
+    result
+}) => {
     // const dispatch = useDispatch();
+    const SEARCH_RESULT_TYPES = {
+        USER: "user",
+        COMMUNITY: "community"
+    }
+    const type = result.walletAddress ? SEARCH_RESULT_TYPES.USER : SEARCH_RESULT_TYPES.COMMUNITY
+
     return (
         // <Box marginTop={"20px"}>
         //     <Box padding={"10px"} width={"100%"} height={"119px"} borderRadius={"6px"} bg={"#FFFFFF"} justifyContent={"center"} display={"flex"} flexDirection={"row"}>
@@ -30,7 +38,7 @@ const IndividualSearchResult = ({username}) => {
                 marginLeft={'-60px'}>
                 <Image
                     border={'5px solid white'}
-                    src={getAvatarOrDefault(null)}
+                    src={getAvatarOrDefault(result.profilePic)}
                     fit={'cover'}
                     overflow={'hidden'}
                     borderRadius={'full'}
@@ -42,7 +50,7 @@ const IndividualSearchResult = ({username}) => {
                     borderRadius={'6px'}
                     height={'142px'}>
                     <Image
-                        src={getBannerOrDefault(null)}
+                        src={getBannerOrDefault(result.banner)}
                         fit={'cover'}
                         overflow={'hidden'}
                         borderRadius={'6px'}
@@ -52,11 +60,21 @@ const IndividualSearchResult = ({username}) => {
             <Grid width={"100%"} height={"82px"} borderRadius={"6px"} bg={"#FFFFFF"} justifyItems={"center"} alignContent={"center"} display={"grid"} templateColumns={"1fr 1fr 1fr"} templateRows={"1fr 1fr "} top={"30%"}>
                 <GridItem></GridItem>
                 <GridItem fontSize={"23px"} fontFamily={"DM Sans"} fontWeight={700} color={"#3B82F6"}>
-                    {username}
+                    {type === SEARCH_RESULT_TYPES.USER ? result.name : result.name}
                 </GridItem>
                 <GridItem></GridItem>
-                <GridItem justifyItems={"center"}><Button width={"100%"} height={"70%"} bottom={"0px"} backgroundColor={"#F6FAFF"} fontSize={"11px"} color={"#3B82F6"}>2022 followers</Button></GridItem>
-                <GridItem fontSize={"17px"} fontFamily={"DM Sans"} fontWeight={700} color={"#3B82F6"}>@{username}</GridItem>
+                <GridItem justifyItems={"center"}>
+                    <Button width={"100%"} height={"70%"}bottom={"0px"} backgroundColor={"#F6FAFF"} fontSize={"11px"} color={"#3B82F6"}>
+                        {type === SEARCH_RESULT_TYPES.USER ?
+                            (result.followerCount ? result.followerCount : 0) + " followers"
+                            :
+                            (result.memberCount ? result.memberCount : 0) + " members"
+                        }
+                    </Button>
+                </GridItem>
+                <GridItem fontSize={"17px"} fontFamily={"DM Sans"} fontWeight={700} color={"#3B82F6"}>
+                    {type === SEARCH_RESULT_TYPES.USER ? "@" + result.username : "< " + result.communityID + " >"}
+                </GridItem>
                 <Button width={"70%"} height={"70%"} backgroundColor={"#3B82F6"} color={"white"}>View</Button>
             </Grid>
         </Flex>

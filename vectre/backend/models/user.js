@@ -73,7 +73,7 @@ const search = (session, searchVal) => {
         `MATCH (user: User)`,
         `WHERE user.username =~ $regex OR user.name =~ $regex`,
         searchVal.toLowerCase().startsWith("0x") ? `OR user.walletAddress =~ $regex` : "", // only search wallet if starts w/ 0x
-        `RETURN user`,
+        `RETURN user`
     ].join('\n');
     return session.run(query, {
         regex: regex

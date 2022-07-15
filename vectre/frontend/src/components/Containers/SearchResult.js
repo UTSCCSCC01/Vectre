@@ -3,7 +3,7 @@ import {Box} from "@chakra-ui/react"
 import IndividualSearchResult from "../IndividualSearchResult/IndividualSearchResult"
 
 const SearchResultContainer = ({
-    listOfResults
+    results
 }) => {
     
 
@@ -15,11 +15,11 @@ const SearchResultContainer = ({
         </Box>
         <br />
         <Box width={"100%"} display={"grid"} gridTemplateColumns={"1fr 1fr"} gridGap="24px">
-            <IndividualSearchResult username = {"123"}/>
-            <IndividualSearchResult username = {"124"}/>
-            <IndividualSearchResult username = {"125"}/>
-            <IndividualSearchResult username = {"126"}/>
-            <IndividualSearchResult username = {"127"}/>
+            {results.map((result, i) => {
+                return (
+                    <IndividualSearchResult key={i} result={result}/>
+                )
+            })}
         </Box>
     </>
     )

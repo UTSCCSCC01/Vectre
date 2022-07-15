@@ -18,12 +18,15 @@ const SearchPage = () => {
     const searchedCommunities = useSelector(searchedCommunitiesSelector)
     const dispatch = useDispatch()
 
-    const searchInput = "Doo" // TODO: Replace with text field input
+    const searchInput = "E" // TODO: Replace with text field input
 
     function handleSearchSubmit() { // TODO: Call on form submit
         dispatch(searchUsers(searchInput))
         dispatch(searchCommunities(searchInput))
     }
+    useEffect(() => { // TODO: Remove when submit button is implemented
+        handleSearchSubmit()
+    }, [])
 
     return (
         <ContentWIthNavContainer>
@@ -35,7 +38,7 @@ const SearchPage = () => {
                             fontWeight={700}
                             color={'primary.400'}
                             bg={'white'} 
-                            placeHolder={"Looking For Something?"}>
+                            placeholder={"Looking For Something?"}>
                             </Input>
                     <Box display={"flex"} flexDirection={"column"}>
                         <TextButton
@@ -52,7 +55,7 @@ const SearchPage = () => {
                             text={"Search"} />
                     </Box>
                 </form>    
-                <SearchResultContainer/>
+                <SearchResultContainer results={[...searchedUsers, ...searchedCommunities]}/>
             </Box>
         </ContentWIthNavContainer>
     );
