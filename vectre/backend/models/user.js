@@ -331,21 +331,30 @@ const updateProfile = function (session, walletAddress, newProf) {
                                 newProf.profilePic = result.data.link;
                                 profileFilter.push("profilePic")
                             }
+
+                            if (newProf.banner) {
+                                imgUtils.upload(newProf.banner)
+                                    .then(result2 => {
+                                        newProf.banner = null;
+                                        if (result2.data.link) {
+                                            newProf.banner = result2.data.link;
+                                            profileFilter.push("banner")
+                                        }
+                                        return updateUser(session, walletAddress, profileFilter, newProf)
+                                            .then(response => { return response })
+                                            .catch(error => { throw error })
+                                    })
+                                
+                            }
                         })
-                }
-                if (newProf.banner) {
-                    imgUtils.upload(newProf.banner)
-                        .then(result => {
-                            newProf.banner = null;
-                            if (result.data.link) {
-                                newProf.banner = result.data.link;
-                                profileFilter.push("banner")
+                        .catch(error => {
+                            throw {
+                                success: false,
+                                message: "Could not update user"
                             }
                         })
                 }
-                return updateUser(session, walletAddress, profileFilter, newProf)
-                    .then(response => { return response })
-                    .catch(error => { throw error })
+                
             }
         })
         .catch(error => {

@@ -19,80 +19,78 @@ const createPost = function (session, authorWalletAddress, body) {
         imgUtils.upload(body.imageData)
             .then((result) => {
                 imageURL = result.data.link
-            })
-    }
-    const postID = nano()
-    const timestamp = new Date().toISOString()
+                const postID = nano()
+                const timestamp = new Date().toISOString()
 
-    return Community.isRole(session, authorWalletAddress, body.communityID, ROLES.MEMBER.type)
-        .then(memberCheck => {
-            if (!memberCheck.emptyInput) {
-                if (memberCheck.success) {
-                    if (!memberCheck.result) {
-                        // Author is not a member of Community
-                        return {
-                            success: false,
-                            message: "Author is not a Member of Community"
-                        }
-                    }
-                } else {
-                    // User or Community does not exist
-                    return {
-                        success: false,
-                        message: "User or Community does not exist"
-                    }
-                }
-            }
-
-            if (body.repostPostID) { // Repost
-                return getPostByID(session, null, body.repostPostID)
-                    .then((result) => {
-                        if (result.success) {
-                            if (result.post.repostPostID) { // Prevent repost of repost
-                                throw {
+                return Community.isRole(session, authorWalletAddress, body.communityID, ROLES.MEMBER.type)
+                    .then(memberCheck => {
+                        if (!memberCheck.emptyInput) {
+                            if (memberCheck.success) {
+                                if (!memberCheck.result) {
+                                    // Author is not a member of Community
+                                    return {
+                                        success: false,
+                                        message: "Author is not a Member of Community"
+                                    }
+                                }
+                            } else {
+                                // User or Community does not exist
+                                return {
                                     success: false,
-                                    message: "Cannot create repost of repost"
+                                    message: "User or Community does not exist"
                                 }
                             }
-                            const query = [
-                                `CREATE (p:Post {postID: $postID, repostPostID: $repostPostID, text: $text, imageURL: $imageURL, author: $author, timestamp: $timestamp, likes: 0, edited: false, parent: null})`,
-                                `WITH (p)`,
-                                `MATCH (u:User {walletAddress: $author}), (repost:Post {postID: $repostPostID})`,
-                                `CREATE (u)-[r:POSTED]->(p)`
-                            ].join('\n');
-
-                            return session.run(query, {
-                                postID: postID,
-                                repostPostID: body.repostPostID,
-                                text: body.text,
-                                imageURL: imageURL, // optional
-                                author: authorWalletAddress,
-                                timestamp: timestamp
-                            })
-                                .then((result2) => {
-                                    if (body.communityID) {
-                                        Community.linkPost(session, authorWalletAddress, postID, body.communityID)
-                                    }
-                                    return {
-                                        success: true,
-                                        message: "Successfully created repost",
-                                        newPostID: postID
-                                    }
-                                })
-                                .catch((error) => {
-                                    throw {
-                                        success: false,
-                                        message: "Failed to create repost",
-                                        error: error
-                                    }
-                                });
-                        } else {
-                            throw {
-                                success: false,
-                                message: result.message
-                            }
                         }
-                    })
+
+                        if (body.repostPostID) { // Repost
+                            return getPostByID(session, null, body.repostPostID)
+                                .then((result) => {
+                                    if (result.success) {
+                                        if (result.post.repostPostID) { // Prevent repost of repost
+                                            throw {
+                                                success: false,
+                                                message: "Cannot create repost of repost"
+                                            }
+                                        }
+                                        const query = [
+                                            `CREATE (p:Post {postID: $postID, repostPostID: $repostPostID, text: $text, imageURL: $imageURL, author: $author, timestamp: $timestamp, likes: 0, edited: false, parent: null})`,
+                                            `WITH (p)`,
+                                            `MATCH (u:User {walletAddress: $author}), (repost:Post {postID: $repostPostID})`,
+                                            `CREATE (u)-[r:POSTED]->(p)`
+                                        ].join('\n');
+
+                                         return session.run(query, {
+                                            postID: postID,
+                                            repostPostID: body.repostPostID,
+                                            text: body.text,
+                                            imageURL: imageURL, // optional
+                                            author: authorWalletAddress,
+                                            timestamp: timestamp
+                                        })
+                                            .then((result2) => {
+                                                if (body.communityID) {
+                                                Community.linkPost(session, authorWalletAddress, postID, body.communityID)
+                                                }
+                                                return {
+                                                    success: true,
+                                                    message: "Successfully created repost",
+                                                    newPostID: postID
+                                                }
+                                            })
+                                            .catch((error) => {
+                                                throw {
+                                                    success: false,
+                                                    message: "Failed to create repost",
+                                                    error: error
+                                                }
+                                            });
+                                    } else {
+                                        throw {
+                                            success: false,
+                                            message: result.message
+                                        }
+                                    }
+                })
                     .catch((error) => {
                         throw {
                             success: false,
@@ -135,6 +133,9 @@ const createPost = function (session, authorWalletAddress, body) {
                     });
             }
         })
+            })
+    }
+    
 };
 
 const createComment = function (session, authorWalletAddress, postID, body) {
