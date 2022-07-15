@@ -1,8 +1,8 @@
 import { all } from 'redux-saga/effects';
 import usersSaga from "./users";
 import postsSaga from "./posts";
-import notificationSaga from './notification';
-import communitySaga from './community';
+import notificationSaga from './notifications';
+import communitySaga from './communities';
 
 const headers = {
     'Content-Type': 'application/json',

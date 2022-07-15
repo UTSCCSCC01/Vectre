@@ -2,7 +2,7 @@ import {
     STORE_COMMUNITY,
     STORE_ROLES_LOGGED_IN_USER,
     STORE_SEARCHED_COMMUNITIES
-} from "../constants/community";
+} from "../constants/communities";
 
 const initialState = {
     community: {},
@@ -10,7 +10,7 @@ const initialState = {
     loggedInUserRoles: []
 }
 
-const community = (state = initialState, action) => {
+const communities = (state = initialState, action) => {
     switch (action.type) {
         case STORE_COMMUNITY:
             return {
@@ -32,4 +32,4 @@ const community = (state = initialState, action) => {
     }
 }
 
-export default community
+export default communities

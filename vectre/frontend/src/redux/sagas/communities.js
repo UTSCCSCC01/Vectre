@@ -15,14 +15,14 @@ import {
     JOIN_COMMUNITY,
     LEAVE_COMMUNITY,
     SEARCH_COMMUNITIES
-} from "../constants/community";
+} from "../constants/communities";
 import {
     getCommunity,
     getRolesOfLoggedInUser,
     storeCommunity,
     storeRolesOfLoggedInUser,
     storeSearchedCommunities
-} from "../actions/community";
+} from "../actions/communities";
 
 function* createCommunitySaga(action) {
     try {

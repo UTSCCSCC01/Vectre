@@ -1,14 +1,14 @@
 import { combineReducers } from 'redux';
 import users from "./users";
 import posts from "./posts";
+import communities from "./communities";
 import global from "./global";
-import community from "./community";
 
 const createRootReducer = combineReducers({ // Insert reducers
     users,
     posts,
+    communities,
     global,
-    community
 });
 
 export default createRootReducer;

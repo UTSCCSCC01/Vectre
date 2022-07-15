@@ -1,6 +1,6 @@
 import { call, put, takeLatest } from "redux-saga/effects"
 import { postRequest } from "./index";
-import { READ_NOTIFICATION } from "../constants/notification";
+import { READ_NOTIFICATION } from "../constants/notifications";
 import { 
     BASE_API_URL,
     NOTIF        

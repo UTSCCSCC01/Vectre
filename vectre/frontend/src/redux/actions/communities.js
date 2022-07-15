@@ -9,7 +9,7 @@ import {
     LEAVE_COMMUNITY,
     SEARCH_COMMUNITIES,
     STORE_SEARCHED_COMMUNITIES
-} from "../constants/community";
+} from "../constants/communities";
 
 export const createCommunity = (community, redirectWindow) => ({
     type: CREATE_COMMUNITY,

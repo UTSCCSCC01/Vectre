@@ -9,9 +9,9 @@ import  {HiSearch} from 'react-icons/hi';
 import SearchResultContainer from '../../components/Containers/SearchResult';
 import {useDispatch, useSelector} from "react-redux";
 import {searchUsers} from "../../redux/actions/users";
-import {searchCommunities} from "../../redux/actions/community";
+import {searchCommunities} from "../../redux/actions/communities";
 import {searchedUsersSelector} from "../../redux/selectors/users";
-import {searchedCommunitiesSelector} from "../../redux/selectors/community";
+import {searchedCommunitiesSelector} from "../../redux/selectors/communities";
 
 const SearchPage = () => {
     const searchedUsers = useSelector(searchedUsersSelector)

@@ -10,10 +10,10 @@ import { FaDiscord, FaTwitter, FaEthereum } from 'react-icons/fa'
 import { AiFillInstagram } from 'react-icons/ai'
 import { VscGlobe } from 'react-icons/vsc'
 
-import { loggedInUserRolesSelector } from "../../../../redux/selectors/community";
+import { loggedInUserRolesSelector } from "../../../../redux/selectors/communities";
 import { useDispatch, useSelector } from 'react-redux';
 import CommunityProfileEditModal from "../../../Modals/CommunityProfileEditModal/CommunityProfileEditModal";
-import { joinCommunity, leaveCommunity } from "../../../../redux/actions/community";
+import { joinCommunity, leaveCommunity } from "../../../../redux/actions/communities";
 
 const ProfileCommunityDetailsBotComponent = ({
     communityData
