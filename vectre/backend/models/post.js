@@ -74,8 +74,7 @@ const createPost = function (session, authorWalletAddress, body) {
                                     return {
                                         success: true,
                                         message: "Successfully created repost",
-                                        newPostID: postID,
-                                        imageURL: imageURL
+                                        newPostID: postID
                                     }
                                 })
                                 .catch((error) => {
@@ -122,8 +121,7 @@ const createPost = function (session, authorWalletAddress, body) {
                         return {
                             success: true,
                             message: "Successfully created post",
-                            newPostID: postID,
-                            imageURL: imageURL
+                            newPostID: postID
                         }
                     })
                     .catch((error) => {
