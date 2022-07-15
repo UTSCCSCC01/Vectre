@@ -502,6 +502,9 @@ const getLikesOnPost = function (session, postID) {
 }
 
 const getUserFeed = function (session, walletAddress, start, size, sortType, sortOrder) {
+    sortType = sortType.toLowerCase()
+    sortOrder = sortOrder.toLowerCase()
+
     if (start < 0) {
         throw {
             success: false,
@@ -512,20 +515,20 @@ const getUserFeed = function (session, walletAddress, start, size, sortType, sor
             success: false,
             message: "Size must be non-negative"
         }
-    } else if (sortType !== "timestamp" || sortType !== "likes") {
+    } else if (sortType !== "timestamp" && sortType !== "likes") {
         throw {
             success: false,
-            message: "Incorrect sort type"
+            message: "Invalid sort type"
         }
-    } else if (sortOrder !== "DESC" || sortOrder !== "ASC") {
+    } else if (sortOrder !== "desc" && sortOrder !== "asc") {
         throw {
             success: false,
-            message: "Incorrect sort order"
+            message: "Invalid sort order"
         }
     }
 
     const orderBy = sortType === "timestamp" ? "post.timestamp" : "post.likes",
-        order = sortOrder === "DESC" ? "DESC" : ""
+        order = sortOrder === "desc" ? "DESC" : ""
     const query = [
         `MATCH (currentUser: User {walletAddress: $walletAddress})-[:FOLLOWS]->(followedUser:User)-[:POSTED]->(post: Post)`,
         `WHERE post.parent IS NULL`, // Prevent comments in feed

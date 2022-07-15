@@ -8,9 +8,11 @@ const { authenticateToken, storeWalletAddressFromToken } = require("../utils/aut
 // Posts
 // POST /posts/feed
 router.post('/feed', authenticateToken, (req, res, next) => {
-    const start = req.body.start? req.body.start : 0,
-        size = req.body.size? req.body.size : 10;
-    Post.getUserFeed(dbUtils.getSession(req), req.walletAddress, start, size)
+    const start = req.body.start ? req.body.start : 0,
+        size = req.body.size ? req.body.size : 10,
+        sortType = req.body.sort ? req.body.sort : "likes",
+        sortOrder = req.body.order ? req.body.order : "desc"
+    Post.getUserFeed(dbUtils.getSession(req), req.walletAddress, start, size, sortType, sortOrder)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
@@ -71,18 +73,6 @@ router.get('/:postID/checkLike', authenticateToken, (req, res, next) => {
 // GET /posts/{postID}/likes
 router.get('/:postID/likes', (req, res, next) => {
     Post.getLikesOnPost(dbUtils.getSession(req), req.params.postID)
-        .then((result) => res.send(result))
-        .catch((error) => res.send(error))
-})
-
-// GET /posts/feed
-router.get('/feed', authenticateToken, (req, res, next) => {
-    const walletAddress = req.walletAddress;
-    const start = req.body.start? req.body.start : 0;
-    const size = req.body.size? req.body.size : 10;
-    const sortType = req.body.sort? req.body.sort : "timestamp";
-    const sortOrder = req.body.order? req.body.order : "ASC";
-    Post.getUserFeed(dbUtils.getSession(req), walletAddress, start, size, sortType, sortOrder)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
