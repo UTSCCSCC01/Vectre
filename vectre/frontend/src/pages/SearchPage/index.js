@@ -25,7 +25,7 @@ const SearchPage = () => {
         dispatch(searchUsers(searchInput))
         dispatch(searchCommunities(searchInput))
     }
-    useEffect(() => { // TODO: Remove when submit button is implemented
+    useEffect(() => {
         handleSearchSubmit()
     }, [])
 
