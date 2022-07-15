@@ -16,8 +16,10 @@ const createPost = function (session, authorWalletAddress, body) {
     }
     let imageURL = null;
     if (body.imageData) {
-        const uploadResponse = imgUtils.upload(body.imageData);
-        imageURL = uploadResponse.data.link;
+        imgUtils.upload(body.imageData)
+            .then((result) => {
+                imageURL = result.data.link
+            })
     }
     const postID = nano()
     const timestamp = new Date().toISOString()

@@ -324,21 +324,24 @@ const updateProfile = function (session, walletAddress, newProf) {
             } else {
                 let profileFilter = ["name", "username", "bio"]
                 if (newProf.profilePic) {
-                    const uploadResponse = imgUtils.upload(newProf.profilePic)
-                    newProf.profilePic = null;
-                    if (uploadResponse.data.link) {
-                        newProf.profilePic = uploadResponse.data.link
-                        profileFilter.push("profilePic")
-                    }
+                    imgUtils.upload(newProf.profilePic)
+                        .then(result => {
+                            newProf.profilePic = null;
+                            if (result.data.link) {
+                                newProf.profilePic = result.data.link;
+                                profileFilter.push("profilePic")
+                            }
+                        })
                 }
                 if (newProf.banner) {
-                    const uploadResponse = imgUtils.upload(newProf.banner)
-                    newProf.banner = null;
-                    if (uploadResponse.data.link) {
-                        newProf.banner = uploadResponse.data.link
-                        profileFilter.push("banner")
-                    }
-
+                    imgUtils.upload(newProf.banner)
+                        .then(result => {
+                            newProf.banner = null;
+                            if (result.data.link) {
+                                newProf.banner = result.data.link;
+                                profileFilter.push("banner")
+                            }
+                        })
                 }
                 return updateUser(session, walletAddress, profileFilter, newProf)
                     .then(response => { return response })
