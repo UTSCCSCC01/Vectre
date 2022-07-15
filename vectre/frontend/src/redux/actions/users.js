@@ -56,8 +56,9 @@ export const storeFunds = (funds) => ({
     funds
 })
 
-export const getUser = () => ({
+export const getUser = (walletAddress) => ({
     type: GET_USER,
+    walletAddress
 })
 export const storeUser = (user) => ({
     type: STORE_USER,
