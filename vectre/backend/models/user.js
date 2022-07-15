@@ -5,7 +5,7 @@ const Notification = require('../models/notification');
 const config = require('../config');
 const jwt = require('jsonwebtoken')
 const ethUtil = require('ethereumjs-util');
-const fetch = (url) => import('node-fetch').then(({ default: fetch }) => fetch(url));
+const imgUtils = require('../utils/images')
 
 const getAll = (session) => { // Returns all Users
     const query = "MATCH (user:User) RETURN user";
@@ -20,7 +20,8 @@ const getAll = (session) => { // Returns all Users
         .catch((error) => {
             throw {
                 success: false,
-                message: "Failed to get users"
+                message: "Failed to get users",
+                error: error.message
             }
         });
 }
@@ -326,17 +327,40 @@ const updateProfile = function (session, walletAddress, newProf) {
             if (!_.isEmpty(existence.records)) { // Check for existing username
                 return { success: false, message: "Username already exists." }
             } else {
-                const profileFilter = ["name", "username", "bio"]
-                return updateUser(session, walletAddress, profileFilter, newProf)
-                    .then(response => { return response })
-                    .catch(error => { throw error })
+                let profileFilter = ["name", "username", "bio"]
+                if (newProf.profilePic) {
+                    return imgUtils.upload(newProf.profilePic)
+                        .then(result => {
+                            newProf.profilePic = null;
+                            if (result.data.link) {
+                                newProf.profilePic = result.data.link;
+                                profileFilter.push("profilePic")
+                            }
+
+                            if (newProf.banner) {
+                                return imgUtils.upload(newProf.banner)
+                                    .then(result2 => {
+                                        newProf.banner = null;
+                                        if (result2.data.link) {
+                                            newProf.banner = result2.data.link;
+                                            profileFilter.push("banner")
+                                        }
+                                        return updateUser(session, walletAddress, profileFilter, newProf)
+                                            .then(response => { return response })
+                                            .catch(error => { throw error })
+                                    })
+
+                            }
+                        })
+                }
+
             }
         })
         .catch(error => {
             throw {
                 success: false,
+                message: "Could not update user",
                 error: error.message,
-                message: error.message
             }
         })
 }

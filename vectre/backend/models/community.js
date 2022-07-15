@@ -3,6 +3,7 @@ const { getRelationshipFromRole } = require('../utils/Utils');
 const Community = require('./neo4j/community')
 const { ROLES } = require("./neo4j/community");
 const User = require('./neo4j/user')
+const Post = require('./neo4j/post')
 
 // helper functions
 const filterBody = function (body) {
@@ -634,6 +635,90 @@ const communityUpdate = function (session, walletAddress, communityID, body) {
         })
 }
 
+const getCommunityFeed = function (session, communityID, start, size, sortType, sortOrder) {
+    sortType = sortType.toLowerCase()
+    sortOrder = sortOrder.toLowerCase()
+
+    if (start < 0) {
+        throw {
+            success: false,
+            message: "Start index must be non-negative"
+        }
+    } else if (size < 0) {
+        throw {
+            success: false,
+            message: "Size must be non-negative"
+        }
+    } else if (sortType !== "timestamp" && sortType !== "likes") {
+        throw {
+            success: false,
+            message: "Invalid sort type"
+        }
+    } else if (sortOrder !== "desc" && sortOrder !== "asc") {
+        throw {
+            success: false,
+            message: "Invalid sort order"
+        }
+    }
+
+    const orderBy = sortType === "timestamp" ? "post.timestamp" : "post.likes",
+        order = sortOrder === "desc" ? "DESC" : ""
+    const query = [
+        `MATCH (community: Community {communityID: $communityID})<-[:POSTED_TO]-(post: Post)`,
+        `WHERE post.parent IS NULL`, // Prevent comments in feed
+        `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
+        `OPTIONAL MATCH (repost:Post)`,
+        `WHERE repost.postID = post.repostPostID`,
+        `OPTIONAL MATCH (repostAuthor:User)`,
+        `WHERE repostAuthor.walletAddress = repost.author`,
+        `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
+        `RETURN DISTINCT post, repost, repostAuthor, count(c) AS comment`,
+        `ORDER BY ${orderBy} ${order}`,
+        `SKIP toInteger($start)`,
+        `LIMIT toInteger($size)`
+    ].join('\n');
+
+    return exists(session, communityID)
+        .then(idCheck => {
+            if (idCheck.result) { // Community exists
+                return session.run(query, {
+                    communityID: communityID,
+                    start: start,
+                    size: size
+                })
+                    .then((results) => {
+                        let posts = []
+                        results.records.forEach((record) => {
+                            let post = new Post(record.get("post"))
+                            post.comment = String(record.get("comment").low);
+                            if (post.repostPostID) {
+                                post.repostPost = new Post(record.get('repost'))
+                                post.repostPost.author = new User(record.get('repostAuthor'))
+                            }
+
+                            posts.push(post)
+                        })
+                        return {
+                            success: true,
+                            posts: posts
+                        }
+                    })
+            } else {
+                throw {
+                    success: false,
+                    message: "Community does not exist"
+                }
+            }
+        })
+        .catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to get feed",
+                error: error.message
+            }
+        });
+}
+
 module.exports = {
     get,
     getAll,
@@ -644,5 +729,6 @@ module.exports = {
     removeMember,
     getRolesOfUsers,
     isRole,
-    linkPost
+    linkPost,
+    getCommunityFeed
 }
