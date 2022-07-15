@@ -10,9 +10,10 @@ import {
     communityFeedPaginationCompleteSelector,
     communityFeedSortTypeSelector,
 } from "../../redux/selectors/community";
-import {getCommunity, getCommunityFeed, getRolesOfLoggedInUser} from "../../redux/actions/community";
-import {Box, Button} from "@chakra-ui/react";
+import { getCommunity, getCommunityFeed, getRolesOfLoggedInUser } from "../../redux/actions/community";
+import { Box, Button, Flex, Stack } from "@chakra-ui/react";
 import PostComponent from "../PostComponent/PostComponent";
+import TextButton from "../Buttons/TextButton/TextButton";
 
 const communitySideButtonsList = (userIsModerator) => [
     {
@@ -67,16 +68,29 @@ const Community = ({
                 !loggedInUserRoles.includes("moderator")
             ) : []}>
                 <ProfileCommunityDetails communityData={communityData} />
-
-                {feed.map((item, i) => {
-                    return (
-                        <Box key={i}>
-                            <PostComponent item={item} fromFeed={true} />
-                        </Box>
-                    )
-                })}
+                <Stack
+                    mt={"15px"}
+                    gap={"10px"}>
+                    {feed.map((item, i) => {
+                        return (
+                            <Box key={i}>
+                                <PostComponent item={item} fromFeed={true} />
+                            </Box>
+                        )
+                    })}
+                </Stack>
                 {feed.length === feedIndex && !feedPaginationComplete ?
-                    <Button onClick={loadFeed}>Load more</Button>
+                    (
+                        <Flex
+                            justifyContent={'center'}
+                            alignItems={'center'}
+                            height={'80px'}
+                        >
+                            <TextButton
+                                text={'Load more'}
+                                onClick={loadFeed} />
+                        </Flex>
+                    )
                     : null}
             </ContentWithSideButtons>
         </>
