@@ -29,8 +29,9 @@ export const storePost = (post) => ({
     post
 })
 
-export const getFeed = () => ({
-    type: GET_FEED
+export const getFeed = (feedIndex) => ({
+    type: GET_FEED,
+    feedIndex
 })
 export const storeFeed = (posts) => ({
     type: STORE_FEED,

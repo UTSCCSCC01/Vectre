@@ -6,8 +6,8 @@ const Post = require('../models/post');
 const { authenticateToken, storeWalletAddressFromToken } = require("../utils/auth");
 
 // Posts
-// GET /posts/feed
-router.get('/feed', authenticateToken, (req, res, next) => {
+// POST /posts/feed
+router.post('/feed', authenticateToken, (req, res, next) => {
     const start = req.body.start? req.body.start : 0,
         size = req.body.size? req.body.size : 10;
     Post.getUserFeed(dbUtils.getSession(req), req.walletAddress, start, size)

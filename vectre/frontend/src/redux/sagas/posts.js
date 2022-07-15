@@ -68,9 +68,9 @@ function* getCommentsSaga(action) {
     }
 }
 
-function* getFeed() {
+function* getFeed(action) {
     try {
-        const response = yield call(getRequest, BASE_API_URL + POSTS.GET_FEED), responseData = response[1]
+        const response = yield call(postRequest, BASE_API_URL + POSTS.GET_FEED, {start: action.feedIndex}), responseData = response[1]
         if (responseData.success) {
             yield put(storeFeed(responseData.posts))
         } else {

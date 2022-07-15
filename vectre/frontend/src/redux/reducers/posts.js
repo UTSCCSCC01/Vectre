@@ -26,10 +26,15 @@ const posts = (state = initialState, action) => {
                 comments: action.comments
             }
         case STORE_FEED:
+            var newFeed = [
+                ...state.feed,
+                ...action.posts
+            ].filter((post, index, self) => index === self.findIndex((post2) => (post2.postID === post.postID))) // Filter duplicates based on postID
+
             return {
                 ...state,
-                feed: action.posts,
-                feedIndex: state.feedIndex + action.posts?.length
+                feed: newFeed,
+                feedIndex: newFeed.length
             }
         case DO_LIKE:
             if (action.isComment) {

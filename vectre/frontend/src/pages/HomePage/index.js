@@ -1,20 +1,21 @@
 import ContentWIthNavContainer from "../../components/Containers/ContentWIthNavContainer";
 import PostComponent from "../../components/PostComponent/PostComponent";
 import {
-    Box,
+    Box, Button,
     Stack
 } from '@chakra-ui/react'
 import {useDispatch, useSelector} from "react-redux";
-import {feedSelector} from "../../redux/selectors/posts";
+import {feedIndexSelector, feedSelector} from "../../redux/selectors/posts";
 import {useEffect} from "react";
 import {getFeed} from "../../redux/actions/posts";
 
 const HomePage = () => {
     const feed = useSelector(feedSelector)
+    const feedIndex = useSelector(feedIndexSelector)
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(getFeed())
+        dispatch(getFeed(feedIndex))
     }, [])
 
     return (
@@ -28,6 +29,9 @@ const HomePage = () => {
                             </Box>
                         )
                     })}
+                    {feed.length === feedIndex ?
+                        <Button>Load more</Button>
+                        : null}
                 </Stack>
             </Box>
         </ContentWIthNavContainer>
