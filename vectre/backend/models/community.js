@@ -219,6 +219,34 @@ const getAll = function (session) {
         })
 }
 
+const search = (session, searchVal) => {
+    const regex = `(?i).*${searchVal}.*`
+    const query = [
+        `MATCH (community: Community)`,
+        `WHERE community.communityID =~ $regex OR community.name =~ $regex OR community.bio =~ $regex\`,`
+        `RETURN community`,
+    ].join('\n');
+    return session.run(query, {
+        regex: regex
+    })
+        .then((results) => {
+            let communities = []
+            results.records.forEach((record) => {
+                communities.push(new User(record.get('community')))
+            })
+            return {
+                success: true,
+                communities: communities
+            }
+        }).catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to search communities",
+                error: error.message
+            }
+        })
+}
+
 const isRole = function (session, walletAddress, communityID, role) {
     const queries = [
         'MATCH (u: User {walletAddress: $walletAddress}) MATCH (c: Community {communityID: $communityID}) RETURN u, c',
@@ -637,6 +665,7 @@ const communityUpdate = function (session, walletAddress, communityID, body) {
 module.exports = {
     get,
     getAll,
+    search,
     communityCreate,
     communityUpdate,
     getUsersByRole,
@@ -644,5 +673,5 @@ module.exports = {
     removeMember,
     getRolesOfUsers,
     isRole,
-    linkPost
+    linkPost,
 }
