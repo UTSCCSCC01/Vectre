@@ -11,6 +11,7 @@ import {
     storeProfilePost,
 } from "../actions/posts";
 import {
+    CREATE_POST,
     GET_POST,
     GET_COMMENTS,
     CREATE_COMMENT,
@@ -27,6 +28,21 @@ import {
 import { showToast } from "../actions/toast";
 import { TOAST_STATUSES } from "../constants/toast";
 import { doneLoading, showLoading } from "../../redux/actions/loading";
+
+function* createPost(action) {
+    try {
+        const response = yield call(postRequest, BASE_API_URL + POSTS.CREATE_POST, action.postData), responseData = response[1]
+        if (responseData.success) {
+            yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
+            yield put(action.redirectWindow("/post/" + responseData.newPostID))
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+    } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to create post"))
+        console.log(error)
+    }
+}
 
 function* createRepost(action) {
     try {
@@ -77,7 +93,7 @@ function* getCommentsSaga(action) {
 function* getFeed(action) {
     try {
         const defaultSize = 10
-        const response = yield call(postRequest, BASE_API_URL + POSTS.GET_FEED, {start: action.feedIndex, size: defaultSize}), responseData = response[1]
+        const response = yield call(postRequest, BASE_API_URL + POSTS.GET_FEED, { start: action.feedIndex, size: defaultSize }), responseData = response[1]
         if (responseData.success) {
             yield put(storeFeed(responseData.posts, defaultSize))
         } else {
@@ -148,6 +164,7 @@ function* getProfilePosts(action) {
 }
 
 function* postsSaga() {
+    yield takeLatest(CREATE_POST, createPost)
     yield takeLatest(CREATE_REPOST, createRepost)
     yield takeLatest(GET_POST, getPostSaga)
     yield takeLatest(GET_COMMENTS, getCommentsSaga)

@@ -22,21 +22,8 @@ import TextButton from '../../Buttons/TextButton/TextButton'
 import { useDispatch, useSelector } from "react-redux";
 import { loggedInUserSelector } from "../../../redux/selectors/users";
 import { createPost } from "../../../redux/actions/posts";
-import { redirectWindow } from "../../../utils/Utils"
+import { getBase64, redirectWindow } from "../../../utils/Utils"
 import PostModalComponent from "../../PostComponent/PostModalComponent/PostModalComponent";
-
-const communityList = [
-    {
-        communityID: "Doodles"
-    },
-    {
-        communityID: "meowz"
-    },
-    {
-        communityID: "GOT"
-    }
-]
-
 
 const CreatePostModal = ({
     isOpen,
@@ -82,12 +69,14 @@ const CreatePostModal = ({
                                 let postData = {
                                     text: event.target.text.value,
                                     walletAddress: loggedInUser.walletAddress,
-                                    imageData: selectedImage,
                                     communityID: option ? option : null
                                 }
-                                // dispatch(createPost(postData, redirectWindow))
-                                setSelectedImage(null)
-                                onClose();
+                                getBase64(selectedImage, (result) => {
+                                    postData.imageData = result
+                                    dispatch(createPost(postData, redirectWindow))
+                                    setSelectedImage(null)
+                                    onClose();
+                                })
                             }}
                         >
                             <Flex
@@ -208,7 +197,7 @@ const CreatePostModal = ({
                                 onChange={(event) => { setOption(event.target.value) }}>
                                 <option value={null}>{`@${loggedInUser.username}`}</option>
                                 {
-                                    communityList.map((elem, i) => {
+                                    loggedInUser && loggedInUser.communities.map((elem, i) => {
                                         return <option value={elem.communityID} key={i}>{`<${elem.communityID}>`}</option>
                                     })
                                 }
