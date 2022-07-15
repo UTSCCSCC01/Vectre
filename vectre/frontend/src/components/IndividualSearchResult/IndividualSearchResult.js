@@ -55,7 +55,7 @@ const IndividualSearchResult = ({username}) => {
                     {username}
                 </GridItem>
                 <GridItem></GridItem>
-                <GridItem justifyItems={"center"}><Button width={"100%"} height={"70%"}bottom={"0px"} backgroundColor={"#F6FAFF"}>2022 followers</Button></GridItem>
+                <GridItem justifyItems={"center"}><Button width={"100%"} height={"70%"} bottom={"0px"} backgroundColor={"#F6FAFF"} fontSize={"11px"} color={"#3B82F6"}>2022 followers</Button></GridItem>
                 <GridItem fontSize={"17px"} fontFamily={"DM Sans"} fontWeight={700} color={"#3B82F6"}>@{username}</GridItem>
                 <Button width={"70%"} height={"70%"} backgroundColor={"#3B82F6"} color={"white"}>View</Button>
             </Grid>
