@@ -115,7 +115,7 @@ function* getNFT(action) {
 
 function* getFunds(action) {
     try {
-        const response = yield call(getRequest, BASE_API_URL + USERS.GET_FUNDS.replace("{walletAddress}", action.walletAddress)), responseData = response[1]
+        const response = yield call(getRequest, BASE_API_URL + USERS.GET_FUNDS), responseData = response[1]
         if (responseData.success) {
             yield put(storeFunds(responseData.funds))
         }
