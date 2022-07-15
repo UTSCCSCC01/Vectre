@@ -67,4 +67,16 @@ router.get('/:postID/likes', (req, res, next) => {
         .catch((error) => res.send(error))
 })
 
+// GET /posts/feed
+router.get('/feed', authenticateToken, (req, res, next) => {
+    const walletAddress = req.walletAddress;
+    const start = req.body.start? req.body.start : 0;
+    const size = req.body.size? req.body.size : 10;
+    const sortType = req.body.sort? req.body.sort : "timestamp";
+    const sortOrder = req.body.order? req.body.order : "ASC";
+    Post.getUserFeed(dbUtils.getSession(req), walletAddress, start, size, sortType, sortOrder)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
+
 module.exports = router;

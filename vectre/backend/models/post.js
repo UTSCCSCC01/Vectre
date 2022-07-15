@@ -469,6 +469,60 @@ const getLikesOnPost = function (session, postID) {
         });
 }
 
+const getUserFeed = function (session, walletAddress, start, size, sortType, sortOrder) {
+    if (sortType !== "timestamp" || sortType !== "likes") {
+        throw {
+            success: false,
+            message: "Incorrect sort type"
+        }
+    }
+
+    if (sortOrder !== "DESC" || sortOrder !== "ASC") {
+        throw {
+            success: false,
+            message: "Incorrect sort order"
+        }
+    }
+
+    const orderBy = sortType === "timestamp" ? "p.timestamp" : "p.likes";
+    const order = sortOrder === "DESC" ? "DESC" : "";
+    const query = [
+        `MATCH (u: User {walletAddress: '${walletAddress}'})-[:FOLLOWS]->(b:User)-[:POSTED]->(p: Post)`,
+        `OPTIONAL MATCH (p)-[:REPOSTED]->(c)`,
+        `RETURN p, c`,
+        `ORDER BY ${orderBy} ${order}`,
+        `SKIP ${start}`,
+        `LIMIT ${size}`
+    ].join('\n');
+
+    return session.run(query)
+        .then((results) => {
+            let posts = []
+            results.records.forEach((record) => {
+                const post = new Post(record.get('p'))
+                
+                if(post.repostPostID){
+                    const child = new Post(record.get('c'))
+                    post.repostPost = child
+                }
+                posts.push(post)
+            })
+            return {
+                success: true,
+                posts: posts
+            }
+        })
+        .catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to get posts",
+                error: error,
+                orderBy,
+                order
+            }
+        });
+}
+
 module.exports = {
     createUserPost,
     createUserComment,
@@ -479,5 +533,6 @@ module.exports = {
     likePost,
     unlikePost,
     getLikesOnPost,
-    checkIfAlreadyLiked
+    checkIfAlreadyLiked,
+    getUserFeed
 };
