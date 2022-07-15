@@ -2,13 +2,12 @@ import ContentWithSideButtons from "../../components/Containers/ContentWithSideB
 import ProfileCommunityDetails from "./ProfileCommunityDetails/ProfileCommunityDetails"
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import { communitySelector } from "../../redux/selectors/community";
+import { communitySelector, loggedInUserRolesSelector } from "../../redux/selectors/community";
 import { getCommunity, getRolesOfLoggedInUser } from "../../redux/actions/community";
-import { loggedInUserSelector } from "../../redux/selectors/users";
-import { getLoggedInUser } from "../../redux/actions/users";
 
-const communitySideButtonsList = [
+const communitySideButtonsList = (userIsModerator) => [
     {
+        hidden: userIsModerator,
         text: "Create a Proposal",
         func: () => { console.log("Creating a proposal...") }
     },
@@ -17,8 +16,13 @@ const communitySideButtonsList = [
         func: () => { console.log("Voting for a proposal...") }
     },
     {
+        hidden: userIsModerator,
         text: "Moderator Settings",
         link: "settings"
+    },
+    {
+        text: "Announcements",
+        func: () => { console.log("anouncements") }
     }
 ]
 
@@ -26,18 +30,19 @@ const Community = ({
     communityID
 }) => {
     const dispatch = useDispatch();
-    const loggedInUser = useSelector(loggedInUserSelector);
     const communityData = useSelector(communitySelector)
+    const loggedInUserRoles = useSelector(loggedInUserRolesSelector);
     useEffect(() => {
-        dispatch(getLoggedInUser());
-        dispatch(getRolesOfLoggedInUser(communityID, loggedInUser.walletAddress));
+        dispatch(getRolesOfLoggedInUser(communityID));
         dispatch(getCommunity(communityID));
     }, []);
 
     return (
         <>
             <base href={`/c/${communityID}/`} />
-            <ContentWithSideButtons sideButtonsList={communitySideButtonsList}>
+            <ContentWithSideButtons sideButtonsList={loggedInUserRoles.includes("member") ? communitySideButtonsList(
+                !loggedInUserRoles.includes("moderator")
+            ) : []}>
                 <ProfileCommunityDetails communityData={communityData} />
             </ContentWithSideButtons>
         </>

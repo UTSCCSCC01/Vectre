@@ -31,10 +31,9 @@ export const updateCommunity = (communityID, community, redirectWindow) => ({
     redirectWindow
 })
 
-export const getRolesOfLoggedInUser = (communityID, walletAddress) => ({
+export const getRolesOfLoggedInUser = (communityID) => ({
     type: GET_ROLES_LOGGED_IN_USER,
-    communityID,
-    walletAddress
+    communityID
 })
 export const storeRolesOfLoggedInUser = (roles) => ({
     type: STORE_ROLES_LOGGED_IN_USER,

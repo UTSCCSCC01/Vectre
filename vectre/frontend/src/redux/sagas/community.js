@@ -2,6 +2,7 @@ import { call, put, takeLatest } from "redux-saga/effects"
 import { getRequest, postRequest, putRequest } from "./index";
 import {
     BASE_API_URL,
+    USERS,
     COMMUNITY
 } from "../constants/endpoints";
 import { showToast } from "../actions/toast";
@@ -15,7 +16,7 @@ import {
     JOIN_COMMUNITY,
     LEAVE_COMMUNITY
 } from "../constants/community";
-import { getCommunity, storeCommunity, storeRolesOfLoggedInUser } from "../actions/community";
+import { getCommunity, getRolesOfLoggedInUser, storeCommunity, storeRolesOfLoggedInUser } from "../actions/community";
 
 function* createCommunitySaga(action) {
     try {
@@ -54,9 +55,11 @@ function* updateCommunitySaga(action) {
         if (responseData.success) {
             if (responseData.communityID !== action.communityID) {
                 yield put(action.redirectWindow(`/c/${responseData.communityID}`))
+                yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
             }
             else {
                 yield put(getCommunity(action.communityID));
+                yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
             }
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
@@ -67,9 +70,10 @@ function* updateCommunitySaga(action) {
     }
 }
 
-function* getRolesOfLoggedInUser(action) {
+function* getRolesOfLoggedInUserSaga(action) {
     try {
-        const response = yield call(getRequest, BASE_API_URL + COMMUNITY.GET_ROLES_LOGGED_IN_USER.replace("{communityID}", action.communityID).replace("{walletAddress}", action.walletAddress)), responseData = response[1]
+        const loggedInUserResponse = yield call(getRequest, BASE_API_URL + USERS.GET_LOGGED_IN_USER), loggedInUserResponseData = loggedInUserResponse[1]
+        const response = yield call(getRequest, BASE_API_URL + COMMUNITY.GET_ROLES_LOGGED_IN_USER.replace("{communityID}", action.communityID).replace("{walletAddress}", loggedInUserResponseData.user.walletAddress)), responseData = response[1]
         if (responseData.success) {
             yield put(storeRolesOfLoggedInUser(responseData.roles));
         } else {
@@ -86,6 +90,8 @@ function* joinCommunity(action) {
         const response = yield call(postRequest, BASE_API_URL + COMMUNITY.JOIN_COMMUNITY.replace("{communityID}", action.communityID)), responseData = response[1]
         if (responseData.success) {
             yield put(getCommunity(action.communityID))
+            yield put(getRolesOfLoggedInUser(action.communityID))
+            yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }
@@ -100,6 +106,8 @@ function* leaveCommunity(action) {
         const response = yield call(postRequest, BASE_API_URL + COMMUNITY.LEAVE_COMMUNITY.replace("{communityID}", action.communityID)), responseData = response[1]
         if (responseData.success) {
             yield put(getCommunity(action.communityID))
+            yield put(getRolesOfLoggedInUser(action.communityID))
+            yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }
@@ -113,7 +121,7 @@ function* communitySaga() {
     yield takeLatest(CREATE_COMMUNITY, createCommunitySaga)
     yield takeLatest(GET_COMMUNITY, getCommunitySaga)
     yield takeLatest(UPDATE_COMMUNITY, updateCommunitySaga)
-    yield takeLatest(GET_ROLES_LOGGED_IN_USER, getRolesOfLoggedInUser)
+    yield takeLatest(GET_ROLES_LOGGED_IN_USER, getRolesOfLoggedInUserSaga)
     yield takeLatest(JOIN_COMMUNITY, joinCommunity)
     yield takeLatest(LEAVE_COMMUNITY, leaveCommunity)
 }
