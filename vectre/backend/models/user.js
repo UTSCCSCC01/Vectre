@@ -323,16 +323,16 @@ const updateProfile = function (session, walletAddress, newProf) {
                 return { success: false, message: "Username already exists." }
             } else {
                 let profileFilter = ["name", "username", "bio"]
-                if (newProf.profilePicImageData) {
-                    const uploadResponse = imgUtils.upload(newProf.profilePicImageData)
+                if (newProf.profilePic) {
+                    const uploadResponse = imgUtils.upload(newProf.profilePic)
                     newProf.profilePic = null;
                     if (uploadResponse.data.link) {
                         newProf.profilePic = uploadResponse.data.link
                         profileFilter.push("profilePic")
                     }
                 }
-                if (newProf.bannerImageData) {
-                    const uploadResponse = imgUtils.upload(newProf.bannerImageData)
+                if (newProf.banner) {
+                    const uploadResponse = imgUtils.upload(newProf.banner)
                     newProf.banner = null;
                     if (uploadResponse.data.link) {
                         newProf.banner = uploadResponse.data.link
