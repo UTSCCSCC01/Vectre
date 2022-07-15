@@ -10,7 +10,6 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users'),
     postsRouter = require('./routes/posts'),
-    imagesRouter = require('./routes/images'),
     notificationsRouter = require('./routes/notifications')
     communityRouter = require('./routes/community')
 
@@ -35,7 +34,6 @@ app.use(cors(corsOptions))
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/posts', postsRouter);
-app.use('/images', imagesRouter);
 app.use('/notifications', notificationsRouter);
 app.use('/communities', communityRouter);
 
