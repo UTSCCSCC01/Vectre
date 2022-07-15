@@ -13,10 +13,13 @@ const SearchResultContainer = ({
                 Explore All
                 <BsGlobe />
         </Box>
+        <br />
         <Box width={"100%"} display={"grid"} gridTemplateColumns={"1fr 1fr"} gridGap="24px">
-            <IndividualSearchResult/>
-            <IndividualSearchResult/>
-            <IndividualSearchResult/>
+            <IndividualSearchResult username = {"123"}/>
+            <IndividualSearchResult username = {"124"}/>
+            <IndividualSearchResult username = {"125"}/>
+            <IndividualSearchResult username = {"126"}/>
+            <IndividualSearchResult username = {"127"}/>
         </Box>
     </>
     )
