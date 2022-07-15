@@ -30,16 +30,20 @@ const PostPage = () => {
         dispatch(getComments(postID));
     }, [])
 
-    if (post.parent) window.location = `/post/${post.parent}#${post.postID}`
+    if (post[0].parent) window.location = `/post/${post[0].parent}#${post[0].postID}`
 
     return (
         <ContentWIthNavContainer>
             <Box py={'60px'} maxWidth={'4xl'} margin={'0 auto'}>
                 <Stack alignSelf={'center'} gap={'16px'}>
-                    {(post.author && !post.parent) ?
+                    {(post.length !== 0 && post[0].author && !post[0].parent) ?
                         <>
-                            <PostComponent item={post} />
-                            {loggedInUser.walletAddress ? (<UserCommentComponent item={{ author: loggedInUser }} />) : (<UserCommentNotLoggedInComponent />)}
+                            <PostComponent item={post[0]} />
+                            {loggedInUser.walletAddress ?
+                                <UserCommentComponent
+                                    item={{ author: loggedInUser }}
+                                    isComment={post[0].parent !== null} />
+                            : <UserCommentNotLoggedInComponent /> }
                             <div id="comments"></div>
                             <PostCommentsComponent comments={comments} />
                         </>

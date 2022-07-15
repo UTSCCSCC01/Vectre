@@ -15,12 +15,9 @@ import {
 } from "../../redux/selectors/users";
 
 // Components
-import {
-    Button,
-    Link,
-} from "@chakra-ui/react";
-import ProfileEditModal from "../Modals/ProfileEditModal/ProfileEditModal";
 import Dashboard from "../Dashboard/Dashboard"
+import ProfileUserDetails from "./ProfileUserDetails/ProfileUserDetails";
+import ProfilePosts from "./ProfilePosts/ProfilePosts";
 
 class Profile extends React.Component {
     constructor(props) {
@@ -36,7 +33,9 @@ class Profile extends React.Component {
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.loggedInUser !== this.props.loggedInUser) {
-            this.setState({ following: this.props.loggedInUser.following.includes(this.props.profileWalletAddress) })
+            this.setState({
+                following: this.props.loggedInUser.following.some(following => following.walletAddress === this.props.profileWalletAddress)
+            })
         }
     }
 
@@ -48,9 +47,9 @@ class Profile extends React.Component {
     }
     handleFollowUser = () => {
         if (this.state.following) { // Unfollow
-            this.props.unfollowUser(this.props.profileWalletAddress)
+            this.props.unfollowUser(this.props.profileWalletAddress, this.props.profileWalletAddress)
         } else { // Follow
-            this.props.followUser(this.props.profileWalletAddress)
+            this.props.followUser(this.props.profileWalletAddress, this.props.profileWalletAddress)
         }
     }
 
@@ -60,55 +59,7 @@ class Profile extends React.Component {
                 {!this.props.user.walletAddress ? `User ${this.props.profileWalletAddress} does not exist!`
                     :
                     <>
-                        <h1><b>Profile:</b></h1>
-                        <div>
-                            <b>walletAddress:</b> {this.props.user.walletAddress} <br></br>
-                            <b>username:</b> @{this.props.user.username} <br></br>
-                            <b>name</b>: {this.props.user.name} <br></br>
-                            <b>bio</b>: {this.props.user.bio} <br></br>
-
-                            <br></br>
-                            <b>Following</b>: <br></br>
-                            {this.props.user.following.map(walletAddress =>
-                                <>
-                                    - <Link href={"/user/" + walletAddress}>{walletAddress}</Link><br></br>
-                                </>
-                            )}
-
-                            <br></br>
-                            <b>Followers</b>: <br></br>
-                            {this.props.user.followers.map(walletAddress =>
-                                <>
-                                    - <Link href={"/user/" + walletAddress}>{walletAddress}</Link><br></br>
-                                </>
-                            )}
-                            <br></br>
-                        </div>
-
-                        {/* Display edit profile is logged in user is same as profile being viewed */}
-                        {this.props.loggedInUser.walletAddress === this.props.profileWalletAddress ?
-                            <>
-                                {/* Edit user profile */}
-                                <Button
-                                    onClick={this.handleOpenModal}>
-                                    Edit User Profile
-                                </Button>
-                                <ProfileEditModal
-                                    loggedInUser={this.props.loggedInUser}
-                                    updateUser={this.handleUpdateUser}
-                                    isOpen={this.state.isModalOpen}
-                                    openModal={this.handleOpenModal}
-                                    closeModal={this.handleCloseModal}
-                                />
-                            </> :
-                            <>
-                                {/* Follow */}
-                                <Button
-                                    onClick={this.handleFollowUser}>
-                                    {this.state.following ? "Unfollow" : "Follow"}
-                                </Button>
-                            </>
-                        }
+                        <ProfileUserDetails props={this.props} handleUpdateUser={this.handleUpdateUser} handleFollowUser={this.handleFollowUser} following={this.state.following} />
                         {(this.props.loggedInUser.walletAddress === this.props.profileWalletAddress || this.props.user.dashboard !== "[]") ? // Only show empty dashboard if its your own
                             <Dashboard
                                 loggedInUser={this.props.loggedInUser}
@@ -116,6 +67,7 @@ class Profile extends React.Component {
                                 currentDashboard={this.props.user.dashboard}
                             /> : null
                         }
+                        <ProfilePosts props={this.props} />
                     </>
                 }
             </div>

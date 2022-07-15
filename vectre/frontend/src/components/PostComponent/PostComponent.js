@@ -15,8 +15,6 @@ const PostComponent = ({
     ...otherProps
 }) => {
     const { isOpen, onClose, onOpen } = useDisclosure();
-
-    const isPostClickable = item.postID && window.location.toString().includes('home')
     return (
         <>
             <Box
@@ -27,9 +25,9 @@ const PostComponent = ({
                 borderRadius={'6px'}
                 px={'18px'}
                 py={'15px'}
-                _hover={isPostClickable ? { border: "1px solid rgba(59, 130, 246, 0.4)" } : ""}
-                cursor={isPostClickable ? 'pointer' : 'default'}
-                onClick={() => { if (isPostClickable) window.location = `/post/${item.postID}`}}>
+                _hover={{ border: "1px solid rgba(59, 130, 246, 0.4)" }}
+                cursor={!item.parent ? 'pointer' : 'default'}
+                onClick={() => { if (item.postID && !item.parent) window.location = `/post/${item.postID}` }}>
                 <Stack gap={'4px'}>
                     <PostTopComponent item={item} />
                     <PostMidComponent item={item} onOpen={onOpen} />
