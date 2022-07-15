@@ -21,6 +21,12 @@ router.post('/feed', authenticateToken, (req, res, next) => {
 router.post('/create', authenticateToken, (req, res, next) => {
     if (req.body.imageData) {
         upload(req.body.imageData).then((result) => {
+            if(!result.data.link) {
+                throw {
+                    success: false,
+                    message: "Invalid image data"
+                }
+            }
             Post.createPost(dbUtils.getSession(req), req.walletAddress, req.body, result.data.link)
                 .then((result) => res.send(result))
                 .catch((error) => res.send(error))

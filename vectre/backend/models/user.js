@@ -344,6 +344,12 @@ const updateProfile = function (session, walletAddress, newProf) {
                                             .then(response => { return response })
                                             .catch(error => { throw error })
                                     })
+                                    .catch(error => {
+                                        throw {
+                                            succcess: false,
+                                            message: "Could not update user"
+                                        }
+                                    })
                                 
                             }
                         })
