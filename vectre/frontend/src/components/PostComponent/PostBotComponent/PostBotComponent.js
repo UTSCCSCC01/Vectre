@@ -15,18 +15,18 @@ import PostBotRepostButton from "./PostBotRepostButton/PostBotRepostButton";
 
 const PostBotComponent = ({
     item,
+    fromFeed=false
 }) => {
     return (
         <Flex flexDirection={'row'} alignContent={'center'} justifyContent={'space-between'}>
             <Flex gap={'10px'}>
-                <PostBotLikeButton item={item} />
+                <PostBotLikeButton item={item} fromFeed={fromFeed}/>
                 <TextButton
                     display={item.comment && !item.parent ? 'inline-flex' : 'none'}
                     text={`${item.comment} Commments`}
                     rightIcon={<FaCommentAlt size="1.1rem" />}
                     onClick={(e) => {
-                        // comment
-                        console.log("comment")
+                        window.location = `/post/${item.postID}#comments`
                         e.stopPropagation();
                     }} />
                 <IconSquareButton

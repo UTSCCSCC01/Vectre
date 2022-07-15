@@ -7,6 +7,7 @@ import LoginPage from '../pages/Login';
 import PostPage from '../pages/PostPage';
 import Profile from '../pages/Profile';
 import SettingsPage from '../pages/SettingsPage';
+import CommunityPage from '../pages/CommunityPage';
 
 export default function Routes() {
     return (
@@ -19,6 +20,7 @@ export default function Routes() {
                 <Route path="/user/:walletAddress" component={Profile} />
                 <Route path="/settings" component={SettingsPage} />
                 <Route path="/post/:postID" component={PostPage} />
+                <Route path="/c/:communityID" component={CommunityPage} />
             </Switch>
         </Router>
     );

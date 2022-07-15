@@ -39,7 +39,7 @@ const ProfileUserDetailsTopComponent = ({
                     borderRadius={'6px'}
                     height={'215px'}>
                     <Image
-                        src={getBannerOrDefault(props.user.bgImageURL)}
+                        src={getBannerOrDefault(props.user.banner)}
                         fit={'cover'}
                         overflow={'hidden'}
                         borderRadius={'6px'}
@@ -61,8 +61,11 @@ const ProfileUserDetailsTopComponent = ({
                     position={'relative'}
                     fontSize={'12px'}>
                     <Text fontSize={'24px'} lineHeight={'31.25px'}>{props.user.name}</Text>
-                    <Text>@{props.user.username}</Text>
+                    {
+                        props.user.communityID ? <Text>{`< ${props.user.communityID} >`}</Text> : <Text>@{props.user.username}</Text>
+                    }
                     <Box
+                        display={props.user.walletAddress ? 'initial' : 'none'}
                         position={'absolute'}
                         bottom={'0px'}
                         right={'0px'}
