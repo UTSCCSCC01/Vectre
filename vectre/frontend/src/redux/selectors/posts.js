@@ -6,3 +6,4 @@ export const profilePostsSelector = createSelector(state => state && state.posts
 export const feedSelector = createSelector(state => state && state.posts && state.posts.feed, feedSelector => feedSelector)
 export const feedIndexSelector = createSelector(state => state && state.posts && state.posts.feedIndex, feedIndexSelector => feedIndexSelector)
 export const feedPaginationCompleteSelector = createSelector(state => state && state.posts && state.posts.feedPaginationComplete, feedPaginationCompleteSelector => feedPaginationCompleteSelector)
+export const feedSortTypeSelector = createSelector(state => state && state.posts && state.posts.feedSortType, feedSortTypeSelector => feedSortTypeSelector)

@@ -4,6 +4,11 @@ export const STORE_POST = "STORE_POST"
 
 export const GET_FEED = "GET_FEED"
 export const STORE_FEED = "STORE_FEED"
+export const STORE_FEED_SORT_TYPE = "STORE_FEED_SORT_TYPE"
+export const FEED_SORT_TYPE = {
+    TIMESTAMP: "timestamp",
+    LIKES: "likes"
+}
 
 export const CREATE_REPOST = "CREATE_REPOST"
 
@@ -18,13 +23,3 @@ export const POST_LIKE = "POST_LIKE"
 export const POST_UNLIKE = "POST_UNLIKE"
 export const DO_LIKE = "DO_LIKE"
 export const DO_UNLIKE = "DO_UNLIKE"
-
-//Sorting
-export const UPLOAD_DATE_ASC = "UPLOAD_DATE_ASC"
-export const NUMBER_OF_LIKES_ASC = "NUMBER_OF_LIKES_ASC"    
-export const UPLOAD_DATE_DESC = "UPLOAD_DATE_DESC"    
-export const NUMBER_OF_LIKES_DESC = "NUMBER_OF_LIKES_DESC"    
-
-export const UPDATE_SORTING = "UPDATE_SORTING"
-
-export const FEEDSORTING = "FEEDSORTING"

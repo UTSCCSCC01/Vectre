@@ -8,23 +8,20 @@ import {
     Flex, 
     Stack, 
     Button,
-    ButtonGroup, 
-
 } from "@chakra-ui/react";
 
-import {UPDATE_SORTING, UPLOAD_DATE_ASC, UPLOAD_DATE_DESC, NUMBER_OF_LIKES_ASC, NUMBER_OF_LIKES_DESC } from "../../../redux/constants/posts";
-import { useDispatch } from "react-redux"; 
-import { sortFeed } from "../../../redux/actions/posts";
-
+import { useDispatch } from "react-redux";
+import {storeFeedSortType} from "../../../redux/actions/posts";
+import {FEED_SORT_TYPE} from "../../../redux/constants/posts";
 
 const PostModalComponent = ({
     isOpen,
-    onClose,
+    onClose
 }) => {
     const dispatch = useDispatch()
-    function dispatchCall(feedSorting){
-        dispatch(sortFeed(feedSorting)); 
-        onClose(); 
+    function updateFeedSortType(sortType){
+        dispatch(storeFeedSortType(sortType))
+        onClose()
     }
 
     return (
@@ -58,10 +55,8 @@ const PostModalComponent = ({
                         <Flex direction={"y"} gap="32px" justifyContent={"center"}>
                             <Stack>
                                 <h1>Sort By</h1>
-                                <Button onClick={() => {dispatchCall(UPLOAD_DATE_ASC)}}>Latest to Oldest</Button>
-                                <Button onClick={() => {dispatchCall(UPLOAD_DATE_DESC)}}>Oldest to Latest</Button>
-                                <Button onClick={() => {dispatchCall(NUMBER_OF_LIKES_ASC)}}>Most Liked to Least Liked</Button>
-                                <Button onClick={() => {dispatchCall(NUMBER_OF_LIKES_DESC)}}>Least Liked to Most Liked</Button>
+                                <Button onClick={() => {updateFeedSortType(FEED_SORT_TYPE.LIKES)}}>Most liked</Button>
+                                <Button onClick={() => {updateFeedSortType(FEED_SORT_TYPE.TIMESTAMP)}}>Newest</Button>
                             </Stack>
                         </Flex>
                     </ModalBody>

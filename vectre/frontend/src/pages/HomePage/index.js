@@ -9,7 +9,12 @@ import {
     useDisclosure
 } from '@chakra-ui/react'
 import {useDispatch, useSelector} from "react-redux";
-import {feedIndexSelector, feedPaginationCompleteSelector, feedSelector} from "../../redux/selectors/posts";
+import {
+    feedIndexSelector,
+    feedPaginationCompleteSelector,
+    feedSelector,
+    feedSortTypeSelector
+} from "../../redux/selectors/posts";
 import {useEffect} from "react";
 import {getFeed} from "../../redux/actions/posts";
 
@@ -29,10 +34,11 @@ const HomePage = () => {
     const feed = useSelector(feedSelector)
     const feedIndex = useSelector(feedIndexSelector)
     const feedPaginationComplete = useSelector(feedPaginationCompleteSelector)
+    const feedSortType = useSelector(feedSortTypeSelector)
     const dispatch = useDispatch()
 
     function loadFeed() {
-        dispatch(getFeed(feedIndex))
+        dispatch(getFeed(feedIndex, feedSortType))
     }
     useEffect(() => {
         loadFeed()
@@ -55,7 +61,7 @@ const HomePage = () => {
                             : null}
                     </Stack>
                 </Box>
-                <FilterSortingModal isOpen={isOpen} onClose={onClose} imageURL={""} />
+                <FilterSortingModal isOpen={isOpen} onClose={onClose} />
             </ContentWithSideButtons>
         </ContentWIthNavContainer>
     )

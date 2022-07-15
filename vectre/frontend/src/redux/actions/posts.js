@@ -14,7 +14,7 @@ import {
     DO_UNLIKE,
     GET_PROFILE_POSTS,
     STORE_PROFILE_POSTS,
-    UPDATE_SORTING,
+    STORE_FEED_SORT_TYPE,
 } from "../constants/posts";
 
 // Posts
@@ -32,9 +32,10 @@ export const storePost = (post) => ({
     post
 })
 
-export const getFeed = (feedIndex) => ({
+export const getFeed = (feedIndex, sortType) => ({
     type: GET_FEED,
-    feedIndex
+    feedIndex,
+    sortType
 })
 export const storeFeed = (posts, requestedSize) => ({
     type: STORE_FEED,
@@ -42,7 +43,7 @@ export const storeFeed = (posts, requestedSize) => ({
     requestedSize
 })
 export const storeFeedSortType = (sortType) => ({
-    type: UPDATE_SORTING,
+    type: STORE_FEED_SORT_TYPE,
     sortType
 })
 

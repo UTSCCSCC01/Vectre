@@ -77,7 +77,12 @@ function* getCommentsSaga(action) {
 function* getFeed(action) {
     try {
         const defaultSize = 10
-        const response = yield call(postRequest, BASE_API_URL + POSTS.GET_FEED, {start: action.feedIndex, size: defaultSize}), responseData = response[1]
+        console.log(action.sortType)
+        const response = yield call(postRequest, BASE_API_URL + POSTS.GET_FEED, {
+            start: action.feedIndex,
+            size: defaultSize,
+            sort: action.sortType
+        }), responseData = response[1]
         if (responseData.success) {
             yield put(storeFeed(responseData.posts, defaultSize))
         } else {
