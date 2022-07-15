@@ -6,6 +6,7 @@ export const USERS = {
     GET_LOGGED_IN_USER: "/users/login/currentUser",
 
     GET_USERS: "/users",
+    SEARCH_USERS: "/users/search/{searchVal}",
     CREATE_USER: "/users/register",
     UPDATE_USER: "/users/{walletAddress}/update",
 
@@ -37,6 +38,7 @@ export const NOTIF = {
 export const COMMUNITY = {
     CREATE_COMMUNITY: "/communities/create",
     GET_COMMUNITY: "/communities/{communityID}",
+    SEARCH_COMMUNITIES: "/communities/search/{searchVal}",
     UPDATE_COMMUNITY: "/communities/{communityID}/update",
     GET_ROLES_LOGGED_IN_USER: "/communities/{communityID}/members/{walletAddress}/roles",
     JOIN_COMMUNITY: "/communities/{communityID}/join",

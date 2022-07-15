@@ -83,7 +83,7 @@ export default function NavBar() {
                             </Button>
                         </Link>
                         <Link
-                            href='#'
+                            href='/search'
                             _hover={{ textDecoration: "none" }}>
                             <Button
                                 display={{ base: 'none', lg: 'inline-flex' }}

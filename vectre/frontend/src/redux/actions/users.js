@@ -4,8 +4,10 @@ import {
     LOGIN_USER,
     GET_USER,
     GET_USERS,
+    SEARCH_USERS,
     STORE_USER,
     STORE_USERS,
+    STORE_SEARCHED_USERS,
     CREATE_USER,
     UPDATE_USER,
     GET_LOGGED_IN_USER,
@@ -57,10 +59,18 @@ export const storeUser = (user) => ({
 export const getUsers = () => ({
     type: GET_USERS
 })
-
 export const storeUsers = (users) => ({
     type: STORE_USERS,
     users
+})
+
+export const searchUsers = (searchVal) => ({
+    type: SEARCH_USERS,
+    searchVal
+})
+export const storeSearchedUsers = (searchedUsers) => ({
+    type: STORE_SEARCHED_USERS,
+    searchedUsers
 })
 
 export const getLoggedInUser = () => ({

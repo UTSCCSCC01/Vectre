@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {
     Box,
     Input
@@ -7,8 +7,24 @@ import ContentWIthNavContainer from "../../components/Containers/ContentWIthNavC
 import TextButton from '../../components/Buttons/TextButton/TextButton';
 import  {HiSearch} from 'react-icons/hi';
 import SearchResultContainer from '../../components/Containers/SearchResult';
+import {useDispatch, useSelector} from "react-redux";
+import {searchUsers} from "../../redux/actions/users";
+import {searchCommunities} from "../../redux/actions/community";
+import {searchedUsersSelector} from "../../redux/selectors/users";
+import {searchedCommunitiesSelector} from "../../redux/selectors/community";
 
 const SearchPage = () => {
+    const searchedUsers = useSelector(searchedUsersSelector)
+    const searchedCommunities = useSelector(searchedCommunitiesSelector)
+    const dispatch = useDispatch()
+
+    const searchInput = "Doo" // TODO: Replace with text field input
+
+    function handleSearchSubmit() { // TODO: Call on form submit
+        dispatch(searchUsers(searchInput))
+        dispatch(searchCommunities(searchInput))
+    }
+
     return (
         <ContentWIthNavContainer>
             <Box py={'60px'} maxWidth={'4xl'} margin={'0 auto'}>
@@ -22,7 +38,18 @@ const SearchPage = () => {
                             placeHolder={"Looking For Something?"}>
                             </Input>
                     <Box display={"flex"} flexDirection={"column"}>
-                        <TextButton rightIcon={<HiSearch/>} color={"white"} bg={"primary.400"} px={"24"} py={"1"} text={"Search"} fontSize={"18px"} marginTop={"5px"} marginBottom={"30px"} fontWeight={700} alignSelf={"flex-end"} />
+                        <TextButton
+                            rightIcon={<HiSearch/>}
+                            color={"white"}
+                            bg={"primary.400"}
+                            px={"24"}
+                            py={"1"}
+                            fontSize={"18px"}
+                            marginTop={"5px"}
+                            marginBottom={"30px"}
+                            fontWeight={700}
+                            alignSelf={"flex-end"}
+                            text={"Search"} />
                     </Box>
                 </form>    
                 <SearchResultContainer/>
