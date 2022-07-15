@@ -2,8 +2,17 @@ import ContentWithSideButtons from "../../components/Containers/ContentWithSideB
 import ProfileCommunityDetails from "./ProfileCommunityDetails/ProfileCommunityDetails"
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import { communitySelector, loggedInUserRolesSelector } from "../../redux/selectors/community";
-import { getCommunity, getRolesOfLoggedInUser } from "../../redux/actions/community";
+import {
+    communitySelector,
+    loggedInUserRolesSelector,
+    communityFeedSelector,
+    communityFeedIndexSelector,
+    communityFeedPaginationCompleteSelector,
+    communityFeedSortTypeSelector,
+} from "../../redux/selectors/community";
+import {getCommunity, getCommunityFeed, getRolesOfLoggedInUser} from "../../redux/actions/community";
+import {Box, Button} from "@chakra-ui/react";
+import PostComponent from "../PostComponent/PostComponent";
 
 const communitySideButtonsList = (userIsModerator) => [
     {
@@ -32,10 +41,24 @@ const Community = ({
     const dispatch = useDispatch();
     const communityData = useSelector(communitySelector)
     const loggedInUserRoles = useSelector(loggedInUserRolesSelector);
+
     useEffect(() => {
         dispatch(getRolesOfLoggedInUser(communityID));
         dispatch(getCommunity(communityID));
     }, []);
+
+
+    const feed = useSelector(communityFeedSelector)
+    const feedIndex = useSelector(communityFeedIndexSelector)
+    const feedPaginationComplete = useSelector(communityFeedPaginationCompleteSelector)
+    const feedSortType = useSelector(communityFeedSortTypeSelector)
+
+    function loadFeed() {
+        dispatch(getCommunityFeed(communityID, feedIndex, feedSortType))
+    }
+    useEffect(() => {
+        loadFeed()
+    }, [feedSortType])
 
     return (
         <>
@@ -44,6 +67,17 @@ const Community = ({
                 !loggedInUserRoles.includes("moderator")
             ) : []}>
                 <ProfileCommunityDetails communityData={communityData} />
+
+                {feed.map((item, i) => {
+                    return (
+                        <Box key={i}>
+                            <PostComponent item={item} fromFeed={true} />
+                        </Box>
+                    )
+                })}
+                {feed.length === feedIndex && !feedPaginationComplete ?
+                    <Button onClick={loadFeed}>Load more</Button>
+                    : null}
             </ContentWithSideButtons>
         </>
     )

@@ -6,7 +6,7 @@ import {
     GET_ROLES_LOGGED_IN_USER,
     STORE_ROLES_LOGGED_IN_USER,
     JOIN_COMMUNITY,
-    LEAVE_COMMUNITY
+    LEAVE_COMMUNITY, GET_COMMUNITY_FEED, STORE_COMMUNITY_FEED
 } from "../constants/community";
 
 export const createCommunity = (community, redirectWindow) => ({
@@ -22,6 +22,18 @@ export const getCommunity = (communityID) => ({
 export const storeCommunity = (community) => ({
     type: STORE_COMMUNITY,
     community
+})
+
+export const getCommunityFeed = (communityID, feedIndex, sortType) => ({
+    type: GET_COMMUNITY_FEED,
+    communityID,
+    feedIndex,
+    sortType
+})
+export const storeCommunityFeed = (posts, requestedSize) => ({
+    type: STORE_COMMUNITY_FEED,
+    posts,
+    requestedSize
 })
 
 export const updateCommunity = (communityID, community, redirectWindow) => ({

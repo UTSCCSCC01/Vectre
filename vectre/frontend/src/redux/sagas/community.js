@@ -14,9 +14,16 @@ import {
     UPDATE_COMMUNITY,
     GET_ROLES_LOGGED_IN_USER,
     JOIN_COMMUNITY,
-    LEAVE_COMMUNITY
+    LEAVE_COMMUNITY,
+    GET_COMMUNITY_FEED
 } from "../constants/community";
-import { getCommunity, getRolesOfLoggedInUser, storeCommunity, storeRolesOfLoggedInUser } from "../actions/community";
+import {
+    getCommunity,
+    getRolesOfLoggedInUser,
+    storeCommunity,
+    storeCommunityFeed,
+    storeRolesOfLoggedInUser
+} from "../actions/community";
 
 function* createCommunitySaga(action) {
     try {
@@ -45,6 +52,25 @@ function* getCommunitySaga(action) {
         }
     } catch (error) {
         yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get community"))
+        console.log(error)
+    }
+}
+
+function* getCommunityFeed(action) {
+    try {
+        const defaultSize = 10
+        const response = yield call(postRequest, BASE_API_URL + COMMUNITY.GET_COMMUNITY_FEED.replace("{communityID}", action.communityID), {
+            start: action.feedIndex,
+            size: defaultSize,
+            sort: action.sortType
+        }), responseData = response[1]
+        if (responseData.success) {
+            yield put(storeCommunityFeed(responseData.posts, defaultSize))
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+    } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get feed"))
         console.log(error)
     }
 }
@@ -120,6 +146,7 @@ function* leaveCommunity(action) {
 function* communitySaga() {
     yield takeLatest(CREATE_COMMUNITY, createCommunitySaga)
     yield takeLatest(GET_COMMUNITY, getCommunitySaga)
+    yield takeLatest(GET_COMMUNITY_FEED, getCommunityFeed)
     yield takeLatest(UPDATE_COMMUNITY, updateCommunitySaga)
     yield takeLatest(GET_ROLES_LOGGED_IN_USER, getRolesOfLoggedInUserSaga)
     yield takeLatest(JOIN_COMMUNITY, joinCommunity)

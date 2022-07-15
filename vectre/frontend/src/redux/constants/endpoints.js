@@ -1,3 +1,5 @@
+import {GET_COMMUNITY_FEED} from "./posts";
+
 export const BASE_API_URL = "http://localhost:8080"
 
 export const USERS = {
@@ -37,6 +39,7 @@ export const NOTIF = {
 export const COMMUNITY = {
     CREATE_COMMUNITY: "/communities/create",
     GET_COMMUNITY: "/communities/{communityID}",
+    GET_COMMUNITY_FEED: "/communities/{communityID}/feed",
     UPDATE_COMMUNITY: "/communities/{communityID}/update",
     GET_ROLES_LOGGED_IN_USER: "/communities/{communityID}/members/{walletAddress}/roles",
     JOIN_COMMUNITY: "/communities/{communityID}/join",
