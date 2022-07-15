@@ -4,6 +4,7 @@ const Community = require('./neo4j/community')
 const { ROLES } = require("./neo4j/community");
 const User = require('./neo4j/user')
 const Post = require('./neo4j/post')
+const {FEED_SORT} = require("./neo4j/post");
 
 // helper functions
 const filterBody = function (body) {
@@ -635,9 +636,8 @@ const communityUpdate = function (session, walletAddress, communityID, body) {
         })
 }
 
-const getCommunityFeed = function (session, communityID, start, size, sortType, sortOrder) {
-    sortType = sortType.toLowerCase()
-    sortOrder = sortOrder.toLowerCase()
+const getCommunityFeed = function (session, communityID, walletAddress, start, size, sortType, sortOrder) {
+    sortType = sortType.toLowerCase(), sortOrder = sortOrder.toLowerCase()
 
     if (start < 0) {
         throw {
@@ -649,30 +649,33 @@ const getCommunityFeed = function (session, communityID, start, size, sortType, 
             success: false,
             message: "Size must be non-negative"
         }
-    } else if (sortType !== "timestamp" && sortType !== "likes") {
+    } else if (!Object.values(FEED_SORT.TYPES).includes(sortType)) {
         throw {
             success: false,
             message: "Invalid sort type"
         }
-    } else if (sortOrder !== "desc" && sortOrder !== "asc") {
+    } else if (!Object.values(FEED_SORT.ORDER).includes(sortOrder)) {
         throw {
             success: false,
             message: "Invalid sort order"
         }
     }
 
-    const orderBy = sortType === "timestamp" ? "post.timestamp" : "post.likes",
-        order = sortOrder === "desc" ? "DESC" : ""
+    const orderBy = sortType === FEED_SORT.TYPES.TIMESTAMP ? "post.timestamp" : "post.likes",
+        order = sortOrder === FEED_SORT.ORDER.DESC ? "DESC" : ""
     const query = [
         `MATCH (community: Community {communityID: $communityID})<-[:POSTED_TO]-(post: Post)`,
         `WHERE post.parent IS NULL`, // Prevent comments in feed
+        `OPTIONAL MATCH (author:User)`,
+        `WHERE author.walletAddress = post.author`,
+        `OPTIONAL MATCH (currentUser: User {walletAddress: $walletAddress})-[l:LIKED]->(post)`,
         `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
         `OPTIONAL MATCH (repost:Post)`,
         `WHERE repost.postID = post.repostPostID`,
         `OPTIONAL MATCH (repostAuthor:User)`,
         `WHERE repostAuthor.walletAddress = repost.author`,
         `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
-        `RETURN DISTINCT post, repost, repostAuthor, count(c) AS comment`,
+        `RETURN DISTINCT author, post, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID`,
         `ORDER BY ${orderBy} ${order}`,
         `SKIP toInteger($start)`,
         `LIMIT toInteger($size)`
@@ -683,6 +686,7 @@ const getCommunityFeed = function (session, communityID, start, size, sortType, 
             if (idCheck.result) { // Community exists
                 return session.run(query, {
                     communityID: communityID,
+                    walletAddress: walletAddress,
                     start: start,
                     size: size
                 })
@@ -690,7 +694,10 @@ const getCommunityFeed = function (session, communityID, start, size, sortType, 
                         let posts = []
                         results.records.forEach((record) => {
                             let post = new Post(record.get("post"))
+                            post.author = new User(record.get("author"))
                             post.comment = String(record.get("comment").low);
+                            post.community = record.get('com.communityID') ? String(record.get('com.communityID')) : null
+                            post.alreadyLiked = record.get('likes').low > 0
                             if (post.repostPostID) {
                                 post.repostPost = new Post(record.get('repost'))
                                 post.repostPost.author = new User(record.get('repostAuthor'))
