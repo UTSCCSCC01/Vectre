@@ -1,24 +1,16 @@
 const config = require('../config')
 const clientID = config.imgur.clientID
 
-function upload(body) {
-    if(!body.data) {
-        throw {
-            success: false, 
-            message: "No data in request body"
-        }
-    }
-    const { data } = body;
+function upload(imageData) {
     const apiURL = 'https://api.imgur.com/3/image';
     return fetch(apiURL, {
         method: 'POST',
-        body: data,
+        body: imageData,
         headers: {
             'Authorization': 'Client-ID ' + clientID
         }
     })
         .then(response => response.json())
-
 }
 
 function retrieve(body) {

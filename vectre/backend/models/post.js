@@ -2,6 +2,7 @@ const _ = require('lodash');
 const Post = require('./neo4j/post')
 const User = require('./neo4j/user')
 const { nano } = require('../utils/Utils')
+const imgUtils = require('../utils/images')
 const Notification = require("../models/notification")
 
 const createUserPost = function (session, authorWalletAddress, body) {
@@ -10,6 +11,11 @@ const createUserPost = function (session, authorWalletAddress, body) {
             success: false,
             message: 'Post must contain text field'
         }
+    }
+    const imageURL = null;
+    if (body.imageData) {
+        const uploadResponse = imgUtils.upload(body.imageData);
+        imageURL = uploadResponse.data.link;
     }
     const postID = nano()
     const timestamp = new Date().toISOString()
@@ -35,7 +41,7 @@ const createUserPost = function (session, authorWalletAddress, body) {
                         postID: postID,
                         repostPostID: body.repostPostID,
                         text: body.text,
-                        imageURL: body.imageURL ? body.imageURL : null, // optional
+                        imageURL: imageURL,
                         author: authorWalletAddress,
                         timestamp: timestamp
                     })
@@ -43,7 +49,8 @@ const createUserPost = function (session, authorWalletAddress, body) {
                             return {
                                 success: true,
                                 message: "Successfully created repost",
-                                newPostID: postID
+                                newPostID: postID,
+                                imageURL
                             }
                         })
                         .catch((error) => {
@@ -79,7 +86,7 @@ const createUserPost = function (session, authorWalletAddress, body) {
         return session.run(query, {
             postID: postID,
             text: body.text,
-            imageURL: body.imageURL ? body.imageURL : null, // optional
+            imageURL: imageURL,
             author: authorWalletAddress,
             timestamp: timestamp
         })
@@ -87,7 +94,8 @@ const createUserPost = function (session, authorWalletAddress, body) {
                 return {
                     success: true,
                     message: "Successfully created post",
-                    newPostID: postID
+                    newPostID: postID,
+                    imageURL
                 }
             })
             .catch((error) => {
