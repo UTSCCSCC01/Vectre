@@ -34,10 +34,17 @@ router.get('/:walletAddress/dashboard', (req, res) => {
         .catch((error) => res.send(error))
 })
 // GET /users/{walletAddress}/funds
-router.get('/:walletAddress/funds', (req, res) => {
-    User.getFunds(req.params.walletAddress)
-        .then((result) => res.send(result))
-        .catch((error) => res.send(error))
+router.get('/:walletAddress/funds', authenticateToken, (req, res) => {
+    if (req.walletAddress == req.params.walletAddress) {
+        User.getFunds(req.params.walletAddress)
+            .then((result) => res.send(result))
+            .catch((error) => res.send(error))
+    } else {
+        res.status(403).send({
+            success: false,
+            message: "You do not have access to this User's wallet funds."
+        })
+    }
 })
 
 // GET /users/{walletAddress}/notifications
