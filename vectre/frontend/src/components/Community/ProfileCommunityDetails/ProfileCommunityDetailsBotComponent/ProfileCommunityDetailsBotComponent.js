@@ -102,6 +102,7 @@ const ProfileCommunityDetailsBotComponent = ({
                                     fontWeight={700}
                                     color={'white'}
                                     bg={'primary.400'}
+                                    _hover={{ bg: "red" }}
                                     text={'Leave'}
                                     onClick={() => { dispatch(leaveCommunity(communityData.communityID)) }} />
                             )
