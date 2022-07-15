@@ -19,7 +19,7 @@ const SearchPage = () => {
     const searchedCommunities = useSelector(searchedCommunitiesSelector)
     const dispatch = useDispatch()
 
-    const [searchInput, setSearchInput] = useState("")
+    const [searchInput, setSearchInput] = useState(".*")
 
     function handleSearchSubmit() {
         dispatch(searchUsers(searchInput))
@@ -50,7 +50,7 @@ const SearchPage = () => {
                             placeholder={"Looking For Something?"}
                             _placeholder={{ color: "primary.400" }}
                             borderRadius={'6px'}
-                            onChange={(event) => { setSearchInput(event.target.value) }} />
+                            onChange={(event) => { setSearchInput(event.target.value === "" ? ".*" : event.target.value) }} />
                     </FormControl>
                     <Box display={"flex"} flexDirection={"column"}>
                         <TextButton
