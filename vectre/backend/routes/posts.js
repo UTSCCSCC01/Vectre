@@ -4,14 +4,15 @@ var router = express.Router();
 const dbUtils = require('../utils/neo4j/dbUtils');
 const Post = require('../models/post');
 const { authenticateToken, storeWalletAddressFromToken } = require("../utils/auth");
+const {FEED_SORT} = require("../models/neo4j/post");
 
 // Posts
 // POST /posts/feed
 router.post('/feed', authenticateToken, (req, res, next) => {
     const start = req.body.start ? req.body.start : 0,
         size = req.body.size ? req.body.size : 10,
-        sortType = req.body.sort ? req.body.sort : "timestamp",
-        sortOrder = req.body.order ? req.body.order : "desc"
+        sortType = req.body.sort ? req.body.sort : FEED_SORT.TYPES.TIMESTAMP,
+        sortOrder = req.body.order ? req.body.order : FEED_SORT.ORDER.DESC
     Post.getUserFeed(dbUtils.getSession(req), req.walletAddress, start, size, sortType, sortOrder)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))

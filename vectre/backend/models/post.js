@@ -5,6 +5,7 @@ const { nano } = require('../utils/Utils')
 const Notification = require("../models/notification")
 const { ROLES } = require("../models/neo4j/community");
 const Community = require("./community")
+const {FEED_SORT} = require("./neo4j/post");
 
 const createPost = function (session, authorWalletAddress, body) {
     if (!body.text) {
@@ -502,8 +503,7 @@ const getLikesOnPost = function (session, postID) {
 }
 
 const getUserFeed = function (session, walletAddress, start, size, sortType, sortOrder) {
-    sortType = sortType.toLowerCase()
-    sortOrder = sortOrder.toLowerCase()
+    sortType = sortType.toLowerCase(), sortOrder = sortOrder.toLowerCase()
 
     if (start < 0) {
         throw {
@@ -515,20 +515,20 @@ const getUserFeed = function (session, walletAddress, start, size, sortType, sor
             success: false,
             message: "Size must be non-negative"
         }
-    } else if (sortType !== "timestamp" && sortType !== "likes") {
+    } else if (!Object.values(FEED_SORT.TYPES).includes(sortType)) {
         throw {
             success: false,
             message: "Invalid sort type"
         }
-    } else if (sortOrder !== "desc" && sortOrder !== "asc") {
+    } else if (!Object.values(FEED_SORT.ORDER).includes(sortOrder)) {
         throw {
             success: false,
             message: "Invalid sort order"
         }
     }
 
-    const orderBy = sortType === "timestamp" ? "post.timestamp" : "post.likes",
-        order = sortOrder === "desc" ? "DESC" : ""
+    const orderBy = sortType === FEED_SORT.TYPES.TIMESTAMP ? "post.timestamp" : "post.likes",
+        order = sortOrder === FEED_SORT.ORDER.DESC ? "DESC" : ""
     const query = [
         `MATCH (currentUser: User {walletAddress: $walletAddress})-[:FOLLOWS]->(followedUser:User)-[:POSTED]->(post: Post)`,
         `WHERE post.parent IS NULL`, // Prevent comments in feed
