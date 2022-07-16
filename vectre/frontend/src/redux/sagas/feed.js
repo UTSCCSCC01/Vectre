@@ -5,10 +5,10 @@ import {
     POSTS,
     COMMUNITY
 } from "../constants/endpoints";
-import { showToast } from "../actions/toast";
-import { TOAST_STATUSES } from "../constants/toast";
-import {storeCommunityFeed, storeFeed} from "../actions/feed";
-import {GET_COMMUNITY_FEED, GET_FEED} from "../constants/feed";
+import { showToast } from "../actions/global";
+import { TOAST_STATUSES } from "../constants/global";
+import { storeCommunityFeed, storeFeed } from "../actions/feed";
+import { GET_COMMUNITY_FEED, GET_FEED } from "../constants/feed";
 
 function* getFeed(action) {
     try {
