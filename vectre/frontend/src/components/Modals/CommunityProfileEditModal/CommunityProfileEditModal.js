@@ -14,7 +14,7 @@ import FormTextArea from "../FormTextArea/FormTextArea";
 import StyledModalHeader from "../StyledModalHeader/StyledModalHeader";
 import BannerProfilePicWrapper from "../BannerProfilePicWrapper/BannerProfilePicWrapper";
 import { useDispatch } from "react-redux";
-import { createCommunity, updateCommunity } from "../../../redux/actions/community";
+import { createCommunity, updateCommunity } from "../../../redux/actions/communities";
 import { redirectWindow } from "../../../utils/Utils";
 
 const CommunityProfileEditModal = ({

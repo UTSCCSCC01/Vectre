@@ -73,6 +73,39 @@ const getByWalletAddress = (session, walletAddress) => {
         })
 }
 
+const search = (session, searchVal) => {
+    const regex = `(?i).*${searchVal}.*`
+    const query = [
+        `MATCH (user: User)`,
+        `WHERE user.username =~ $regex OR user.name =~ $regex`,
+        searchVal.toLowerCase().startsWith("0x") ? `OR user.walletAddress =~ $regex` : "", // only search wallet if starts w/ 0x
+        `OPTIONAL MATCH (user)<-[f:FOLLOWS]-(follower: User)`,
+        `RETURN user, count(f) as followerCount`
+    ].join('\n');
+    return session.run(query, {
+        regex: regex
+    })
+        .then((results) => {
+            let users = []
+            results.records.forEach((record) => {
+                let user = new User(record.get('user'))
+                user.followerCount = record.get("followerCount").low
+
+                users.push(user)
+            })
+            return {
+                success: true,
+                users: users
+            }
+        }).catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to search users",
+                error: error.message
+            }
+        })
+}
+
 const register = (session, body, setTokenInCookie) => { // Creates User from body data
     if (!(/^[0-9a-zA-Z_.-]+$/.test(body.username))) {
         return new Promise((resolve) => {
@@ -668,6 +701,7 @@ const getCommunitiesByUser = function (session, walletAddress) {
 module.exports = {
     getAll,
     getByWalletAddress,
+    search,
     register,
     getNonce,
     login,

@@ -5,8 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     communitySelector,
     loggedInUserRolesSelector,
-} from "../../redux/selectors/community";
-import { getCommunity, getRolesOfLoggedInUser } from "../../redux/actions/community";
+} from "../../redux/selectors/communities";
 import { Box, Flex, Stack } from "@chakra-ui/react";
 import PostComponent from "../PostComponent/PostComponent";
 import TextButton from "../Buttons/TextButton/TextButton";
@@ -18,6 +17,7 @@ import {
 } from "../../redux/selectors/feed";
 import { getCommunityFeed } from "../../redux/actions/feed";
 import CreatePostComponent from "../CreatePostComponent/CreatePostComponent";
+import { getCommunity, getRolesOfLoggedInUser } from "../../redux/actions/communities";
 
 const communitySideButtonsList = (userIsModerator) => [
     {

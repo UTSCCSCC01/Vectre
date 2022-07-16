@@ -3,8 +3,8 @@ import {
    useBoolean,
    Image
 } from "@chakra-ui/react"
-import { TOAST_STATUSES } from "../../../redux/constants/toast";
-import { showToast } from "../../../redux/actions/toast";
+import { TOAST_STATUSES } from "../../../redux/constants/global";
+import { showToast } from "../../../redux/actions/global";
 import { useDispatch } from "react-redux";
 
 const NFTImage = ({

@@ -1,4 +1,4 @@
-import { READ_NOTIFICATION } from "../constants/notification"
+import { READ_NOTIFICATION } from "../constants/notifications"
 
 export const readNotification = (notificationID) => ({
     type: READ_NOTIFICATION,
