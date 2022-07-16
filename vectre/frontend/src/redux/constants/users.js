@@ -5,6 +5,12 @@ export const LOGIN_USER = "LOGIN_USER"
 export const GET_LOGGED_IN_USER = "GET_LOGGED_IN_USER"
 export const STORE_LOGGED_IN_USER = "STORE_LOGGED_IN_USER"
 
+export const GET_NFT = "GET_NFT"
+export const STORE_NFT = "STORE_NFT"
+export const GET_FUNDS = "GET_FUNDS"
+export const STORE_FUNDS = "STORE_FUNDS"
+export const UPDATE_DASHBOARD = "UPDATE_DASHBOARD"
+
 export const GET_USER = "GET_USER"
 export const GET_USERS = "GET_USERS"
 export const SEARCH_USERS = "SEARCH_USERS"
@@ -21,8 +27,3 @@ export const STORE_UNREADSTATUS = "STORE_UNREADSTATUS"
 
 export const FOLLOW_USER = "FOLLOW_USER"
 export const UNFOLLOW_USER = "UNFOLLOW_USER"
-
-export const GET_NFT = "GET_NFT"
-export const STORE_NFT = "STORE_NFT"
-
-export const UPDATE_DASHBOARD = "UPDATE_DASHBOARD"

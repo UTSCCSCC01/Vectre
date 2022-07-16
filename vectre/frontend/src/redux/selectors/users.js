@@ -8,3 +8,4 @@ export const nonceSelector = createSelector(state => state && state.users && sta
 export const notificationsSelector = createSelector(state => state && state.users && state.users.notifications, notificationsSelector => notificationsSelector)
 export const unreadStatusSelector = createSelector(state => state && state.users && state.users.unreadStatus, unreadStatusSelector => unreadStatusSelector)
 export const nftSelector = createSelector(state => state && state.users && state.users.nft, nftSelector => nftSelector)
+export const fundsSelector = createSelector(state => state && state.users && state.users.funds, fundsSelector => fundsSelector)

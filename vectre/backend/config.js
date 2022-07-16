@@ -9,7 +9,8 @@ const config = {
         username: process.env.NEO4J_DB_USERNAME,
         password: process.env.NEO4J_DB_PASSWORD,
     },
-    "jwtSecretToken": process.env.JWT_SECRET_TOKEN
+    "jwtSecretToken": process.env.JWT_SECRET_TOKEN,
+    "etherscanToken": process.env.ETHERSCAN_TOKEN
 }
 
 module.exports = config;

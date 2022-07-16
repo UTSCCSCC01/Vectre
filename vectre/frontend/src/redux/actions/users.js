@@ -18,8 +18,10 @@ import {
     FOLLOW_USER,
     UNFOLLOW_USER,
     GET_NFT,
-    UPDATE_DASHBOARD,
     STORE_NFT,
+    GET_FUNDS,
+    STORE_FUNDS,
+    UPDATE_DASHBOARD,
 } from "../constants/users";
 
 // Login
@@ -45,6 +47,14 @@ export const getNFT = (walletAddress) => ({
 export const storeNFT = (nft) => ({
     type: STORE_NFT,
     nft
+})
+
+export const getFunds = () => ({
+    type: GET_FUNDS
+})
+export const storeFunds = (funds) => ({
+    type: STORE_FUNDS,
+    funds
 })
 
 export const getUser = (walletAddress) => ({

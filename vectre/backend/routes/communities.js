@@ -6,6 +6,17 @@ const { ROLES } = require("../models/neo4j/community");
 const { authenticateToken } = require('../utils/auth');
 const dbUtils = require('../utils/neo4j/dbUtils');
 
+// POST /communities/feed
+router.post('/:communityID/feed', authenticateToken, (req, res, next) => {
+    const start = req.body.start ? req.body.start : 0,
+        size = req.body.size ? req.body.size : 10,
+        sortType = req.body.sort ? req.body.sort : "timestamp",
+        sortOrder = req.body.order ? req.body.order : "desc"
+    Community.getCommunityFeed(dbUtils.getSession(req), req.params.communityID, start, size, sortType, sortOrder)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
+
 // GET /communities
 router.get('/', (req, res, next) => {
     Community.getAll(dbUtils.getSession(req))

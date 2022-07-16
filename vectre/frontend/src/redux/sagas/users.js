@@ -6,6 +6,7 @@ import {
     storeLoggedInUser,
     storeUser,
     storeNFT,
+    storeFunds,
     storeNotifications,
     storeUnreadStatus,
     getUser,
@@ -24,6 +25,7 @@ import {
     FOLLOW_USER,
     UNFOLLOW_USER,
     GET_NFT,
+    GET_FUNDS,
     UPDATE_DASHBOARD,
     SEARCH_USERS,
 } from "../constants/users";
@@ -121,6 +123,21 @@ function* getNFT(action) {
         }
     } catch (error) {
         yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get NFTs"))
+        console.log(error)
+    }
+}
+
+function* getFunds() {
+    try {
+        const response = yield call(getRequest, BASE_API_URL + USERS.GET_FUNDS), responseData = response[1]
+        if (responseData.success) {
+            yield put(storeFunds(responseData.funds))
+        }
+        else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+    } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to retrieve wallet funds."))
         console.log(error)
     }
 }
@@ -225,6 +242,8 @@ function* usersSaga() {
     yield takeLatest(LOGIN_USER, loginUser)
     yield takeLatest(GET_LOGGED_IN_USER, getLoggedInUserSaga)
     yield takeLatest(GET_USER, getUserSaga)
+    yield takeLatest(GET_NFT, getNFT)
+    yield takeLatest(GET_FUNDS, getFunds)
     yield takeLatest(GET_USERS, getUsers)
     yield takeLatest(SEARCH_USERS, searchUsers)
     yield takeLatest(CREATE_USER, createUser)

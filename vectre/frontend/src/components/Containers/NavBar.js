@@ -1,3 +1,4 @@
+import React, { useEffect } from "react"
 import {
     Flex,
     Text,
@@ -18,11 +19,12 @@ import { FaWallet } from 'react-icons/fa'
 import NotificationPopover from '../Notifications/NotificationPopover'
 
 import VectreIcon from '../Icons/VectreIcon'
-import { loggedInUserSelector } from "../../redux/selectors/users";
+import { fundsSelector, loggedInUserSelector } from "../../redux/selectors/users";
 import { useSelector } from "react-redux";
 
 export default function NavBar() {
     const loggedInUser = useSelector(loggedInUserSelector)
+    const funds = useSelector(fundsSelector)
     return (
         <Container maxW={'8xl'}>
             <Flex alignItems="center"
@@ -106,20 +108,21 @@ export default function NavBar() {
                         spacing={6}
                         display={{ base: 'none', lg: 'flex' }}
                         alignItems={'center'}>
-                        <Link
-                            href='#'
-                            _hover={{ textDecoration: "none" }}>
-                            <Button
+                        {funds !== "" ?
+                            <Text
                                 display={{ base: 'none', lg: 'inline-flex' }}
-                                px={'17.5px'}
+                                px={'25px'}
+                                py={'6px'}
+                                borderRadius={'6px'}
                                 fontSize={'18px'}
                                 fontWeight={700}
                                 color={'primary.400'}
+                                _hover={{ textDecoration: "none" }}
                                 bg={'white'}
                                 _focus={{ outline: 0 }}>
-                                --- $ETH
-                            </Button>
-                        </Link>
+                                {funds} ETH
+                            </Text>
+                            : null}
                         <NotificationPopover />
                         <Link
                             href={Object.keys(loggedInUser).length === 0 ? "/login" : `/user/${loggedInUser.walletAddress}`}
