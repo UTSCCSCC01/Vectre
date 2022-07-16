@@ -10,7 +10,7 @@ const { FEED_SORT } = require("../models/neo4j/post");
 // Posts
 // POST /posts/feed
 
-router.post('/feed', authenticateToken, (req, res, next) => {
+router.post('/feed', storeWalletAddressFromToken, (req, res, next) => {
     const start = req.body.start ? req.body.start : 0,
         size = req.body.size ? req.body.size : 10,
         sortType = req.body.sort ? req.body.sort : FEED_SORT.TYPES.TIMESTAMP,
