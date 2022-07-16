@@ -1,12 +1,10 @@
 import ContentWIthNavContainer from "../../components/Containers/ContentWIthNavContainer";
 import ContentWithSideButtons from "../../components/Containers/ContentWithSideButtons";
 import PostComponent from "../../components/PostComponent/PostComponent";
-import FilterSortingModal from "../../components/Modals/FilterSortingModal/FilterSortingModal"
 import {
     Box,
     Button,
-    Stack,
-    useDisclosure
+    Stack
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -23,8 +21,6 @@ import SortingButtonComponent from "../../components/SortingButtonComponent/Sort
 const HomePage = () => {
     const sideButtonsList = [
     ]
-
-    const { isOpen, onOpen, onClose } = useDisclosure();
 
     const feed = useSelector(feedSelector)
     const feedIndex = useSelector(feedIndexSelector)
@@ -56,7 +52,6 @@ const HomePage = () => {
                         <Button onClick={loadFeed}>Load more</Button>
                         : null}
                 </Stack>
-                <FilterSortingModal isOpen={isOpen} onClose={onClose} />
             </ContentWithSideButtons>
         </ContentWIthNavContainer>
     )
