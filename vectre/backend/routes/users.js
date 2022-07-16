@@ -161,4 +161,11 @@ router.post('/:walletAddressToUnfollow/unfollow', authenticateToken, (req, res, 
         .catch((error) => res.send(error))
 });
 
+// GET /users/{walletAddress}/communities
+router.get('/:walletAddress/communities', (req, res, next) => {
+    User.getCommunitiesByUser(dbUtils.getSession(req), req.params.walletAddress)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+});
+
 module.exports = router;

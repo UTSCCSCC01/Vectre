@@ -4,10 +4,11 @@ import {
     Box, Button,
     Stack
 } from '@chakra-ui/react'
-import {useDispatch, useSelector} from "react-redux";
-import {feedIndexSelector, feedPaginationCompleteSelector, feedSelector} from "../../redux/selectors/posts";
-import {useEffect} from "react";
-import {getFeed} from "../../redux/actions/posts";
+import { useDispatch, useSelector } from "react-redux";
+import { feedIndexSelector, feedPaginationCompleteSelector, feedSelector } from "../../redux/selectors/posts";
+import { useEffect } from "react";
+import { getFeed } from "../../redux/actions/posts";
+import CreatePostComponent from "../../components/CreatePostComponent/CreatePostComponent";
 
 const HomePage = () => {
     const feed = useSelector(feedSelector)
@@ -25,7 +26,8 @@ const HomePage = () => {
     return (
         <ContentWIthNavContainer>
             <Box py={'60px'} maxWidth={'4xl'} margin={'0 auto'}>
-                <Stack alignSelf={'center'} gap={'36px'}>
+                <CreatePostComponent />
+                <Stack mt={"20px"} alignSelf={'center'} gap={'36px'}>
                     {feed.map((item, i) => {
                         return (
                             <Box key={i}>
