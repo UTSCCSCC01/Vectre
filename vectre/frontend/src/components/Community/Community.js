@@ -72,12 +72,12 @@ const Community = ({
                 !loggedInUserRoles.includes("moderator")
             ) : []}>
                 <ProfileCommunityDetails communityData={communityData} />
-                {
-                    loggedInUserRoles.includes("member") ? <CreatePostComponent communityID={communityID} /> : null
-                }
                 <Stack
                     mt={"15px"}
                     gap={"10px"}>
+                    {
+                        loggedInUserRoles.includes("member") ? <CreatePostComponent communityID={communityID} /> : null
+                    }
                     {feed.map((item, i) => {
                         return (
                             <Box key={i}>
