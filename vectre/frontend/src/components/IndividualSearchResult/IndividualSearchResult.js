@@ -4,7 +4,7 @@ import {
     Image,
     Link
 } from "@chakra-ui/react"
-import { getAvatarOrDefault, getBannerOrDefault } from "../../utils/Utils";
+import {formatWalletAddress, getAvatarOrDefault, getBannerOrDefault} from "../../utils/Utils";
 
 const IndividualSearchResult = ({
     result
@@ -64,6 +64,13 @@ const IndividualSearchResult = ({
                     <Box fontSize={"12px"} fontWeight={700} color={"#3B82F6"}>
                         {type === SEARCH_RESULT_TYPES.USER ? "@" + result.username : "< " + result.communityID + " >"}
                     </Box>
+                    {type === SEARCH_RESULT_TYPES.USER ?
+                        <Box
+                            fontSize={"12px"} fontWeight={700}
+                            color={'rgba(105, 123, 152, 1)'}>
+                            &#123; {formatWalletAddress(result.walletAddress)} &#125;
+                        </Box>
+                        : null}
                     <Box
                         position={'absolute'}
                         bottom={'0'}

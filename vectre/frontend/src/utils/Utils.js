@@ -18,9 +18,9 @@ export const formatLikes = (num) => {
 
 // assumes walletAddress is valid
 export const formatWalletAddress = (walletAddress) => {
-    if (walletAddress === undefined) {
-        return "Not a valid wallet address";
-    }
+    if (walletAddress === undefined) return "Not a valid wallet address"
+    else if (walletAddress.length < 10) return walletAddress
+
     return walletAddress.slice(0, 4) + "..." + walletAddress.slice(-4);
 };
 
