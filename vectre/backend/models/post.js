@@ -590,7 +590,6 @@ const getUserFeed = function (session, walletAddress, start, size, sortType, sor
             }
         })
         .catch((error) => {
-            console.log(error)
             throw {
                 success: false,
                 message: "Failed to get feed",
