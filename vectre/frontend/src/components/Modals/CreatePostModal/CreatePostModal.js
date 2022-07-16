@@ -202,7 +202,7 @@ const CreatePostModal = ({
                                 width={'fit-content'}
                                 name={'option'}
                                 onChange={(event) => { setOption(event.target.value) }}>
-                                <option value={null}>{`@${loggedInUser.username}`}</option>
+                                <option value={null}>{`Your profile (@${loggedInUser.username})`}</option>
                                 {
                                     loggedInUser && loggedInUser.communities.map((elem, i) => {
                                         return <option value={elem.communityID} key={i}>{`<${elem.communityID}>`}</option>
