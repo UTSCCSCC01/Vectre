@@ -70,7 +70,7 @@ function* searchCommunities(action) {
 
 function* updateCommunitySaga(action) {
     try {
-        const response = yield call(postRequest, BASE_API_URL + COMMUNITY.UPDATE_COMMUNITY.replace("{communityID}", action.communityID), action.community), responseData = response[1]
+        const response = yield call(putRequest, BASE_API_URL + COMMUNITY.UPDATE_COMMUNITY.replace("{communityID}", action.communityID), action.community), responseData = response[1]
         if (responseData.success) {
             if (responseData.communityID !== action.communityID) {
                 yield put(action.redirectWindow(`/c/${responseData.communityID}`))

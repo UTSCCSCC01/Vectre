@@ -45,8 +45,8 @@ router.post('/create', authenticateToken, (req, res, nex) => {
         .catch(error => res.send(error))
 })
 
-// POST /communities/:communityID/update
-router.post('/:communityID/update', authenticateToken, (req, res, next) => {
+// PUT /communities/:communityID/update
+router.put('/:communityID/update', authenticateToken, (req, res, next) => {
     Community.communityUpdate(dbUtils.getSession(req), req.walletAddress, req.params.communityID, req.body)
         .then(result => res.send(result))
         .catch(error => res.send(error))
