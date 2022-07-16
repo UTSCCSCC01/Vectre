@@ -529,40 +529,59 @@ const getUserFeed = function (session, walletAddress, start, size, sortType, sor
 
     const orderBy = sortType === FEED_SORT.TYPES.TIMESTAMP ? "post.timestamp" : "post.likes",
         order = sortOrder === FEED_SORT.ORDER.DESC ? "DESC" : ""
-    const query = [
-        `CALL {`,
-            `MATCH (currentUser: User {walletAddress: $walletAddress})-[:FOLLOWS]->(author:User)-[:POSTED]->(post: Post)`,
-            `WHERE post.parent IS NULL`, // Prevent comments in feed
-            `OPTIONAL MATCH (currentUser)-[l:LIKED]->(post)`,
-            `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
-            `OPTIONAL MATCH (repost:Post)`,
-            `WHERE repost.postID = post.repostPostID`,
-            `OPTIONAL MATCH (repostAuthor:User)`,
-            `WHERE repostAuthor.walletAddress = repost.author`,
-            `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
-            `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID AS communityID`,
+
+    var query = ""
+    if (walletAddress !== null) {
+        query = [
+            `CALL {`,
+                `MATCH (currentUser: User {walletAddress: $walletAddress})-[:FOLLOWS]->(author:User)-[:POSTED]->(post: Post)`,
+                `WHERE post.parent IS NULL`, // Prevent comments in feed
+                `OPTIONAL MATCH (currentUser)-[l:LIKED]->(post)`,
+                `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
+                `OPTIONAL MATCH (repost:Post)`,
+                `WHERE repost.postID = post.repostPostID`,
+                `OPTIONAL MATCH (repostAuthor:User)`,
+                `WHERE repostAuthor.walletAddress = repost.author`,
+                `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
+                `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID AS communityID`,
+                `ORDER BY ${orderBy} ${order}`,
+
+                `UNION`,
+
+                `MATCH (currentUser)-[:JOINS]->(:Community)<-[:POSTED_TO]-(post: Post)`,
+                `WHERE post.parent IS NULL`, // Prevent comments in feed
+                `OPTIONAL MATCH (author:User)`,
+                `WHERE author.walletAddress = post.author`,
+                `OPTIONAL MATCH (currentUser)-[l:LIKED]->(post)`,
+                `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
+                `OPTIONAL MATCH (repost:Post)`,
+                `WHERE repost.postID = post.repostPostID`,
+                `OPTIONAL MATCH (repostAuthor:User)`,
+                `WHERE repostAuthor.walletAddress = repost.author`,
+                `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
+                `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID AS communityID`,
+            `}`,
+            `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, likes, comment, communityID`,
             `ORDER BY ${orderBy} ${order}`,
-
-            `UNION`,
-
-            `MATCH (currentUser)-[:JOINS]->(:Community)<-[:POSTED_TO]-(post: Post)`,
+            `SKIP toInteger($start)`,
+            `LIMIT toInteger($size)`
+        ].join('\n');
+    } else {
+        query = [
+            `MATCH (author:User)-[:POSTED]->(post: Post)`,
             `WHERE post.parent IS NULL`, // Prevent comments in feed
-            `OPTIONAL MATCH (author:User)`,
-            `WHERE author.walletAddress = post.author`,
-            `OPTIONAL MATCH (currentUser)-[l:LIKED]->(post)`,
             `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
             `OPTIONAL MATCH (repost:Post)`,
             `WHERE repost.postID = post.repostPostID`,
             `OPTIONAL MATCH (repostAuthor:User)`,
             `WHERE repostAuthor.walletAddress = repost.author`,
             `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
-            `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID AS communityID`,
-        `}`,
-        `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, likes, comment, communityID`,
-        `ORDER BY ${orderBy} ${order}`,
-        `SKIP toInteger($start)`,
-        `LIMIT toInteger($size)`
-    ].join('\n');
+            `RETURN DISTINCT post, author, repost, repostAuthor, 0 AS likes, count(c) AS comment, com.communityID AS communityID`,
+            `ORDER BY ${orderBy} ${order}`,
+            `SKIP toInteger($start)`,
+            `LIMIT toInteger($size)`
+        ].join('\n');
+    }
 
     return session.run(query, {
         walletAddress: walletAddress,
