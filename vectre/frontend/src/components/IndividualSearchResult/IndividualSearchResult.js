@@ -16,7 +16,7 @@ const IndividualSearchResult = ({
     const type = result.walletAddress ? SEARCH_RESULT_TYPES.USER : SEARCH_RESULT_TYPES.COMMUNITY
 
     return (
-        <Link _hover={{ textDecoration: "none" }} href={result.communityID ? `/c/${result.communityID}` : `/user/${result.username}`}>
+        <Link _hover={{ textDecoration: "none" }} href={result.communityID ? `/c/${result.communityID}` : `/user/${result.walletAddress}`}>
             <Flex
                 flexDirection={'column'}
                 gap={'20px'}
