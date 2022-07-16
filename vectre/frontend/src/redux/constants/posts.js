@@ -2,14 +2,6 @@ export const CREATE_POST = "CREATE_POST"
 export const GET_POST = "GET_POST"
 export const STORE_POST = "STORE_POST"
 
-export const GET_FEED = "GET_FEED"
-export const STORE_FEED = "STORE_FEED"
-export const STORE_FEED_SORT_TYPE = "STORE_FEED_SORT_TYPE"
-export const FEED_SORT_TYPE = {
-    TIMESTAMP: "timestamp",
-    LIKES: "likes"
-}
-
 export const CREATE_REPOST = "CREATE_REPOST"
 
 export const GET_PROFILE_POSTS = "GET_PROFILE_POSTS"

@@ -14,9 +14,9 @@ import {
     feedPaginationCompleteSelector,
     feedSelector,
     feedSortTypeSelector
-} from "../../redux/selectors/posts";
+} from "../../redux/selectors/feed";
 import {useEffect} from "react";
-import {getFeed} from "../../redux/actions/posts";
+import {getFeed} from "../../redux/actions/feed";
 
 const HomePage = () => {
     const sideButtonsList = [

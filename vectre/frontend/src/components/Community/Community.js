@@ -5,15 +5,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     communitySelector,
     loggedInUserRolesSelector,
-    communityFeedSelector,
-    communityFeedIndexSelector,
-    communityFeedPaginationCompleteSelector,
-    communityFeedSortTypeSelector,
 } from "../../redux/selectors/community";
-import { getCommunity, getCommunityFeed, getRolesOfLoggedInUser } from "../../redux/actions/community";
-import { Box, Button, Flex, Stack } from "@chakra-ui/react";
+import { getCommunity, getRolesOfLoggedInUser } from "../../redux/actions/community";
+import { Box, Flex, Stack } from "@chakra-ui/react";
 import PostComponent from "../PostComponent/PostComponent";
 import TextButton from "../Buttons/TextButton/TextButton";
+import {
+    feedSelector,
+    feedIndexSelector,
+    feedPaginationCompleteSelector,
+    feedSortTypeSelector
+} from "../../redux/selectors/feed";
+import {getCommunityFeed} from "../../redux/actions/feed";
 
 const communitySideButtonsList = (userIsModerator) => [
     {
@@ -49,10 +52,10 @@ const Community = ({
     }, []);
 
 
-    const feed = useSelector(communityFeedSelector)
-    const feedIndex = useSelector(communityFeedIndexSelector)
-    const feedPaginationComplete = useSelector(communityFeedPaginationCompleteSelector)
-    const feedSortType = useSelector(communityFeedSortTypeSelector)
+    const feed = useSelector(feedSelector)
+    const feedIndex = useSelector(feedIndexSelector)
+    const feedPaginationComplete = useSelector(feedPaginationCompleteSelector)
+    const feedSortType = useSelector(feedSortTypeSelector)
 
     function loadFeed() {
         dispatch(getCommunityFeed(communityID, feedIndex, feedSortType))

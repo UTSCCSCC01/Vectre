@@ -3,6 +3,7 @@ import usersSaga from "./users";
 import postsSaga from "./posts";
 import notificationSaga from './notification';
 import communitySaga from './community';
+import feedSaga from "./feed";
 
 const headers = {
     'Content-Type': 'application/json',
@@ -45,6 +46,7 @@ export default function* root() {
         usersSaga(),
         postsSaga(),
         notificationSaga(),
-        communitySaga()
+        communitySaga(),
+        feedSaga()
     ]);
 }

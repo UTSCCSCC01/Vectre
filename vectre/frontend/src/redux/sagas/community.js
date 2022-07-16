@@ -56,25 +56,6 @@ function* getCommunitySaga(action) {
     }
 }
 
-function* getCommunityFeed(action) {
-    try {
-        const defaultSize = 10
-        const response = yield call(postRequest, BASE_API_URL + COMMUNITY.GET_COMMUNITY_FEED.replace("{communityID}", action.communityID), {
-            start: action.feedIndex,
-            size: defaultSize,
-            sort: action.sortType
-        }), responseData = response[1]
-        if (responseData.success) {
-            yield put(storeCommunityFeed(responseData.posts, defaultSize))
-        } else {
-            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
-        }
-    } catch (error) {
-        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get feed"))
-        console.log(error)
-    }
-}
-
 function* updateCommunitySaga(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + COMMUNITY.UPDATE_COMMUNITY.replace("{communityID}", action.communityID), action.community), responseData = response[1]
@@ -146,7 +127,6 @@ function* leaveCommunity(action) {
 function* communitySaga() {
     yield takeLatest(CREATE_COMMUNITY, createCommunitySaga)
     yield takeLatest(GET_COMMUNITY, getCommunitySaga)
-    yield takeLatest(GET_COMMUNITY_FEED, getCommunityFeed)
     yield takeLatest(UPDATE_COMMUNITY, updateCommunitySaga)
     yield takeLatest(GET_ROLES_LOGGED_IN_USER, getRolesOfLoggedInUserSaga)
     yield takeLatest(JOIN_COMMUNITY, joinCommunity)
