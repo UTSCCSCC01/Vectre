@@ -71,12 +71,19 @@ const CreatePostModal = ({
                                     walletAddress: loggedInUser.walletAddress,
                                     communityID: option ? option : null
                                 }
-                                getBase64(selectedImage, (result) => {
-                                    postData.imageData = result
+                                if (selectedImage) {
+                                    getBase64(selectedImage, (result) => {
+                                        postData.imageData = result
+                                        dispatch(createPost(postData, redirectWindow))
+                                        setSelectedImage(null)
+                                        onClose();
+                                    })
+                                }
+                                else {
                                     dispatch(createPost(postData, redirectWindow))
                                     setSelectedImage(null)
                                     onClose();
-                                })
+                                }
                             }}
                         >
                             <Flex
