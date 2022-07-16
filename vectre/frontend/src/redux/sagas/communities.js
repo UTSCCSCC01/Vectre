@@ -92,11 +92,13 @@ function* updateCommunitySaga(action) {
 function* getRolesOfLoggedInUserSaga(action) {
     try {
         const loggedInUserResponse = yield call(getRequest, BASE_API_URL + USERS.GET_LOGGED_IN_USER), loggedInUserResponseData = loggedInUserResponse[1]
-        const response = yield call(getRequest, BASE_API_URL + COMMUNITY.GET_ROLES_LOGGED_IN_USER.replace("{communityID}", action.communityID).replace("{walletAddress}", loggedInUserResponseData.user.walletAddress)), responseData = response[1]
-        if (responseData.success) {
-            yield put(storeRolesOfLoggedInUser(responseData.roles));
-        } else {
-            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        if (loggedInUserResponseData?.user?.walletAddress) {
+            const response = yield call(getRequest, BASE_API_URL + COMMUNITY.GET_ROLES_LOGGED_IN_USER.replace("{communityID}", action.communityID).replace("{walletAddress}", loggedInUserResponseData.user.walletAddress)), responseData = response[1]
+            if (responseData.success) {
+                yield put(storeRolesOfLoggedInUser(responseData.roles));
+            } else {
+                yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+            }
         }
     } catch (error) {
         yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get roles of current user"))

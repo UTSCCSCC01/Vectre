@@ -133,9 +133,6 @@ function* getFunds() {
         if (responseData.success) {
             yield put(storeFunds(responseData.funds))
         }
-        else {
-            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
-        }
     } catch (error) {
         yield put(showToast(TOAST_STATUSES.ERROR, "Failed to retrieve wallet funds."))
         console.log(error)
