@@ -7,7 +7,6 @@ import {
     doUnlike,
     getPost,
     getComments,
-    storeFeed,
     storeProfilePost,
 } from "../actions/posts";
 import {
@@ -19,7 +18,6 @@ import {
     POST_UNLIKE,
     CREATE_REPOST,
     GET_PROFILE_POSTS,
-    GET_FEED,
 } from "../constants/posts";
 import {
     BASE_API_URL,
@@ -89,21 +87,6 @@ function* getCommentsSaga(action) {
     }
 }
 
-function* getFeed(action) {
-    try {
-        const defaultSize = 10
-        const response = yield call(postRequest, BASE_API_URL + POSTS.GET_FEED, { start: action.feedIndex, size: defaultSize }), responseData = response[1]
-        if (responseData.success) {
-            yield put(storeFeed(responseData.posts, defaultSize))
-        } else {
-            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
-        }
-    } catch (error) {
-        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get feed"))
-        console.log(error)
-    }
-}
-
 function* createComment(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + POSTS.CREATE_COMMENT.replace("{postID}", action.postID), action.comment), responseData = response[1]
@@ -167,7 +150,6 @@ function* postsSaga() {
     yield takeLatest(CREATE_REPOST, createRepost)
     yield takeLatest(GET_POST, getPostSaga)
     yield takeLatest(GET_COMMENTS, getCommentsSaga)
-    yield takeLatest(GET_FEED, getFeed)
     yield takeLatest(CREATE_COMMENT, createComment)
     yield takeLatest(POST_LIKE, postLike)
     yield takeLatest(POST_UNLIKE, postUnlike)

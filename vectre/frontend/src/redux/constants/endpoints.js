@@ -39,6 +39,7 @@ export const NOTIF = {
 export const COMMUNITY = {
     CREATE_COMMUNITY: "/communities/create",
     GET_COMMUNITY: "/communities/{communityID}",
+    GET_COMMUNITY_FEED: "/communities/{communityID}/feed",
     SEARCH_COMMUNITIES: "/communities/search/{searchVal}",
     UPDATE_COMMUNITY: "/communities/{communityID}/update",
     GET_ROLES_LOGGED_IN_USER: "/communities/{communityID}/members/{walletAddress}/roles",

@@ -1,6 +1,7 @@
 import { all } from 'redux-saga/effects';
 import usersSaga from "./users";
 import postsSaga from "./posts";
+import feedSaga from "./feed";
 import notificationSaga from './notifications';
 import communitySaga from './communities';
 
@@ -45,6 +46,7 @@ export default function* root() {
         usersSaga(),
         postsSaga(),
         notificationSaga(),
-        communitySaga()
+        communitySaga(),
+        feedSaga()
     ]);
 }

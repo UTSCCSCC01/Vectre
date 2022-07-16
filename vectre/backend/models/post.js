@@ -6,6 +6,7 @@ const imgUtils = require('../utils/images')
 const Notification = require("../models/notification")
 const { ROLES } = require("../models/neo4j/community");
 const Community = require("./community")
+const {FEED_SORT} = require("./neo4j/post");
 
 const createPost = function (session, authorWalletAddress, body, imageURL) {
     if (!body.text) {
@@ -501,7 +502,9 @@ const getLikesOnPost = function (session, postID) {
         });
 }
 
-const getUserFeed = function (session, walletAddress, start, size) {
+const getUserFeed = function (session, walletAddress, start, size, sortType, sortOrder) {
+    sortType = sortType.toLowerCase(), sortOrder = sortOrder.toLowerCase()
+
     if (start < 0) {
         throw {
             success: false,
@@ -512,8 +515,20 @@ const getUserFeed = function (session, walletAddress, start, size) {
             success: false,
             message: "Size must be non-negative"
         }
+    } else if (!Object.values(FEED_SORT.TYPES).includes(sortType)) {
+        throw {
+            success: false,
+            message: "Invalid sort type"
+        }
+    } else if (!Object.values(FEED_SORT.ORDER).includes(sortOrder)) {
+        throw {
+            success: false,
+            message: "Invalid sort order"
+        }
     }
 
+    const orderBy = sortType === FEED_SORT.TYPES.TIMESTAMP ? "post.timestamp" : "post.likes",
+        order = sortOrder === FEED_SORT.ORDER.DESC ? "DESC" : ""
     const query = [
         `MATCH (currentUser: User {walletAddress: $walletAddress})-[:FOLLOWS]->(followedUser:User)-[:POSTED]->(post: Post)`,
         `WHERE post.parent IS NULL`, // Prevent comments in feed
@@ -525,7 +540,7 @@ const getUserFeed = function (session, walletAddress, start, size) {
         `WHERE repostAuthor.walletAddress = repost.author`,
         `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
         `RETURN DISTINCT currentUser, followedUser, post, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID`,
-        `ORDER BY post.timestamp DESC`,
+        `ORDER BY ${orderBy} ${order}`,
         `SKIP toInteger($start)`,
         `LIMIT toInteger($size)`
     ].join('\n');
@@ -576,5 +591,5 @@ module.exports = {
     unlikePost,
     getLikesOnPost,
     checkIfAlreadyLiked,
-    getUserFeed,
+    getUserFeed
 };

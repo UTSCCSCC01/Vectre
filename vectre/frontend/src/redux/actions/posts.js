@@ -2,8 +2,6 @@ import {
     CREATE_POST,
     GET_POST,
     STORE_POST,
-    GET_FEED,
-    STORE_FEED,
     CREATE_REPOST,
     GET_COMMENTS,
     STORE_COMMENTS,
@@ -29,16 +27,6 @@ export const getPost = (postID) => ({
 export const storePost = (post) => ({
     type: STORE_POST,
     post
-})
-
-export const getFeed = (feedIndex) => ({
-    type: GET_FEED,
-    feedIndex
-})
-export const storeFeed = (posts, requestedSize) => ({
-    type: STORE_FEED,
-    posts,
-    requestedSize
 })
 
 export const createRepost = (repostData, redirectWindow) => ({
