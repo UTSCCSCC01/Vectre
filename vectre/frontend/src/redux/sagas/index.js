@@ -1,7 +1,9 @@
 import { all } from 'redux-saga/effects';
 import usersSaga from "./users";
 import postsSaga from "./posts";
-import notificationSaga from './notification';
+import feedSaga from "./feed";
+import notificationSaga from './notifications';
+import communitySaga from './communities';
 
 const headers = {
     'Content-Type': 'application/json',
@@ -39,10 +41,12 @@ export const putRequest = (url, data) => {
 }
 
 export default function* root() {
-  yield all([
-      // insert sagas
-      usersSaga(),
-      postsSaga(),
-      notificationSaga()
-  ]);
+    yield all([
+        // insert sagas
+        usersSaga(),
+        postsSaga(),
+        notificationSaga(),
+        communitySaga(),
+        feedSaga()
+    ]);
 }

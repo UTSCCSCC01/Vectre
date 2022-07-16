@@ -4,13 +4,43 @@ var router = express.Router();
 const dbUtils = require('../utils/neo4j/dbUtils');
 const Post = require('../models/post');
 const { authenticateToken, storeWalletAddressFromToken } = require("../utils/auth");
+const { upload } = require('../utils/images');
+const { FEED_SORT } = require("../models/neo4j/post");
 
 // Posts
-// POST /posts/create
-router.post('/create', authenticateToken, (req, res, next) => {
-    Post.createUserPost(dbUtils.getSession(req), req.walletAddress, req.body)
+// POST /posts/feed
+
+router.post('/feed', authenticateToken, (req, res, next) => {
+    const start = req.body.start ? req.body.start : 0,
+        size = req.body.size ? req.body.size : 10,
+        sortType = req.body.sort ? req.body.sort : FEED_SORT.TYPES.TIMESTAMP,
+        sortOrder = req.body.order ? req.body.order : FEED_SORT.ORDER.DESC
+    Post.getUserFeed(dbUtils.getSession(req), req.walletAddress, start, size, sortType, sortOrder)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
+})
+
+// POST /posts/create
+router.post('/create', authenticateToken, (req, res, next) => {
+    if (req.body.imageData) {
+        upload(req.body.imageData).then((result) => {
+            if (!result.data.link) {
+                throw {
+                    success: false,
+                    message: "Invalid image data"
+                }
+            }
+            Post.createPost(dbUtils.getSession(req), req.walletAddress, req.body, result.data.link)
+                .then((result) => res.send(result))
+                .catch((error) => res.send(error))
+        })
+            .catch((error) => res.send("Image upload failed"));
+    }
+    else {
+        Post.createPost(dbUtils.getSession(req), req.walletAddress, req.body, "")
+            .then((result) => res.send(result))
+            .catch((error) => res.send(error))
+    }
 })
 // POST /posts/{postID}/update
 router.post('/:postID/update', authenticateToken, (req, res, next) => {
@@ -25,12 +55,11 @@ router.get('/:postID', storeWalletAddressFromToken, (req, res, next) => {
         .catch((error) => res.send(error))
 })
 
-
 // Post interactions (like/comment):
 // Comment
 // POST /posts/create/{postID}/comment
 router.post('/create/:postID/comment', authenticateToken, (req, res, next) => {
-    Post.createUserComment(dbUtils.getSession(req), req.walletAddress, req.params.postID, req.body)
+    Post.createComment(dbUtils.getSession(req), req.walletAddress, req.params.postID, req.body)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })

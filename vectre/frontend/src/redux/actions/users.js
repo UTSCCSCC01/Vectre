@@ -4,8 +4,10 @@ import {
     LOGIN_USER,
     GET_USER,
     GET_USERS,
+    SEARCH_USERS,
     STORE_USER,
     STORE_USERS,
+    STORE_SEARCHED_USERS,
     CREATE_USER,
     UPDATE_USER,
     GET_LOGGED_IN_USER,
@@ -16,8 +18,10 @@ import {
     FOLLOW_USER,
     UNFOLLOW_USER,
     GET_NFT,
-    UPDATE_DASHBOARD,
     STORE_NFT,
+    GET_FUNDS,
+    STORE_FUNDS,
+    UPDATE_DASHBOARD,
 } from "../constants/users";
 
 // Login
@@ -45,6 +49,14 @@ export const storeNFT = (nft) => ({
     nft
 })
 
+export const getFunds = () => ({
+    type: GET_FUNDS
+})
+export const storeFunds = (funds) => ({
+    type: STORE_FUNDS,
+    funds
+})
+
 export const getUser = (walletAddress) => ({
     type: GET_USER,
     walletAddress
@@ -57,10 +69,18 @@ export const storeUser = (user) => ({
 export const getUsers = () => ({
     type: GET_USERS
 })
-
 export const storeUsers = (users) => ({
     type: STORE_USERS,
     users
+})
+
+export const searchUsers = (searchVal) => ({
+    type: SEARCH_USERS,
+    searchVal
+})
+export const storeSearchedUsers = (searchedUsers) => ({
+    type: STORE_SEARCHED_USERS,
+    searchedUsers
 })
 
 export const getLoggedInUser = () => ({
@@ -105,11 +125,15 @@ export const updateDashboard = (walletAddress, dashboard, resetSelectedList) => 
     resetSelectedList
 })
 
-export const followUser = (walletAddressToFollow,) => ({
+export const followUser = (walletAddressToFollow, profileWalletAddress, toggleFollowList) => ({
     type: FOLLOW_USER,
-    walletAddressToFollow
+    walletAddressToFollow,
+    profileWalletAddress,
+    toggleFollowList
 })
-export const unfollowUser = (walletAddressToUnfollow) => ({
+export const unfollowUser = (walletAddressToUnfollow, profileWalletAddress, toggleFollowList) => ({
     type: UNFOLLOW_USER,
-    walletAddressToUnfollow
+    walletAddressToUnfollow,
+    profileWalletAddress,
+    toggleFollowList
 })

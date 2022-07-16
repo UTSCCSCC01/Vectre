@@ -16,6 +16,14 @@ export const formatLikes = (num) => {
     return num.toString();
 };
 
+// assumes walletAddress is valid
+export const formatWalletAddress = (walletAddress) => {
+    if (walletAddress === undefined) return "Not a valid wallet address"
+    else if (walletAddress.length < 10) return walletAddress
+
+    return walletAddress.slice(0, 4) + "..." + walletAddress.slice(-4);
+};
+
 // assumes isoString is valid
 // checks if isoString is within 24 hours of current time
 export const within24 = (isoString) => {
@@ -34,3 +42,14 @@ export const getBannerOrDefault = (bannerLink) => {
 }
 
 export const redirectWindow = (href) => { window.location.href = href }
+
+export const getBase64 = (file, callback) => {
+    let reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function () {
+        callback(reader.result)
+    };
+    reader.onerror = function (error) {
+        console.log('Error: ', error);
+    };
+}

@@ -1,12 +1,12 @@
 import { call, put, takeLatest } from "redux-saga/effects"
 import { postRequest } from "./index";
-import { READ_NOTIFICATION } from "../constants/notification";
+import { READ_NOTIFICATION } from "../constants/notifications";
 import { 
     BASE_API_URL,
     NOTIF        
 } from "../constants/endpoints";
-import {showToast} from "../actions/toast";
-import {TOAST_STATUSES} from "../constants/toast";
+import {showToast} from "../actions/global";
+import {TOAST_STATUSES} from "../constants/global";
 
 function* readNotification(action) {
     try {

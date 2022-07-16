@@ -2,12 +2,13 @@ import {
     STORE_POST,
     STORE_COMMENTS,
     DO_LIKE,
-    DO_UNLIKE
+    DO_UNLIKE,
+    STORE_PROFILE_POSTS,
 } from "../constants/posts";
 
 const initialState = {
-    post: {},
-    comments: []
+    posts: [],
+    comments: [],
 }
 
 const posts = (state = initialState, action) => {
@@ -15,7 +16,7 @@ const posts = (state = initialState, action) => {
         case STORE_POST:
             return {
                 ...state,
-                post: action.post
+                posts: [action.post]
             }
         case STORE_COMMENTS:
             return {
@@ -26,31 +27,30 @@ const posts = (state = initialState, action) => {
             if (action.isComment) {
                 return {
                     ...state,
-                    comments: state.comments.map((comment, i) => comment.postID === action.postID ? { ...comment, likes: comment.likes + 1, alreadyLiked: true } : comment)
+                    comments: state.comments.map((comment, i) => comment.postID === action.postID ? { ...comment, likes: comment.likes+1, alreadyLiked: true } : comment)
                 }
-            }
-            return {
-                ...state,
-                post: {
-                    ...state.post,
-                    likes: state.post.likes + 1,
-                    alreadyLiked: true
+            } else {
+                return {
+                    ...state,
+                    posts: state.posts.map((post, i) => post.postID === action.postID ? { ...post, likes: post.likes + 1, alreadyLiked: true } : post)
                 }
             }
         case DO_UNLIKE:
             if (action.isComment) {
                 return {
                     ...state,
-                    comments: state.comments.map((comment, i) => comment.postID === action.postID ? { ...comment, likes: comment.likes - 1, alreadyLiked: false } : comment)
+                    comments: state.comments.map((comment, i) => comment.postID === action.postID ? { ...comment, likes: comment.likes-1, alreadyLiked: false } : comment)
+                }
+            } else {
+                return {
+                    ...state,
+                    posts: state.posts.map((post, i) => post.postID === action.postID ? { ...post, likes: post.likes - 1, alreadyLiked: false } : post)
                 }
             }
+        case STORE_PROFILE_POSTS:
             return {
                 ...state,
-                post: {
-                    ...state.post,
-                    likes: state.post.likes - 1,
-                    alreadyLiked: false
-                }
+                posts: action.posts
             }
         default:
             return state

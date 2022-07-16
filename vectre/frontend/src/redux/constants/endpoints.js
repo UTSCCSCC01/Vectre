@@ -6,6 +6,7 @@ export const USERS = {
     GET_LOGGED_IN_USER: "/users/login/currentUser",
 
     GET_USERS: "/users",
+    SEARCH_USERS: "/users/search/{searchVal}",
     CREATE_USER: "/users/register",
     UPDATE_USER: "/users/{walletAddress}/update",
 
@@ -16,18 +17,32 @@ export const USERS = {
 
     GET_NFT: "/users/{walletAddress}/nft",
     UPDATE_DASHBOARD: "/users/{walletAddress}/updateDashboard",
+    GET_FUNDS: "/users/funds"
 }
 
 export const POSTS = {
     CREATE_POST: "/posts/create",
+    GET_FEED: "/posts/feed",
     GET_POST: "/posts/{postID}",
     CREATE_REPOST: "/posts/create",
     CREATE_COMMENT: "/posts/create/{postID}/comment",
     GET_COMMENTS: "/posts/{postID}/comments",
     POST_LIKE: "/posts/{postID}/like",
     POST_UNLIKE: "/posts/{postID}/unlike",
+    GET_PROFILE_POSTS: "/users/{walletAddress}/posts",
 }
 
 export const NOTIF = {
     READ_NOTIFICATION: "/notifications/{notificationID}/read"
+}
+
+export const COMMUNITY = {
+    CREATE_COMMUNITY: "/communities/create",
+    GET_COMMUNITY: "/communities/{communityID}",
+    GET_COMMUNITY_FEED: "/communities/{communityID}/feed",
+    SEARCH_COMMUNITIES: "/communities/search/{searchVal}",
+    UPDATE_COMMUNITY: "/communities/{communityID}/update",
+    GET_ROLES_LOGGED_IN_USER: "/communities/{communityID}/members/{walletAddress}/roles",
+    JOIN_COMMUNITY: "/communities/{communityID}/join",
+    LEAVE_COMMUNITY: "/communities/{communityID}/leave"
 }

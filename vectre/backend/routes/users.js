@@ -5,13 +5,27 @@ const User = require('../models/user'),
     Post = require('../models/post'),
     Notification = require('../models/notification');
 const dbUtils = require('../utils/neo4j/dbUtils');
-const { authenticateToken } = require("../utils/auth");
+const { authenticateToken, storeWalletAddressFromToken } = require("../utils/auth");
 
 // GET /users
 router.get('/', (req, res, next) => {
     User.getAll(dbUtils.getSession(req))
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
+})
+
+// GET /users/funds
+router.get('/funds', authenticateToken, (req, res) => {
+    if (req.walletAddress) {
+        User.getFunds(req.walletAddress)
+            .then((result) => res.send(result))
+            .catch((error) => res.send(error))
+    } else {
+        res.status(403).send({
+            success: false,
+            message: "You do not have access to get this User's wallet funds."
+        })
+    }
 })
 
 // GET /users/{walletAddress}
@@ -21,9 +35,9 @@ router.get('/:walletAddress', (req, res) => {
         .catch((error) => res.send(error))
 })
 
-// GET /users/{walletAddress}/posts
-router.get('/:walletAddress/posts', (req, res, next) => {
-    Post.getPostsByUser(dbUtils.getSession(req), req.params.walletAddress)
+// GET /users/search/{searchVal}
+router.get('/search/:searchVal', (req, res) => {
+    User.search(dbUtils.getSession(req), req.params.searchVal)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
@@ -71,8 +85,10 @@ router.post('/login/nonce', (req, res) => {
 })
 
 // GET /users/{walletAddress}/posts
-router.get('/:walletAddress/posts', (req, res, next) => {
-    Post.getPostsByUser(dbUtils.getSession(req), req.params.walletAddress)
+router.get('/:walletAddress/posts', storeWalletAddressFromToken, (req, res, next) => {
+    // req.walletAddress is the walletAddress from the token
+    // req.params.walletAddress is the walletAddress of another user of the profile the user (from token) is looking at
+    Post.getPostsByUser(dbUtils.getSession(req), req.walletAddress, req.params.walletAddress)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 });
@@ -148,6 +164,13 @@ router.post('/:walletAddressToFollow/follow', authenticateToken, (req, res, next
 // POST /users/{walletAddressToUnfollow}/unfollow
 router.post('/:walletAddressToUnfollow/unfollow', authenticateToken, (req, res, next) => {
     User.unfollow(dbUtils.getSession(req), req.walletAddress, req.params.walletAddressToUnfollow)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+});
+
+// GET /users/{walletAddress}/communities
+router.get('/:walletAddress/communities', (req, res, next) => {
+    User.getCommunitiesByUser(dbUtils.getSession(req), req.params.walletAddress)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 });

@@ -14,3 +14,14 @@ const Post = module.exports = function (_node) {
         "repostPostID": _node.properties["repostPostID"] ? _node.properties["repostPostID"] : null,
     })
 };
+
+module.exports.FEED_SORT = {
+    TYPES: {
+        TIMESTAMP: "timestamp",
+        LIKES: "likes"
+    },
+    ORDER: {
+        ASC: "asc",
+        DESC: "desc"
+    },
+}

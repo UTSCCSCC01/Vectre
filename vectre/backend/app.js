@@ -5,12 +5,14 @@ var cors = require('cors');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const bodyParser = require("body-parser");
 
 // Routes
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users'),
     postsRouter = require('./routes/posts'),
     notificationsRouter = require('./routes/notifications')
+    communitiesRouter = require('./routes/communities')
 
 var app = express();
 
@@ -19,6 +21,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 app.use(logger('dev'));
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -34,6 +38,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/posts', postsRouter);
 app.use('/notifications', notificationsRouter);
+app.use('/communities', communitiesRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

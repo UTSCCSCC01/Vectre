@@ -6,16 +6,20 @@ import {
     STORE_NOTIFICATIONS,
     STORE_UNREADSTATUS,
     STORE_NFT,
+    STORE_SEARCHED_USERS,
+    STORE_FUNDS,
 } from "../constants/users";
 
 const initialState = {
     user: {},
     users: [],
+    searchedUsers: [],
     loggedInUser: {},
     nonce: "",
     notifications: [],
     unreadStatus: false,
-    nft: []
+    nft: [],
+    funds: "",
 }
 
 const users = (state = initialState, action) => {
@@ -29,6 +33,11 @@ const users = (state = initialState, action) => {
             return {
                 ...state,
                 users: action.users
+            }
+        case STORE_SEARCHED_USERS:
+            return {
+                ...state,
+                searchedUsers: action.searchedUsers
             }
         case STORE_LOGGED_IN_USER:
             return {
@@ -54,6 +63,11 @@ const users = (state = initialState, action) => {
             return {
                 ...state,
                 nft: action.nft
+            }
+        case STORE_FUNDS:
+            return {
+                ...state,
+                funds: action.funds
             }
         default:
             return state

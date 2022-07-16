@@ -8,19 +8,20 @@ import UserCommentBotComponent from './UserCommentBotComponent/UserCommentBotCom
 
 const UserCommentComponent = ({
     item,
+    isComment
 }) => {
     return (
         <>
             <Box
                 height={'fit-content'}
-                bg={item.isComment ? 'rgba(59, 130, 246, 0.16)' : 'rgba(255, 255, 255, 0.5)'}
+                bg={'rgba(255, 255, 255, 0.5)'}
                 borderRadius={'6px'}
                 mt={'0px !important'}
                 px={'18px'}
                 py={'15px'}>
                 <Stack gap={'4px'}>
                     <PostTopComponent item={item} />
-                    <UserCommentBotComponent item={item} />
+                    <UserCommentBotComponent item={item} isComment={isComment} />
                 </Stack>
             </Box>
         </>

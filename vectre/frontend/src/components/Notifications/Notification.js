@@ -12,7 +12,7 @@ import { ImUserPlus } from 'react-icons/im'
 
 // Redux
 import { connect } from "react-redux";
-import { readNotification } from "../../redux/actions/notification";
+import { readNotification } from "../../redux/actions/notifications";
 import {getAvatarOrDefault} from "../../utils/Utils";
 
 const NOTIFICATION_ACTIONS = {
@@ -69,7 +69,7 @@ class Notification extends React.Component {
             />
             <Box noOfLines={1} textAlign={"left"}>
               <p>
-                <b>{this.props.fromUser.username}</b> {this.state.message}
+                <b>@{this.props.fromUser.username}</b> {this.state.message}
               </p>
             </Box>
         </Flex>

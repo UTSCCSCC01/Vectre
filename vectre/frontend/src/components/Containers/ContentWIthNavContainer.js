@@ -1,17 +1,25 @@
 import NavBar from "./NavBar";
 import { ReactComponent as LandingRect } from '../../assets/icons/landing-rect.svg'
-import {Box} from '@chakra-ui/react'
-import {useEffect} from "react";
-import {useDispatch} from "react-redux";
-import {getLoggedInUser} from "../../redux/actions/users";
+import {
+    Box,
+    Spinner,
+    Flex
+} from '@chakra-ui/react'
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getLoggedInUser, getFunds } from "../../redux/actions/users";
 import ToastContainer from "./ToastContainer";
+import {loadingSelector} from "../../redux/selectors/global";
 
 const ContentWIthNavContainer = ({
     ...otherProps
 }) => {
+    const isLoading = useSelector(loadingSelector);
     const dispatch = useDispatch()
+
     useEffect(() => {
         dispatch(getLoggedInUser())
+        dispatch(getFunds())
     }, [])
 
     return (
@@ -25,7 +33,28 @@ const ContentWIthNavContainer = ({
                     </Box>
                     <Box>
                         <NavBar />
-                        {otherProps.children}
+                        {isLoading ?
+                            (
+                                <Flex
+                                    height={'80vh'}
+                                    position={'fixed'}
+                                    right={'50%'}
+                                    alignItems={'center'}
+                                    justifyContent={'center'}>
+                                    <Spinner
+                                        thickness='3px'
+                                        speed='0.65s'
+                                        emptyColor='white'
+                                        color='primary.400'
+                                        size='xl'
+                                    />
+                                </Flex>
+                            ) : <></>
+                        }
+                        <Box
+                            visibility={isLoading ? 'hidden' : 'visible'}>
+                            {otherProps.children}
+                        </Box>
                     </Box>
                 </Box>
             </Box>
