@@ -11,8 +11,8 @@ import {
 } from "@chakra-ui/react";
 
 import { useDispatch } from "react-redux";
-import {storeFeedSortType} from "../../../redux/actions/posts";
-import {FEED_SORT_TYPE} from "../../../redux/constants/posts";
+import {storeFeedSortType} from "../../../redux/actions/feed";
+import {FEED_SORT_TYPE} from "../../../redux/constants/feed";
 
 const PostModalComponent = ({
     isOpen,

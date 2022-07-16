@@ -5,14 +5,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     communitySelector,
     loggedInUserRolesSelector,
-    communityFeedSelector,
-    communityFeedIndexSelector,
-    communityFeedPaginationCompleteSelector,
-    communityFeedSortTypeSelector,
 } from "../../redux/selectors/community";
-import {getCommunity, getCommunityFeed, getRolesOfLoggedInUser} from "../../redux/actions/community";
-import {Box, Button} from "@chakra-ui/react";
+import { getCommunity, getRolesOfLoggedInUser } from "../../redux/actions/community";
+import { Box, Flex, Stack } from "@chakra-ui/react";
 import PostComponent from "../PostComponent/PostComponent";
+import TextButton from "../Buttons/TextButton/TextButton";
+import {
+    feedSelector,
+    feedIndexSelector,
+    feedPaginationCompleteSelector,
+    feedSortTypeSelector
+} from "../../redux/selectors/feed";
+import {getCommunityFeed} from "../../redux/actions/feed";
 
 const communitySideButtonsList = (userIsModerator) => [
     {
@@ -48,10 +52,10 @@ const Community = ({
     }, []);
 
 
-    const feed = useSelector(communityFeedSelector)
-    const feedIndex = useSelector(communityFeedIndexSelector)
-    const feedPaginationComplete = useSelector(communityFeedPaginationCompleteSelector)
-    const feedSortType = useSelector(communityFeedSortTypeSelector)
+    const feed = useSelector(feedSelector)
+    const feedIndex = useSelector(feedIndexSelector)
+    const feedPaginationComplete = useSelector(feedPaginationCompleteSelector)
+    const feedSortType = useSelector(feedSortTypeSelector)
 
     function loadFeed() {
         dispatch(getCommunityFeed(communityID, feedIndex, feedSortType))
@@ -67,16 +71,29 @@ const Community = ({
                 !loggedInUserRoles.includes("moderator")
             ) : []}>
                 <ProfileCommunityDetails communityData={communityData} />
-
-                {feed.map((item, i) => {
-                    return (
-                        <Box key={i}>
-                            <PostComponent item={item} fromFeed={true} />
-                        </Box>
-                    )
-                })}
+                <Stack
+                    mt={"15px"}
+                    gap={"10px"}>
+                    {feed.map((item, i) => {
+                        return (
+                            <Box key={i}>
+                                <PostComponent item={item} fromFeed={true} />
+                            </Box>
+                        )
+                    })}
+                </Stack>
                 {feed.length === feedIndex && !feedPaginationComplete ?
-                    <Button onClick={loadFeed}>Load more</Button>
+                    (
+                        <Flex
+                            justifyContent={'center'}
+                            alignItems={'center'}
+                            height={'80px'}
+                        >
+                            <TextButton
+                                text={'Load more'}
+                                onClick={loadFeed} />
+                        </Flex>
+                    )
                     : null}
             </ContentWithSideButtons>
         </>
