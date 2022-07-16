@@ -204,9 +204,9 @@ const CreatePostModal = ({
                                 onChange={(event) => { setOption(event.target.value) }}>
                                 <option value={null}>{`Your profile (@${loggedInUser.username})`}</option>
                                 {
-                                    loggedInUser && loggedInUser.communities.map((elem, i) => {
+                                    loggedInUser.communities ? loggedInUser.communities.map((elem, i) => {
                                         return <option value={elem.communityID} key={i}>{`<${elem.communityID}>`}</option>
-                                    })
+                                    }) : null
                                 }
                             </Select>
                             <TextButton
