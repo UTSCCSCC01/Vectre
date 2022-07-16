@@ -20,7 +20,7 @@ export default function Routes() {
                 <Route path="/user/:walletAddress" component={Profile} />
                 <Route path="/settings" component={SettingsPage} />
                 <Route path="/post/:postID" component={PostPage} />
-                <Route path="/c/:communityID" component={CommunityPage} />
+                <Route path={["/c/:communityID", "/community/:communityID"]} component={CommunityPage} />
             </Switch>
         </Router>
     );

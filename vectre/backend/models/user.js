@@ -1,10 +1,11 @@
 const _ = require('lodash')
 const User = require('./neo4j/user')
+const Community = require('./neo4j/community')
 const Notification = require('../models/notification');
 const config = require('../config');
 const jwt = require('jsonwebtoken')
 const ethUtil = require('ethereumjs-util');
-const fetch = (url) => import('node-fetch').then(({default: fetch}) => fetch(url));
+const imgUtils = require('../utils/images')
 
 const getAll = (session) => { // Returns all Users
     const query = "MATCH (user:User) RETURN user";
@@ -19,7 +20,8 @@ const getAll = (session) => { // Returns all Users
         .catch((error) => {
             throw {
                 success: false,
-                message: "Failed to get users"
+                message: "Failed to get users",
+                error: error.message
             }
         });
 }
@@ -51,10 +53,14 @@ const getByWalletAddress = (session, walletAddress) => {
                         return getFollowers(session, walletAddress)
                             .then((followerResult) => {
                                 user.followers = followerResult.followers
-                                return {
-                                    success: true,
-                                    user: user
-                                }
+                                return getCommunitiesByUser(session, walletAddress)
+                                    .then((communitiesResult) => {
+                                        user.communities = communitiesResult.communities
+                                        return {
+                                            success: true,
+                                            user: user
+                                        }
+                                    })
                             })
                     })
             }
@@ -235,7 +241,7 @@ const updateUser = function (session, walletAddress, filter, newUser) {
     for (let f of nonEmpty) {
         if ((f in newUser)) {
             if (newUser[f] == "") {
-                throw {success: false, message: `Field ${f} is empty.`}
+                throw { success: false, message: `Field ${f} is empty.` }
             }
 
             if (f === "username") {
@@ -321,17 +327,40 @@ const updateProfile = function (session, walletAddress, newProf) {
             if (!_.isEmpty(existence.records)) { // Check for existing username
                 return { success: false, message: "Username already exists." }
             } else {
-                const profileFilter = ["name", "username", "bio"]
-                return updateUser(session, walletAddress, profileFilter, newProf)
-                    .then(response => { return response })
-                    .catch(error => { throw error })
+                let profileFilter = ["name", "username", "bio"]
+                if (newProf.profilePic) {
+                    return imgUtils.upload(newProf.profilePic)
+                        .then(result => {
+                            newProf.profilePic = null;
+                            if (result.data.link) {
+                                newProf.profilePic = result.data.link;
+                                profileFilter.push("profilePic")
+                            }
+
+                            if (newProf.banner) {
+                                return imgUtils.upload(newProf.banner)
+                                    .then(result2 => {
+                                        newProf.banner = null;
+                                        if (result2.data.link) {
+                                            newProf.banner = result2.data.link;
+                                            profileFilter.push("banner")
+                                        }
+                                        return updateUser(session, walletAddress, profileFilter, newProf)
+                                            .then(response => { return response })
+                                            .catch(error => { throw error })
+                                    })
+
+                            }
+                        })
+                }
+
             }
         })
         .catch(error => {
             throw {
                 success: false,
+                message: "Could not update user",
                 error: error.message,
-                message: error.message
             }
         })
 }
@@ -539,6 +568,43 @@ const getNFT = (walletAddress) => { // Gets all NFTs of a User using OpenSea API
         })
 }
 
+const getFunds = (walletAddress) => { // Gets the wallet funds of a User using Etherscan API.
+    return fetch(`https://api.etherscan.io/api?module=account&action=balance&address=${walletAddress}&tag=latest&apikey=${config.etherscanToken}`)
+        .then(res => {
+            if (res.status !== 200) {
+                throw {
+                    success: false,
+                    message: "Failed to retrieve wallet funds."
+                }
+            }
+            return res.json()
+        })
+        .then(json => {
+            if (json.status == 0) {
+                return { // failed EtherscanAPI call
+                    success: false,
+                    error: json.message,
+                    message: json.message,
+                }
+            }
+            var walletFunds = json.result / Math.pow(10, 18);
+            if (walletFunds !== 0) {
+                walletFunds = walletFunds.toFixed(3);
+            }
+            return {
+                success: true,
+                funds: walletFunds,
+                message: `Successfully retrieved user's wallet funds`
+            }
+        }).catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to get user's wallet funds",
+                error: error.message
+            }
+        })
+}
+
 const updateDashboard = (session, walletAddress, body) => {  // Sets the NFTs in the dashboard of a User.
     const query = `MATCH (user:User {walletAddress: $walletAddress}) SET user.dashboard = $dashboard RETURN user`;
     return session.run(query, {
@@ -567,6 +633,38 @@ const updateDashboard = (session, walletAddress, body) => {  // Sets the NFTs in
         })
 }
 
+const getCommunitiesByUser = function (session, walletAddress) {
+    const query = [
+        'MATCH (:User{walletAddress:$walletAddress})-[:JOINS]->(community:Community)',
+        'RETURN community'
+    ].join("\n")
+
+    return session.run(query, { walletAddress: walletAddress })
+        .then(result => {
+            if (_.isEmpty(result.records)) {
+                return {
+                    success: true,
+                    communities: []
+                }
+            } else {
+                let communities = []
+                result.records.forEach(record => {
+                    communities.push(new Community(record.get('community')))
+                })
+                return {
+                    success: true,
+                    communities: communities
+                }
+            }
+        }).catch(error => {
+            throw {
+                success: false,
+                message: "Failed to retrieve communities that the user is a member of.",
+                error: error.message
+            }
+        })
+}
+
 module.exports = {
     getAll,
     getByWalletAddress,
@@ -581,5 +679,7 @@ module.exports = {
     follow: followUser,
     unfollow: unfollowUser,
     getNFT,
-    updateDashboard
+    updateDashboard,
+    getCommunitiesByUser,
+    getFunds,
 }

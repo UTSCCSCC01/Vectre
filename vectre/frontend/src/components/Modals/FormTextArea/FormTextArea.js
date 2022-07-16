@@ -16,6 +16,7 @@ const FormTextArea = ({
             isRequired={isRequired}
             pt={'12px'}>
             <FormLabel
+                display={inputLabelText ? "initial" : "none"}
                 htmlFor={inputID}
                 color={'primary.400'}
                 fontWeight={700}

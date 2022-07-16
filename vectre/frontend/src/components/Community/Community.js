@@ -16,7 +16,8 @@ import {
     feedPaginationCompleteSelector,
     feedSortTypeSelector
 } from "../../redux/selectors/feed";
-import {getCommunityFeed} from "../../redux/actions/feed";
+import { getCommunityFeed } from "../../redux/actions/feed";
+import CreatePostComponent from "../CreatePostComponent/CreatePostComponent";
 
 const communitySideButtonsList = (userIsModerator) => [
     {
@@ -71,6 +72,9 @@ const Community = ({
                 !loggedInUserRoles.includes("moderator")
             ) : []}>
                 <ProfileCommunityDetails communityData={communityData} />
+                {
+                    loggedInUserRoles.includes("member") ? <CreatePostComponent communityID={communityID} /> : null
+                }
                 <Stack
                     mt={"15px"}
                     gap={"10px"}>

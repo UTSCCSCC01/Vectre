@@ -11,7 +11,7 @@ Furthermore, Vectre ensures that the true ownership of digital assets is maintai
 We hope that Vectre will allow web3 communities to thrive by providing a platform by which community guidelines can be set through a proposal voting system, where verified members vote to shape the direction of their community.
 
 ## Installation
-1. Install [Node.js v18.20 (npm 8.9.0)](https://nodejs.org/en/)
+1. Install [Node.js v18.5.0 (npm 8.12.1)](https://nodejs.org/en/download/current/)
 2. Install required dependencies (start from `vectre/` directory then run the following):
    ```powershell
    cd backend
@@ -27,6 +27,8 @@ We hope that Vectre will allow web3 communities to thrive by providing a platfor
    NEO4J_DB_USERNAME=
    NEO4J_DB_PASSWORD=
    JWT_SECRET_TOKEN=
+   IMGUR_CLIENT_ID=
+   ETHERSCAN_TOKEN=
    ```
 4. Start backend (runs on port 8080)
    ```powershell

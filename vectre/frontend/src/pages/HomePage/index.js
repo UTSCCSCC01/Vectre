@@ -8,28 +8,29 @@ import {
     Stack,
     useDisclosure
 } from '@chakra-ui/react'
-import {useDispatch, useSelector} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
     feedIndexSelector,
     feedPaginationCompleteSelector,
     feedSelector,
     feedSortTypeSelector
 } from "../../redux/selectors/feed";
-import {useEffect} from "react";
-import {getFeed} from "../../redux/actions/feed";
+import { useEffect } from "react";
+import { getFeed } from "../../redux/actions/feed";
+import CreatePostComponent from "../../components/CreatePostComponent/CreatePostComponent";
 
 const HomePage = () => {
     const sideButtonsList = [
-      {
-        link: "",
-        text: "Sort Feed",
-        func: () => {
-          onOpen();
+        {
+            link: "",
+            text: "Sort Feed",
+            func: () => {
+                onOpen();
+            }
         }
-      }
     ]
 
-    const {isOpen, onOpen, onClose} = useDisclosure();
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
     const feed = useSelector(feedSelector)
     const feedIndex = useSelector(feedIndexSelector)
@@ -48,7 +49,8 @@ const HomePage = () => {
         <ContentWIthNavContainer>
             <ContentWithSideButtons sideButtonsList={sideButtonsList}>
                 <Box py={'60px'} maxWidth={'4xl'} margin={'0 auto'}>
-                    <Stack alignSelf={'center'} gap={'36px'}>
+                    <CreatePostComponent />
+                    <Stack mt={"20px"} alignSelf={'center'} gap={'36px'}>
                         {feed.map((item, i) => {
                             return (
                                 <Box key={i}>

@@ -14,6 +14,20 @@ router.get('/', (req, res, next) => {
         .catch((error) => res.send(error))
 })
 
+// GET /users/funds
+router.get('/funds', authenticateToken, (req, res) => {
+    if (req.walletAddress) {
+        User.getFunds(req.walletAddress)
+            .then((result) => res.send(result))
+            .catch((error) => res.send(error))
+    } else {
+        res.status(403).send({
+            success: false,
+            message: "You do not have access to get this User's wallet funds."
+        })
+    }
+})
+
 // GET /users/{walletAddress}
 router.get('/:walletAddress', (req, res) => {
     User.getByWalletAddress(dbUtils.getSession(req), req.params.walletAddress)
@@ -143,6 +157,13 @@ router.post('/:walletAddressToFollow/follow', authenticateToken, (req, res, next
 // POST /users/{walletAddressToUnfollow}/unfollow
 router.post('/:walletAddressToUnfollow/unfollow', authenticateToken, (req, res, next) => {
     User.unfollow(dbUtils.getSession(req), req.walletAddress, req.params.walletAddressToUnfollow)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+});
+
+// GET /users/{walletAddress}/communities
+router.get('/:walletAddress/communities', (req, res, next) => {
+    User.getCommunitiesByUser(dbUtils.getSession(req), req.params.walletAddress)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 });

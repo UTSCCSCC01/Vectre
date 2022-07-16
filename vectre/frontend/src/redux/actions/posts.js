@@ -15,10 +15,10 @@ import {
 } from "../constants/posts";
 
 // Posts
-export const createPost = (text, imageURL) => ({
+export const createPost = (postData, redirectWindow) => ({
     type: CREATE_POST,
-    text,
-    imageURL
+    postData,
+    redirectWindow
 })
 export const getPost = (postID) => ({
     type: GET_POST,
