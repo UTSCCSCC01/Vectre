@@ -530,16 +530,35 @@ const getUserFeed = function (session, walletAddress, start, size, sortType, sor
     const orderBy = sortType === FEED_SORT.TYPES.TIMESTAMP ? "post.timestamp" : "post.likes",
         order = sortOrder === FEED_SORT.ORDER.DESC ? "DESC" : ""
     const query = [
-        `MATCH (currentUser: User {walletAddress: $walletAddress})-[:FOLLOWS]->(followedUser:User)-[:POSTED]->(post: Post)`,
-        `WHERE post.parent IS NULL`, // Prevent comments in feed
-        `OPTIONAL MATCH (currentUser)-[l:LIKED]->(post)`,
-        `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
-        `OPTIONAL MATCH (repost:Post)`,
-        `WHERE repost.postID = post.repostPostID`,
-        `OPTIONAL MATCH (repostAuthor:User)`,
-        `WHERE repostAuthor.walletAddress = repost.author`,
-        `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
-        `RETURN DISTINCT currentUser, followedUser, post, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID`,
+        `CALL {`,
+            `MATCH (currentUser: User {walletAddress: $walletAddress})-[:FOLLOWS]->(author:User)-[:POSTED]->(post: Post)`,
+            `WHERE post.parent IS NULL`, // Prevent comments in feed
+            `OPTIONAL MATCH (currentUser)-[l:LIKED]->(post)`,
+            `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
+            `OPTIONAL MATCH (repost:Post)`,
+            `WHERE repost.postID = post.repostPostID`,
+            `OPTIONAL MATCH (repostAuthor:User)`,
+            `WHERE repostAuthor.walletAddress = repost.author`,
+            `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
+            `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID AS communityID`,
+            `ORDER BY ${orderBy} ${order}`,
+
+            `UNION`,
+
+            `MATCH (currentUser)-[:JOINS]->(:Community)<-[:POSTED_TO]-(post: Post)`,
+            `WHERE post.parent IS NULL`, // Prevent comments in feed
+            `OPTIONAL MATCH (author:User)`,
+            `WHERE author.walletAddress = post.author`,
+            `OPTIONAL MATCH (currentUser)-[l:LIKED]->(post)`,
+            `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
+            `OPTIONAL MATCH (repost:Post)`,
+            `WHERE repost.postID = post.repostPostID`,
+            `OPTIONAL MATCH (repostAuthor:User)`,
+            `WHERE repostAuthor.walletAddress = repost.author`,
+            `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
+            `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID AS communityID`,
+        `}`,
+        `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, likes, comment, communityID`,
         `ORDER BY ${orderBy} ${order}`,
         `SKIP toInteger($start)`,
         `LIMIT toInteger($size)`
@@ -554,9 +573,9 @@ const getUserFeed = function (session, walletAddress, start, size, sortType, sor
             let posts = []
             results.records.forEach((record) => {
                 let post = new Post(record.get("post"))
-                post.author = new User(record.get("followedUser"))
+                post.author = new User(record.get("author"))
                 post.comment = String(record.get("comment").low);
-                post.community = record.get('com.communityID') ? String(record.get('com.communityID')) : null
+                post.community = record.get('communityID') ? String(record.get('communityID')) : null
                 post.alreadyLiked = record.get('likes').low > 0
                 if (post.repostPostID) {
                     post.repostPost = new Post(record.get('repost'))
@@ -571,6 +590,7 @@ const getUserFeed = function (session, walletAddress, start, size, sortType, sor
             }
         })
         .catch((error) => {
+            console.log(error)
             throw {
                 success: false,
                 message: "Failed to get feed",
