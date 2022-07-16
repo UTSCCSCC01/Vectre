@@ -23,7 +23,7 @@ import {
     BASE_API_URL,
     POSTS
 } from "../constants/endpoints";
-import {showLoading, showToast} from "../actions/global";
+import { showLoading, showToast } from "../actions/global";
 import { TOAST_STATUSES } from "../constants/global";
 
 function* createPost(action) {

@@ -56,7 +56,7 @@ const RepostModal = ({
                                     text: event.target.text.value,
                                     repostPostID: item.postID,
                                     walletAddress: loggedInUser.walletAddress,
-                                    communityID: option
+                                    communityID: option ? option : null
                                 }
                                 dispatch(createRepost(repostData, redirectWindow))
                                 onClose();
@@ -117,7 +117,7 @@ const RepostModal = ({
                             width={'fit-content'}
                             name={'option'}
                             onChange={(event) => { setOption(event.target.value) }}>
-                            <option value={null}>{`Your profile (@${loggedInUser.username})`}</option>
+                            <option value={""}>{`Your profile (@${loggedInUser.username})`}</option>
                             {
                                 loggedInUser.communities ? loggedInUser.communities.map((elem, i) => {
                                     return <option value={elem.communityID} key={i}>{`<${elem.communityID}>`}</option>

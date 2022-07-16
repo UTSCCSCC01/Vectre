@@ -18,16 +18,10 @@ import {
 import { useEffect } from "react";
 import { getFeed } from "../../redux/actions/feed";
 import CreatePostComponent from "../../components/CreatePostComponent/CreatePostComponent";
+import SortingButtonComponent from "../../components/SortingButtonComponent/SortingButtonComponent";
 
 const HomePage = () => {
     const sideButtonsList = [
-        {
-            link: "",
-            text: "Sort Feed",
-            func: () => {
-                onOpen();
-            }
-        }
     ]
 
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -48,21 +42,20 @@ const HomePage = () => {
     return (
         <ContentWIthNavContainer>
             <ContentWithSideButtons sideButtonsList={sideButtonsList}>
-                <Box py={'60px'} maxWidth={'4xl'} margin={'0 auto'}>
-                    <CreatePostComponent />
-                    <Stack mt={"20px"} alignSelf={'center'} gap={'36px'}>
-                        {feed.map((item, i) => {
-                            return (
-                                <Box key={i}>
-                                    <PostComponent item={item} fromFeed={true} />
-                                </Box>
-                            )
-                        })}
-                        {feed.length === feedIndex && !feedPaginationComplete ?
-                            <Button onClick={loadFeed}>Load more</Button>
-                            : null}
-                    </Stack>
-                </Box>
+                <CreatePostComponent />
+                <SortingButtonComponent />
+                <Stack mt={"20px"} alignSelf={'center'} gap={'36px'}>
+                    {feed.map((item, i) => {
+                        return (
+                            <Box key={i}>
+                                <PostComponent item={item} fromFeed={true} />
+                            </Box>
+                        )
+                    })}
+                    {feed.length === feedIndex && !feedPaginationComplete ?
+                        <Button onClick={loadFeed}>Load more</Button>
+                        : null}
+                </Stack>
                 <FilterSortingModal isOpen={isOpen} onClose={onClose} />
             </ContentWithSideButtons>
         </ContentWIthNavContainer>
