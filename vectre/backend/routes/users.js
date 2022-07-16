@@ -35,6 +35,13 @@ router.get('/:walletAddress', (req, res) => {
         .catch((error) => res.send(error))
 })
 
+// GET /users/search/{searchVal}
+router.get('/search/:searchVal', (req, res) => {
+    User.search(dbUtils.getSession(req), req.params.searchVal)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
+
 // GET /users/{walletAddress}/nft
 router.get('/:walletAddress/nft', (req, res) => {
     User.getNFT(req.params.walletAddress)

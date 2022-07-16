@@ -25,9 +25,8 @@ import {
     BASE_API_URL,
     POSTS
 } from "../constants/endpoints";
-import { showToast } from "../actions/toast";
-import { TOAST_STATUSES } from "../constants/toast";
-import { doneLoading, showLoading } from "../../redux/actions/loading";
+import {showLoading, showToast} from "../actions/global";
+import { TOAST_STATUSES } from "../constants/global";
 
 function* createPost(action) {
     try {

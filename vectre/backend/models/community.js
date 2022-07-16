@@ -181,8 +181,7 @@ const get = function (session, communityID) {
                 success: false,
                 message: "Community does not exist"
             }
-        }
-        else {
+        } else {
             let community = new Community(result.records[0].get('c'))
             return {
                 success: true,
@@ -215,6 +214,34 @@ const getAll = function (session) {
             throw {
                 success: false,
                 message: "Failed to fetch all communities",
+                error: error.message
+            }
+        })
+}
+
+const search = (session, searchVal) => {
+    const regex = `(?i).*${searchVal}.*`
+    const query = [
+        `MATCH (community: Community)`,
+        `WHERE community.communityID =~ $regex OR community.name =~ $regex OR community.bio =~ $regex`,
+        `RETURN community`,
+    ].join('\n');
+    return session.run(query, {
+        regex: regex
+    })
+        .then((results) => {
+            let communities = []
+            results.records.forEach((record) => {
+                communities.push(new Community(record.get('community')))
+            })
+            return {
+                success: true,
+                communities: communities
+            }
+        }).catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to search communities",
                 error: error.message
             }
         })
@@ -722,6 +749,7 @@ const getCommunityFeed = function (session, communityID, start, size, sortType, 
 module.exports = {
     get,
     getAll,
+    search,
     communityCreate,
     communityUpdate,
     getUsersByRole,

@@ -2,9 +2,9 @@ import ContentWithSideButtons from "../../components/Containers/ContentWithSideB
 import ProfileCommunityDetails from "./ProfileCommunityDetails/ProfileCommunityDetails"
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import { communitySelector, loggedInUserRolesSelector } from "../../redux/selectors/community";
-import { getCommunity, getRolesOfLoggedInUser } from "../../redux/actions/community";
 import CreatePostComponent from "../CreatePostComponent/CreatePostComponent";
+import { communitySelector, loggedInUserRolesSelector } from "../../redux/selectors/communities";
+import { getCommunity, getRolesOfLoggedInUser } from "../../redux/actions/communities";
 
 const communitySideButtonsList = (userIsModerator) => [
     {
