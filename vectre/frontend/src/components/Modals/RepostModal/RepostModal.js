@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import {
     Modal,
     ModalOverlay,
@@ -9,7 +9,8 @@ import {
     Image,
     Flex,
     FormControl,
-    Textarea
+    Textarea,
+    Select
 } from "@chakra-ui/react"
 
 import { BsFillCheckCircleFill } from 'react-icons/bs';
@@ -28,6 +29,7 @@ const RepostModal = ({
 }) => {
     const loggedInUser = useSelector(loggedInUserSelector);
     const dispatch = useDispatch();
+    const [option, setOption] = useState("");
     return (
         <>
             <Modal
@@ -53,7 +55,8 @@ const RepostModal = ({
                                 let repostData = {
                                     text: event.target.text.value,
                                     repostPostID: item.postID,
-                                    walletAddress: loggedInUser.walletAddress
+                                    walletAddress: loggedInUser.walletAddress,
+                                    communityID: option
                                 }
                                 dispatch(createRepost(repostData, redirectWindow))
                                 onClose();
@@ -104,12 +107,23 @@ const RepostModal = ({
                         pt={'17px'}
                         pb={'0px'}
                         px={'0px'}>
-                        <TextButton
-                            text={`Select a < Community >`}
-                            px={'17.5px'}
+                        <Select
+                            placeholder={"Select a <Community>"}
                             fontSize={'18px'}
+                            bg={'white'}
+                            color={'primary.400'}
                             fontWeight={700}
-                            rightIcon={<BsFillCheckCircleFill />} />
+                            variant={'filled'}
+                            width={'fit-content'}
+                            name={'option'}
+                            onChange={(event) => { setOption(event.target.value) }}>
+                            <option value={null}>{`Your profile (@${loggedInUser.username})`}</option>
+                            {
+                                loggedInUser.communities ? loggedInUser.communities.map((elem, i) => {
+                                    return <option value={elem.communityID} key={i}>{`<${elem.communityID}>`}</option>
+                                }) : null
+                            }
+                        </Select>
                         <TextButton
                             ml={'13px'}
                             form={"repost-form"}

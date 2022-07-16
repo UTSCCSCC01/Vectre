@@ -2,6 +2,7 @@ import ContentWithSideButtons from "../../components/Containers/ContentWithSideB
 import ProfileCommunityDetails from "./ProfileCommunityDetails/ProfileCommunityDetails"
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
+import CreatePostComponent from "../CreatePostComponent/CreatePostComponent";
 import { communitySelector, loggedInUserRolesSelector } from "../../redux/selectors/communities";
 import { getCommunity, getRolesOfLoggedInUser } from "../../redux/actions/communities";
 
@@ -44,6 +45,9 @@ const Community = ({
                 !loggedInUserRoles.includes("moderator")
             ) : []}>
                 <ProfileCommunityDetails communityData={communityData} />
+                {
+                    loggedInUserRoles.includes("member") ? <CreatePostComponent communityID={communityID} /> : null
+                }
             </ContentWithSideButtons>
         </>
     )
