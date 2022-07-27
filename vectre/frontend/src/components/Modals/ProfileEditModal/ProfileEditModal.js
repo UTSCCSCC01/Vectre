@@ -11,7 +11,7 @@ import { FaUser } from 'react-icons/fa'
 import FormInput from "../FormInput/FormInput";
 import FormTextArea from "../FormTextArea/FormTextArea";
 import StyledModalHeader from "../StyledModalHeader/StyledModalHeader";
-import BannerProfileEditPicsWrapper from "../BannerProfilePicWrapper/BannerProfilePicWrapper";
+import BannerProfileEditPicsWrapper from "../BannerProfileEditPicsWrapper/BannerProfileEditPicsWrapper";
 class ProfileEditModal extends React.Component {
 
     handleProfileEditSubmit = (event) => {

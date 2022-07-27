@@ -8,11 +8,10 @@ import {
     Button
 } from "@chakra-ui/react"
 import { FaUserFriends } from 'react-icons/fa'
-import { ReactComponent as EditIcon } from "../../../assets/icons/edit-icon.svg";
 import FormInput from "../FormInput/FormInput";
 import FormTextArea from "../FormTextArea/FormTextArea";
 import StyledModalHeader from "../StyledModalHeader/StyledModalHeader";
-import BannerProfilePicWrapper from "../BannerProfilePicWrapper/BannerProfilePicWrapper";
+import BannerProfileEditPicsWrapper from "../BannerProfileEditPicsWrapper/BannerProfileEditPicsWrapper";
 import { useDispatch } from "react-redux";
 import { createCommunity, updateCommunity } from "../../../redux/actions/communities";
 import { redirectWindow } from "../../../utils/Utils";
@@ -65,22 +64,7 @@ const CommunityProfileEditModal = ({
                                 }
                             }}
                         >
-                            <BannerProfilePicWrapper
-                                data={communityData}>
-                                <Button
-                                    alignSelf={'end'}
-                                    ml={'32px'}
-                                    background={'primary.400'}
-                                    color={'white'}
-                                    px={'46px'}
-                                    py={'11px'}
-                                    borderRadius={'6px'}
-                                    rightIcon={<EditIcon />}
-                                    _focus={{ outline: 0 }}
-                                    disabled={true}> {/* TODO: Implement edit avatar/banner */}
-                                    {isEdit ? "Edit" : "Choose"}
-                                </Button>
-                            </BannerProfilePicWrapper>
+                            <BannerProfileEditPicsWrapper data={communityData} />
                             {
                                 isEdit ? (
                                     <>
