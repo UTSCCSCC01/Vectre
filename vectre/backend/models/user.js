@@ -386,7 +386,9 @@ const updateProfile = function (session, walletAddress, newProf) {
                             }
                         })
                 }
-
+                return updateUser(session, walletAddress, profileFilter, newProf)
+                    .then(response => { return response })
+                    .catch(error => { throw error })
             }
         })
         .catch(error => {
