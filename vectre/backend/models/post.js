@@ -6,6 +6,7 @@ const imgUtils = require('../utils/images')
 const Notification = require("../models/notification")
 const { ROLES } = require("../models/neo4j/community");
 const Community = require("./community")
+const {FEED_SORT} = require("./neo4j/post");
 
 const createPost = function (session, authorWalletAddress, body, imageURL) {
     if (!body.text) {
@@ -501,7 +502,9 @@ const getLikesOnPost = function (session, postID) {
         });
 }
 
-const getUserFeed = function (session, walletAddress, start, size) {
+const getUserFeed = function (session, walletAddress, start, size, sortType, sortOrder) {
+    sortType = sortType.toLowerCase(), sortOrder = sortOrder.toLowerCase()
+
     if (start < 0) {
         throw {
             success: false,
@@ -512,23 +515,73 @@ const getUserFeed = function (session, walletAddress, start, size) {
             success: false,
             message: "Size must be non-negative"
         }
+    } else if (!Object.values(FEED_SORT.TYPES).includes(sortType)) {
+        throw {
+            success: false,
+            message: "Invalid sort type"
+        }
+    } else if (!Object.values(FEED_SORT.ORDER).includes(sortOrder)) {
+        throw {
+            success: false,
+            message: "Invalid sort order"
+        }
     }
 
-    const query = [
-        `MATCH (currentUser: User {walletAddress: $walletAddress})-[:FOLLOWS]->(followedUser:User)-[:POSTED]->(post: Post)`,
-        `WHERE post.parent IS NULL`, // Prevent comments in feed
-        `OPTIONAL MATCH (currentUser)-[l:LIKED]->(post)`,
-        `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
-        `OPTIONAL MATCH (repost:Post)`,
-        `WHERE repost.postID = post.repostPostID`,
-        `OPTIONAL MATCH (repostAuthor:User)`,
-        `WHERE repostAuthor.walletAddress = repost.author`,
-        `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
-        `RETURN DISTINCT currentUser, followedUser, post, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID`,
-        `ORDER BY post.timestamp DESC`,
-        `SKIP toInteger($start)`,
-        `LIMIT toInteger($size)`
-    ].join('\n');
+    const orderBy = sortType === FEED_SORT.TYPES.TIMESTAMP ? "post.timestamp" : "post.likes",
+        order = sortOrder === FEED_SORT.ORDER.DESC ? "DESC" : ""
+
+    var query = ""
+    if (walletAddress !== null) {
+        query = [
+            `CALL {`,
+                `MATCH (currentUser: User {walletAddress: $walletAddress})-[:FOLLOWS]->(author:User)-[:POSTED]->(post: Post)`,
+                `WHERE post.parent IS NULL`, // Prevent comments in feed
+                `OPTIONAL MATCH (currentUser)-[l:LIKED]->(post)`,
+                `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
+                `OPTIONAL MATCH (repost:Post)`,
+                `WHERE repost.postID = post.repostPostID`,
+                `OPTIONAL MATCH (repostAuthor:User)`,
+                `WHERE repostAuthor.walletAddress = repost.author`,
+                `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
+                `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID AS communityID`,
+                `ORDER BY ${orderBy} ${order}`,
+
+                `UNION`,
+
+                `MATCH (currentUser)-[:JOINS]->(:Community)<-[:POSTED_TO]-(post: Post)`,
+                `WHERE post.parent IS NULL`, // Prevent comments in feed
+                `OPTIONAL MATCH (author:User)`,
+                `WHERE author.walletAddress = post.author`,
+                `OPTIONAL MATCH (currentUser)-[l:LIKED]->(post)`,
+                `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
+                `OPTIONAL MATCH (repost:Post)`,
+                `WHERE repost.postID = post.repostPostID`,
+                `OPTIONAL MATCH (repostAuthor:User)`,
+                `WHERE repostAuthor.walletAddress = repost.author`,
+                `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
+                `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID AS communityID`,
+            `}`,
+            `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, likes, comment, communityID`,
+            `ORDER BY ${orderBy} ${order}`,
+            `SKIP toInteger($start)`,
+            `LIMIT toInteger($size)`
+        ].join('\n');
+    } else {
+        query = [
+            `MATCH (author:User)-[:POSTED]->(post: Post)`,
+            `WHERE post.parent IS NULL`, // Prevent comments in feed
+            `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
+            `OPTIONAL MATCH (repost:Post)`,
+            `WHERE repost.postID = post.repostPostID`,
+            `OPTIONAL MATCH (repostAuthor:User)`,
+            `WHERE repostAuthor.walletAddress = repost.author`,
+            `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
+            `RETURN DISTINCT post, author, repost, repostAuthor, 0 AS likes, count(c) AS comment, com.communityID AS communityID`,
+            `ORDER BY ${orderBy} ${order}`,
+            `SKIP toInteger($start)`,
+            `LIMIT toInteger($size)`
+        ].join('\n');
+    }
 
     return session.run(query, {
         walletAddress: walletAddress,
@@ -539,9 +592,9 @@ const getUserFeed = function (session, walletAddress, start, size) {
             let posts = []
             results.records.forEach((record) => {
                 let post = new Post(record.get("post"))
-                post.author = new User(record.get("followedUser"))
+                post.author = new User(record.get("author"))
                 post.comment = String(record.get("comment").low);
-                post.community = record.get('com.communityID') ? String(record.get('com.communityID')) : null
+                post.community = record.get('communityID') ? String(record.get('communityID')) : null
                 post.alreadyLiked = record.get('likes').low > 0
                 if (post.repostPostID) {
                     post.repostPost = new Post(record.get('repost'))
@@ -576,5 +629,5 @@ module.exports = {
     unlikePost,
     getLikesOnPost,
     checkIfAlreadyLiked,
-    getUserFeed,
+    getUserFeed
 };

@@ -5,14 +5,17 @@ const dbUtils = require('../utils/neo4j/dbUtils');
 const Post = require('../models/post');
 const { authenticateToken, storeWalletAddressFromToken } = require("../utils/auth");
 const { upload } = require('../utils/images');
+const { FEED_SORT } = require("../models/neo4j/post");
 
 // Posts
 // POST /posts/feed
 
-router.post('/feed', authenticateToken, (req, res, next) => {
-    const start = req.body.start? req.body.start : 0,
-        size = req.body.size? req.body.size : 10;
-    Post.getUserFeed(dbUtils.getSession(req), req.walletAddress, start, size)
+router.post('/feed', storeWalletAddressFromToken, (req, res, next) => {
+    const start = req.body.start ? req.body.start : 0,
+        size = req.body.size ? req.body.size : 10,
+        sortType = req.body.sort ? req.body.sort : FEED_SORT.TYPES.TIMESTAMP,
+        sortOrder = req.body.order ? req.body.order : FEED_SORT.ORDER.DESC
+    Post.getUserFeed(dbUtils.getSession(req), req.walletAddress, start, size, sortType, sortOrder)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
@@ -21,7 +24,7 @@ router.post('/feed', authenticateToken, (req, res, next) => {
 router.post('/create', authenticateToken, (req, res, next) => {
     if (req.body.imageData) {
         upload(req.body.imageData).then((result) => {
-            if(!result.data.link) {
+            if (!result.data.link) {
                 throw {
                     success: false,
                     message: "Invalid image data"

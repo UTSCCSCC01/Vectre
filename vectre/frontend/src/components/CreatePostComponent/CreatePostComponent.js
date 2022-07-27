@@ -21,7 +21,6 @@ const CreatePostComponent = ({
                 borderRadius={'6px'}
                 px={'12px'}
                 py={'16px'}
-                mt={'22px'}
                 cursor={'pointer'}
                 onClick={() => { onOpen() }}>
                 <Flex
