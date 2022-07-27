@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import {
     Modal,
     ModalOverlay,
@@ -12,6 +12,7 @@ import FormInput from "../FormInput/FormInput";
 import FormTextArea from "../FormTextArea/FormTextArea";
 import StyledModalHeader from "../StyledModalHeader/StyledModalHeader";
 import BannerProfileEditPicsWrapper from "../BannerProfileEditPicsWrapper/BannerProfileEditPicsWrapper";
+import { getBase64Async } from "../../../utils/Utils";
 
 const ProfileEditModal = ({
     loggedInUser,
@@ -20,13 +21,37 @@ const ProfileEditModal = ({
     openModal,
     closeModal
 }) => {
-    const handleProfileEditSubmit = (event) => {
+
+    const [profilePicImageData, setProfilePicImageData] = useState(null);
+    const [bannerImageData, setBannerImageData] = useState(null);
+
+    const bannerHiddenFileInput = React.useRef(null);
+
+    const bannerHandleUploadClick = () => {
+        bannerHiddenFileInput.current.click();
+    };
+    const bannerHandleChange = (event) => {
+        setBannerImageData(document.getElementById("bannerImageInput").files[0]);
+    };
+
+    const handleProfileEditSubmit = async (event) => {
         event.preventDefault();
         let updatedUser = {
             name: event.target.name.value,
             username: event.target.username.value,
             bio: event.target.bio.value
         }
+        if (profilePicImageData) {
+            const result = await getBase64Async(profilePicImageData);
+            updatedUser.profilePicImageData = result;
+        }
+        if (bannerImageData) {
+            const result = await getBase64Async(bannerImageData);
+            updatedUser.bannerImageData = result;
+        }
+        setProfilePicImageData(null);
+        setBannerImageData(null);
+        // console.log(updatedUser);
         updateUser(updatedUser)
         closeModal()
     }
@@ -52,7 +77,12 @@ const ProfileEditModal = ({
                             id="setup-form"
                             onSubmit={handleProfileEditSubmit}
                         >
-                            <BannerProfileEditPicsWrapper data={loggedInUser} />
+                            <BannerProfileEditPicsWrapper
+                                data={loggedInUser}
+                                bannerImageData={bannerImageData}
+                                bannerHandleUploadClick={bannerHandleUploadClick}
+                                bannerHiddenFileInput={bannerHiddenFileInput}
+                                bannerHandleChange={bannerHandleChange} />
                             <FormInput inputID={'name'} inputDefaultValue={loggedInUser.name} inputLabelText={'Name:'} isRequired={true} />
                             <FormInput inputID={'username'} inputDefaultValue={loggedInUser.username} inputLabelText={'Username:'} isRequired={true} />
                             <FormTextArea inputID={'bio'} inputDefaultValue={loggedInUser.bio} inputLabelText={'Bio:'} />

@@ -6,12 +6,16 @@ import { BsFillPencilFill } from "react-icons/bs";
 import { getBannerOrDefault } from "../../../../utils/Utils";
 
 const Banner = ({
-    data
+    data,
+    bannerImageData,
+    bannerHandleUploadClick,
+    bannerHiddenFileInput,
+    bannerHandleChange
 }) => {
     return (
         <>
             <Image
-                src={getBannerOrDefault(data.banner)}
+                src={bannerImageData ? URL.createObjectURL(bannerImageData) : getBannerOrDefault(data.banner)}
                 fit={'cover'}
                 overflow={'hidden'}
                 borderRadius={'6px'}
@@ -28,7 +32,16 @@ const Banner = ({
                 mb={'5px'}
                 position={'absolute'}
                 icon={<BsFillPencilFill size={'1.5rem'} />}
+                onClick={bannerHandleUploadClick}
             />
+            <input
+                type="file"
+                name="image"
+                id="bannerImageInput"
+                accept="image/png, image/jpeg"
+                ref={bannerHiddenFileInput}
+                onChange={bannerHandleChange}
+                style={{ display: 'none' }} />
         </>
     )
 }

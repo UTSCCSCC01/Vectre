@@ -53,3 +53,11 @@ export const getBase64 = (file, callback) => {
         console.log('Error: ', error);
     };
 }
+
+export const getBase64Async = (file) => {
+    return new Promise(resolve => {
+        getBase64(file, (result) => {
+            resolve(result);
+        })
+    })
+}
