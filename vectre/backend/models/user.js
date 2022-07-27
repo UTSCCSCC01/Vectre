@@ -340,7 +340,7 @@ const updateUser = function (session, walletAddress, filter, newUser) {
         })
 }
 
-const updateProfile = function (session, walletAddress, newProf) {
+const updateProfile = function (session, walletAddress, newProf, profilePicLink, bannerLink) {
     /**
      * Update the user profile of the wallet owner using newProf object.
      *
@@ -361,30 +361,13 @@ const updateProfile = function (session, walletAddress, newProf) {
                 return { success: false, message: "Username already exists." }
             } else {
                 let profileFilter = ["name", "username", "bio"]
-                if (newProf.profilePic) {
-                    return imgUtils.upload(newProf.profilePic)
-                        .then(result => {
-                            newProf.profilePic = null;
-                            if (result.data.link) {
-                                newProf.profilePic = result.data.link;
-                                profileFilter.push("profilePic")
-                            }
-
-                            if (newProf.banner) {
-                                return imgUtils.upload(newProf.banner)
-                                    .then(result2 => {
-                                        newProf.banner = null;
-                                        if (result2.data.link) {
-                                            newProf.banner = result2.data.link;
-                                            profileFilter.push("banner")
-                                        }
-                                        return updateUser(session, walletAddress, profileFilter, newProf)
-                                            .then(response => { return response })
-                                            .catch(error => { throw error })
-                                    })
-
-                            }
-                        })
+                if (profilePicLink != "") {
+                    newProf.profilePic = profilePicLink;
+                    profileFilter.push("profilePic")
+                }
+                if (bannerLink != "") {
+                    newProf.banner = bannerLink;
+                    profileFilter.push("banner")
                 }
                 return updateUser(session, walletAddress, profileFilter, newProf)
                     .then(response => { return response })

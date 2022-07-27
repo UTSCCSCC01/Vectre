@@ -6,6 +6,7 @@ const User = require('../models/user'),
     Notification = require('../models/notification');
 const dbUtils = require('../utils/neo4j/dbUtils');
 const { authenticateToken, storeWalletAddressFromToken } = require("../utils/auth");
+const { upload } = require('../utils/images');
 
 // GET /users
 router.get('/', (req, res, next) => {
@@ -118,9 +119,21 @@ router.get('/login/currentUser', authenticateToken, (req, res) => {
 // PUT /users/{walletAddress}/update
 router.put('/:walletAddress/update', authenticateToken, (req, res) => {
     if (req.walletAddress === req.params.walletAddress) {
-        User.updateProfile(dbUtils.getSession(req), req.params.walletAddress, req.body)
-            .then((result) => res.send(result))
-            .catch((error) => res.send(error))
+        (async () => {
+            var profilePicLink = "";
+            var bannerLink = "";
+            if (req.body.profilePicImageData) {
+                const img1 = await upload(req.body.profilePicImageData);
+                profilePicLink = img1.data.link;
+            }
+            if (req.body.bannerImageData) {
+                const img2 = await upload(req.body.bannerImageData);
+                bannerLink = img2.data.link;
+            }
+            User.updateProfile(dbUtils.getSession(req), req.params.walletAddress, req.body, profilePicLink, bannerLink)
+                .then((result) => res.send(result))
+                .catch((error) => res.send(error))
+        })();
     } else {
         res.status(403).send({
             success: false,
