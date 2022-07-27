@@ -48,22 +48,7 @@ class ProfileEditModal extends React.Component {
                                 id="setup-form"
                                 onSubmit={this.handleProfileEditSubmit}
                             >
-                                <BannerProfilePicWrapper
-                                    data={this.props.loggedInUser}>
-                                    <Button
-                                        alignSelf={'end'}
-                                        ml={'32px'}
-                                        background={'primary.400'}
-                                        color={'white'}
-                                        px={'46px'}
-                                        py={'11px'}
-                                        borderRadius={'6px'}
-                                        rightIcon={<EditIcon />}
-                                        _focus={{ outline: 0 }}
-                                        disabled={true}> {/* TODO: Implement edit avatar/banner */}
-                                        Edit
-                                    </Button>
-                                </BannerProfilePicWrapper>
+                                <BannerProfilePicWrapper data={this.props.loggedInUser} />
                                 <FormInput inputID={'name'} inputDefaultValue={this.props.loggedInUser.name} inputLabelText={'Name:'} isRequired={true} />
                                 <FormInput inputID={'username'} inputDefaultValue={this.props.loggedInUser.username} inputLabelText={'Username:'} isRequired={true} />
                                 <FormTextArea inputID={'bio'} inputDefaultValue={this.props.loggedInUser.bio} inputLabelText={'Bio:'} />

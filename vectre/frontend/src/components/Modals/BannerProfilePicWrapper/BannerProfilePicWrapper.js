@@ -1,13 +1,13 @@
 import {
     Flex,
     Box,
-    Image
+    Image,
+    Spacer
 } from "@chakra-ui/react"
 import { getAvatarOrDefault, getBannerOrDefault } from "../../../utils/Utils";
 
 const BannerProfilePicWrapper = ({
-    data,
-    ...otherProps
+    data
 }) => {
     return (
         <Flex
@@ -33,7 +33,7 @@ const BannerProfilePicWrapper = ({
                 overflow={'hidden'}
                 borderRadius={'6px'}
                 height={'200px'} />
-            {otherProps.children}
+            <Spacer />
         </Flex>
     )
 }
