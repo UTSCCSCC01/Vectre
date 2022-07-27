@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import {
     Modal,
     ModalOverlay,
@@ -14,7 +14,7 @@ import StyledModalHeader from "../StyledModalHeader/StyledModalHeader";
 import BannerProfileEditPicsWrapper from "../BannerProfileEditPicsWrapper/BannerProfileEditPicsWrapper";
 import { useDispatch } from "react-redux";
 import { createCommunity, updateCommunity } from "../../../redux/actions/communities";
-import { redirectWindow } from "../../../utils/Utils";
+import { getBase64Async, redirectWindow } from "../../../utils/Utils";
 
 const CommunityProfileEditModal = ({
     communityData,
@@ -23,6 +23,53 @@ const CommunityProfileEditModal = ({
     isEdit
 }) => {
     const dispatch = useDispatch();
+
+    const [profilePicImageData, setProfilePicImageData] = useState(null);
+    const [bannerImageData, setBannerImageData] = useState(null);
+
+    const bannerHiddenFileInput = React.useRef(null);
+
+    const bannerHandleUploadClick = () => {
+        bannerHiddenFileInput.current.click();
+    };
+    const bannerHandleChange = (event) => {
+        setBannerImageData(document.getElementById("bannerImageInput").files[0]);
+    };
+
+    const handleProfileEditSubmit = async (event) => {
+        event.preventDefault();
+
+        let updatedCommunity = {
+            name: event.target.name.value,
+            communityID: event.target.communityID.value,
+            bio: event.target.bio.value,
+            discordLink: event.target.discordLink.value,
+            instagramLink: event.target.instagramLink.value,
+            twitterLink: event.target.twitterLink.value,
+            websiteLink: event.target.websiteLink.value,
+            ethLink: event.target.ethLink.value,
+        }
+
+        if (profilePicImageData) {
+            const result = await getBase64Async(profilePicImageData);
+            updatedCommunity.profilePicImageData = result;
+        }
+        if (bannerImageData) {
+            const result = await getBase64Async(bannerImageData);
+            updatedCommunity.bannerImageData = result;
+        }
+        setProfilePicImageData(null);
+        setBannerImageData(null);
+
+        if (isEdit) {
+            dispatch(updateCommunity(communityData.communityID, updatedCommunity, redirectWindow))
+            onClose();
+        }
+        else {
+            dispatch(createCommunity(updatedCommunity, redirectWindow))
+        }
+    }
+
     return (
         <>
             <Modal
@@ -43,28 +90,14 @@ const CommunityProfileEditModal = ({
                         px={{ base: '24px', md: '64px' }}>
                         <form
                             id="community-edit-form"
-                            onSubmit={(event) => {
-                                event.preventDefault();
-                                let updatedCommunity = {
-                                    name: event.target.name.value,
-                                    communityID: event.target.communityID.value,
-                                    bio: event.target.bio.value,
-                                    discordLink: event.target.discordLink.value,
-                                    instagramLink: event.target.instagramLink.value,
-                                    twitterLink: event.target.twitterLink.value,
-                                    websiteLink: event.target.websiteLink.value,
-                                    ethLink: event.target.ethLink.value,
-                                }
-                                if (isEdit) {
-                                    dispatch(updateCommunity(communityData.communityID, updatedCommunity, redirectWindow))
-                                    onClose();
-                                }
-                                else {
-                                    dispatch(createCommunity(updatedCommunity, redirectWindow))
-                                }
-                            }}
+                            onSubmit={handleProfileEditSubmit}
                         >
-                            <BannerProfileEditPicsWrapper data={communityData} />
+                            <BannerProfileEditPicsWrapper
+                                data={communityData}
+                                bannerImageData={bannerImageData}
+                                bannerHandleUploadClick={bannerHandleUploadClick}
+                                bannerHiddenFileInput={bannerHiddenFileInput}
+                                bannerHandleChange={bannerHandleChange} />
                             {
                                 isEdit ? (
                                     <>
