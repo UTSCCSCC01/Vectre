@@ -4,7 +4,8 @@ import {
     Image,
     Link
 } from "@chakra-ui/react"
-import {formatWalletAddress, getAvatarOrDefault, getBannerOrDefault} from "../../utils/Utils";
+import { formatWalletAddress, getBannerOrDefault } from "../../utils/Utils";
+import VerifiedNFTAvatar, { VERIFIED_AVATAR_TYPES } from "../VerifiedNFTAvatar/VerifiedNFTAvatar";
 
 const IndividualSearchResult = ({
     result
@@ -24,17 +25,11 @@ const IndividualSearchResult = ({
             >
                 <Box
                     position={'absolute'}
-                    top={'25%'}
+                    top={'24%'}
                     left={'50%'}
-                    marginLeft={'-60px'}
+                    marginLeft={'-58px'}
                     zIndex={4}>
-                    <Image
-                        border={'5px solid white'}
-                        src={getAvatarOrDefault(result.profilePic)}
-                        fit={'cover'}
-                        overflow={'hidden'}
-                        borderRadius={'full'}
-                        boxSize={'120px'} />
+                    <VerifiedNFTAvatar data={result} type={VERIFIED_AVATAR_TYPES.SEARCH} />
                 </Box>
                 <Box
                     border={'12px solid white'}

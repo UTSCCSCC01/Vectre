@@ -1,5 +1,4 @@
 import {
-    Image,
     Flex,
     Link,
     Spacer,
@@ -8,10 +7,10 @@ import {
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import DefaultAvatar from "../../../../assets/images/default-avatar.png"
 import { followUser, unfollowUser } from "../../../../redux/actions/users";
 import { loggedInUserSelector } from "../../../../redux/selectors/users";
 import TextButton from "../../../Buttons/TextButton/TextButton";
+import VerifiedNFTAvatar, { VERIFIED_AVATAR_TYPES } from "../../../VerifiedNFTAvatar/VerifiedNFTAvatar";
 
 const handleFollowClick = (walletAddress, profileWalletAddress, alreadyFollowed, setAlreadyFollowed, dispatch) => {
     if (!alreadyFollowed) {
@@ -43,13 +42,7 @@ const FollowUserCard = ({
                     href={"/user/" + user.walletAddress}
                     _hover={{ textDecoration: "none" }}
                     _focus={{ boxShadow: "none" }}>
-                    <Image
-                        src={user.profilePic}
-                        fallbackSrc={DefaultAvatar}
-                        fit={'cover'}
-                        overflow={'hidden'}
-                        borderRadius={'full'}
-                        boxSize={'48px'} />
+                    <VerifiedNFTAvatar data={user} type={VERIFIED_AVATAR_TYPES.FOLLOW} />
                 </Link>
                 <Link
                     href={"/user/" + user.walletAddress}

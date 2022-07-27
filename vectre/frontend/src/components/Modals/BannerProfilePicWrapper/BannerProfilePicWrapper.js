@@ -3,7 +3,8 @@ import {
     Box,
     Image
 } from "@chakra-ui/react"
-import { getAvatarOrDefault, getBannerOrDefault } from "../../../utils/Utils";
+import { getBannerOrDefault } from "../../../utils/Utils";
+import VerifiedNFTAvatar, { VERIFIED_AVATAR_TYPES } from "../../VerifiedNFTAvatar/VerifiedNFTAvatar";
 
 const BannerProfilePicWrapper = ({
     data,
@@ -19,13 +20,7 @@ const BannerProfilePicWrapper = ({
                 top={'53%'}
                 left={'50%'}
                 marginLeft={'-60px'}>
-                <Image
-                    border={'5px solid white'}
-                    src={getAvatarOrDefault(data.profilePic)}
-                    fit={'cover'}
-                    overflow={'hidden'}
-                    borderRadius={'full'}
-                    boxSize={'120px'} />
+                <VerifiedNFTAvatar data={data} type={VERIFIED_AVATAR_TYPES.PROFILE} />
             </Box>
             <Image
                 src={getBannerOrDefault(data.banner)}

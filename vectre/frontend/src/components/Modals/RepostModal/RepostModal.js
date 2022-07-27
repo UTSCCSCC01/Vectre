@@ -6,21 +6,19 @@ import {
     ModalBody,
     ModalFooter,
     Link,
-    Image,
     Flex,
     FormControl,
     Textarea,
     Select
 } from "@chakra-ui/react"
 
-import { BsFillCheckCircleFill } from 'react-icons/bs';
-import DefaultAvatar from '../../../assets/images/default-avatar.png';
 import TextButton from '../../Buttons/TextButton/TextButton'
 import RepostComponent from "../../PostComponent/RepostComponent/RepostComponent";
 import { useDispatch, useSelector } from "react-redux";
 import { loggedInUserSelector } from "../../../redux/selectors/users";
 import { createRepost } from "../../../redux/actions/posts";
 import { redirectWindow } from "../../../utils/Utils"
+import VerifiedNFTAvatar, { VERIFIED_AVATAR_TYPES } from "../../VerifiedNFTAvatar/VerifiedNFTAvatar";
 
 const RepostModal = ({
     item,
@@ -76,13 +74,7 @@ const RepostModal = ({
                                         fontSize={'18px'}
                                         fontWeight={700}
                                         leftIcon={
-                                            <Image
-                                                src={loggedInUser.profilePic}
-                                                fallbackSrc={DefaultAvatar}
-                                                fit={'cover'}
-                                                overflow={'hidden'}
-                                                borderRadius={'full'}
-                                                boxSize={'32px'} />
+                                            <VerifiedNFTAvatar data={loggedInUser} type={VERIFIED_AVATAR_TYPES.POST} />
                                         } />
                                 </Link>
                                 <FormControl
