@@ -8,11 +8,10 @@ import {
     Button
 } from "@chakra-ui/react"
 import { FaUser } from 'react-icons/fa'
-import { ReactComponent as EditIcon } from "../../../assets/icons/edit-icon.svg";
 import FormInput from "../FormInput/FormInput";
 import FormTextArea from "../FormTextArea/FormTextArea";
 import StyledModalHeader from "../StyledModalHeader/StyledModalHeader";
-import BannerProfilePicWrapper from "../BannerProfilePicWrapper/BannerProfilePicWrapper";
+import BannerProfileEditPicsWrapper from "../BannerProfilePicWrapper/BannerProfilePicWrapper";
 class ProfileEditModal extends React.Component {
 
     handleProfileEditSubmit = (event) => {
@@ -48,7 +47,7 @@ class ProfileEditModal extends React.Component {
                                 id="setup-form"
                                 onSubmit={this.handleProfileEditSubmit}
                             >
-                                <BannerProfilePicWrapper data={this.props.loggedInUser} />
+                                <BannerProfileEditPicsWrapper data={this.props.loggedInUser} />
                                 <FormInput inputID={'name'} inputDefaultValue={this.props.loggedInUser.name} inputLabelText={'Name:'} isRequired={true} />
                                 <FormInput inputID={'username'} inputDefaultValue={this.props.loggedInUser.username} inputLabelText={'Username:'} isRequired={true} />
                                 <FormTextArea inputID={'bio'} inputDefaultValue={this.props.loggedInUser.bio} inputLabelText={'Bio:'} />
