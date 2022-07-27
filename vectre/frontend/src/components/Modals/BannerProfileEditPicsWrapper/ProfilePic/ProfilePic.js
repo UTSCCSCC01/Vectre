@@ -1,14 +1,17 @@
 import {
     Box,
     Image,
-    IconButton
+    IconButton,
+    useDisclosure
 } from "@chakra-ui/react"
 import { BsFillPencilFill } from "react-icons/bs";
 import { getAvatarOrDefault } from "../../../../utils/Utils";
+import ProfilePicEditModal from "./ProfilePicEditModal/ProfilePicEditModal";
 
 const ProfilePic = ({
     data
 }) => {
+    const { isOpen, onOpen, onClose } = useDisclosure();
     return (
         <>
             <Box
@@ -32,8 +35,10 @@ const ProfilePic = ({
                     right={'-2%'}
                     position={'absolute'}
                     icon={<BsFillPencilFill size={'1.2rem'} />}
+                    onClick={onOpen}
                 />
             </Box>
+            <ProfilePicEditModal data={data} isOpen={isOpen} onClose={onClose} />
         </>
     )
 }
