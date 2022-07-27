@@ -4,7 +4,7 @@ const Community = require('./neo4j/community')
 const { ROLES } = require("./neo4j/community");
 const User = require('./neo4j/user')
 const Post = require('./neo4j/post')
-const {FEED_SORT} = require("./neo4j/post");
+const { FEED_SORT } = require("./neo4j/post");
 
 // helper functions
 const filterBody = function (body) {
@@ -620,7 +620,7 @@ const communityCreate = function (session, ownerWalletAddress, body) {
         })
 }
 
-const communityUpdate = function (session, walletAddress, communityID, body) {
+const communityUpdate = function (session, walletAddress, communityID, body, profilePicLink, bannerLink) {
     let filtered = filterBody(body)
     return communityValidate(filtered)
         .then(validateResult => {
@@ -637,6 +637,12 @@ const communityUpdate = function (session, walletAddress, communityID, body) {
                                                 message: `Community ID ${body.communityID} has already been taken.`
                                             }
                                         } else {
+                                            if (profilePicLink != "") {
+                                                filtered.profilePic = profilePicLink;
+                                            }
+                                            if (bannerLink != "") {
+                                                filtered.banner = bannerLink;
+                                            }
                                             return update(session, communityID, filtered)
                                         }
                                     })
