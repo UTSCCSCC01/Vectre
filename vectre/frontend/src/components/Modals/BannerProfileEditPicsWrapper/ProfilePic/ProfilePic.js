@@ -9,7 +9,9 @@ import { getAvatarOrDefault } from "../../../../utils/Utils";
 import ProfilePicEditModal from "./ProfilePicEditModal/ProfilePicEditModal";
 
 const ProfilePic = ({
-    data
+    data,
+    profilePicImageData,
+    setProfilePicImageData
 }) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     return (
@@ -21,7 +23,7 @@ const ProfilePic = ({
                 marginLeft={'-60px'}>
                 <Image
                     border={'5px solid white'}
-                    src={getAvatarOrDefault(data.profilePic)}
+                    src={profilePicImageData ? URL.createObjectURL(profilePicImageData) : getAvatarOrDefault(data.profilePic)}
                     fit={'cover'}
                     overflow={'hidden'}
                     borderRadius={'full'}
@@ -38,7 +40,7 @@ const ProfilePic = ({
                     onClick={onOpen}
                 />
             </Box>
-            <ProfilePicEditModal data={data} isOpen={isOpen} onClose={onClose} />
+            <ProfilePicEditModal data={data} isOpen={isOpen} onClose={onClose} profilePicImageData={profilePicImageData} setProfilePicImageData={setProfilePicImageData} />
         </>
     )
 }

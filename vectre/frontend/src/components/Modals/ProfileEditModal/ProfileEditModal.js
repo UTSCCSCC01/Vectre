@@ -25,15 +25,6 @@ const ProfileEditModal = ({
     const [profilePicImageData, setProfilePicImageData] = useState(null);
     const [bannerImageData, setBannerImageData] = useState(null);
 
-    const bannerHiddenFileInput = React.useRef(null);
-
-    const bannerHandleUploadClick = () => {
-        bannerHiddenFileInput.current.click();
-    };
-    const bannerHandleChange = (event) => {
-        setBannerImageData(document.getElementById("bannerImageInput").files[0]);
-    };
-
     const handleProfileEditSubmit = async (event) => {
         event.preventDefault();
         let updatedUser = {
@@ -51,7 +42,6 @@ const ProfileEditModal = ({
         }
         setProfilePicImageData(null);
         setBannerImageData(null);
-        // console.log(updatedUser);
         updateUser(updatedUser)
         closeModal()
     }
@@ -80,9 +70,9 @@ const ProfileEditModal = ({
                             <BannerProfileEditPicsWrapper
                                 data={loggedInUser}
                                 bannerImageData={bannerImageData}
-                                bannerHandleUploadClick={bannerHandleUploadClick}
-                                bannerHiddenFileInput={bannerHiddenFileInput}
-                                bannerHandleChange={bannerHandleChange} />
+                                setBannerImageData={setBannerImageData}
+                                profilePicImageData={profilePicImageData}
+                                setProfilePicImageData={setProfilePicImageData} />
                             <FormInput inputID={'name'} inputDefaultValue={loggedInUser.name} inputLabelText={'Name:'} isRequired={true} />
                             <FormInput inputID={'username'} inputDefaultValue={loggedInUser.username} inputLabelText={'Username:'} isRequired={true} />
                             <FormTextArea inputID={'bio'} inputDefaultValue={loggedInUser.bio} inputLabelText={'Bio:'} />

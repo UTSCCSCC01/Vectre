@@ -2,16 +2,25 @@ import {
     Image,
     IconButton
 } from "@chakra-ui/react"
+import React from "react";
 import { BsFillPencilFill } from "react-icons/bs";
 import { getBannerOrDefault } from "../../../../utils/Utils";
 
 const Banner = ({
     data,
     bannerImageData,
-    bannerHandleUploadClick,
-    bannerHiddenFileInput,
-    bannerHandleChange
+    setBannerImageData
 }) => {
+
+    const bannerHiddenFileInput = React.useRef(null);
+
+    const bannerHandleUploadClick = () => {
+        bannerHiddenFileInput.current.click();
+    };
+    const bannerHandleChange = (event) => {
+        setBannerImageData(document.getElementById("bannerImageInput").files[0]);
+    };
+
     return (
         <>
             <Image

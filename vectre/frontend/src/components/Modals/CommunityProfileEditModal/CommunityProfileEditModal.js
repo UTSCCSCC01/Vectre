@@ -27,15 +27,6 @@ const CommunityProfileEditModal = ({
     const [profilePicImageData, setProfilePicImageData] = useState(null);
     const [bannerImageData, setBannerImageData] = useState(null);
 
-    const bannerHiddenFileInput = React.useRef(null);
-
-    const bannerHandleUploadClick = () => {
-        bannerHiddenFileInput.current.click();
-    };
-    const bannerHandleChange = (event) => {
-        setBannerImageData(document.getElementById("bannerImageInput").files[0]);
-    };
-
     const handleProfileEditSubmit = async (event) => {
         event.preventDefault();
 
@@ -95,9 +86,9 @@ const CommunityProfileEditModal = ({
                             <BannerProfileEditPicsWrapper
                                 data={communityData}
                                 bannerImageData={bannerImageData}
-                                bannerHandleUploadClick={bannerHandleUploadClick}
-                                bannerHiddenFileInput={bannerHiddenFileInput}
-                                bannerHandleChange={bannerHandleChange} />
+                                setBannerImageData={setBannerImageData}
+                                profilePicImageData={profilePicImageData}
+                                setProfilePicImageData={setProfilePicImageData} />
                             {
                                 isEdit ? (
                                     <>
