@@ -116,8 +116,7 @@ const create = function (session, ownerWalletAddress, newCommunity) {
         'CREATE (c: Community $format)',
         'SET c.memberCount = toInteger(1)',
         'CREATE (o)-[:JOINS]->(c)',
-        'CREATE (o)-[:MODERATES]->(c)',
-        'CREATE (o)-[link: OWNS]->(c)',
+        'CREATE (o)-[link:MODERATES]->(c)',
         'RETURN link'
     ].join("\n")
 
@@ -402,14 +401,7 @@ const promoteMember = function (session, walletAddress, communityID) {
                     }
                 }
             } else {
-                return member
-            }
-        })
-        .catch(error => {
-            throw {
-                success: false,
-                message: "Failed to promote User to Moderator of Community",
-                error: error.message
+                return memberCheck
             }
         })
 }
@@ -484,10 +476,20 @@ const removeMember = function (session, walletAddress, communityID) {
         .then(moderatorCheck => {
             if (moderatorCheck.success) {
                 if (moderatorCheck.result) {
-                    // User is a moderator, use query 0 and 1 to remove
-                    return session.run(queries[0], format)
+                    // Check if User is the only moderator.
+                    return getUsersByRole(session, communityID, ROLES.MODERATOR.type)
+                    .then(result => {
+                        if (result.moderator.length == 1) {
+                            return {
+                                success: false,
+                                message: "The last Moderator cannot unfollow Community, please promote someone else to Moderator before unfollow."
+                            }
+                        }
+                        // User is not the a moderator, use query 0 tp remove.
+                        return session.run(queries[0], format)
                         .then(result => { return successReturn })
-
+                    })
+                    
                 } else {
                     // Check if User is a member
                     return isRole(session, walletAddress, communityID, ROLES.MEMBER.type)
@@ -528,8 +530,7 @@ const getRolesOfUsers = function (session, walletAddress, communityID) {
 
     const LINK_ROLES = {
         "JOINS": ROLES.MEMBER,
-        "MODERATES": ROLES.MODERATOR,
-        "OWNS": ROLES.OWNER
+        "MODERATES": ROLES.MODERATOR
     }
 
     return isRole(session, walletAddress, communityID, ROLES.MEMBER.type)
@@ -753,6 +754,31 @@ const getCommunityFeed = function (session, communityID, walletAddress, start, s
         });
 }
 
+const moderatorPromotesMember = function(session, communityID, calledBy, member) {
+    return isRole(session, calledBy, communityID, ROLES.MODERATOR.type)
+    .then(moderatorCheck => {
+        if (moderatorCheck.success) {
+            if (moderatorCheck.result) {
+                return promoteMember(session, member, communityID);
+            } else {
+                return {
+                    success: false,
+                    message: "User does not have permission to promote Member."
+                }
+            }
+        } else {
+            return moderatorCheck
+        }
+    })
+    .catch(error => {
+        throw {
+            success: false,
+            message: "Failed to promote Member.",
+            error: error.message
+        }
+    })
+}
+
 module.exports = {
     get,
     getAll,
@@ -765,5 +791,6 @@ module.exports = {
     getRolesOfUsers,
     isRole,
     linkPost,
-    getCommunityFeed
+    getCommunityFeed,
+    moderatorPromotesMember
 }

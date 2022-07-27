@@ -26,8 +26,8 @@ module.exports.ROLES = {
         type: "moderator",
         relationship: "MODERATES"
     },
-    OWNER: {
-        type: "owner",
-        relationship: "OWNS"
-    }
+    // OWNER: {
+    //     type: "owner",
+    //     relationship: "OWNS"
+    // }
 }

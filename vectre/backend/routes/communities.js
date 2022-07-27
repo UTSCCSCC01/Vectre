@@ -7,6 +7,13 @@ const { authenticateToken, storeWalletAddressFromToken } = require('../utils/aut
 const dbUtils = require('../utils/neo4j/dbUtils');
 const {FEED_SORT} = require("../models/neo4j/post");
 
+// Test
+router.get('/test', (req, res, next) => {
+    Community.addMember(dbUtils.getSession(req), "1010", "newCOM2")
+        .then(result => res.send(result))
+        .catch(error => res.send(error))
+})
+
 // POST /communities/feed
 router.post('/:communityID/feed', storeWalletAddressFromToken, (req, res, next) => {
     const start = req.body.start ? req.body.start : 0,
@@ -70,6 +77,12 @@ router.post('/:communityID/leave', authenticateToken, (req, res, next) => {
 // GET /communities/:communityID/members/:walletAddress/roles
 router.get("/:communityID/members/:walletAddress/roles", (req, res, next) => {
     Community.getRolesOfUsers(dbUtils.getSession(req), req.params.walletAddress, req.params.communityID)
+        .then(result => res.send(result))
+        .catch(error => res.send(error))
+})
+
+router.post("/:communityID/promotes/:walletAddress", authenticateToken, (req, res, next) => {
+    Community.moderatorPromotesMember(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress)
         .then(result => res.send(result))
         .catch(error => res.send(error))
 })
