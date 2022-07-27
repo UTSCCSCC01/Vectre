@@ -17,7 +17,6 @@ const VerifiedNFTAvatar = ({
     data,
     type
 }) => {
-    var isVerified = true;
     var boxSize;
     var shadowsBorderWidth;
 
@@ -69,7 +68,7 @@ const VerifiedNFTAvatar = ({
     return (
         <Box position={'relative'}>
             <Box
-                display={isVerified ? "initial" : "none"}
+                display={data.isNFT ? "initial" : "none"}
                 boxSize={boxSize}
                 left={'0%'}
                 position={"absolute"}
@@ -78,7 +77,7 @@ const VerifiedNFTAvatar = ({
                 animation={`${rotateKeyFrame} 1s linear infinite`}
             />
             <Image
-                border={!isVerified && (type === VERIFIED_AVATAR_TYPES.PROFILE || type === VERIFIED_AVATAR_TYPES.SEARCH || type === VERIFIED_AVATAR_TYPES.NAVBAR) ? '5px solid white' : 'none'}
+                border={!data.isNFT && (type === VERIFIED_AVATAR_TYPES.PROFILE || type === VERIFIED_AVATAR_TYPES.SEARCH || type === VERIFIED_AVATAR_TYPES.NAVBAR) ? '5px solid white' : 'none'}
                 src={getAvatarOrDefault(data.profilePic)}
                 fallbackSrc={DefaultAvatar}
                 fit={'cover'}
