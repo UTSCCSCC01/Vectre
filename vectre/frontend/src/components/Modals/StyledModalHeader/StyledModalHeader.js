@@ -14,8 +14,8 @@ const StyledModalHeader = ({
             px={{ base: '24px', md: '64px' }}>
             <ModalCloseButton
                 color={'primary.400'}
-                top={4}
-                left={4}
+                top={6}
+                left={6}
                 transform={'scale(1.8)'}
                 _focus={{ outline: 0 }}
                 _hover={{ background: 'white' }}

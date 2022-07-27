@@ -69,7 +69,7 @@ const ProfileEditModal = ({
                     backdropFilter='blur(20px)'
                 />
                 <ModalContent
-                    py={'40px'}>
+                    py={'10px'}>
                     <StyledModalHeader headerText={'Edit Profile'} icon={<FaUser size={'2rem'} />} />
                     <ModalBody
                         px={{ base: '24px', md: '64px' }}>

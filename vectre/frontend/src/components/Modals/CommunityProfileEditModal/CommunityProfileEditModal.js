@@ -84,7 +84,7 @@ const CommunityProfileEditModal = ({
                     backdropFilter='blur(20px)'
                 />
                 <ModalContent
-                    py={'40px'}>
+                    py={'10px'}>
                     <StyledModalHeader headerText={isEdit ? 'Edit Community' : 'Create a Community'} icon={<FaUserFriends size={'2rem'} />} />
                     <ModalBody
                         px={{ base: '24px', md: '64px' }}>
