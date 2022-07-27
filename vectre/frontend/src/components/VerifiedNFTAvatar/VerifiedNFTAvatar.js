@@ -10,7 +10,8 @@ export const VERIFIED_AVATAR_TYPES = {
     PROFILE: "profile",
     POST: "post",
     NAVBAR: "navbar",
-    SEARCH: "search"
+    SEARCH: "search",
+    FOLLOW: "follow"
 }
 
 const VerifiedNFTAvatar = ({
@@ -36,6 +37,10 @@ const VerifiedNFTAvatar = ({
         case VERIFIED_AVATAR_TYPES.SEARCH:
             boxSize = '115px';
             shadowsBorderWidth = '3px';
+            break;
+        case VERIFIED_AVATAR_TYPES.FOLLOW:
+            boxSize = '48px';
+            shadowsBorderWidth = '1.5px';
             break;
         default:
             boxSize = '32px'

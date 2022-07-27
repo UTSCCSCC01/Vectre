@@ -17,13 +17,13 @@ import {
 } from "@chakra-ui/react"
 
 import { BsFillTrashFill, BsFillImageFill } from 'react-icons/bs';
-import DefaultAvatar from '../../../assets/images/default-avatar.png';
 import TextButton from '../../Buttons/TextButton/TextButton'
 import { useDispatch, useSelector } from "react-redux";
 import { loggedInUserSelector } from "../../../redux/selectors/users";
 import { createPost } from "../../../redux/actions/posts";
 import { getBase64, redirectWindow } from "../../../utils/Utils"
 import PostModalComponent from "../../PostComponent/PostModalComponent/PostModalComponent";
+import VerifiedNFTAvatar, { VERIFIED_AVATAR_TYPES } from "../../VerifiedNFTAvatar/VerifiedNFTAvatar";
 
 const CreatePostModal = ({
     isOpen,
@@ -100,13 +100,7 @@ const CreatePostModal = ({
                                             fontSize={'18px'}
                                             fontWeight={700}
                                             leftIcon={
-                                                <Image
-                                                    src={loggedInUser.profilePic}
-                                                    fallbackSrc={DefaultAvatar}
-                                                    fit={'cover'}
-                                                    overflow={'hidden'}
-                                                    borderRadius={'full'}
-                                                    boxSize={'32px'} />
+                                                <VerifiedNFTAvatar data={loggedInUser} type={VERIFIED_AVATAR_TYPES.POST} />
                                             } />
                                     </Link>
                                 </Box>
