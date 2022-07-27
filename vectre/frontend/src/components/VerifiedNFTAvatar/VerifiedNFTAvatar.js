@@ -17,7 +17,7 @@ const VerifiedNFTAvatar = ({
     data,
     type
 }) => {
-    const isVerified = true;
+    var isVerified = true;
     var boxSize;
     var shadowsBorderWidth;
 
@@ -31,12 +31,12 @@ const VerifiedNFTAvatar = ({
             shadowsBorderWidth = '1.5px';
             break;
         case VERIFIED_AVATAR_TYPES.NAVBAR:
-            boxSize = '32px';
-            shadowsBorderWidth = '1px';
+            boxSize = '58px';
+            shadowsBorderWidth = '2.5px';
             break;
         case VERIFIED_AVATAR_TYPES.SEARCH:
-            boxSize = '32px';
-            shadowsBorderWidth = '2px';
+            boxSize = '115px';
+            shadowsBorderWidth = '3px';
             break;
         default:
             boxSize = '32px'
@@ -67,24 +67,25 @@ const VerifiedNFTAvatar = ({
     }
 
     return (
-        <>
+        <Box position={'relative'}>
             <Box
                 display={isVerified ? "initial" : "none"}
                 boxSize={boxSize}
+                left={'0%'}
                 position={"absolute"}
                 borderRadius={'full'}
                 boxShadow={shadows(shadowsBorderWidth, "0px")}
                 animation={`${rotateKeyFrame} 1s linear infinite`}
             />
             <Image
-                border={!isVerified && type === VERIFIED_AVATAR_TYPES.PROFILE ? '5px solid white' : 'none'}
+                border={!isVerified && (type === VERIFIED_AVATAR_TYPES.PROFILE || type === VERIFIED_AVATAR_TYPES.SEARCH || type === VERIFIED_AVATAR_TYPES.NAVBAR) ? '5px solid white' : 'none'}
                 src={getAvatarOrDefault(data.profilePic)}
                 fallbackSrc={DefaultAvatar}
                 fit={'cover'}
                 overflow={'hidden'}
                 boxSize={boxSize}
                 borderRadius={'full'} />
-        </>
+        </Box>
     )
 }
 
