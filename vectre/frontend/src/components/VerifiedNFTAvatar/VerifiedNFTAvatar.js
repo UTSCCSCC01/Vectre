@@ -20,23 +20,27 @@ const VerifiedNFTAvatar = ({
 }) => {
     var boxSize;
     var shadowsBorderWidth;
+    var nonNFTBorderWidth;
 
     switch (type) {
         case VERIFIED_AVATAR_TYPES.PROFILE:
             boxSize = '120px';
             shadowsBorderWidth = '3px';
+            nonNFTBorderWidth = '5px';
             break;
         case VERIFIED_AVATAR_TYPES.POST:
             boxSize = '32px';
             shadowsBorderWidth = '1.5px';
             break;
         case VERIFIED_AVATAR_TYPES.NAVBAR:
-            boxSize = '58px';
+            boxSize = '60px';
             shadowsBorderWidth = '2.5px';
+            nonNFTBorderWidth = '3px';
             break;
         case VERIFIED_AVATAR_TYPES.SEARCH:
             boxSize = '115px';
             shadowsBorderWidth = '3px';
+            nonNFTBorderWidth = '5px';
             break;
         case VERIFIED_AVATAR_TYPES.FOLLOW:
             boxSize = '48px';
@@ -45,6 +49,7 @@ const VerifiedNFTAvatar = ({
         default:
             boxSize = '32px'
             shadowsBorderWidth = '1px';
+            nonNFTBorderWidth = "0px";
     }
 
 
@@ -59,14 +64,14 @@ const VerifiedNFTAvatar = ({
 
     const shadows = (borderWidth, weight) => {
         return `
-        0 ${borderWidth} 0 ${weight} rgb(225 131 194 / 25%),
-        0 -${borderWidth} 0 ${weight} rgb(165 181 222 / 25%), 
-        ${borderWidth} 0 0 ${weight} rgb(225 131 194 / 25%), 
-        -${borderWidth} 0 0 ${weight} rgb(165 181 222 / 25%), 
-        ${borderWidth} -${borderWidth} 0 ${weight} rgb(195 156 208 / 50%), 
-        -${borderWidth} ${borderWidth} 0 ${weight} rgb(195 156 208 / 50%), 
-        ${borderWidth} ${borderWidth} 0 ${weight} rgb(255 105 180 / 75%), 
-        -${borderWidth} -${borderWidth} 0 ${weight} rgb(135 206 235 / 75%)
+        inset 0 ${borderWidth} 0 ${weight} rgb(225 131 194 / 25%),
+        inset 0 -${borderWidth} 0 ${weight} rgb(165 181 222 / 25%), 
+        inset ${borderWidth} 0 0 ${weight} rgb(225 131 194 / 25%), 
+        inset -${borderWidth} 0 0 ${weight} rgb(165 181 222 / 25%), 
+        inset ${borderWidth} -${borderWidth} 0 ${weight} rgb(195 156 208 / 50%), 
+        inset -${borderWidth} ${borderWidth} 0 ${weight} rgb(195 156 208 / 50%), 
+        inset ${borderWidth} ${borderWidth} 0 ${weight} rgb(255 105 180 / 75%), 
+        inset -${borderWidth} -${borderWidth} 0 ${weight} rgb(135 206 235 / 75%)
         `
     }
 
@@ -82,7 +87,7 @@ const VerifiedNFTAvatar = ({
                 animation={`${rotateKeyFrame} 1s linear infinite`}
             />
             <Image
-                border={!data.isNFT && (type === VERIFIED_AVATAR_TYPES.PROFILE || type === VERIFIED_AVATAR_TYPES.SEARCH || type === VERIFIED_AVATAR_TYPES.NAVBAR) ? '5px solid white' : 'none'}
+                border={!data.isNFT ? `${nonNFTBorderWidth} solid white` : 'none'}
                 src={getAvatarOrDefault(data.profilePic)}
                 fallbackSrc={DefaultAvatar}
                 fit={'cover'}
