@@ -64,9 +64,10 @@ const ProfilePicEditModal = ({
                                 borderRadius={'full'}
                                 boxSize={'180px'} />
                             <TextButton
-                                display={data.walletAddress ? 'initial' : 'none'}
+                                display={data.walletAddress ? 'inline-flex' : 'none'}
                                 text={'Select NFT'}
                                 fontWeight={700}
+                                width={"250px"}
                                 fontSize={'18px'}
                                 background={'primary.400'}
                                 color={'white'}
@@ -77,6 +78,7 @@ const ProfilePicEditModal = ({
                             <TextButton
                                 text={'Upload Image'}
                                 fontWeight={700}
+                                width={"250px"}
                                 fontSize={'18px'}
                                 background={'primary.400'}
                                 color={'white'}
