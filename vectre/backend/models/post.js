@@ -617,7 +617,7 @@ const getUserFeed = function (session, walletAddress, start, size, sortType, sor
         });
 }
 
-const searchPosts = function (session, body) {
+const searchPosts = function (session, body, walletAddress) {
     
     if(!body.term) {
         throw {
@@ -628,6 +628,7 @@ const searchPosts = function (session, body) {
     const query = [
         `MATCH (author:User)-[:POSTED]->(post: Post)`,
         `WHERE post.parent IS NULL AND (LOWER(post.text) CONTAINS LOWER('${term}'))`, // Prevent comments in feed
+        `OPTIONAL MATCH (user:User{walletAddress:$walletAddress})-[l:LIKED]->(post)`,
         `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
         `OPTIONAL MATCH (repost:Post)`,
         `WHERE repost.postID = post.repostPostID`,
@@ -639,7 +640,8 @@ const searchPosts = function (session, body) {
     ].join('\n');
 
     return session.run(query, {
-        term: body.term
+        term: body.term,
+        walletAddress: walletAddress
     })
         .then((results) => {
             let posts = []

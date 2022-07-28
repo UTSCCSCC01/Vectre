@@ -9,8 +9,8 @@ const { FEED_SORT } = require("../models/neo4j/post");
 
 // Posts
 // POST /posts/search
-router.post('/search', (req, res, next) => {
-    Post.searchPosts(dbUtils.getSession(req), req.body)
+router.post('/search', storeWalletAddressFromToken, (req, res, next) => {
+    Post.searchPosts(dbUtils.getSession(req), req.body, req.walletAddress)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
