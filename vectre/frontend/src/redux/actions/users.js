@@ -22,6 +22,8 @@ import {
     GET_FUNDS,
     STORE_FUNDS,
     UPDATE_DASHBOARD,
+    DO_FOLLOW_SEARCHED_USER,
+    DO_UNFOLLOW_SEARCHED_USER,
 } from "../constants/users";
 
 // Login
@@ -83,6 +85,15 @@ export const storeSearchedUsers = (searchedUsers) => ({
     searchedUsers
 })
 
+export const doFollowSearchedUsers = (walletAddress) => ({
+    type: DO_FOLLOW_SEARCHED_USER,
+    walletAddress
+})
+export const doUnfollowSearchedUsers = (walletAddress) => ({
+    type: DO_UNFOLLOW_SEARCHED_USER,
+    walletAddress
+})
+
 export const getLoggedInUser = () => ({
     type: GET_LOGGED_IN_USER
 })
@@ -125,15 +136,17 @@ export const updateDashboard = (walletAddress, dashboard, resetSelectedList) => 
     resetSelectedList
 })
 
-export const followUser = (walletAddressToFollow, profileWalletAddress, toggleFollowList) => ({
+export const followUser = (walletAddressToFollow, profileWalletAddress, toggleFollowList, callBack) => ({
     type: FOLLOW_USER,
     walletAddressToFollow,
     profileWalletAddress,
-    toggleFollowList
+    toggleFollowList,
+    callBack
 })
-export const unfollowUser = (walletAddressToUnfollow, profileWalletAddress, toggleFollowList) => ({
+export const unfollowUser = (walletAddressToUnfollow, profileWalletAddress, toggleFollowList, callBack) => ({
     type: UNFOLLOW_USER,
     walletAddressToUnfollow,
     profileWalletAddress,
-    toggleFollowList
+    toggleFollowList,
+    callBack
 })

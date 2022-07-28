@@ -4,17 +4,19 @@ import {
     Image,
     Link
 } from "@chakra-ui/react"
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { cutText, getAvatarOrDefault } from "../../../utils/Utils";
 import ToggleHollowButton from "../../Buttons/ToggleHollowButton/ToggleHollowButton";
 import { doFollowSearchedCommunities, doUnfollowSearchedCommunities, joinCommunity, leaveCommunity } from "../../../redux/actions/communities";
-import React, { useState } from "react";
+import React from "react";
+import { doFollowSearchedUsers, doUnfollowSearchedUsers, followUser, unfollowUser } from "../../../redux/actions/users";
+import { loggedInUserSelector } from "../../../redux/selectors/users";
 
 const IndividualSearchResult = ({
     result
 }) => {
     const dispatch = useDispatch();
-
+    const loggedInUser = useSelector(loggedInUserSelector);
     const SEARCH_RESULT_TYPES = {
         USER: "user",
         COMMUNITY: "community"
@@ -27,6 +29,15 @@ const IndividualSearchResult = ({
         }
         else {
             dispatch(joinCommunity(result.communityID, () => dispatch(doFollowSearchedCommunities(result.communityID))))
+        }
+    }
+
+    const onUsersFollowClick = () => {
+        if (result.alreadyFollowed) {
+            dispatch(unfollowUser(result.walletAddress, null, null, () => dispatch(doUnfollowSearchedUsers(result.walletAddress))))
+        }
+        else {
+            dispatch(followUser(result.walletAddress, null, null, () => dispatch(doFollowSearchedUsers(result.walletAddress))))
         }
     }
 
@@ -63,11 +74,15 @@ const IndividualSearchResult = ({
 
                 {
                     type === SEARCH_RESULT_TYPES.USER ? (
-                        <ToggleHollowButton
-                            alignSelf={'flex-start'}
-                            mt={'10px'}
-                            onText={'Followed'}
-                            offText={'Follow'} />
+                        loggedInUser && loggedInUser.walletAddress !== result.walletAddress ?
+                            <ToggleHollowButton
+                                alignSelf={'flex-start'}
+                                mt={'10px'}
+                                onText={'Followed'}
+                                offText={'Follow'}
+                                isOn={result.alreadyFollowed}
+                                onClick={() => onUsersFollowClick()} />
+                            : null
                     ) : (
                         <ToggleHollowButton
                             alignSelf={'flex-start'}

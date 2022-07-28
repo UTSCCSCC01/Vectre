@@ -34,7 +34,7 @@ import {
     USERS
 } from "../constants/endpoints";
 import { TOAST_STATUSES } from "../constants/global";
-import {showLoading, showToast} from "../actions/global";
+import { showLoading, showToast } from "../actions/global";
 
 // Login
 function* getLoginNonce(action) {
@@ -189,7 +189,12 @@ function* updateDashboard(action) {
 function* followUser(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + USERS.FOLLOW_USER.replace("{walletAddress}", action.walletAddressToFollow), {}), responseData = response[1]
+        console.log(action);
         if (responseData.success) {
+            if (action.callBack) {
+                action.callBack()
+                return;
+            }
             yield put(getUser(action.profileWalletAddress))
             yield put(getLoggedInUser())
             if (action.toggleFollowList) action.toggleFollowList()
@@ -206,6 +211,10 @@ function* unfollowUser(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + USERS.UNFOLLOW_USER.replace("{walletAddress}", action.walletAddressToUnfollow), {}), responseData = response[1]
         if (responseData.success) {
+            if (action.callBack) {
+                action.callBack()
+                return;
+            }
             yield put(getUser(action.profileWalletAddress))
             yield put(getLoggedInUser())
             if (action.toggleFollowList) action.toggleFollowList()
