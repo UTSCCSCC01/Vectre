@@ -62,7 +62,7 @@ const ProfilePicEditModal = ({
                                 fit={'cover'}
                                 overflow={'hidden'}
                                 borderRadius={'full'}
-                                boxSize={'180px'} />
+                                boxSize={'160px'} />
                             <TextButton
                                 display={data.walletAddress ? 'inline-flex' : 'none'}
                                 text={'Select NFT'}

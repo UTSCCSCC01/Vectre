@@ -40,6 +40,7 @@ const Banner = ({
                 mr={'8px'}
                 mb={'5px'}
                 position={'absolute'}
+                _hover={{ bg: "primary.400" }}
                 icon={<BsFillPencilFill size={'1.5rem'} />}
                 onClick={bannerHandleUploadClick}
             />

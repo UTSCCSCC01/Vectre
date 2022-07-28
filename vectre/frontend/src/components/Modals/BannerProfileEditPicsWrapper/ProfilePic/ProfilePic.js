@@ -36,6 +36,7 @@ const ProfilePic = ({
                     bottom={'3%'}
                     right={'-2%'}
                     position={'absolute'}
+                    _hover={{ bg: "primary.400" }}
                     icon={<BsFillPencilFill size={'1.2rem'} />}
                     onClick={onOpen}
                 />
