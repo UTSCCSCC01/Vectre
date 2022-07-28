@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const { getRelationshipFromRole } = require('../utils/Utils');
 const Community = require('./neo4j/community')
-const { ROLES } = require("./neo4j/community");
+const { ROLES, MOD } = require("./neo4j/community");
 const User = require('./neo4j/user')
 const Post = require('./neo4j/post')
 const {FEED_SORT} = require("./neo4j/post");
@@ -590,6 +590,70 @@ const linkPost = function (session, walletAddress, postID, communityID) {
     })
 }
 
+const banMember = function (session, walletAddress, communityID) {
+    const query = [
+        'MATCH (u: User {walletAddress: $walletAddress}), (c: Community {communityID: $communityID})',
+        `CREATE (u)-[:BANNED_FROM]->(c)`
+    ].join("\n")
+    
+    return isRole(session, walletAddress, communityCreate, ROLES.BANNED.type)
+    .then(bannedResult => {
+        if (!bannedResult.success) {
+            return bannedResult
+        }
+        if (bannedResult.result) {
+            return {
+                success: false,
+                message: "User is already banned from Community."
+            }
+        } 
+        return session.run(query, {
+            walletAddress: walletAddress,
+            communityID: communityID
+        })
+        .then(result => {
+            return {
+                success: true,
+                message: "Successfully banned User from Community."
+            }
+        })
+    })
+}
+
+const unbanMember = function (session, walletAddress, communityID) {
+    const query = [
+        'MATCH (:User {walletAddress: $walletAddress})-[l:BANNED_FROM]->(c: Community {communityID: $communityID})',
+        'DELETE l'
+    ].join("\n")
+    
+    return isRole(session, walletAddress, communityCreate, ROLES.BANNED.type)
+    .then(bannedResult => {
+        if (!bannedResult.success) {
+            return bannedResult
+        }
+        if (!bannedResult.result) {
+            return {
+                success: false,
+                message: "User is not banned from Community."
+            }
+        } 
+        return session.run(query, {
+            walletAddress: walletAddress,
+            communityID: communityID
+        })
+        .then(result => {
+            return {
+                success: true,
+                message: "Successfully unbanned User from Community."
+            }
+        })
+    })
+}
+
+const removeCommunityPost = function (session, postID, communityID) {
+
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 const communityCreate = function (session, ownerWalletAddress, body) {
@@ -754,26 +818,35 @@ const getCommunityFeed = function (session, communityID, walletAddress, start, s
         });
 }
 
-const moderatorPromotesMember = function(session, communityID, calledBy, member) {
+const moderatorModeratesMember = function(session, communityID, calledBy, member, mode) {
     return isRole(session, calledBy, communityID, ROLES.MODERATOR.type)
     .then(moderatorCheck => {
-        if (moderatorCheck.success) {
-            if (moderatorCheck.result) {
-                return promoteMember(session, member, communityID);
-            } else {
-                return {
-                    success: false,
-                    message: "User does not have permission to promote Member."
-                }
-            }
-        } else {
+        if (!moderatorCheck.success) {
             return moderatorCheck
+        }
+        if (!moderatorCheck.result) {
+            return {
+                success: false,
+                message: `User does not have the permission to ${mode} Member.`
+            }    
+        }
+        switch (mode) {
+            case MOD.PROMOTE:
+                return promoteMember(session, member, communityID);
+            case MOD.BAN:
+                return banMember(session, member, communityID);
+            case MOD.UNBAN:
+                return unbanMember(session, member, communityID);
+            default:
+                throw {
+                    message: "Unknown moderator mode."
+                }
         }
     })
     .catch(error => {
         throw {
             success: false,
-            message: "Failed to promote Member.",
+            message: `Failed to ${mode} Member.`,
             error: error.message
         }
     })
@@ -792,5 +865,5 @@ module.exports = {
     isRole,
     linkPost,
     getCommunityFeed,
-    moderatorPromotesMember
+    moderatorModeratesMember
 }

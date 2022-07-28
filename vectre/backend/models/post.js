@@ -16,118 +16,153 @@ const createPost = function (session, authorWalletAddress, body, imageURL) {
         }
     }
     const postID = nano()
-    const timestamp = new Date().toISOString()
-    return Community.isRole(session, authorWalletAddress, body.communityID, ROLES.MEMBER.type)
-        .then(memberCheck => {
-            if (!memberCheck.emptyInput) {
-                if (memberCheck.success) {
-                    if (!memberCheck.result) {
-                        // Author is not a member of Community
-                        return {
-                            success: false,
-                            message: "Author is not a Member of Community"
-                        }
-                    }
-                } else {
-                    // User or Community does not exist
+    const timestamp = new Date().toISOString();
+
+    return (async () => {
+        // Check if author cannot make post inside community, if community is provided.
+        if (body.communityID) {
+            try {
+                const memberCheck = await Community.isRole(session, authorWalletAddress, body.communityID, ROLES.MEMBER.type)
+                if (!memberCheck.success) {
                     return {
                         success: false,
-                        message: "User or Community does not exist"
+                        message: "User or Community does not exist."
+                    }
+                }
+                if (!memberCheck.result) {
+                    return {
+                        success: false,
+                        message: "Author is not a Member of Community."
+                    }
+                }
+                const bannedResult = await Community.isRole(session, authorWalletAddress, body.communityID, ROLES.BANNED.type)
+                if (bannedResult.result) {
+                    return {
+                        success: false,
+                        message: "Author is banned from Community."
                     }
                 }
             }
+            catch (error) {
+                throw {
+                    success: false,
+                    message: "Failed to create Post.",
+                    error: error.message
+                }
+            }
+        }
 
-            if (body.repostPostID) { // Repost
-                return getPostByID(session, null, body.repostPostID)
-                    .then((result) => {
-                        if (result.success) {
-                            if (result.post.repostPostID) { // Prevent repost of repost
-                                throw {
-                                    success: false,
-                                    message: "Cannot create repost of repost"
-                                }
-                            }
-                            const query = [
-                                `CREATE (p:Post {postID: $postID, repostPostID: $repostPostID, text: $text, imageURL: $imageURL, author: $author, timestamp: $timestamp, likes: 0, edited: false, parent: null})`,
-                                `WITH (p)`,
-                                `MATCH (u:User {walletAddress: $author}), (repost:Post {postID: $repostPostID})`,
-                                `CREATE (u)-[r:POSTED]->(p)`
-                            ].join('\n');
-
-                            return session.run(query, {
-                                postID: postID,
-                                repostPostID: body.repostPostID,
-                                text: body.text,
-                                imageURL: imageURL, // optional
-                                author: authorWalletAddress,
-                                timestamp: timestamp
-                            })
-                                .then((result2) => {
-                                    if (body.communityID) {
-                                        Community.linkPost(session, authorWalletAddress, postID, body.communityID)
-                                    }
-                                    return {
-                                        success: true,
-                                        message: "Successfully created repost",
-                                        newPostID: postID
-                                    }
-                                })
-                                .catch((error) => {
-                                    throw {
-                                        success: false,
-                                        message: "Failed to create repost",
-                                        error: error
-                                    }
-                                });
-                        } else {
+        if (body.repostPostID) { // Repost
+            // Check if the post is in a community that author is banned from.
+            try {
+                const postCheck = await getPostByID(session, null, body.repostPostID)
+                if (postCheck.success && postCheck.post.community) {
+                    const bannedCheck = await Community.isRole(session, authorWalletAddress, postCheck.post.community, ROLES.BANNED.type)
+                    if (bannedCheck.result) {
+                        return {
+                            success: false,
+                            message: `User cannot interact with Post because User is banned from Community ${postCheck.post.community}`
+                        }
+                    }
+                }
+            } catch (error) {
+                throw {
+                    success: false,
+                    message: "Failed to create Repost.",
+                    error: error.message
+                }
+            }
+            
+            return getPostByID(session, null, body.repostPostID)
+                .then((result) => {
+                    if (result.success) {
+                        if (result.post.repostPostID) { // Prevent repost of repost
                             throw {
                                 success: false,
-                                message: result.message
+                                message: "Cannot create repost of repost"
                             }
                         }
-                    })
-                    .catch((error) => {
-                        throw {
-                            success: false,
-                            message: "Failed to create repost",
-                            error: error.message
-                        }
-                    });
-            } else {
-                const query = [
-                    `CREATE (p:Post {postID: $postID, text: $text, imageURL: $imageURL, author: $author, timestamp: $timestamp, likes: 0, edited: false, parent: null})`,
-                    `WITH (p)`,
-                    `MATCH (u:User)`,
-                    `WHERE u.walletAddress = $author`,
-                    `CREATE (u)-[r:POSTED]->(p)`
-                ].join('\n');
 
-                return session.run(query, {
-                    postID: postID,
-                    text: body.text,
-                    imageURL: imageURL, // optional
-                    author: authorWalletAddress,
-                    timestamp: timestamp
-                })
-                    .then((result) => {
-                        if (body.communityID) {
-                            Community.linkPost(session, authorWalletAddress, postID, body.communityID)
-                        }
-                        return {
-                            success: true,
-                            message: "Successfully created post",
-                            newPostID: postID
-                        }
-                    })
-                    .catch((error) => {
+                        const query = [
+                            `CREATE (p:Post {postID: $postID, repostPostID: $repostPostID, text: $text, imageURL: $imageURL, author: $author, timestamp: $timestamp, likes: 0, edited: false, parent: null})`,
+                            `WITH (p)`,
+                            `MATCH (u:User {walletAddress: $author}), (repost:Post {postID: $repostPostID})`,
+                            `CREATE (u)-[r:POSTED]->(p)`
+                        ].join('\n');
+
+                        return session.run(query, {
+                            postID: postID,
+                            repostPostID: body.repostPostID,
+                            text: body.text,
+                            imageURL: imageURL, // optional
+                            author: authorWalletAddress,
+                            timestamp: timestamp
+                        })
+                            .then((result2) => {
+                                if (body.communityID) {
+                                    Community.linkPost(session, authorWalletAddress, postID, body.communityID)
+                                }
+                                return {
+                                    success: true,
+                                    message: "Successfully created repost",
+                                    newPostID: postID
+                                }
+                            })
+                            .catch((error) => {
+                                throw {
+                                    success: false,
+                                    message: "Failed to create repost",
+                                    error: error
+                                }
+                            });
+                    } else {
                         throw {
                             success: false,
-                            message: "Failed to create post",
-                            error: error.message
+                            message: result.message
                         }
-                    });
-            }
-        })
+                    }
+                })
+                .catch((error) => {
+                    throw {
+                        success: false,
+                        message: "Failed to create repost",
+                        error: error.message
+                    }
+                });
+        } else {
+            const query = [
+                `CREATE (p:Post {postID: $postID, text: $text, imageURL: $imageURL, author: $author, timestamp: $timestamp, likes: 0, edited: false, parent: null})`,
+                `WITH (p)`,
+                `MATCH (u:User)`,
+                `WHERE u.walletAddress = $author`,
+                `CREATE (u)-[r:POSTED]->(p)`
+            ].join('\n');
+            return session.run(query, {
+                postID: postID,
+                text: body.text,
+                imageURL: imageURL, // optional
+                author: authorWalletAddress,
+                timestamp: timestamp
+            })
+                .then((result) => {
+                    if (body.communityID) {
+                        Community.linkPost(session, authorWalletAddress, postID, body.communityID)
+                    }
+                    return {
+                        success: true,
+                        message: "Successfully created post",
+                        newPostID: postID
+                    }
+                })
+                .catch((error) => {
+                    throw {
+                        success: false,
+                        message: "Failed to create post",
+                        error: error.message
+                    }
+                });
+        }
+    })();
 };
 
 const createComment = function (session, authorWalletAddress, postID, body) {
@@ -138,40 +173,65 @@ const createComment = function (session, authorWalletAddress, postID, body) {
         }
     }
     const commentPostID = nano()
-    const timestamp = new Date().toISOString()
-    const query = [
-        `CREATE (p:Post {postID: $commentPostID, text: $text, author: $authorWalletAddress, timestamp: $timestamp, likes: 0, edited: false, parent: $parentPostID})`,
-        `WITH (p)`,
-        `MATCH (u:User), (parent:Post)`,
-        `WHERE u.walletAddress = $authorWalletAddress AND parent.postID = $parentPostID`,
-        `CREATE (u)-[r:POSTED]->(p), (p)-[r2:COMMENTED_ON]->(parent)`,
-        `RETURN parent`
-    ].join('\n');
-
-    return session.run(query, {
-        commentPostID: commentPostID,
-        parentPostID: postID,
-        text: body.text,
-        authorWalletAddress: authorWalletAddress,
-        timestamp: timestamp
-    })
-        .then((result) => {
-            var parentAuthor = new Post(result.records[0].get('parent')).author
-            return Notification.create(session, "comment", parentAuthor, authorWalletAddress, commentPostID)
-                .then((result2) => {
+    const timestamp = new Date().toISOString();
+    
+    return (async () => {
+        try {
+            const postCheck = await getPostByID(session, null, postID)
+            if (!postCheck.success) {
+                throw { message: postCheck.message }
+            }
+            if (postCheck.post.community) {
+                const bannedCheck = await Community.isRole(session, authorWalletAddress, postCheck.post.community, ROLES.BANNED.type)
+                if (bannedCheck.result) {
                     return {
-                        success: true,
-                        message: "Successfully created comment"
+                        success: false,
+                        message: `User cannot interact with Post because User is banned from Community ${postCheck.post.community}`
                     }
-                })
-        })
-        .catch((error) => {
+                }
+            }
+        } catch (error) {
             throw {
                 success: false,
-                message: "Failed to create comment",
-                error: error
+                message: "Failed to create comment.",
+                error: error.message
             }
-        });
+        }
+
+        const query = [
+            `CREATE (p:Post {postID: $commentPostID, text: $text, author: $authorWalletAddress, timestamp: $timestamp, likes: 0, edited: false, parent: $parentPostID})`,
+            `WITH (p)`,
+            `MATCH (u:User), (parent:Post)`,
+            `WHERE u.walletAddress = $authorWalletAddress AND parent.postID = $parentPostID`,
+            `CREATE (u)-[r:POSTED]->(p), (p)-[r2:COMMENTED_ON]->(parent)`,
+            `RETURN parent`
+        ].join('\n');
+
+        return session.run(query, {
+            commentPostID: commentPostID,
+            parentPostID: postID,
+            text: body.text,
+            authorWalletAddress: authorWalletAddress,
+            timestamp: timestamp
+        })
+            .then((result) => {
+                var parentAuthor = new Post(result.records[0].get('parent')).author
+                return Notification.create(session, "comment", parentAuthor, authorWalletAddress, commentPostID)
+                    .then((result2) => {
+                        return {
+                            success: true,
+                            message: "Successfully created comment"
+                        }
+                    })
+            })
+            .catch((error) => {
+                throw {
+                    success: false,
+                    message: "Failed to create comment",
+                    error: error
+                }
+            });
+    })();
 };
 
 const update = function (session, walletAddress, postID, body) {
@@ -407,36 +467,60 @@ const likePost = function (session, postID, walletAddress) {
         `RETURN p`
     ].join('\n');
 
-    return checkIfAlreadyLiked(session, postID, walletAddress)
-        .then((result) => {
-            if (!result.alreadyLiked) {
-                return session.run(query, {
-                    walletAddress: walletAddress,
-                    postID: postID
-                })
-                    .then((result2) => {
-                        var postAuthor = new Post(result2.records[0].get('p')).author
-                        return Notification.create(session, "like", postAuthor, walletAddress, postID)
-                            .then((result3) => {
-                                return {
-                                    success: true,
-                                    message: "Successfully liked post",
-                                }
-                            })
-                    })
+    return (async () => {
+        try {
+            const postCheck = await getPostByID(session, null, postID)
+            if (!postCheck.success) {
+                throw { message: postCheck.message }
             }
-            return {
-                success: false,
-                message: "Post was already liked",
+            if (postCheck.post.community) {
+                const bannedCheck = await Community.isRole(session, walletAddress, postCheck.post.community, ROLES.BANNED.type)
+                if (bannedCheck.result) {
+                    return {
+                        success: false,
+                        message: `User cannot interact with Post because User is banned from Community ${postCheck.post.community}`
+                    }
+                }
             }
-        })
-        .catch((error) => {
+        } catch (error) {
             throw {
                 success: false,
-                message: "Failed to like post",
-                error: error
+                message: "Failed like Post.",
+                error: error.message
             }
-        })
+        }
+
+        return checkIfAlreadyLiked(session, postID, walletAddress)
+            .then((result) => {
+                if (!result.alreadyLiked) {
+                    return session.run(query, {
+                        walletAddress: walletAddress,
+                        postID: postID
+                    })
+                        .then((result2) => {
+                            var postAuthor = new Post(result2.records[0].get('p')).author
+                            return Notification.create(session, "like", postAuthor, walletAddress, postID)
+                                .then((result3) => {
+                                    return {
+                                        success: true,
+                                        message: "Successfully liked post",
+                                    }
+                                })
+                        })
+                }
+                return {
+                    success: false,
+                    message: "Post was already liked",
+                }
+            })
+            .catch((error) => {
+                throw {
+                    success: false,
+                    message: "Failed to like post",
+                    error: error
+                }
+            })
+    })();
 };
 
 const unlikePost = function (session, postID, walletAddress) {

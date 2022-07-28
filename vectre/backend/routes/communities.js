@@ -2,17 +2,10 @@ var express = require('express');
 var router = express.Router();
 
 const Community = require('../models/community');
-const { ROLES } = require("../models/neo4j/community");
+const { ROLES, MOD } = require("../models/neo4j/community");
 const { authenticateToken, storeWalletAddressFromToken } = require('../utils/auth');
 const dbUtils = require('../utils/neo4j/dbUtils');
 const {FEED_SORT} = require("../models/neo4j/post");
-
-// Test
-router.get('/test', (req, res, next) => {
-    Community.addMember(dbUtils.getSession(req), "1010", "newCOM2")
-        .then(result => res.send(result))
-        .catch(error => res.send(error))
-})
 
 // POST /communities/feed
 router.post('/:communityID/feed', storeWalletAddressFromToken, (req, res, next) => {
@@ -81,8 +74,20 @@ router.get("/:communityID/members/:walletAddress/roles", (req, res, next) => {
         .catch(error => res.send(error))
 })
 
-router.post("/:communityID/promotes/:walletAddress", authenticateToken, (req, res, next) => {
-    Community.moderatorPromotesMember(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress)
+router.post("/:communityID/promote/:walletAddress", authenticateToken, (req, res, next) => {
+    Community.moderatorModeratesMember(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress, MOD.PROMOTE)
+        .then(result => res.send(result))
+        .catch(error => res.send(error))
+})
+
+router.post("/:communityID/ban/:walletAddress", authenticateToken, (req, res, next) => {
+    Community.moderatorModeratesMember(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress, MOD.BAN)
+        .then(result => res.send(result))
+        .catch(error => res.send(error))
+})
+
+router.post("/:communityID/unban/:walletAddress", authenticateToken, (req, res, next) => {
+    Community.moderatorModeratesMember(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress, MOD.UNBAN)
         .then(result => res.send(result))
         .catch(error => res.send(error))
 })
