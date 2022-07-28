@@ -5,7 +5,8 @@ const Community = require('../models/community');
 const { ROLES } = require("../models/neo4j/community");
 const { authenticateToken, storeWalletAddressFromToken } = require('../utils/auth');
 const dbUtils = require('../utils/neo4j/dbUtils');
-const {FEED_SORT} = require("../models/neo4j/post");
+const { FEED_SORT } = require("../models/neo4j/post");
+const { upload } = require('../utils/images');
 
 // POST /communities/feed
 router.post('/:communityID/feed', storeWalletAddressFromToken, (req, res, next) => {
@@ -48,9 +49,21 @@ router.post('/create', authenticateToken, (req, res, nex) => {
 
 // PUT /communities/:communityID/update
 router.put('/:communityID/update', authenticateToken, (req, res, next) => {
-    Community.communityUpdate(dbUtils.getSession(req), req.walletAddress, req.params.communityID, req.body)
-        .then(result => res.send(result))
-        .catch(error => res.send(error))
+    (async () => {
+        var profilePicLink = "";
+        var bannerLink = "";
+        if (req.body.profilePicImageData) {
+            const img1 = await upload(req.body.profilePicImageData);
+            profilePicLink = img1.data.link;
+        }
+        if (req.body.bannerImageData) {
+            const img2 = await upload(req.body.bannerImageData);
+            bannerLink = img2.data.link;
+        }
+        Community.communityUpdate(dbUtils.getSession(req), req.walletAddress, req.params.communityID, req.body, profilePicLink, bannerLink)
+            .then(result => res.send(result))
+            .catch(error => res.send(error))
+    })();
 })
 
 // POST /communities/:communityID/join
