@@ -4,7 +4,7 @@ import {
     Image,
     Link
 } from "@chakra-ui/react"
-import {formatWalletAddress, getAvatarOrDefault, getBannerOrDefault} from "../../utils/Utils";
+import { formatWalletAddress, getAvatarOrDefault, getBannerOrDefault } from "../../../utils/Utils";
 
 const IndividualSearchResult = ({
     result
