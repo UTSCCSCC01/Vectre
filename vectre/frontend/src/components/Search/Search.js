@@ -9,6 +9,7 @@ import { searchCommunities } from "../../redux/actions/communities";
 import { searchedUsersSelector } from "../../redux/selectors/users";
 import { searchedCommunitiesSelector } from "../../redux/selectors/communities";
 import SearchForm from './SearchForm/SearchForm';
+import HeaderAndFilter from '../HeaderAndFilter/HeaderAndFilter';
 
 const Search = () => {
 
@@ -32,7 +33,9 @@ const Search = () => {
             gap={'20px'}>
             <SearchForm handleSearchSubmit={handleSearchSubmit} setSearchInput={setSearchInput} />
             <Spacer />
+            <HeaderAndFilter text={'Users & Communities'} onClick={() => console.log("HI!")} />
             <SearchResultContainer results={[...searchedUsers, ...searchedCommunities]} />
+            <HeaderAndFilter text={'Posts'} />
         </Flex>
     )
 }
