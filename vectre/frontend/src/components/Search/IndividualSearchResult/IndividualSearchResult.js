@@ -1,16 +1,11 @@
-import {
-    Flex,
-    Box,
-    Image,
-    Link
-} from "@chakra-ui/react"
 import { useDispatch, useSelector } from "react-redux";
-import { cutText, getAvatarOrDefault } from "../../../utils/Utils";
+import { cutText } from "../../../utils/Utils";
 import ToggleHollowButton from "../../Buttons/ToggleHollowButton/ToggleHollowButton";
 import { doFollowSearchedCommunities, doUnfollowSearchedCommunities, joinCommunity, leaveCommunity } from "../../../redux/actions/communities";
 import React from "react";
 import { doFollowSearchedUsers, doUnfollowSearchedUsers, followUser, unfollowUser } from "../../../redux/actions/users";
 import { loggedInUserSelector } from "../../../redux/selectors/users";
+import EntityCard from "../../EntityCard/EntityCard";
 
 const IndividualSearchResult = ({
     result
@@ -42,36 +37,13 @@ const IndividualSearchResult = ({
     }
 
     return (
-        <Link _hover={{ textDecoration: "none" }} href={result.communityID ? `/c/${result.communityID}` : `/user/${result.walletAddress}`}>
-            <Flex
-                justifyContent={"space-between"}
-                alignItems={"center"}
-                borderRadius={"6px"}
-                bg={"white"}
-                flexDirection={'row'}
-                px={'12px'}
-                py={'12px'}>
-                <Flex
-                    flexDirection={'row'}
-                    alignItems={"center"}
-                    gap={'15px'}>
-                    <Image
-                        border={'5px solid white'}
-                        src={getAvatarOrDefault(result.profilePic)}
-                        fit={'cover'}
-                        overflow={'hidden'}
-                        borderRadius={'full'}
-                        boxSize={'65px'} />
-                    <Box>
-                        <Box fontSize={"18px"} fontWeight={500} color={"primary.400"} >
-                            {cutText(result.name, 20)}
-                        </Box>
-                        <Box fontSize={"13px"} fontWeight={400} color={"primary.400"}>
-                            {type === SEARCH_RESULT_TYPES.USER ? "@" + result.username : "< " + result.communityID + " >"}
-                        </Box>
-                    </Box>
-                </Flex>
-
+        <>
+            <EntityCard
+                primaryText={cutText(result.name, 20)}
+                secondaryText={type === SEARCH_RESULT_TYPES.USER ? "@" + result.username : "< " + result.communityID + " >"}
+                tertiaryText={cutText(result.bio, 40)}
+                data={result}
+                href={result.communityID ? `/c/${result.communityID}` : `/user/${result.walletAddress}`}>
                 {
                     type === SEARCH_RESULT_TYPES.USER ? (
                         loggedInUser && loggedInUser.walletAddress !== result.walletAddress ?
@@ -93,9 +65,8 @@ const IndividualSearchResult = ({
                             onClick={() => onCommunitiesFollowClick()} />
                     )
                 }
-
-            </Flex>
-        </Link>
+            </EntityCard>
+        </>
     );
 };
 
