@@ -617,6 +617,58 @@ const getUserFeed = function (session, walletAddress, start, size, sortType, sor
         });
 }
 
+const searchPosts = function (session, body) {
+    
+    if(!body.term) {
+        throw {
+            success: false,
+            message: "No provided search term"
+        }
+    }
+    const query = [
+        `MATCH (author:User)-[:POSTED]->(post: Post)`,
+        `WHERE post.parent IS NULL AND (post.text CONTAINS '${term}')`, // Prevent comments in feed
+        `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
+        `OPTIONAL MATCH (repost:Post)`,
+        `WHERE repost.postID = post.repostPostID`,
+        `OPTIONAL MATCH (repostAuthor:User)`,
+        `WHERE repostAuthor.walletAddress = repost.author`,
+        `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
+        `RETURN DISTINCT post, author, repost, repostAuthor, 0 AS likes, count(c) AS comment, com.communityID AS communityID`,
+        `ORDER BY post.timestamp DESC`
+    ].join('\n');
+
+    return session.run(query, {
+        term: body.term
+    })
+        .then((results) => {
+            let posts = []
+            results.records.forEach((record) => {
+                let post = new Post(record.get("post"))
+                post.author = new User(record.get("author"))
+                post.comment = String(record.get("comment").low);
+                post.community = record.get('communityID') ? String(record.get('communityID')) : null
+                post.alreadyLiked = record.get('likes').low > 0
+                if (post.repostPostID) {
+                    post.repostPost = new Post(record.get('repost'))
+                    post.repostPost.author = new User(record.get('repostAuthor'))
+                }
+
+                posts.push(post)
+            })
+            return {
+                success: true,
+                posts: posts
+            }
+        })
+        .catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to search posts",
+                error: error
+            }
+        });
+}
 
 module.exports = {
     createPost,
@@ -629,5 +681,6 @@ module.exports = {
     unlikePost,
     getLikesOnPost,
     checkIfAlreadyLiked,
-    getUserFeed
+    getUserFeed,
+    searchPosts
 };

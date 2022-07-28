@@ -95,5 +95,11 @@ router.get('/:postID/likes', (req, res, next) => {
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
+// GET /posts/search
+router.get('/search', (req, res, next) => {
+    Post.searchPosts(dbUtils.getSession(req), req.body)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
 
 module.exports = router;
