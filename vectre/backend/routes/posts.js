@@ -8,8 +8,13 @@ const { upload } = require('../utils/images');
 const { FEED_SORT } = require("../models/neo4j/post");
 
 // Posts
+// POST /posts/search
+router.post('/search', (req, res, next) => {
+    Post.searchPosts(dbUtils.getSession(req), req.body)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
 // POST /posts/feed
-
 router.post('/feed', storeWalletAddressFromToken, (req, res, next) => {
     const start = req.body.start ? req.body.start : 0,
         size = req.body.size ? req.body.size : 10,
@@ -92,12 +97,6 @@ router.get('/:postID/checkLike', authenticateToken, (req, res, next) => {
 // GET /posts/{postID}/likes
 router.get('/:postID/likes', (req, res, next) => {
     Post.getLikesOnPost(dbUtils.getSession(req), req.params.postID)
-        .then((result) => res.send(result))
-        .catch((error) => res.send(error))
-})
-// GET /posts/search
-router.get('/search', (req, res, next) => {
-    Post.searchPosts(dbUtils.getSession(req), req.body)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })

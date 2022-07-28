@@ -627,7 +627,7 @@ const searchPosts = function (session, body) {
     }
     const query = [
         `MATCH (author:User)-[:POSTED]->(post: Post)`,
-        `WHERE post.parent IS NULL AND (post.text CONTAINS '${term}')`, // Prevent comments in feed
+        `WHERE post.parent IS NULL AND (LOWER(post.text) CONTAINS LOWER('${term}'))`, // Prevent comments in feed
         `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
         `OPTIONAL MATCH (repost:Post)`,
         `WHERE repost.postID = post.repostPostID`,
