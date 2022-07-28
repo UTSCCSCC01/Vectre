@@ -8,7 +8,9 @@ import {
     JOIN_COMMUNITY,
     LEAVE_COMMUNITY,
     SEARCH_COMMUNITIES,
-    STORE_SEARCHED_COMMUNITIES
+    STORE_SEARCHED_COMMUNITIES,
+    DO_FOLLOW_SEARCHED_COMMUNITY,
+    DO_UNFOLLOW_SEARCHED_COMMUNITY
 } from "../constants/communities";
 
 export const createCommunity = (community, redirectWindow) => ({
@@ -35,6 +37,15 @@ export const storeSearchedCommunities = (searchedCommunities) => ({
     searchedCommunities
 })
 
+export const doFollowSearchedCommunities = (communityID) => ({
+    type: DO_FOLLOW_SEARCHED_COMMUNITY,
+    communityID
+})
+export const doUnfollowSearchedCommunities = (communityID) => ({
+    type: DO_UNFOLLOW_SEARCHED_COMMUNITY,
+    communityID
+})
+
 export const updateCommunity = (communityID, community, redirectWindow) => ({
     type: UPDATE_COMMUNITY,
     communityID,
@@ -51,11 +62,13 @@ export const storeRolesOfLoggedInUser = (roles) => ({
     roles
 })
 
-export const joinCommunity = (communityID) => ({
+export const joinCommunity = (communityID, callBack) => ({
     type: JOIN_COMMUNITY,
-    communityID
+    communityID,
+    callBack
 })
-export const leaveCommunity = (communityID) => ({
+export const leaveCommunity = (communityID, callBack) => ({
     type: LEAVE_COMMUNITY,
-    communityID
+    communityID,
+    callBack
 })

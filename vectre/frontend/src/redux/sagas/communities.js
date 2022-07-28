@@ -110,6 +110,10 @@ function* joinCommunity(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + COMMUNITY.JOIN_COMMUNITY.replace("{communityID}", action.communityID)), responseData = response[1]
         if (responseData.success) {
+            if (action.callBack) {
+                action.callBack()
+                return;
+            }
             yield put(getCommunity(action.communityID))
             yield put(getRolesOfLoggedInUser(action.communityID))
             yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
@@ -126,6 +130,10 @@ function* leaveCommunity(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + COMMUNITY.LEAVE_COMMUNITY.replace("{communityID}", action.communityID)), responseData = response[1]
         if (responseData.success) {
+            if (action.callBack) {
+                action.callBack()
+                return;
+            }
             yield put(getCommunity(action.communityID))
             yield put(getRolesOfLoggedInUser(action.communityID))
             yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
