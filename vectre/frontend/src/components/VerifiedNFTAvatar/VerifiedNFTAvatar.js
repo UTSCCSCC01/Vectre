@@ -78,7 +78,7 @@ const VerifiedNFTAvatar = ({
     return (
         <Box position={'relative'}>
             <Box
-                display={data.isNFT ? "initial" : "none"}
+                display={data.isProfilePicNFT ? "initial" : "none"}
                 boxSize={boxSize}
                 left={'0%'}
                 position={"absolute"}
@@ -87,7 +87,7 @@ const VerifiedNFTAvatar = ({
                 animation={`${rotateKeyFrame} 1s linear infinite`}
             />
             <Image
-                border={!data.isNFT ? `${nonNFTBorderWidth} solid white` : 'none'}
+                border={!data.isProfilePicNFT ? `${nonNFTBorderWidth} solid white` : 'none'}
                 src={getAvatarOrDefault(data.profilePic)}
                 fallbackSrc={DefaultAvatar}
                 fit={'cover'}

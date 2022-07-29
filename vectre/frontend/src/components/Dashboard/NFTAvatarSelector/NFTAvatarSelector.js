@@ -60,7 +60,7 @@ function handleSelectAdd(selectedList, nftItem, setSelectedList) {
     setSelectedList(newSelectedList)
 }
 
-function NFTSelector({
+function NFTAvatarSelector({
     isOpen,
     onClose
 }) {
@@ -205,4 +205,4 @@ function NFTSelector({
     )
 }
 
-export default NFTSelector;
+export default NFTAvatarSelector;
