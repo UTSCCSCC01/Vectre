@@ -53,26 +53,6 @@ const createPost = function (session, authorWalletAddress, body, imageURL) {
         }
 
         if (body.repostPostID) { // Repost
-            // Check if the post is in a community that author is banned from.
-            try {
-                const postCheck = await getPostByID(session, null, body.repostPostID)
-                if (postCheck.success && postCheck.post.community) {
-                    const bannedCheck = await Community.isRole(session, authorWalletAddress, postCheck.post.community, ROLES.BANNED.type)
-                    if (bannedCheck.result) {
-                        return {
-                            success: false,
-                            message: `You are banned from this community`
-                        }
-                    }
-                }
-            } catch (error) {
-                throw {
-                    success: false,
-                    message: "Failed to create Repost",
-                    error: error.message
-                }
-            }
-            
             return getPostByID(session, null, body.repostPostID)
                 .then((result) => {
                     if (result.success) {
