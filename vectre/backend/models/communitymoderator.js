@@ -168,13 +168,12 @@ const moderationAction = function(session, communityID, calledBy, member, action
             else if (!moderatorCheck.result) {
                 throw {
                     success: false,
-                    message: `User does not have the permission to ${action} Member.`
+                    message: `User does not have the permission to ${action} Member`
                 }
-            }
-            if (calledBy === member) {
-                return {
+            } else if (calledBy === member) {
+                throw {
                     success: false,
-                    message: `You cannot ${action} yourself.`
+                    message: `You cannot ${action} yourself`
                 }
             }
             switch (action) {
