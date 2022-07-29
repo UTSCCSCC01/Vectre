@@ -16,7 +16,8 @@ import { RiImageAddFill } from 'react-icons/ri'
 import StyledModalHeader from "../../../StyledModalHeader/StyledModalHeader";
 import { getAvatarOrDefault } from "../../../../../utils/Utils";
 import TextButton from "../../../../Buttons/TextButton/TextButton";
-import NFTAvatarModal from "../../../../Dashboard/NFTAvatarSelector/NFTAvatarSelector"
+import NFTAvatarModal from "../../../NFTAvatarModal/NFTAvatarModal"
+
 
 const ProfilePicEditModal = ({
     data,
