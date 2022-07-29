@@ -5,6 +5,7 @@ import {
     ModalContent,
     ModalBody,
     ModalFooter,
+    useDisclosure,
     Button,
     Flex,
     Image
@@ -15,6 +16,7 @@ import { RiImageAddFill } from 'react-icons/ri'
 import StyledModalHeader from "../../../StyledModalHeader/StyledModalHeader";
 import { getAvatarOrDefault } from "../../../../../utils/Utils";
 import TextButton from "../../../../Buttons/TextButton/TextButton";
+import NFTAvatarModal from "../../../../Dashboard/NFTAvatarSelector/NFTAvatarSelector"
 
 const ProfilePicEditModal = ({
     data,
@@ -32,6 +34,7 @@ const ProfilePicEditModal = ({
     const profilePicHandleChange = (event) => {
         setProfilePicImageData(document.getElementById("profilePicImageInput").files[0]);
     };
+    const { isOpen: isOpenNFT, onOpen: onOpenNFT, onClose: onCloseNFT } = useDisclosure()
 
     return (
         <>
@@ -64,6 +67,7 @@ const ProfilePicEditModal = ({
                                 borderRadius={'full'}
                                 boxSize={'160px'} />
                             <TextButton
+                                onClick={onOpenNFT}
                                 display={data.walletAddress ? 'inline-flex' : 'none'}
                                 text={'Select NFT'}
                                 fontWeight={700}
@@ -115,6 +119,7 @@ const ProfilePicEditModal = ({
                     </ModalFooter>
                 </ModalContent>
             </Modal>
+            <NFTAvatarModal isOpen={isOpenNFT} onClose={onCloseNFT} />
         </>
     );
 }
