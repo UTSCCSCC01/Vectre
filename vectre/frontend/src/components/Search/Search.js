@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import {
-    Flex, Spacer
+    Box, Button,
+    Flex, Spacer, Stack
 } from "@chakra-ui/react";
 import SearchResultContainer from '../../components/Search/SearchResult/SearchResult';
 import { useDispatch, useSelector } from "react-redux";
@@ -8,6 +9,7 @@ import SearchForm from './SearchForm/SearchForm';
 import HeaderAndFilter from '../HeaderAndFilter/HeaderAndFilter';
 import {searchUsers, searchCommunities, searchPosts} from "../../redux/actions/search";
 import {searchedUsersSelector, searchedCommunitiesSelector, searchedPostsSelector} from "../../redux/selectors/search";
+import PostComponent from "../PostComponent/PostComponent";
 
 const Search = () => {
     const searchedUsers = useSelector(searchedUsersSelector)
@@ -37,11 +39,22 @@ const Search = () => {
             flexDirection={'column'}
             gap={'20px'}>
             <SearchForm handleSearchSubmit={handleSearchSubmit} setSearchInput={setSearchInput} />
+
             <Spacer />
+
             <HeaderAndFilter text={'Users & Communities'} onClick={() => console.log("Peter Chow 🏴‍☠️")} />
             <SearchResultContainer results={sortUsersAndCommunities(searchedUsers, searchedCommunities)} />
+
             <HeaderAndFilter text={'Posts'} />
-            <SearchResultContainer results={[...searchedPosts]} />
+            <Stack gap={"10px"}>
+                {searchedPosts.map((item, i) => {
+                    return (
+                        <Box key={i}>
+                            <PostComponent item={item} fromFeed={true} />
+                        </Box>
+                    )
+                })}
+            </Stack>
         </Flex>
     )
 }
