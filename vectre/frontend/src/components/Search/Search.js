@@ -9,7 +9,14 @@ import SearchResultContainer from '../../components/Search/SearchResult/SearchRe
 import { useDispatch, useSelector } from "react-redux";
 import SearchForm from './SearchForm/SearchForm';
 import HeaderAndFilter from '../HeaderAndFilter/HeaderAndFilter';
-import { searchUsers, searchCommunities, searchPosts, clearSearchedPosts } from "../../redux/actions/search";
+import {
+    searchUsers,
+    searchCommunities,
+    searchPosts,
+    clearSearchedPosts,
+    storeSearchedUsersCommunitiesFilter,
+    storeSearchedPostsSortType
+} from "../../redux/actions/search";
 import {
     searchedUsersSelector,
     searchedCommunitiesSelector,
@@ -17,7 +24,8 @@ import {
 
     searchedPostsIndexSelector,
     searchedPostsPaginationCompleteSelector,
-    searchedPostsSortTypeSelector
+    searchedPostsSortTypeSelector,
+    searchedUserCommunitiesFilterSelector
 } from "../../redux/selectors/search";
 import PostComponent from "../PostComponent/PostComponent";
 import { showLoading } from "../../redux/actions/global";
@@ -26,6 +34,7 @@ import GenericButtonsPopoverWrapper from '../Containers/GenericButtonsPopoverWra
 import { RiHeart2Fill } from 'react-icons/ri';
 import { AiFillClockCircle } from 'react-icons/ai';
 import { FaUser, FaUsers } from 'react-icons/fa';
+import {POSTS_SORT_TYPE, USERS_COMMUNITIES_FILTER} from "../../redux/constants/search";
 
 const Search = () => {
     const dispatch = useDispatch()
@@ -35,11 +44,19 @@ const Search = () => {
 
     const [searchInput, setSearchInput] = useState(".*")
 
+    // Filter/sort
+    const searchedUserCommunitiesFilter = useSelector(searchedUserCommunitiesFilterSelector)
+    function updateSearchedUserCommunitiesFilter(sortType) {
+        dispatch(storeSearchedUsersCommunitiesFilter(sortType))
+    }
+    const searchedPostsSortType = useSelector(searchedPostsSortTypeSelector)
+    function updateSearchedPostsSortType(sortType) {
+        dispatch(storeSearchedPostsSortType(sortType))
+    }
+
     // Posts pagination
     const searchedPostsIndex = useSelector(searchedPostsIndexSelector)
     const searchedPostsPaginationComplete = useSelector(searchedPostsPaginationCompleteSelector)
-    const searchedPostsSortType = useSelector(searchedPostsSortTypeSelector)
-
     function loadSearchedPosts(reset = false) {
         dispatch(searchPosts(searchInput, reset ? 0 : searchedPostsIndex, searchedPostsSortType, reset))
     }
@@ -60,6 +77,29 @@ const Search = () => {
         handleSearchSubmit()
     }, [])
 
+    function getUsersAndCommunitiesHeader() {
+        switch (searchedUserCommunitiesFilter) {
+            case USERS_COMMUNITIES_FILTER.USERS:
+                return "Users"
+            case USERS_COMMUNITIES_FILTER.COMMUNITIES:
+                return "Communities"
+            case USERS_COMMUNITIES_FILTER.ALL:
+            default:
+                return "Users & Communities"
+        }
+    }
+    function getUsersAndCommunitiesResults() {
+        switch (searchedUserCommunitiesFilter) {
+            case USERS_COMMUNITIES_FILTER.USERS:
+                return searchedUsers
+            case USERS_COMMUNITIES_FILTER.COMMUNITIES:
+                return searchedCommunities
+            case USERS_COMMUNITIES_FILTER.ALL:
+                return sortUsersAndCommunities(searchedUsers, searchedCommunities)
+            default:
+                return []
+        }
+    }
     function sortUsersAndCommunities(users, communities) {
         var arr = [...users, ...communities]
         arr.sort((a, b) => (b.communityID ? b.memberCount : b.followers) - (a.communityID ? a.memberCount : a.followers))
@@ -72,21 +112,21 @@ const Search = () => {
                 title: "All",
                 icon: <RiHeart2Fill size={'1.2rem'} />
             },
-            onClick: () => console.log("sorting by all")
+            onClick: () => updateSearchedUserCommunitiesFilter(USERS_COMMUNITIES_FILTER.ALL)
         },
         {
             typeData: {
-                title: "User",
+                title: "Users",
                 icon: <FaUser size={'1.1rem'} />
             },
-            onClick: () => console.log("sorting by user")
+            onClick: () => updateSearchedUserCommunitiesFilter(USERS_COMMUNITIES_FILTER.USERS)
         },
         {
             typeData: {
                 title: "Communities",
                 icon: <FaUsers size={'1.2rem'} />
             },
-            onClick: () => console.log("sorting by communities")
+            onClick: () => updateSearchedUserCommunitiesFilter(USERS_COMMUNITIES_FILTER.COMMUNITIES)
         }
     ]
 
@@ -96,14 +136,14 @@ const Search = () => {
                 title: "Likes",
                 icon: <RiHeart2Fill size={'1.2rem'} />
             },
-            onClick: () => console.log("sorting by likes")
+            onClick: () => updateSearchedPostsSortType(POSTS_SORT_TYPE.LIKES)
         },
         {
             typeData: {
                 title: "Newest",
                 icon: <AiFillClockCircle size={'1.2rem'} />
             },
-            onClick: () => console.log("sorting by newest")
+            onClick: () => updateSearchedPostsSortType(POSTS_SORT_TYPE.TIMESTAMP)
         }
     ]
 
@@ -139,9 +179,9 @@ const Search = () => {
                                 rightIcon={element.typeData.icon} />
                         ))}
                     </>}>
-                <HeaderAndFilter text={'Users & Communities'} />
+                <HeaderAndFilter text={getUsersAndCommunitiesHeader()} />
             </GenericButtonsPopoverWrapper>
-            <SearchResultContainer results={sortUsersAndCommunities(searchedUsers, searchedCommunities)} />
+            <SearchResultContainer results={getUsersAndCommunitiesResults()} />
 
             <GenericButtonsPopoverWrapper
                 placement={'right-start'}

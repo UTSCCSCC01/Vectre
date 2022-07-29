@@ -74,9 +74,9 @@ export const doUnlikeSearchedPost = (postID) => ({
     postID
 })
 
-export const storeSearchedUsersCommunitiesFilter = (sortType) => ({
+export const storeSearchedUsersCommunitiesFilter = (filter) => ({
     type: STORE_SEARCHED_USERS_COMMUNITIES_FILTER,
-    sortType
+    filter
 })
 export const storeSearchedPostsSortType = (sortType) => ({
     type: STORE_SEARCHED_POSTS_SORT_TYPE,

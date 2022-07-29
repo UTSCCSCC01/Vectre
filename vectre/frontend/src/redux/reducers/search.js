@@ -95,18 +95,18 @@ const search = (state = initialState, action) => {
             const filter = Object.values(USERS_COMMUNITIES_FILTER).includes(action.filter) ? action.filter : state.usersCommunitiesFilter;
             return {
                 ...state,
-                usersCommunitiesFilter: filter,
-
-                // Clear users/communities if new filter does not include it
-                users: state.usersCommunitiesFilter !== filter && (filter !== USERS_COMMUNITIES_FILTER.ALL || filter !== USERS_COMMUNITIES_FILTER.USERS) ? initialState.users : state.users,
-                communities: state.usersCommunitiesFilter !== filter && (filter !== USERS_COMMUNITIES_FILTER.ALL || filter !== USERS_COMMUNITIES_FILTER.COMMUNITIES) ? initialState.communities : state.communities
+                usersCommunitiesFilter: filter
             }
         case STORE_SEARCHED_POSTS_SORT_TYPE:
             const sortType = Object.values(POSTS_SORT_TYPE).includes(action.sortType) ? action.sortType : state.postsSortType;
             return {
                 ...state,
-                postsSearchType: sortType,
-                posts: state.postsSortType !== sortType ? initialState.posts : state.posts // Clear posts if sort type changed
+                postsSortType: sortType,
+
+                // Clear searched posts if sort type changed
+                posts: state.postsSortType !== sortType ? initialState.posts : state.posts,
+                postsIndex: state.postsSortType !== sortType ? initialState.postsIndex : state.postsIndex,
+                postsPaginationComplete: state.postsSortType !== sortType ? initialState.postsPaginationComplete : state.postsPaginationComplete
             }
         default:
             return state
