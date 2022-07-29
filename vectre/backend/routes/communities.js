@@ -6,6 +6,7 @@ const { ROLES, MOD } = require("../models/neo4j/community");
 const { authenticateToken, storeWalletAddressFromToken } = require('../utils/auth');
 const dbUtils = require('../utils/neo4j/dbUtils');
 const {FEED_SORT} = require("../models/neo4j/post");
+const Moderator = require('../models/moderator');
 
 // POST /communities/feed
 router.post('/:communityID/feed', storeWalletAddressFromToken, (req, res, next) => {
@@ -74,22 +75,32 @@ router.get("/:communityID/members/:walletAddress/roles", (req, res, next) => {
         .catch(error => res.send(error))
 })
 
+// POST /communities/:communityID/promote/:walletAddress
 router.post("/:communityID/promote/:walletAddress", authenticateToken, (req, res, next) => {
-    Community.moderatorModeratesMember(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress, MOD.PROMOTE)
+    Moderator.moderatesMember(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress, MOD.PROMOTE)
         .then(result => res.send(result))
         .catch(error => res.send(error))
 })
 
+// POST /communities/:communityID/ban/:walletAddress
 router.post("/:communityID/ban/:walletAddress", authenticateToken, (req, res, next) => {
-    Community.moderatorModeratesMember(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress, MOD.BAN)
+    Moderator.moderatesMember(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress, MOD.BAN)
         .then(result => res.send(result))
         .catch(error => res.send(error))
 })
 
+// POST /communities/:communityID/unban/:walletAddress
 router.post("/:communityID/unban/:walletAddress", authenticateToken, (req, res, next) => {
-    Community.moderatorModeratesMember(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress, MOD.UNBAN)
+    Moderator.moderatesMember(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress, MOD.UNBAN)
         .then(result => res.send(result))
         .catch(error => res.send(error))
+})
+
+// POST /communities/:communityID/delete/:postID
+router.post('/:communityID/delete/:postID', authenticateToken, (req, res, next) => {
+    Moderator.deletesPost(dbUtils.getSession(req), req.params.communityID, req.walletAddres, req.params.postID)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
 })
 
 // In consideration

@@ -310,8 +310,12 @@ const getPostsByUser = function (session, walletAddress, profileWalletAddress) {
                 postRecord.alreadyLiked = record.get('likes').low > 0;
                 postRecord.community = record.get('com.communityID') ? String(record.get('com.communityID')) : null
                 if (postRecord.repostPostID) {
-                    postRecord.repostPost = new Post(record.get('repost'))
-                    postRecord.repostPost.author = new User(record.get('repostAuthor'))
+                    if (!record.get('repost')) {
+                        postRecord.repostPostID = "removed"
+                    } else {
+                        postRecord.repostPost = new Post(record.get('repost'))
+                        postRecord.repostPost.author = new User(record.get('repostAuthor'))
+                    }
                 }
                 posts.push(postRecord)
             })
@@ -386,8 +390,12 @@ const getPostByID = function (session, walletAddress, postID) {
             post.comment = String(queryRecord.get("comment").low);
             post.community = queryRecord.get('com.communityID') ? String(queryRecord.get('com.communityID')) : null
             if (post.repostPostID) {
-                post.repostPost = new Post(queryRecord.get('repost'))
-                post.repostPost.author = new User(queryRecord.get('repostAuthor'))
+                if (!queryRecord.get('repost')) {
+                    post.repostPostID = "removed"
+                } else {
+                    post.repostPost = new Post(queryRecord.get('repost'))
+                    post.repostPost.author = new User(queryRecord.get('repostAuthor'))
+                }
             }
 
             if (walletAddress !== null) {
@@ -681,8 +689,12 @@ const getUserFeed = function (session, walletAddress, start, size, sortType, sor
                 post.community = record.get('communityID') ? String(record.get('communityID')) : null
                 post.alreadyLiked = record.get('likes').low > 0
                 if (post.repostPostID) {
-                    post.repostPost = new Post(record.get('repost'))
-                    post.repostPost.author = new User(record.get('repostAuthor'))
+                    if (!record.get('repost')) {
+                        post.repostPostID = "removed"
+                    } else {
+                        post.repostPost = new Post(record.get('repost'))
+                        post.repostPost.author = new User(record.get('repostAuthor'))
+                    }
                 }
 
                 posts.push(post)
@@ -701,6 +713,69 @@ const getUserFeed = function (session, walletAddress, start, size, sortType, sor
         });
 }
 
+const deletePostsByID = function (session, postList) {
+    const query = [
+        'MATCH (p: Post)',
+        'WHERE p.postID IN $postList',
+        'OPTIONAL MATCH (c:Post)-[:COMMENTED_ON]->(p)',
+        'DETACH DELETE c, p',
+    ].join("\n")
+
+    return session.run(query, {
+        postList: postList
+    })
+    .then(result => {
+        return {
+            success: true,
+            message: "Successfully deleted provided posts."
+        }
+    })
+}
+
+const removeCommunityPostsFromUser = function (session, communityID, walletAddress) {
+    const query = [
+        'MATCH (u: User {walletAddress: $walletAddress})-[:POSTED]->(p: Post)-[:POSTED_TO]->(c: Community {communityID: $communityID})',
+        'RETURN p.postID AS id'
+    ].join("\n")
+
+    return session.run(query, {
+        walletAddress: walletAddress,
+        communityID: communityID
+    })
+    .then(postsResult => {
+        let posts = []
+        postsResult.records.forEach(postRecord => {
+            posts.push(postRecord.get('id'))
+        })
+        return deletePostsByID(session, posts)
+    })
+}
+
+const userDeletePost = function (session, walletAddress, postID) {
+    return getPostByID(session, null, postID)
+    .then(postCheck => {
+        if (postCheck.post.author.walletAddress !== walletAddress) {
+            return {
+                success: false,
+                message: "User is not the author of the post."
+            }
+        }
+        return deletePostsByID(session, [postID])
+        .then(result => {
+            return {
+                success: true,
+                message: "Successfully deleted post."
+            }
+        })
+    })
+    .catch(error => {
+        throw {
+            success: false,
+            message: "Failed to delete post.",
+            error: error.message
+        }
+    })
+}
 
 module.exports = {
     createPost,
@@ -713,5 +788,8 @@ module.exports = {
     unlikePost,
     getLikesOnPost,
     checkIfAlreadyLiked,
-    getUserFeed
+    getUserFeed,
+    deletePostsByID,
+    removeCommunityPostsFromUser,
+    userDeletePost
 };

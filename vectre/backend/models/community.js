@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const { getRelationshipFromRole } = require('../utils/Utils');
 const Community = require('./neo4j/community')
-const { ROLES, MOD } = require("./neo4j/community");
+const { ROLES } = require("./neo4j/community");
 const User = require('./neo4j/user')
 const Post = require('./neo4j/post')
 const {FEED_SORT} = require("./neo4j/post");
@@ -269,7 +269,6 @@ const isRole = function (session, walletAddress, communityID, role) {
         .then(existence => {
             if (_.isEmpty(existence.records)) {
                 return {
-                    emptyInput: false,
                     success: false,
                     message: "User or Community does not exist."
                 }
@@ -277,7 +276,6 @@ const isRole = function (session, walletAddress, communityID, role) {
                 return session.run(queries[1], format)
                     .then(result => {
                         return {
-                            emptyInput: false,
                             success: true,
                             result: !(_.isEmpty(result.records))
                         }
@@ -357,91 +355,6 @@ const addMember = function (session, walletAddress, communityID) {
             throw {
                 success: false,
                 message: "Failed to add User to Community",
-                error: error.message
-            }
-        })
-}
-
-const promoteMember = function (session, walletAddress, communityID) {
-    const query = [
-        'MATCH (u: User {walletAddress: $walletAddress} )',
-        'MATCH (c: Community {communityID: $communityID})',
-        'MERGE (u)-[:MODERATES]->(c)'
-    ].join("\n")
-
-    return isRole(session, walletAddress, communityID, ROLES.MEMBER.type)
-        .then(memberCheck => {
-            if (memberCheck.success) {
-                if (memberCheck.result) {
-                    return isRole(session, walletAddress, communityID, ROLES.MODERATOR.type)
-                        .then(moderatorCheck => {
-                            if (moderatorCheck.result) {
-                                // Member is already a moderator
-                                return {
-                                    success: false,
-                                    message: "User is already a Moderator of Community."
-                                }
-                            } else {
-                                // Run query to promote member.
-                                return session.run(query, {
-                                    walletAddress: walletAddress,
-                                    communityID: communityID
-                                }).then(result => {
-                                    return {
-                                        success: true,
-                                        message: "Successfully promote User to Moderator of Community"
-                                    }
-                                })
-                            }
-                        })
-                } else {
-                    return {
-                        success: false,
-                        message: "User is not a Member of Community."
-                    }
-                }
-            } else {
-                return memberCheck
-            }
-        })
-}
-
-const demoteModerator = function (session, walletAddress, communityID) {
-    const query = [
-        'MATCH (u: User {walletAddress: $walletAddress})-[link:MODERATES]->(c: Community {communityID: $communityID})',
-        'DELETE link'
-    ].join("\n")
-
-    return isRole(session, walletAddress, communityID, ROLES.MODERATOR.type)
-        .then(moderatorCheck => {
-            if (moderatorCheck.success) {
-                if (moderatorCheck.result) {
-                    // demote the moderator
-                    return session.run(query, {
-                        walletAddress: walletAddress,
-                        communityID: communityID
-                    }).then(result => {
-                        return {
-                            success: true,
-                            message: "Successfully demoted User to Member of Community"
-                        }
-                    })
-                } else {
-                    // user is not a moderator, thus, may not be a member
-                    return {
-                        success: false,
-                        message: "User is not a Moderator of Community"
-                    }
-                }
-            } else {
-                // User or Community does not exist
-                return moderatorCheck
-            }
-        })
-        .catch(error => {
-            throw {
-                success: false,
-                message: "Failed to demote User to Member of Community",
                 error: error.message
             }
         })
@@ -590,70 +503,6 @@ const linkPost = function (session, walletAddress, postID, communityID) {
     })
 }
 
-const banMember = function (session, walletAddress, communityID) {
-    const query = [
-        'MATCH (u: User {walletAddress: $walletAddress}), (c: Community {communityID: $communityID})',
-        `CREATE (u)-[:BANNED_FROM]->(c)`
-    ].join("\n")
-    
-    return isRole(session, walletAddress, communityCreate, ROLES.BANNED.type)
-    .then(bannedResult => {
-        if (!bannedResult.success) {
-            return bannedResult
-        }
-        if (bannedResult.result) {
-            return {
-                success: false,
-                message: "User is already banned from Community."
-            }
-        } 
-        return session.run(query, {
-            walletAddress: walletAddress,
-            communityID: communityID
-        })
-        .then(result => {
-            return {
-                success: true,
-                message: "Successfully banned User from Community."
-            }
-        })
-    })
-}
-
-const unbanMember = function (session, walletAddress, communityID) {
-    const query = [
-        'MATCH (:User {walletAddress: $walletAddress})-[l:BANNED_FROM]->(c: Community {communityID: $communityID})',
-        'DELETE l'
-    ].join("\n")
-    
-    return isRole(session, walletAddress, communityCreate, ROLES.BANNED.type)
-    .then(bannedResult => {
-        if (!bannedResult.success) {
-            return bannedResult
-        }
-        if (!bannedResult.result) {
-            return {
-                success: false,
-                message: "User is not banned from Community."
-            }
-        } 
-        return session.run(query, {
-            walletAddress: walletAddress,
-            communityID: communityID
-        })
-        .then(result => {
-            return {
-                success: true,
-                message: "Successfully unbanned User from Community."
-            }
-        })
-    })
-}
-
-const removeCommunityPost = function (session, postID, communityID) {
-
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 
 const communityCreate = function (session, ownerWalletAddress, body) {
@@ -767,7 +616,8 @@ const getCommunityFeed = function (session, communityID, walletAddress, start, s
         `OPTIONAL MATCH (repostAuthor:User)`,
         `WHERE repostAuthor.walletAddress = repost.author`,
         `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
-        `RETURN DISTINCT author, post, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID`,
+        'OPTIONAL MATCH (author)-[mod_link:MODERATES]->(com)',
+        'RETURN DISTINCT author, post, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID, mod_link',
         `ORDER BY ${orderBy} ${order}`,
         `SKIP toInteger($start)`,
         `LIMIT toInteger($size)`
@@ -791,8 +641,15 @@ const getCommunityFeed = function (session, communityID, walletAddress, start, s
                             post.community = record.get('com.communityID') ? String(record.get('com.communityID')) : null
                             post.alreadyLiked = record.get('likes').low > 0
                             if (post.repostPostID) {
-                                post.repostPost = new Post(record.get('repost'))
-                                post.repostPost.author = new User(record.get('repostAuthor'))
+                                if (!record.get('repost')) {
+                                    post.repostPostID = "removed"
+                                } else {
+                                    post.repostPost = new Post(record.get('repost'))
+                                    post.repostPost.author = new User(record.get('repostAuthor'))
+                                }
+                            }
+                            if (record.get('mod_link')){
+                                post.verified = true
                             }
 
                             posts.push(post)
@@ -818,40 +675,6 @@ const getCommunityFeed = function (session, communityID, walletAddress, start, s
         });
 }
 
-const moderatorModeratesMember = function(session, communityID, calledBy, member, mode) {
-    return isRole(session, calledBy, communityID, ROLES.MODERATOR.type)
-    .then(moderatorCheck => {
-        if (!moderatorCheck.success) {
-            return moderatorCheck
-        }
-        if (!moderatorCheck.result) {
-            return {
-                success: false,
-                message: `User does not have the permission to ${mode} Member.`
-            }    
-        }
-        switch (mode) {
-            case MOD.PROMOTE:
-                return promoteMember(session, member, communityID);
-            case MOD.BAN:
-                return banMember(session, member, communityID);
-            case MOD.UNBAN:
-                return unbanMember(session, member, communityID);
-            default:
-                throw {
-                    message: "Unknown moderator mode."
-                }
-        }
-    })
-    .catch(error => {
-        throw {
-            success: false,
-            message: `Failed to ${mode} Member.`,
-            error: error.message
-        }
-    })
-}
-
 module.exports = {
     get,
     getAll,
@@ -865,5 +688,4 @@ module.exports = {
     isRole,
     linkPost,
     getCommunityFeed,
-    moderatorModeratesMember
 }
