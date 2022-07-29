@@ -159,7 +159,7 @@ const unbanMember = function (session, walletAddress, communityID) {
         })
 }
 
-const moderatesMember = function(session, communityID, calledBy, member, action) {
+const moderationAction = function(session, communityID, calledBy, member, action) {
     return Community.isRole(session, calledBy, communityID, ROLES.MODERATOR.type)
         .then(moderatorCheck => {
             if (!moderatorCheck.success) return moderatorCheck
@@ -228,6 +228,6 @@ const deletePost = function(session, communityID, calledBy, postID) {
 }
 
 module.exports =  {
-    moderatesMember,
+    moderationAction,
     deletePost
 }

@@ -77,21 +77,21 @@ router.get("/:communityID/members/:walletAddress/roles", (req, res, next) => {
 
 // POST /communities/:communityID/promote/:walletAddress
 router.post("/:communityID/promote/:walletAddress", authenticateToken, (req, res, next) => {
-    CommunityModerator.moderatesMember(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress, MODERATOR_ACTIONS.PROMOTE)
+    CommunityModerator.moderationAction(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress, MODERATOR_ACTIONS.PROMOTE)
         .then(result => res.send(result))
         .catch(error => res.send(error))
 })
 
 // POST /communities/:communityID/ban/:walletAddress
 router.post("/:communityID/ban/:walletAddress", authenticateToken, (req, res, next) => {
-    CommunityModerator.moderatesMember(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress, MODERATOR_ACTIONS.BAN)
+    CommunityModerator.moderationAction(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress, MODERATOR_ACTIONS.BAN)
         .then(result => res.send(result))
         .catch(error => res.send(error))
 })
 
 // POST /communities/:communityID/unban/:walletAddress
 router.post("/:communityID/unban/:walletAddress", authenticateToken, (req, res, next) => {
-    CommunityModerator.moderatesMember(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress, MODERATOR_ACTIONS.UNBAN)
+    CommunityModerator.moderationAction(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress, MODERATOR_ACTIONS.UNBAN)
         .then(result => res.send(result))
         .catch(error => res.send(error))
 })
