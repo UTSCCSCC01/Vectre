@@ -17,6 +17,7 @@ import { useEffect } from "react";
 import { getFeed } from "../../redux/actions/feed";
 import CreatePostComponent from "../../components/CreatePostComponent/CreatePostComponent";
 import SortingButtonComponent from "../../components/SortingButtonComponent/SortingButtonComponent";
+import {showLoading} from "../../redux/actions/global";
 
 const HomePage = () => {
     const sideButtonsList = [
@@ -32,6 +33,7 @@ const HomePage = () => {
         dispatch(getFeed(feedIndex, feedSortType))
     }
     useEffect(() => {
+        dispatch(showLoading(true))
         loadFeed()
     }, [feedSortType])
 
