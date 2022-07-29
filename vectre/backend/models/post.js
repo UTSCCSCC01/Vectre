@@ -32,21 +32,21 @@ const createPost = function (session, authorWalletAddress, body, imageURL) {
                 if (!memberCheck.result) {
                     return {
                         success: false,
-                        message: "Author is not a Member of Community."
+                        message: "You are not a member of this community"
                     }
                 }
                 const bannedResult = await Community.isRole(session, authorWalletAddress, body.communityID, ROLES.BANNED.type)
                 if (bannedResult.result) {
                     return {
                         success: false,
-                        message: "Author is banned from Community."
+                        message: "You are banned from this community"
                     }
                 }
             }
             catch (error) {
                 throw {
                     success: false,
-                    message: "Failed to create Post.",
+                    message: "Failed to create Post",
                     error: error.message
                 }
             }
@@ -61,14 +61,14 @@ const createPost = function (session, authorWalletAddress, body, imageURL) {
                     if (bannedCheck.result) {
                         return {
                             success: false,
-                            message: `User cannot interact with Post because User is banned from Community ${postCheck.post.community}`
+                            message: `You are banned from this community`
                         }
                     }
                 }
             } catch (error) {
                 throw {
                     success: false,
-                    message: "Failed to create Repost.",
+                    message: "Failed to create Repost",
                     error: error.message
                 }
             }
@@ -186,7 +186,7 @@ const createComment = function (session, authorWalletAddress, postID, body) {
                 if (bannedCheck.result) {
                     return {
                         success: false,
-                        message: `User cannot interact with Post because User is banned from Community ${postCheck.post.community}`
+                        message: `You are banned from this community`
                     }
                 }
             }
@@ -486,7 +486,7 @@ const likePost = function (session, postID, walletAddress) {
                 if (bannedCheck.result) {
                     return {
                         success: false,
-                        message: `User cannot interact with Post because User is banned from Community ${postCheck.post.community}`
+                        message: `You are banned from this community`
                     }
                 }
             }

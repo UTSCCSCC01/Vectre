@@ -443,7 +443,8 @@ const getRolesOfUsers = function (session, walletAddress, communityID) {
 
     const LINK_ROLES = {
         "JOINS": ROLES.MEMBER,
-        "MODERATES": ROLES.MODERATOR
+        "MODERATES": ROLES.MODERATOR,
+        "BANNED_FROM": ROLES.BANNED
     }
 
     return isRole(session, walletAddress, communityID, ROLES.MEMBER.type)
@@ -458,6 +459,7 @@ const getRolesOfUsers = function (session, walletAddress, communityID) {
                         .then(result => {
                             let roles = []
                             result.records.forEach(record => {
+                                console.log(record.get('type(r)'))
                                 roles.push(LINK_ROLES[record.get('type(r)')].type)
                             })
                             return {
@@ -478,6 +480,7 @@ const getRolesOfUsers = function (session, walletAddress, communityID) {
                 return memberCheck
             }
         }).catch(error => {
+            console.log(error)
             throw {
                 success: false,
                 message: "Failed to get all roles of User in Community",
