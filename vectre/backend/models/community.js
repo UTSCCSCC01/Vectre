@@ -391,17 +391,17 @@ const removeMember = function (session, walletAddress, communityID) {
                 if (moderatorCheck.result) {
                     // Check if User is the only moderator.
                     return getUsersByRole(session, communityID, ROLES.MODERATOR.type)
-                    .then(result => {
-                        if (result.moderator.length == 1) {
-                            return {
-                                success: false,
-                                message: "The last Moderator cannot unfollow Community, please promote someone else to Moderator before unfollow."
+                        .then(result => {
+                            if (result.moderator.length == 1) {
+                                throw {
+                                    success: false,
+                                    message: "Cannot unfollow Community as sole Moderator"
+                                }
                             }
-                        }
-                        // User is not the a moderator, use query 0 tp remove.
-                        return session.run(queries[0], format)
-                        .then(result => { return successReturn })
-                    })
+                            // User is not the a moderator, use query 0 tp remove.
+                            return session.run(queries[0], format)
+                                .then(result => { return successReturn })
+                        })
                     
                 } else {
                     // Check if User is a member
@@ -414,7 +414,7 @@ const removeMember = function (session, walletAddress, communityID) {
 
                             } else {
                                 // User is not a Member of community
-                                return {
+                                throw {
                                     success: false,
                                     message: "User is not a Member of Community"
                                 }
@@ -648,9 +648,7 @@ const getCommunityFeed = function (session, communityID, walletAddress, start, s
                                     post.repostPost.author = new User(record.get('repostAuthor'))
                                 }
                             }
-                            if (record.get('mod_link')){
-                                post.verified = true
-                            }
+                            if (record.get('mod_link')) post.verified = true
 
                             posts.push(post)
                         })
