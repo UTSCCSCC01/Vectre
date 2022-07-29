@@ -26,6 +26,12 @@ const Search = () => {
         handleSearchSubmit()
     }, [])
 
+    function sortUsersAndCommunities(users, communities) {
+        var arr = [...users, ...communities]
+        arr.sort((a, b) => (b.communityID ? b.memberCount : b.followers) - (a.communityID ? a.memberCount : a.followers))
+        return arr
+    }
+
     return (
         <Flex
             flexDirection={'column'}
@@ -33,7 +39,7 @@ const Search = () => {
             <SearchForm handleSearchSubmit={handleSearchSubmit} setSearchInput={setSearchInput} />
             <Spacer />
             <HeaderAndFilter text={'Users & Communities'} onClick={() => console.log("Peter Chow 🏴‍☠️")} />
-            <SearchResultContainer results={[...searchedUsers, ...searchedCommunities]} />
+            <SearchResultContainer results={sortUsersAndCommunities(searchedUsers, searchedCommunities)} />
             <HeaderAndFilter text={'Posts'} />
         </Flex>
     )
