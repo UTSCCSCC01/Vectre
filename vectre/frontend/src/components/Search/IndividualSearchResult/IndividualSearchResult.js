@@ -47,7 +47,7 @@ const IndividualSearchResult = ({
             <EntityCard
                 primaryText={cutText(result.name, 20)}
                 secondaryText={type === SEARCH_RESULT_TYPES.USER ? "@" + result.username : "< " + result.communityID + " >"}
-                tertiaryText={cutText(result.bio, 40)}
+                // tertiaryText={cutText(result.bio, 40)}
                 data={result}
                 href={result.communityID ? `/c/${result.communityID}` : `/user/${result.walletAddress}`}>
                 {
