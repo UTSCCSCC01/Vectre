@@ -7,22 +7,47 @@ import SearchResultContainer from '../../components/Search/SearchResult/SearchRe
 import { useDispatch, useSelector } from "react-redux";
 import SearchForm from './SearchForm/SearchForm';
 import HeaderAndFilter from '../HeaderAndFilter/HeaderAndFilter';
-import {searchUsers, searchCommunities, searchPosts} from "../../redux/actions/search";
-import {searchedUsersSelector, searchedCommunitiesSelector, searchedPostsSelector} from "../../redux/selectors/search";
+import {searchUsers, searchCommunities, searchPosts, clearSearchedPosts} from "../../redux/actions/search";
+import {
+    searchedUsersSelector,
+    searchedCommunitiesSelector,
+    searchedPostsSelector,
+
+    searchedPostsIndexSelector,
+    searchedPostsPaginationCompleteSelector,
+    searchedPostsSortTypeSelector
+} from "../../redux/selectors/search";
 import PostComponent from "../PostComponent/PostComponent";
+import {showLoading} from "../../redux/actions/global";
 
 const Search = () => {
+    const dispatch = useDispatch()
     const searchedUsers = useSelector(searchedUsersSelector)
     const searchedCommunities = useSelector(searchedCommunitiesSelector)
     const searchedPosts = useSelector(searchedPostsSelector)
-    const dispatch = useDispatch()
 
     const [searchInput, setSearchInput] = useState(".*")
 
+    // Posts pagination
+    const searchedPostsIndex = useSelector(searchedPostsIndexSelector)
+    const searchedPostsPaginationComplete = useSelector(searchedPostsPaginationCompleteSelector)
+    const searchedPostsSortType = useSelector(searchedPostsSortTypeSelector)
+
+    function loadSearchedPosts(reset=false) {
+        dispatch(searchPosts(searchInput, reset ? 0 : searchedPostsIndex, searchedPostsSortType, reset))
+    }
+    useEffect(() => {
+        dispatch(showLoading(true))
+        loadSearchedPosts()
+    }, [searchedPostsSortType])
+
+    // Search
     function handleSearchSubmit() {
+        dispatch(clearSearchedPosts())
+
         dispatch(searchUsers(searchInput))
         dispatch(searchCommunities(searchInput))
-        dispatch(searchPosts(searchInput))
+        loadSearchedPosts(true)
     }
     useEffect(() => {
         handleSearchSubmit()
@@ -54,6 +79,9 @@ const Search = () => {
                         </Box>
                     )
                 })}
+                {searchedPosts.length === searchedPostsIndex && !searchedPostsPaginationComplete ?
+                    <Button onClick={() => loadSearchedPosts(false)}>Load more</Button>
+                    : null}
             </Stack>
         </Flex>
     )

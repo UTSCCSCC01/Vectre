@@ -8,6 +8,7 @@ import {
     DO_LEAVE_SEARCHED_COMMUNITY,
 
     STORE_SEARCHED_POSTS,
+    CLEAR_SEARCHED_POSTS,
     DO_LIKE_SEARCHED_POST,
     DO_UNLIKE_SEARCHED_POST,
 
@@ -22,8 +23,11 @@ const initialState = {
     communities: [],
     posts: [],
 
+    postsIndex: 0,
+    postsPaginationComplete: false,
+
     usersCommunitiesFilter: USERS_COMMUNITIES_FILTER.ALL,
-    postsSearchType: POSTS_SORT_TYPE.LIKES
+    postsSortType: POSTS_SORT_TYPE.LIKES
 }
 
 const search = (state = initialState, action) => {
@@ -59,9 +63,23 @@ const search = (state = initialState, action) => {
                 communities: state.communities.map((com, i) => com.communityID === action.communityID ? { ...com, alreadyJoined: false } : com)
             }
         case STORE_SEARCHED_POSTS:
+            var newSearchedPosts = [
+                ...state.posts,
+                ...action.searchedPosts
+            ].filter((post, index, self) => index === self.findIndex((post2) => (post2.postID === post.postID))); // Filter duplicates based on postID
+
             return {
                 ...state,
-                posts: action.searchedPosts
+                posts: newSearchedPosts,
+                postsIndex: newSearchedPosts.length,
+                postsPaginationComplete: action.requestedSize !== action.searchedPosts.length
+            }
+        case CLEAR_SEARCHED_POSTS:
+            return {
+                ...state,
+                posts: initialState.posts,
+                postsIndex: initialState.postsIndex,
+                postsPaginationComplete: initialState.postsPaginationComplete
             }
         case DO_LIKE_SEARCHED_POST:
             return {
@@ -84,11 +102,11 @@ const search = (state = initialState, action) => {
                 communities: state.usersCommunitiesFilter !== filter && (filter !== USERS_COMMUNITIES_FILTER.ALL || filter !== USERS_COMMUNITIES_FILTER.COMMUNITIES) ? initialState.communities : state.communities
             }
         case STORE_SEARCHED_POSTS_SORT_TYPE:
-            const sortType = Object.values(POSTS_SORT_TYPE).includes(action.sortType) ? action.sortType : state.postsSearchType;
+            const sortType = Object.values(POSTS_SORT_TYPE).includes(action.sortType) ? action.sortType : state.postsSortType;
             return {
                 ...state,
                 postsSearchType: sortType,
-                posts: state.postsSearchType !== sortType ? initialState.posts : state.posts // Clear posts if sort type changed
+                posts: state.postsSortType !== sortType ? initialState.posts : state.posts // Clear posts if sort type changed
             }
         default:
             return state

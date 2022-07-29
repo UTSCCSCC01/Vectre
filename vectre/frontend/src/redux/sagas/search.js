@@ -47,12 +47,18 @@ function* searchCommunities(action) {
 }
 function* searchPosts(action) {
     try {
-        const response = yield call(getRequest, BASE_API_URL + POSTS.SEARCH_POSTS.replace("{searchVal}", action.searchVal)), responseData = response[1]
+        const defaultSize = 10
+        const response = yield call(postRequest, BASE_API_URL + POSTS.SEARCH_POSTS.replace("{searchVal}", action.searchVal), {
+            start: action.searchedPostsIndex,
+            size: defaultSize,
+            sort: action.sortType
+        }), responseData = response[1]
         if (responseData.success) {
-            yield put(storeSearchedPosts(responseData.posts))
+            yield put(storeSearchedPosts(responseData.posts, defaultSize))
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }
+        yield put(showLoading(false))
     } catch (error) {
         yield put(showToast(TOAST_STATUSES.ERROR, "Failed to search posts"))
         console.log(error)
