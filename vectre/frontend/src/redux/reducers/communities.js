@@ -1,13 +1,14 @@
 import {
     STORE_COMMUNITY,
     STORE_ROLES_LOGGED_IN_USER,
-    STORE_SEARCHED_COMMUNITIES
+    STORE_SEARCHED_COMMUNITIES, STORE_TRENDING_COMMUNITIES
 } from "../constants/communities";
 
 const initialState = {
     community: {},
-    searchedCommunities: [],
-    loggedInUserRoles: []
+    loggedInUserRoles: [],
+    searched: [],
+    trending: [],
 }
 
 const communities = (state = initialState, action) => {
@@ -20,7 +21,12 @@ const communities = (state = initialState, action) => {
         case STORE_SEARCHED_COMMUNITIES:
             return {
                 ...state,
-                searchedCommunities: action.searchedCommunities
+                searched: action.searchedCommunities
+            }
+        case STORE_TRENDING_COMMUNITIES:
+            return {
+                ...state,
+                trending: action.trendingCommunities
             }
         case STORE_ROLES_LOGGED_IN_USER:
             return {

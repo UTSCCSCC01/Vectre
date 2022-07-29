@@ -10,18 +10,20 @@ import { TOAST_STATUSES } from "../constants/global";
 import {
     CREATE_COMMUNITY,
     GET_COMMUNITY,
+    GET_TRENDING_COMMUNITIES,
     UPDATE_COMMUNITY,
     GET_ROLES_LOGGED_IN_USER,
     JOIN_COMMUNITY,
     LEAVE_COMMUNITY,
-    SEARCH_COMMUNITIES
+    SEARCH_COMMUNITIES,
 } from "../constants/communities";
 import {
     getCommunity,
     getRolesOfLoggedInUser,
     storeCommunity,
     storeRolesOfLoggedInUser,
-    storeSearchedCommunities
+    storeSearchedCommunities,
+    storeTrendingCommunities
 } from "../actions/communities";
 
 function* createCommunitySaga(action) {
@@ -44,16 +46,32 @@ function* getCommunitySaga(action) {
         const response = yield call(getRequest, BASE_API_URL + COMMUNITY.GET_COMMUNITY.replace("{communityID}", action.communityID)), responseData = response[1]
         if (responseData.success) {
             yield put(storeCommunity(responseData.community))
-            yield put(showLoading(false))
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
-            yield put(showLoading(false))
         }
+        yield put(showLoading(false))
     } catch (error) {
         yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get community"))
         console.log(error)
     }
 }
+
+function* getTrendingCommunities() {
+    try {
+        yield put(showLoading(true))
+        const response = yield call(getRequest, BASE_API_URL + COMMUNITY.GET_TRENDING_COMMUNITIES), responseData = response[1]
+        if (responseData.success) {
+            yield put(storeTrendingCommunities(responseData.communities))
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+        yield put(showLoading(false))
+    } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get trending communities"))
+        console.log(error)
+    }
+}
+
 function* searchCommunities(action) {
     try {
         const response = yield call(getRequest, BASE_API_URL + COMMUNITY.SEARCH_COMMUNITIES.replace("{searchVal}", action.searchVal)), responseData = response[1]
@@ -141,6 +159,7 @@ function* leaveCommunity(action) {
 function* communitySaga() {
     yield takeLatest(CREATE_COMMUNITY, createCommunitySaga)
     yield takeLatest(GET_COMMUNITY, getCommunitySaga)
+    yield takeLatest(GET_TRENDING_COMMUNITIES, getTrendingCommunities)
     yield takeLatest(SEARCH_COMMUNITIES, searchCommunities)
     yield takeLatest(UPDATE_COMMUNITY, updateCommunitySaga)
     yield takeLatest(GET_ROLES_LOGGED_IN_USER, getRolesOfLoggedInUserSaga)

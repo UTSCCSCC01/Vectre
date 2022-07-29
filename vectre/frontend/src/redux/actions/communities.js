@@ -8,7 +8,9 @@ import {
     JOIN_COMMUNITY,
     LEAVE_COMMUNITY,
     SEARCH_COMMUNITIES,
-    STORE_SEARCHED_COMMUNITIES
+    STORE_SEARCHED_COMMUNITIES,
+    GET_TRENDING_COMMUNITIES,
+    STORE_TRENDING_COMMUNITIES,
 } from "../constants/communities";
 
 export const createCommunity = (community, redirectWindow) => ({
@@ -24,6 +26,14 @@ export const getCommunity = (communityID) => ({
 export const storeCommunity = (community) => ({
     type: STORE_COMMUNITY,
     community
+})
+
+export const getTrendingCommunities = () => ({
+    type: GET_TRENDING_COMMUNITIES,
+})
+export const storeTrendingCommunities = (trendingCommunities) => ({
+    type: STORE_TRENDING_COMMUNITIES,
+    trendingCommunities
 })
 
 export const searchCommunities = (searchVal) => ({

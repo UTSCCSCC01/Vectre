@@ -44,5 +44,7 @@ export const COMMUNITY = {
     UPDATE_COMMUNITY: "/communities/{communityID}/update",
     GET_ROLES_LOGGED_IN_USER: "/communities/{communityID}/members/{walletAddress}/roles",
     JOIN_COMMUNITY: "/communities/{communityID}/join",
-    LEAVE_COMMUNITY: "/communities/{communityID}/leave"
+    LEAVE_COMMUNITY: "/communities/{communityID}/leave",
+
+    GET_TRENDING_COMMUNITIES: "/communities/trending"
 }
