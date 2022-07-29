@@ -50,7 +50,7 @@ const Search = () => {
                 {searchedPosts.map((item, i) => {
                     return (
                         <Box key={i}>
-                            <PostComponent item={item} fromFeed={true} />
+                            <PostComponent item={item} fromSearch={true} />
                         </Box>
                     )
                 })}

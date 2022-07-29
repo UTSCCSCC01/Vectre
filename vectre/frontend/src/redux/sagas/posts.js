@@ -25,6 +25,7 @@ import {
 } from "../constants/endpoints";
 import { showLoading, showToast } from "../actions/global";
 import { TOAST_STATUSES } from "../constants/global";
+import {doLikeSearchedPost, doUnlikeSearchedPost} from "../actions/search";
 
 function* createPost(action) {
     try {
@@ -107,7 +108,11 @@ function* postLike(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + POSTS.POST_LIKE.replace("{postID}", action.postID)), responseData = response[1]
         if (responseData.success) {
-            yield put(doLike(action.postID, action.walletAddress, action.isComment, action.fromFeed));
+            if (action.fromSearch) {
+                yield put(doLikeSearchedPost(action.postID));
+            } else {
+                yield put(doLike(action.postID, action.isComment, action.fromFeed));
+            }
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }
@@ -121,7 +126,11 @@ function* postUnlike(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + POSTS.POST_UNLIKE.replace("{postID}", action.postID)), responseData = response[1]
         if (responseData.success) {
-            yield put(doUnlike(action.postID, action.walletAddress, action.isComment, action.fromFeed));
+            if (action.fromSearch) {
+                yield put(doUnlikeSearchedPost(action.postID));
+            } else {
+                yield put(doUnlike(action.postID, action.isComment, action.fromFeed));
+            }
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }

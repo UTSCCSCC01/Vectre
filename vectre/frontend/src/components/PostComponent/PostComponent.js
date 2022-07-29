@@ -11,7 +11,8 @@ import PostModalComponent from './PostModalComponent/PostModalComponent';
 
 const PostComponent = ({
     item,
-    fromFeed=false,
+    fromFeed = false,
+    fromSearch = false,
     ...otherProps
 }) => {
     const { isOpen, onClose, onOpen } = useDisclosure();
@@ -31,7 +32,7 @@ const PostComponent = ({
                 <Stack gap={'4px'}>
                     <PostTopComponent item={item} />
                     <PostMidComponent item={item} onOpen={onOpen} />
-                    <PostBotComponent item={item} fromFeed={fromFeed}/>
+                    <PostBotComponent item={item} fromFeed={fromFeed} fromSearch={fromSearch}/>
                 </Stack>
                 {otherProps.children}
             </Box>
