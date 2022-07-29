@@ -617,7 +617,34 @@ const getUserFeed = function (session, walletAddress, start, size, sortType, sor
         });
 }
 
-const search = function (session, searchVal, walletAddress) {
+const search = function (session, searchVal, walletAddress, start, size, sortType, sortOrder) {
+    sortType = sortType.toLowerCase(), sortOrder = sortOrder.toLowerCase()
+
+    if (start < 0) {
+        throw {
+            success: false,
+            message: "Start index must be non-negative"
+        }
+    } else if (size < 0) {
+        throw {
+            success: false,
+            message: "Size must be non-negative"
+        }
+    } else if (!Object.values(FEED_SORT.TYPES).includes(sortType)) {
+        throw {
+            success: false,
+            message: "Invalid sort type"
+        }
+    } else if (!Object.values(FEED_SORT.ORDER).includes(sortOrder)) {
+        throw {
+            success: false,
+            message: "Invalid sort order"
+        }
+    }
+
+    const orderBy = sortType === FEED_SORT.TYPES.TIMESTAMP ? "post.timestamp" : "post.likes",
+        order = sortOrder === FEED_SORT.ORDER.DESC ? "DESC" : ""
+
     const regex = `(?i).*${searchVal}.*`
     const query = [
         `MATCH (author:User)-[:POSTED]->(post: Post)`,
@@ -630,12 +657,16 @@ const search = function (session, searchVal, walletAddress) {
         `WHERE repostAuthor.walletAddress = repost.author`,
         `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
         `RETURN DISTINCT post, author, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID AS communityID`,
-        `ORDER BY post.timestamp DESC`
+        `ORDER BY ${orderBy} ${order}`,
+        `SKIP toInteger($start)`,
+        `LIMIT toInteger($size)`
     ].join('\n');
 
     return session.run(query, {
         regex: regex,
-        walletAddress: walletAddress
+        walletAddress: walletAddress,
+        start: start,
+        size: size
     })
         .then((results) => {
             let posts = []
