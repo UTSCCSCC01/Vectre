@@ -116,8 +116,7 @@ const create = function (session, ownerWalletAddress, newCommunity) {
         'CREATE (c: Community $format)',
         'SET c.memberCount = toInteger(1)',
         'CREATE (o)-[:JOINS]->(c)',
-        'CREATE (o)-[:MODERATES]->(c)',
-        'CREATE (o)-[link: OWNS]->(c)',
+        'CREATE (o)-[link:MODERATES]->(c)',
         'RETURN link'
     ].join("\n")
 
@@ -270,7 +269,6 @@ const isRole = function (session, walletAddress, communityID, role) {
         .then(existence => {
             if (_.isEmpty(existence.records)) {
                 return {
-                    emptyInput: false,
                     success: false,
                     message: "User or Community does not exist."
                 }
@@ -278,7 +276,6 @@ const isRole = function (session, walletAddress, communityID, role) {
                 return session.run(queries[1], format)
                     .then(result => {
                         return {
-                            emptyInput: false,
                             success: true,
                             result: !(_.isEmpty(result.records))
                         }
@@ -363,98 +360,6 @@ const addMember = function (session, walletAddress, communityID) {
         })
 }
 
-const promoteMember = function (session, walletAddress, communityID) {
-    const query = [
-        'MATCH (u: User {walletAddress: $walletAddress} )',
-        'MATCH (c: Community {communityID: $communityID})',
-        'MERGE (u)-[:MODERATES]->(c)'
-    ].join("\n")
-
-    return isRole(session, walletAddress, communityID, ROLES.MEMBER.type)
-        .then(memberCheck => {
-            if (memberCheck.success) {
-                if (memberCheck.result) {
-                    return isRole(session, walletAddress, communityID, ROLES.MODERATOR.type)
-                        .then(moderatorCheck => {
-                            if (moderatorCheck.result) {
-                                // Member is already a moderator
-                                return {
-                                    success: false,
-                                    message: "User is already a Moderator of Community."
-                                }
-                            } else {
-                                // Run query to promote member.
-                                return session.run(query, {
-                                    walletAddress: walletAddress,
-                                    communityID: communityID
-                                }).then(result => {
-                                    return {
-                                        success: true,
-                                        message: "Successfully promote User to Moderator of Community"
-                                    }
-                                })
-                            }
-                        })
-                } else {
-                    return {
-                        success: false,
-                        message: "User is not a Member of Community."
-                    }
-                }
-            } else {
-                return member
-            }
-        })
-        .catch(error => {
-            throw {
-                success: false,
-                message: "Failed to promote User to Moderator of Community",
-                error: error.message
-            }
-        })
-}
-
-const demoteModerator = function (session, walletAddress, communityID) {
-    const query = [
-        'MATCH (u: User {walletAddress: $walletAddress})-[link:MODERATES]->(c: Community {communityID: $communityID})',
-        'DELETE link'
-    ].join("\n")
-
-    return isRole(session, walletAddress, communityID, ROLES.MODERATOR.type)
-        .then(moderatorCheck => {
-            if (moderatorCheck.success) {
-                if (moderatorCheck.result) {
-                    // demote the moderator
-                    return session.run(query, {
-                        walletAddress: walletAddress,
-                        communityID: communityID
-                    }).then(result => {
-                        return {
-                            success: true,
-                            message: "Successfully demoted User to Member of Community"
-                        }
-                    })
-                } else {
-                    // user is not a moderator, thus, may not be a member
-                    return {
-                        success: false,
-                        message: "User is not a Moderator of Community"
-                    }
-                }
-            } else {
-                // User or Community does not exist
-                return moderatorCheck
-            }
-        })
-        .catch(error => {
-            throw {
-                success: false,
-                message: "Failed to demote User to Member of Community",
-                error: error.message
-            }
-        })
-}
-
 const removeMember = function (session, walletAddress, communityID) {
     const queries = [
         [
@@ -484,10 +389,20 @@ const removeMember = function (session, walletAddress, communityID) {
         .then(moderatorCheck => {
             if (moderatorCheck.success) {
                 if (moderatorCheck.result) {
-                    // User is a moderator, use query 0 and 1 to remove
-                    return session.run(queries[0], format)
-                        .then(result => { return successReturn })
-
+                    // Check if User is the only moderator.
+                    return getUsersByRole(session, communityID, ROLES.MODERATOR.type)
+                        .then(result => {
+                            if (result.moderator.length == 1) {
+                                throw {
+                                    success: false,
+                                    message: "Cannot unfollow Community as sole Moderator"
+                                }
+                            }
+                            // User is not the a moderator, use query 0 tp remove.
+                            return session.run(queries[0], format)
+                                .then(result => { return successReturn })
+                        })
+                    
                 } else {
                     // Check if User is a member
                     return isRole(session, walletAddress, communityID, ROLES.MEMBER.type)
@@ -499,7 +414,7 @@ const removeMember = function (session, walletAddress, communityID) {
 
                             } else {
                                 // User is not a Member of community
-                                return {
+                                throw {
                                     success: false,
                                     message: "User is not a Member of Community"
                                 }
@@ -529,7 +444,7 @@ const getRolesOfUsers = function (session, walletAddress, communityID) {
     const LINK_ROLES = {
         "JOINS": ROLES.MEMBER,
         "MODERATES": ROLES.MODERATOR,
-        "OWNS": ROLES.OWNER
+        "BANNED_FROM": ROLES.BANNED
     }
 
     return isRole(session, walletAddress, communityID, ROLES.MEMBER.type)
@@ -702,7 +617,8 @@ const getCommunityFeed = function (session, communityID, walletAddress, start, s
         `OPTIONAL MATCH (repostAuthor:User)`,
         `WHERE repostAuthor.walletAddress = repost.author`,
         `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
-        `RETURN DISTINCT author, post, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID`,
+        'OPTIONAL MATCH (author)-[mod_link:MODERATES]->(com)',
+        'RETURN DISTINCT author, post, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID, mod_link',
         `ORDER BY ${orderBy} ${order}`,
         `SKIP toInteger($start)`,
         `LIMIT toInteger($size)`
@@ -726,9 +642,14 @@ const getCommunityFeed = function (session, communityID, walletAddress, start, s
                             post.community = record.get('com.communityID') ? String(record.get('com.communityID')) : null
                             post.alreadyLiked = record.get('likes').low > 0
                             if (post.repostPostID) {
-                                post.repostPost = new Post(record.get('repost'))
-                                post.repostPost.author = new User(record.get('repostAuthor'))
+                                if (!record.get('repost')) {
+                                    post.repostPostID = "removed"
+                                } else {
+                                    post.repostPost = new Post(record.get('repost'))
+                                    post.repostPost.author = new User(record.get('repostAuthor'))
+                                }
                             }
+                            if (record.get('mod_link')) post.verified = true
 
                             posts.push(post)
                         })
@@ -765,5 +686,5 @@ module.exports = {
     getRolesOfUsers,
     isRole,
     linkPost,
-    getCommunityFeed
+    getCommunityFeed,
 }

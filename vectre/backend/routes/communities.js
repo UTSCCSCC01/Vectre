@@ -1,8 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
-const Community = require('../models/community');
-const { ROLES } = require("../models/neo4j/community");
+const Community = require('../models/community'),
+    CommunityModerator = require('../models/communitymoderator')
+const { ROLES, MODERATOR_ACTIONS } = require("../models/neo4j/community");
 const { authenticateToken, storeWalletAddressFromToken } = require('../utils/auth');
 const dbUtils = require('../utils/neo4j/dbUtils');
 const {FEED_SORT} = require("../models/neo4j/post");
@@ -72,6 +73,34 @@ router.get("/:communityID/members/:walletAddress/roles", (req, res, next) => {
     Community.getRolesOfUsers(dbUtils.getSession(req), req.params.walletAddress, req.params.communityID)
         .then(result => res.send(result))
         .catch(error => res.send(error))
+})
+
+// POST /communities/:communityID/promote/:walletAddress
+router.post("/:communityID/promote/:walletAddress", authenticateToken, (req, res, next) => {
+    CommunityModerator.moderationAction(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress, MODERATOR_ACTIONS.PROMOTE)
+        .then(result => res.send(result))
+        .catch(error => res.send(error))
+})
+
+// POST /communities/:communityID/ban/:walletAddress
+router.post("/:communityID/ban/:walletAddress", authenticateToken, (req, res, next) => {
+    CommunityModerator.moderationAction(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress, MODERATOR_ACTIONS.BAN)
+        .then(result => res.send(result))
+        .catch(error => res.send(error))
+})
+
+// POST /communities/:communityID/unban/:walletAddress
+router.post("/:communityID/unban/:walletAddress", authenticateToken, (req, res, next) => {
+    CommunityModerator.moderationAction(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress, MODERATOR_ACTIONS.UNBAN)
+        .then(result => res.send(result))
+        .catch(error => res.send(error))
+})
+
+// POST /communities/:communityID/delete/:postID
+router.post('/:communityID/delete/:postID', authenticateToken, (req, res, next) => {
+    CommunityModerator.deletePost(dbUtils.getSession(req), req.params.communityID, req.walletAddres, req.params.postID)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
 })
 
 // In consideration

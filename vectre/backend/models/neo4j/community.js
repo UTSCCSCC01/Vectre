@@ -26,8 +26,14 @@ module.exports.ROLES = {
         type: "moderator",
         relationship: "MODERATES"
     },
-    OWNER: {
-        type: "owner",
-        relationship: "OWNS"
+    BANNED: {
+        type: "banned",
+        relationship: "BANNED_FROM"
     }
+}
+
+module.exports.MODERATOR_ACTIONS = {
+    PROMOTE: "promote",
+    BAN: "ban",
+    UNBAN: "unban"
 }
