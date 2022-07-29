@@ -9,6 +9,7 @@ import DashboardTop from './DashboardTop/DashboardTop';
 import DashboardMid from './DashboardMid/DashboardMid';
 import DashboardBot from './DashboardBot/DashboardBot';
 import DashboardEditModal from "./DashboardEditModal/DashboardEditModal";
+import NFTSelector from "./NFTSelector/NFTSelector";
 
 const Dashboard = ({
    loggedInUser,

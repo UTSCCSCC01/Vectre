@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { loggedInUserSelector, nftSelector } from '../../../redux/selectors/users';
 
 import { BsFillCheckCircleFill } from 'react-icons/bs';
-import { BiSelectMultiple } from 'react-icons/bi';
+import { FaUserCircle } from 'react-icons/fa';
 
 import NFTImage from "../NFTImage/NFTImage";
 import { getNFT, updateDashboard } from "../../../redux/actions/users";
@@ -60,7 +60,7 @@ function handleSelectAdd(selectedList, nftItem, setSelectedList) {
     setSelectedList(newSelectedList)
 }
 
-function DashboardEditModal({
+function NFTSelector({
     isOpen,
     onClose
 }) {
@@ -111,11 +111,11 @@ function DashboardEditModal({
                                 alignSelf={'center'}
                                 _hover={{ textDecoration: "none" }}
                                 alignItems={'center'}
-                                rightIcon={<BiSelectMultiple />}
+                                rightIcon={<FaUserCircle />}
                                 color={'primary.400'}
                                 bg={'white'}
                                 _focus={{ outline: 0 }}>
-                                Select NFTs Below
+                                Select an NFT
                             </Button>
                         </Flex>
                         <Flex flexDirection={'row'} alignContent={'left'} justifyContent={'left'}>
@@ -129,9 +129,10 @@ function DashboardEditModal({
                                 _hover={{ textDecoration: "none" }}
                                 alignItems={'center'}
                                 color={'grey'}
+                                fontWeight={'light'}
                                 bg={'white'}
                                 _focus={{ outline: 0 }}>
-                                Select Up to 3 NFTs for the Dashboard!
+                                Select an NFT to use as a verified avatar!
                             </Button>
                         </Flex>
                         {nft.length !== 0 ?
@@ -148,7 +149,7 @@ function DashboardEditModal({
                                                         selectedList={selectedList}
                                                         setSelectedList={setSelectedList}
                                                         nftItem={nftItem}
-                                                        maxSelected={3}
+                                                        maxSelected={1}
                                                     />
                                                 </Box>
                                             )
@@ -193,8 +194,9 @@ function DashboardEditModal({
                             color={'white'}
                             _hover={{ textDecoration: "none" }}
                             rightIcon={<BsFillCheckCircleFill />}
+                            fontWeight={'medium'}
                             fontSize={'18px'}>
-                            Select Chosen NFTs
+                            Select Chosen NFT
                         </Button>
                     </ModalFooter>
                 </ModalContent>
@@ -203,4 +205,4 @@ function DashboardEditModal({
     )
 }
 
-export default DashboardEditModal;
+export default NFTSelector;
