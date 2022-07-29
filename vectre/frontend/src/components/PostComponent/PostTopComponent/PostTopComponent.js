@@ -11,10 +11,10 @@ import TextButton from '../../Buttons/TextButton/TextButton'
 import { formatISO } from '../../../utils/Utils'
 import { useSelector } from 'react-redux';
 import { loggedInUserRolesSelector } from '../../../redux/selectors/communities';
-import { RiSettings5Fill } from 'react-icons/ri';
-import IconSquareButton from '../../Buttons/IconSquareButton/IconSquareButton';
+import ModeratorSettingsPopover from '../../ModeratorSettingsPopover/ModeratorSettingsPopover';
 
 const PostTopComponent = ({
+    fromRepost,
     item,
 }) => {
     const loggedInUserRoles = useSelector(loggedInUserRolesSelector);
@@ -65,13 +65,8 @@ const PostTopComponent = ({
                     {formatISO(item.timestamp)}
                 </Box>
                 {
-                    loggedInUserRoles && loggedInUserRoles.includes("moderator") ? (
-                        <IconSquareButton
-                            icon={<RiSettings5Fill size={'1.5rem'}
-                                onClick={(e) => {
-                                    console.log("HI!");
-                                    e.stopPropagation();
-                                }} />} />
+                    !fromRepost && loggedInUserRoles && loggedInUserRoles.includes("moderator") ? (
+                        <ModeratorSettingsPopover item={item} />
                     ) : null
                 }
             </Flex>

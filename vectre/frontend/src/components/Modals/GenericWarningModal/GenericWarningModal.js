@@ -16,7 +16,7 @@ import { IoBan } from "react-icons/io5";
 export const GENERIC_WARNING_TYPE = {
     DELETE: {
         name: "Delete",
-        title: "Delete Post?",
+        title: "Delete Post",
         text: "Note that this cannot be undone, and the post will be removed from your profile, from the timeline of any accounts that follow you, and from all Vectre search results.",
         color: "rgba(255, 89, 89, 1)",
         icon: <Icon as={RiCloseCircleFill} color={'rgba(255, 89, 89, 1)'} />

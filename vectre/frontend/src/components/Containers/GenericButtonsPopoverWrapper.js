@@ -8,6 +8,7 @@ import {
 import React from "react";
 
 const GenericButtonsPopoverWrapper = ({
+    margin,
     placement,
     buttons,
     ...otherProps
@@ -21,12 +22,16 @@ const GenericButtonsPopoverWrapper = ({
                 isOpen={isOpen}
                 onClose={onClose}>
                 <PopoverTrigger>
-                    <>{React.cloneElement(otherProps.children, { onToggle: onToggle })}</>
+                    <div>{React.cloneElement(otherProps.children, { onToggle: onToggle })}</div>
                 </PopoverTrigger>
                 <PopoverContent
+                    margin={margin}
                     width={'180px'}
                     py={'16px'}
-                    px={'13px'}>
+                    px={'13px'}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                    }}>
                     <Stack
                         gap="5px" justifyContent={"center"}>
                         {buttons}
