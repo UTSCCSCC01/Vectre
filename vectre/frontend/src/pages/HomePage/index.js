@@ -1,5 +1,5 @@
 import ContentWIthNavContainer from "../../components/Containers/ContentWIthNavContainer";
-import ContentWithSideButtons from "../../components/Containers/ContentWithSideButtons";
+import ContentWithCommunityButtons from "../../components/Containers/ContentWithCommunityButtons";
 import PostComponent from "../../components/PostComponent/PostComponent";
 import {
     Box,
@@ -17,9 +17,20 @@ import { useEffect } from "react";
 import { getFeed } from "../../redux/actions/feed";
 import CreatePostComponent from "../../components/CreatePostComponent/CreatePostComponent";
 import SortingButtonComponent from "../../components/SortingButtonComponent/SortingButtonComponent";
+// import {default_profile} from "../../assets/images/default_profile_pic.jpg"; 
 
 const HomePage = () => {
     const sideButtonsList = [
+        {
+            hidden: false, 
+            link: "./", 
+            function: () => {
+
+            }, 
+            text: "community 1", 
+            imgSrc: "../../assets/images/default_profile_pic.jpg"
+        }
+
     ]
 
     const feed = useSelector(feedSelector)
@@ -37,7 +48,7 @@ const HomePage = () => {
 
     return (
         <ContentWIthNavContainer>
-            <ContentWithSideButtons sideButtonsList={sideButtonsList}>
+            <ContentWithCommunityButtons sideButtonsList={sideButtonsList}>
                 <CreatePostComponent />
                 <SortingButtonComponent />
                 <Stack mt={"20px"} alignSelf={'center'} gap={'36px'}>
@@ -52,7 +63,7 @@ const HomePage = () => {
                         <Button onClick={loadFeed}>Load more</Button>
                         : null}
                 </Stack>
-            </ContentWithSideButtons>
+            </ContentWithCommunityButtons>
         </ContentWIthNavContainer>
     )
 }
