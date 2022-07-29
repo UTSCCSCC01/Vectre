@@ -751,30 +751,30 @@ const removeCommunityPostsFromUser = function (session, communityID, walletAddre
     })
 }
 
-const userDeletePost = function (session, walletAddress, postID) {
+const deletePost = function (session, walletAddress, postID) {
     return getPostByID(session, null, postID)
-    .then(postCheck => {
-        if (postCheck.post.author.walletAddress !== walletAddress) {
-            return {
-                success: false,
-                message: "User is not the author of the post."
+        .then(postCheck => {
+            if (postCheck.post.author.walletAddress !== walletAddress) {
+                throw {
+                    success: false,
+                    message: "User is not the author of the post"
+                }
             }
-        }
-        return deletePostsByID(session, [postID])
-        .then(result => {
-            return {
-                success: true,
-                message: "Successfully deleted post."
+            return deletePostsByID(session, [postID])
+                .then(result => {
+                    return {
+                        success: true,
+                        message: "Successfully deleted post"
+                    }
+                })
+        })
+        .catch(error => {
+            throw {
+                success: false,
+                message: "Failed to delete post",
+                error: error.message
             }
         })
-    })
-    .catch(error => {
-        throw {
-            success: false,
-            message: "Failed to delete post.",
-            error: error.message
-        }
-    })
 }
 
 module.exports = {
@@ -791,5 +791,5 @@ module.exports = {
     getUserFeed,
     deletePostsByID,
     removeCommunityPostsFromUser,
-    userDeletePost
+    delete: deletePost
 };
