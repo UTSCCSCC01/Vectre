@@ -455,60 +455,36 @@ const likePost = function (session, postID, walletAddress) {
         `RETURN p`
     ].join('\n');
 
-    return (async () => {
-        try {
-            const postCheck = await getPostByID(session, null, postID)
-            if (!postCheck.success) {
-                throw { message: postCheck.message }
+    return checkIfAlreadyLiked(session, postID, walletAddress)
+        .then((result) => {
+            if (!result.alreadyLiked) {
+                return session.run(query, {
+                    walletAddress: walletAddress,
+                    postID: postID
+                })
+                    .then((result2) => {
+                        var postAuthor = new Post(result2.records[0].get('p')).author
+                        return Notification.create(session, "like", postAuthor, walletAddress, postID)
+                            .then((result3) => {
+                                return {
+                                    success: true,
+                                    message: "Successfully liked post",
+                                }
+                            })
+                    })
             }
-            if (postCheck.post.community) {
-                const bannedCheck = await Community.isRole(session, walletAddress, postCheck.post.community, ROLES.BANNED.type)
-                if (bannedCheck.result) {
-                    return {
-                        success: false,
-                        message: `You are banned from this community`
-                    }
-                }
+            return {
+                success: false,
+                message: "Post was already liked",
             }
-        } catch (error) {
+        })
+        .catch((error) => {
             throw {
                 success: false,
-                message: "Failed like Post.",
-                error: error.message
+                message: "Failed to like post",
+                error: error
             }
-        }
-
-        return checkIfAlreadyLiked(session, postID, walletAddress)
-            .then((result) => {
-                if (!result.alreadyLiked) {
-                    return session.run(query, {
-                        walletAddress: walletAddress,
-                        postID: postID
-                    })
-                        .then((result2) => {
-                            var postAuthor = new Post(result2.records[0].get('p')).author
-                            return Notification.create(session, "like", postAuthor, walletAddress, postID)
-                                .then((result3) => {
-                                    return {
-                                        success: true,
-                                        message: "Successfully liked post",
-                                    }
-                                })
-                        })
-                }
-                return {
-                    success: false,
-                    message: "Post was already liked",
-                }
-            })
-            .catch((error) => {
-                throw {
-                    success: false,
-                    message: "Failed to like post",
-                    error: error
-                }
-            })
-    })();
+        })
 };
 
 const unlikePost = function (session, postID, walletAddress) {
