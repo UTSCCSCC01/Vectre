@@ -130,7 +130,7 @@ const unbanMember = function (session, walletAddress, communityID) {
         'DELETE l'
     ].join("\n")
     
-    return Community.isRole(session, walletAddress, communityCreate, ROLES.BANNED.type)
+    return Community.isRole(session, walletAddress, communityID, ROLES.BANNED.type)
         .then(bannedResult => {
             if (!bannedResult.success) return bannedResult
             else if (!bannedResult.result) {
