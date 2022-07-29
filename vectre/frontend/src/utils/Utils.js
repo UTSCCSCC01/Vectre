@@ -24,6 +24,14 @@ export const formatWalletAddress = (walletAddress) => {
     return walletAddress.slice(0, 4) + "..." + walletAddress.slice(-4);
 };
 
+// assumes walletAddress is valid
+export const cutText = (text, maxLength) => {
+    if (text === undefined || text.length < maxLength)
+        return text
+
+    return text.slice(0, maxLength) + "..."
+};
+
 // assumes isoString is valid
 // checks if isoString is within 24 hours of current time
 export const within24 = (isoString) => {

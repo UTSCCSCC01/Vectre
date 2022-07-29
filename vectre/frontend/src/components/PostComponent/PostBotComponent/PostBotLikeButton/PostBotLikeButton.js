@@ -13,7 +13,8 @@ import { postLike, postUnlike } from "../../../../redux/actions/posts";
 
 const PostBotLikeButton = ({
     item,
-    fromFeed = true
+    fromFeed = false,
+    fromSearch = false,
 }) => {
     const loggedInUser = useSelector(loggedInUserSelector);
     const dispatch = useDispatch();
@@ -31,9 +32,9 @@ const PostBotLikeButton = ({
                 onClick={(e) => {
                     if (Object.keys(loggedInUser).length !== 0) {
                         if (item.alreadyLiked) {
-                            dispatch(postUnlike(item.postID, { walletAddress: loggedInUser.walletAddress }, Boolean(item.parent), fromFeed));
+                            dispatch(postUnlike(item.postID, Boolean(item.parent), fromFeed, fromSearch));
                         } else {
-                            dispatch(postLike(item.postID, { walletAddress: loggedInUser.walletAddress }, Boolean(item.parent), fromFeed));
+                            dispatch(postLike(item.postID, Boolean(item.parent), fromFeed, fromSearch));
                         }
                     } else {
                         console.log("Not logged in!");

@@ -61,33 +61,31 @@ export const storeComments = (comments) => ({
 })
 
 // Like
-export const postLike = (postID, walletAddress, isComment, fromFeed) => ({
+export const postLike = (postID, isComment, fromFeed, fromSearch) => ({
     type: POST_LIKE,
     postID,
-    walletAddress,
     isComment,
-    fromFeed
+    fromFeed,
+    fromSearch
 })
-export const postUnlike = (postID, walletAddress, isComment, fromFeed) => ({
+export const postUnlike = (postID, isComment, fromFeed, fromSearch) => ({
     type: POST_UNLIKE,
     postID,
-    walletAddress,
     isComment,
-    fromFeed
+    fromFeed,
+    fromSearch
 })
 
 // Internal actions for updating like counter
-export const doLike = (postID, walletAddress, isComment, fromFeed) => ({
+export const doLike = (postID, isComment, fromFeed) => ({
     type: DO_LIKE,
     postID,
-    walletAddress,
     isComment,
     fromFeed
 })
-export const doUnlike = (postID, walletAddress, isComment, fromFeed) => ({
+export const doUnlike = (postID, isComment, fromFeed) => ({
     type: DO_UNLIKE,
     postID,
-    walletAddress,
     isComment,
     fromFeed
 })

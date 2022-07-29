@@ -36,8 +36,8 @@ router.get('/:walletAddress', (req, res) => {
 })
 
 // GET /users/search/{searchVal}
-router.get('/search/:searchVal', (req, res) => {
-    User.search(dbUtils.getSession(req), req.params.searchVal)
+router.get('/search/:searchVal', storeWalletAddressFromToken, (req, res) => {
+    User.search(dbUtils.getSession(req), req.params.searchVal, req.walletAddress)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
