@@ -8,6 +8,8 @@ const User = module.exports = function (_node) {
         "bio": _node.properties["bio"],
         "nonce": _node.properties["nonce"],
         "profilePic": _node.properties["profilePic"],
+        "isProfilePicNFT": _node.properties["isProfilePicNFT"] ? _node.properties["isProfilePicNFT"] : false,
+        "profilePicToken": _node.properties["profilePicToken"],
         "banner": _node.properties["banner"],
         "following": [],
         "followers": [],
