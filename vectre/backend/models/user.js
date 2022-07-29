@@ -34,7 +34,7 @@ const getByWalletAddress = (session, walletAddress) => {
      * @param wallet address of the user for searching
      * @returns an object with a boolean field 'success', field 'user' that holds the user object, and field 'message'.
      */
-    const query = `MATCH (user: User {walletAddress : $walletAddress}) RETURN user`
+    const query = `MATCH (user: User {walletAddress: $walletAddress}) RETURN user`
     return session.run(query, {
         walletAddress: walletAddress
     })

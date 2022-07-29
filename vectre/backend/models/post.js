@@ -617,18 +617,12 @@ const getUserFeed = function (session, walletAddress, start, size, sortType, sor
         });
 }
 
-const searchPosts = function (session, body, walletAddress) {
-    
-    if(!body.term) {
-        throw {
-            success: false,
-            message: "No provided search term"
-        }
-    }
+const search = function (session, searchVal, walletAddress) {
+    const regex = `(?i).*${searchVal}.*`
     const query = [
         `MATCH (author:User)-[:POSTED]->(post: Post)`,
-        `WHERE post.parent IS NULL AND (LOWER(post.text) CONTAINS LOWER('${term}'))`, // Prevent comments in feed
-        `OPTIONAL MATCH (user:User{walletAddress:$walletAddress})-[l:LIKED]->(post)`,
+        `WHERE post.parent IS NULL AND post.text =~ $regex`, // Prevent comments in feed
+        `OPTIONAL MATCH (user:User{walletAddress: $walletAddress})-[l:LIKED]->(post)`,
         `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
         `OPTIONAL MATCH (repost:Post)`,
         `WHERE repost.postID = post.repostPostID`,
@@ -640,7 +634,7 @@ const searchPosts = function (session, body, walletAddress) {
     ].join('\n');
 
     return session.run(query, {
-        term: body.term,
+        regex: regex,
         walletAddress: walletAddress
     })
         .then((results) => {
@@ -667,9 +661,9 @@ const searchPosts = function (session, body, walletAddress) {
             throw {
                 success: false,
                 message: "Failed to search posts",
-                error: error
+                error: error.message
             }
-        });
+        })
 }
 
 module.exports = {
@@ -684,5 +678,5 @@ module.exports = {
     getLikesOnPost,
     checkIfAlreadyLiked,
     getUserFeed,
-    searchPosts
+    search
 };

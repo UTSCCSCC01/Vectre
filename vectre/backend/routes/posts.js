@@ -8,9 +8,9 @@ const { upload } = require('../utils/images');
 const { FEED_SORT } = require("../models/neo4j/post");
 
 // Posts
-// POST /posts/search
-router.post('/search', storeWalletAddressFromToken, (req, res, next) => {
-    Post.searchPosts(dbUtils.getSession(req), req.body, req.walletAddress)
+// GET /posts/search
+router.get('/search/:searchVal', storeWalletAddressFromToken, (req, res, next) => {
+    Post.search(dbUtils.getSession(req), req.params.searchVal, req.walletAddress)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
