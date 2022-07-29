@@ -21,7 +21,6 @@ import {
     searchedUsersSelector,
     searchedCommunitiesSelector,
     searchedPostsSelector,
-
     searchedPostsIndexSelector,
     searchedPostsPaginationCompleteSelector,
     searchedPostsSortTypeSelector,
@@ -32,9 +31,10 @@ import { showLoading } from "../../redux/actions/global";
 import TextButton from '../Buttons/TextButton/TextButton';
 import GenericButtonsPopoverWrapper from '../Containers/GenericButtonsPopoverWrapper'
 import { RiHeart2Fill } from 'react-icons/ri';
-import { AiFillClockCircle } from 'react-icons/ai';
-import { FaUser, FaUsers } from 'react-icons/fa';
-import {POSTS_SORT_TYPE, USERS_COMMUNITIES_FILTER} from "../../redux/constants/search";
+import { AiFillClockCircle, AiFillFilter } from 'react-icons/ai';
+import { FaSort, FaUser, FaUsers } from 'react-icons/fa';
+import { BsGlobe2 } from 'react-icons/bs';
+import { POSTS_SORT_TYPE, USERS_COMMUNITIES_FILTER } from "../../redux/constants/search";
 
 const Search = () => {
     const dispatch = useDispatch()
@@ -110,7 +110,7 @@ const Search = () => {
         {
             typeData: {
                 title: "All",
-                icon: <RiHeart2Fill size={'1.2rem'} />
+                icon: <BsGlobe2 size={'1.2rem'} />
             },
             onClick: () => updateSearchedUserCommunitiesFilter(USERS_COMMUNITIES_FILTER.ALL)
         },
@@ -133,7 +133,7 @@ const Search = () => {
     const postsButtonsList = [
         {
             typeData: {
-                title: "Likes",
+                title: "Most Likes",
                 icon: <RiHeart2Fill size={'1.2rem'} />
             },
             onClick: () => updateSearchedPostsSortType(POSTS_SORT_TYPE.LIKES)
@@ -179,7 +179,7 @@ const Search = () => {
                                 rightIcon={element.typeData.icon} />
                         ))}
                     </>}>
-                <HeaderAndFilter text={getUsersAndCommunitiesHeader()} />
+                <HeaderAndFilter text={getUsersAndCommunitiesHeader()} icon={<AiFillFilter size={'1.3rem'} />} />
             </GenericButtonsPopoverWrapper>
             <SearchResultContainer results={getUsersAndCommunitiesResults()} />
 
@@ -207,7 +207,7 @@ const Search = () => {
                                 rightIcon={element.typeData.icon} />
                         ))}
                     </>}>
-                <HeaderAndFilter text={'Posts'} />
+                <HeaderAndFilter text={'Posts'} icon={<FaSort size={'1.3rem'} />} />
             </GenericButtonsPopoverWrapper>
             <Stack gap={"10px"}>
                 {searchedPosts.map((item, i) => {
