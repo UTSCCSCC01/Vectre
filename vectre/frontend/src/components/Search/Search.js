@@ -12,7 +12,6 @@ import SearchForm from './SearchForm/SearchForm';
 import HeaderAndFilter from '../HeaderAndFilter/HeaderAndFilter';
 
 const Search = () => {
-
     const searchedUsers = useSelector(searchedUsersSelector)
     const searchedCommunities = useSelector(searchedCommunitiesSelector)
     const dispatch = useDispatch()
@@ -33,7 +32,7 @@ const Search = () => {
             gap={'20px'}>
             <SearchForm handleSearchSubmit={handleSearchSubmit} setSearchInput={setSearchInput} />
             <Spacer />
-            <HeaderAndFilter text={'Users & Communities'} onClick={() => console.log("HI!")} />
+            <HeaderAndFilter text={'Users & Communities'} onClick={() => console.log("Peter Chow 🏴‍☠️")} />
             <SearchResultContainer results={[...searchedUsers, ...searchedCommunities]} />
             <HeaderAndFilter text={'Posts'} />
         </Flex>

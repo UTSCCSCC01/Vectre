@@ -50,7 +50,7 @@ const IndividualSearchResult = ({
                             <ToggleHollowButton
                                 alignSelf={'flex-start'}
                                 mt={'10px'}
-                                onText={'Followed'}
+                                onText={'Following'}
                                 offText={'Follow'}
                                 isOn={result.alreadyFollowed}
                                 onClick={() => onUsersFollowClick()} />
