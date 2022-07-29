@@ -1,12 +1,12 @@
 var express = require('express');
 var router = express.Router();
 
-const Community = require('../models/community');
-const { ROLES, MOD } = require("../models/neo4j/community");
+const Community = require('../models/community'),
+    CommunityModerator = require('../models/communitymoderator')
+const { ROLES, MODERATOR_ACTIONS } = require("../models/neo4j/community");
 const { authenticateToken, storeWalletAddressFromToken } = require('../utils/auth');
 const dbUtils = require('../utils/neo4j/dbUtils');
 const {FEED_SORT} = require("../models/neo4j/post");
-const Moderator = require('../models/moderator');
 
 // POST /communities/feed
 router.post('/:communityID/feed', storeWalletAddressFromToken, (req, res, next) => {
@@ -77,28 +77,28 @@ router.get("/:communityID/members/:walletAddress/roles", (req, res, next) => {
 
 // POST /communities/:communityID/promote/:walletAddress
 router.post("/:communityID/promote/:walletAddress", authenticateToken, (req, res, next) => {
-    Moderator.moderatesMember(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress, MOD.PROMOTE)
+    CommunityModerator.moderatesMember(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress, MODERATOR_ACTIONS.PROMOTE)
         .then(result => res.send(result))
         .catch(error => res.send(error))
 })
 
 // POST /communities/:communityID/ban/:walletAddress
 router.post("/:communityID/ban/:walletAddress", authenticateToken, (req, res, next) => {
-    Moderator.moderatesMember(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress, MOD.BAN)
+    CommunityModerator.moderatesMember(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress, MODERATOR_ACTIONS.BAN)
         .then(result => res.send(result))
         .catch(error => res.send(error))
 })
 
 // POST /communities/:communityID/unban/:walletAddress
 router.post("/:communityID/unban/:walletAddress", authenticateToken, (req, res, next) => {
-    Moderator.moderatesMember(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress, MOD.UNBAN)
+    CommunityModerator.moderatesMember(dbUtils.getSession(req), req.params.communityID , req.walletAddress, req.params.walletAddress, MODERATOR_ACTIONS.UNBAN)
         .then(result => res.send(result))
         .catch(error => res.send(error))
 })
 
 // POST /communities/:communityID/delete/:postID
 router.post('/:communityID/delete/:postID', authenticateToken, (req, res, next) => {
-    Moderator.deletesPost(dbUtils.getSession(req), req.params.communityID, req.walletAddres, req.params.postID)
+    CommunityModerator.deletePost(dbUtils.getSession(req), req.params.communityID, req.walletAddres, req.params.postID)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })

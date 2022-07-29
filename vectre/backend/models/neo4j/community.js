@@ -32,7 +32,7 @@ module.exports.ROLES = {
     }
 }
 
-module.exports.MOD = {
+module.exports.MODERATOR_ACTIONS = {
     PROMOTE: "promote",
     BAN: "ban",
     UNBAN: "unban"
