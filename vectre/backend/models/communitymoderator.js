@@ -90,9 +90,9 @@ const banMember = function (session, walletAddress, communityID) {
         .then(bannedResult => {
             if (!bannedResult.success) return bannedResult
             else if (bannedResult.result) {
-                throw {
+                return {
                     success: false,
-                    message: "User is already banned from Community."
+                    message: "User is already banned from Community"
                 }
             }
             // Delete posts from User in Community
@@ -134,7 +134,7 @@ const unbanMember = function (session, walletAddress, communityID) {
         .then(bannedResult => {
             if (!bannedResult.success) return bannedResult
             else if (!bannedResult.result) {
-                throw {
+                return {
                     success: false,
                     message: "User is not banned from Community"
                 }
