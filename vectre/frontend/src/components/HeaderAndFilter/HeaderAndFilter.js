@@ -6,8 +6,8 @@ import IconSquareButton from "../Buttons/IconSquareButton/IconSquareButton";
 import { AiFillFilter } from "react-icons/ai";
 
 const HeaderAndFilter = ({
-    text,
-    onClick
+    onToggle,
+    text
 }) => {
     return (
         <Flex
@@ -28,7 +28,7 @@ const HeaderAndFilter = ({
                 width={'40px'}
                 icon={<AiFillFilter size={'1.3rem'} />}
                 zIndex={5}
-                onClick={onClick}
+                onClick={onToggle}
             />
             <Box
                 position={'absolute'}
