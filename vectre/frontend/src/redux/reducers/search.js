@@ -28,12 +28,12 @@ const search = (state = initialState, action) => {
         case DO_FOLLOW_SEARCHED_USER:
             return {
                 ...state,
-                searchedUsers: state.searchedUsers.map((user, i) => user.walletAddress === action.walletAddress ? { ...user, alreadyFollowed: true } : user)
+                users: state.users.map((user, i) => user.walletAddress === action.walletAddress ? { ...user, alreadyFollowed: true } : user)
             }
         case DO_UNFOLLOW_SEARCHED_USER:
             return {
                 ...state,
-                searchedUsers: state.searchedUsers.map((user, i) => user.walletAddress === action.walletAddress ? { ...user, alreadyFollowed: false } : user)
+                users: state.users.map((user, i) => user.walletAddress === action.walletAddress ? { ...user, alreadyFollowed: false } : user)
             }
         case STORE_SEARCHED_COMMUNITIES:
             return {
@@ -58,12 +58,12 @@ const search = (state = initialState, action) => {
         case DO_LIKE_SEARCHED_POST:
             return {
                 ...state,
-                posts: state.posts.map((post, i) => post.postID === action.postID ? { ...post, likes: post.likes+1, alreadyLiked: true } : post)
+                posts: state.posts.map((post, i) => post.postID === action.postID ? { ...post, likes: post.likes + 1, alreadyLiked: true } : post)
             }
         case DO_UNLIKE_SEARCHED_POST:
             return {
                 ...state,
-                posts: state.posts.map((post, i) => post.postID === action.postID ? { ...post, likes: post.likes-1, alreadyLiked: false } : post)
+                posts: state.posts.map((post, i) => post.postID === action.postID ? { ...post, likes: post.likes - 1, alreadyLiked: false } : post)
             }
         default:
             return state
