@@ -101,6 +101,8 @@ const banMember = function (session, walletAddress, communityID) {
                     // Ban user
                     const query = [
                         'MATCH (u: User {walletAddress: $walletAddress}), (c: Community {communityID: $communityID})',
+                        'OPTIONAL MATCH (u)-[mod_link:MODERATES]->(c)',
+                        'DELETE mod_link',
                         `CREATE (u)-[:BANNED_FROM]->(c)`
                     ].join("\n")
                     return session.run(query, {
@@ -167,6 +169,12 @@ const moderationAction = function(session, communityID, calledBy, member, action
                 throw {
                     success: false,
                     message: `User does not have the permission to ${action} Member.`
+                }
+            }
+            if (calledBy === member) {
+                return {
+                    success: false,
+                    message: `You cannot ${action} yourself.`
                 }
             }
             switch (action) {
