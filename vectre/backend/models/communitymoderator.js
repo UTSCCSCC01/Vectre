@@ -17,7 +17,7 @@ const promoteMember = function (session, walletAddress, communityID) {
                         .then(moderatorCheck => {
                             if (moderatorCheck.result) {
                                 // Member is already a moderator
-                                return {
+                                throw {
                                     success: false,
                                     message: "User is already a Moderator of Community."
                                 }
@@ -26,12 +26,13 @@ const promoteMember = function (session, walletAddress, communityID) {
                                 return session.run(query, {
                                     walletAddress: walletAddress,
                                     communityID: communityID
-                                }).then(result => {
-                                    return {
-                                        success: true,
-                                        message: "Successfully promote User to Moderator of Community"
-                                    }
                                 })
+                                    .then(result => {
+                                        return {
+                                            success: true,
+                                            message: "Successfully promoted User to Moderator of Community"
+                                        }
+                                    })
                             }
                         })
                 } else {
@@ -47,35 +48,32 @@ const promoteMember = function (session, walletAddress, communityID) {
 }
 
 const demoteModerator = function (session, walletAddress, communityID) {
-    const query = [
-        'MATCH (u: User {walletAddress: $walletAddress})-[link:MODERATES]->(c: Community {communityID: $communityID})',
-        'DELETE link'
-    ].join("\n")
-
     return Community.isRole(session, walletAddress, communityID, ROLES.MODERATOR.type)
         .then(moderatorCheck => {
-            if (moderatorCheck.success) {
-                if (moderatorCheck.result) {
-                    // demote the moderator
-                    return session.run(query, {
-                        walletAddress: walletAddress,
-                        communityID: communityID
-                    }).then(result => {
+            if (!moderatorCheck.success) return moderatorCheck // User or Community does not exist
+
+            if (moderatorCheck.result) {
+                // Demote the moderator
+                const query = [
+                        'MATCH (u: User {walletAddress: $walletAddress})-[link:MODERATES]->(c: Community {communityID: $communityID})',
+                        'DELETE link'
+                    ].join("\n")
+                return session.run(query, {
+                    walletAddress: walletAddress,
+                    communityID: communityID
+                })
+                    .then(result => {
                         return {
                             success: true,
                             message: "Successfully demoted User to Member of Community"
                         }
                     })
-                } else {
-                    // user is not a moderator, thus, may not be a member
-                    return {
-                        success: false,
-                        message: "User is not a Moderator of Community"
-                    }
-                }
             } else {
-                // User or Community does not exist
-                return moderatorCheck
+                // User is not a moderator, thus, may not be a member
+                throw {
+                    success: false,
+                    message: "User is not a Moderator of Community"
+                }
             }
         })
         .catch(error => {
