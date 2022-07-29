@@ -11,7 +11,6 @@ import {
     storeUnreadStatus,
     getUser,
     getLoggedInUser,
-    storeSearchedUsers,
 } from "../actions/users";
 import {
     GET_LOGIN_NONCE,
@@ -27,7 +26,6 @@ import {
     GET_NFT,
     GET_FUNDS,
     UPDATE_DASHBOARD,
-    SEARCH_USERS,
 } from "../constants/users";
 import {
     BASE_API_URL,
@@ -90,19 +88,6 @@ function* getUsers() {
         const response = yield call(getRequest, BASE_API_URL + USERS.GET_USERS), responseData = response[1]
         if (responseData.success) {
             yield put(storeUsers(responseData.users))
-        } else {
-            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
-        }
-    } catch (error) {
-        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get users"))
-        console.log(error)
-    }
-}
-function* searchUsers(action) {
-    try {
-        const response = yield call(getRequest, BASE_API_URL + USERS.SEARCH_USERS.replace("{searchVal}", action.searchVal)), responseData = response[1]
-        if (responseData.success) {
-            yield put(storeSearchedUsers(responseData.users))
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }
@@ -251,7 +236,6 @@ function* usersSaga() {
     yield takeLatest(GET_NFT, getNFT)
     yield takeLatest(GET_FUNDS, getFunds)
     yield takeLatest(GET_USERS, getUsers)
-    yield takeLatest(SEARCH_USERS, searchUsers)
     yield takeLatest(CREATE_USER, createUser)
     yield takeLatest(UPDATE_USER, updateUser)
     yield takeLatest(GET_NOTIFICATIONS, getNotifications)

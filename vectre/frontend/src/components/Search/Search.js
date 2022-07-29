@@ -4,16 +4,15 @@ import {
 } from "@chakra-ui/react";
 import SearchResultContainer from '../../components/Search/SearchResult/SearchResult';
 import { useDispatch, useSelector } from "react-redux";
-import { searchUsers } from "../../redux/actions/users";
-import { searchCommunities } from "../../redux/actions/communities";
-import { searchedUsersSelector } from "../../redux/selectors/users";
-import { searchedCommunitiesSelector } from "../../redux/selectors/communities";
 import SearchForm from './SearchForm/SearchForm';
 import HeaderAndFilter from '../HeaderAndFilter/HeaderAndFilter';
+import {searchUsers, searchCommunities, searchPosts} from "../../redux/actions/search";
+import {searchedUsersSelector, searchedCommunitiesSelector, searchedPostsSelector} from "../../redux/selectors/search";
 
 const Search = () => {
     const searchedUsers = useSelector(searchedUsersSelector)
     const searchedCommunities = useSelector(searchedCommunitiesSelector)
+    const searchedPosts = useSelector(searchedPostsSelector)
     const dispatch = useDispatch()
 
     const [searchInput, setSearchInput] = useState(".*")
@@ -21,6 +20,7 @@ const Search = () => {
     function handleSearchSubmit() {
         dispatch(searchUsers(searchInput))
         dispatch(searchCommunities(searchInput))
+        dispatch(searchPosts(searchInput))
     }
     useEffect(() => {
         handleSearchSubmit()
@@ -41,6 +41,7 @@ const Search = () => {
             <HeaderAndFilter text={'Users & Communities'} onClick={() => console.log("Peter Chow 🏴‍☠️")} />
             <SearchResultContainer results={sortUsersAndCommunities(searchedUsers, searchedCommunities)} />
             <HeaderAndFilter text={'Posts'} />
+            <SearchResultContainer results={[...searchedPosts]} />
         </Flex>
     )
 }

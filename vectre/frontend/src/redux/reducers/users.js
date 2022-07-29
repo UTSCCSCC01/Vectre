@@ -6,16 +6,12 @@ import {
     STORE_NOTIFICATIONS,
     STORE_UNREADSTATUS,
     STORE_NFT,
-    STORE_SEARCHED_USERS,
-    DO_FOLLOW_SEARCHED_USER,
-    DO_UNFOLLOW_SEARCHED_USER,
     STORE_FUNDS,
 } from "../constants/users";
 
 const initialState = {
     user: {},
     users: [],
-    searchedUsers: [],
     loggedInUser: {},
     nonce: "",
     notifications: [],
@@ -35,21 +31,6 @@ const users = (state = initialState, action) => {
             return {
                 ...state,
                 users: action.users
-            }
-        case STORE_SEARCHED_USERS:
-            return {
-                ...state,
-                searchedUsers: action.searchedUsers
-            }
-        case DO_FOLLOW_SEARCHED_USER:
-            return {
-                ...state,
-                searchedUsers: state.searchedUsers.map((user, i) => user.walletAddress === action.walletAddress ? { ...user, alreadyFollowed: true } : user)
-            }
-        case DO_UNFOLLOW_SEARCHED_USER:
-            return {
-                ...state,
-                searchedUsers: state.searchedUsers.map((user, i) => user.walletAddress === action.walletAddress ? { ...user, alreadyFollowed: false } : user)
             }
         case STORE_LOGGED_IN_USER:
             return {

@@ -1,11 +1,17 @@
 import { useDispatch, useSelector } from "react-redux";
 import { cutText } from "../../../utils/Utils";
 import ToggleHollowButton from "../../Buttons/ToggleHollowButton/ToggleHollowButton";
-import { doFollowSearchedCommunities, doUnfollowSearchedCommunities, joinCommunity, leaveCommunity } from "../../../redux/actions/communities";
+import { joinCommunity, leaveCommunity } from "../../../redux/actions/communities";
 import React from "react";
-import { doFollowSearchedUsers, doUnfollowSearchedUsers, followUser, unfollowUser } from "../../../redux/actions/users";
+import { followUser, unfollowUser } from "../../../redux/actions/users";
 import { loggedInUserSelector } from "../../../redux/selectors/users";
 import EntityCard from "../../EntityCard/EntityCard";
+import {
+    doFollowSearchedUsers,
+    doJoinSearchedCommunities,
+    doLeaveSearchedCommunities,
+    doUnfollowSearchedUsers
+} from "../../../redux/actions/search";
 
 const IndividualSearchResult = ({
     result
@@ -20,10 +26,10 @@ const IndividualSearchResult = ({
 
     const onCommunitiesFollowClick = () => {
         if (result.alreadyJoined) {
-            dispatch(leaveCommunity(result.communityID, () => dispatch(doUnfollowSearchedCommunities(result.communityID))))
+            dispatch(leaveCommunity(result.communityID, () => dispatch(doLeaveSearchedCommunities(result.communityID))))
         }
         else {
-            dispatch(joinCommunity(result.communityID, () => dispatch(doFollowSearchedCommunities(result.communityID))))
+            dispatch(joinCommunity(result.communityID, () => dispatch(doJoinSearchedCommunities(result.communityID))))
         }
     }
 

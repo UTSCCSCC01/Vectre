@@ -4,10 +4,8 @@ import {
     LOGIN_USER,
     GET_USER,
     GET_USERS,
-    SEARCH_USERS,
     STORE_USER,
     STORE_USERS,
-    STORE_SEARCHED_USERS,
     CREATE_USER,
     UPDATE_USER,
     GET_LOGGED_IN_USER,
@@ -22,8 +20,6 @@ import {
     GET_FUNDS,
     STORE_FUNDS,
     UPDATE_DASHBOARD,
-    DO_FOLLOW_SEARCHED_USER,
-    DO_UNFOLLOW_SEARCHED_USER,
 } from "../constants/users";
 
 // Login
@@ -74,24 +70,6 @@ export const getUsers = () => ({
 export const storeUsers = (users) => ({
     type: STORE_USERS,
     users
-})
-
-export const searchUsers = (searchVal) => ({
-    type: SEARCH_USERS,
-    searchVal
-})
-export const storeSearchedUsers = (searchedUsers) => ({
-    type: STORE_SEARCHED_USERS,
-    searchedUsers
-})
-
-export const doFollowSearchedUsers = (walletAddress) => ({
-    type: DO_FOLLOW_SEARCHED_USER,
-    walletAddress
-})
-export const doUnfollowSearchedUsers = (walletAddress) => ({
-    type: DO_UNFOLLOW_SEARCHED_USER,
-    walletAddress
 })
 
 export const getLoggedInUser = () => ({

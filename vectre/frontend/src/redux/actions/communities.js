@@ -7,10 +7,6 @@ import {
     STORE_ROLES_LOGGED_IN_USER,
     JOIN_COMMUNITY,
     LEAVE_COMMUNITY,
-    SEARCH_COMMUNITIES,
-    STORE_SEARCHED_COMMUNITIES,
-    DO_FOLLOW_SEARCHED_COMMUNITY,
-    DO_UNFOLLOW_SEARCHED_COMMUNITY
 } from "../constants/communities";
 
 export const createCommunity = (community, redirectWindow) => ({
@@ -26,24 +22,6 @@ export const getCommunity = (communityID) => ({
 export const storeCommunity = (community) => ({
     type: STORE_COMMUNITY,
     community
-})
-
-export const searchCommunities = (searchVal) => ({
-    type: SEARCH_COMMUNITIES,
-    searchVal
-})
-export const storeSearchedCommunities = (searchedCommunities) => ({
-    type: STORE_SEARCHED_COMMUNITIES,
-    searchedCommunities
-})
-
-export const doFollowSearchedCommunities = (communityID) => ({
-    type: DO_FOLLOW_SEARCHED_COMMUNITY,
-    communityID
-})
-export const doUnfollowSearchedCommunities = (communityID) => ({
-    type: DO_UNFOLLOW_SEARCHED_COMMUNITY,
-    communityID
 })
 
 export const updateCommunity = (communityID, community, redirectWindow) => ({

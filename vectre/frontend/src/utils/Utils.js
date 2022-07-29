@@ -26,8 +26,10 @@ export const formatWalletAddress = (walletAddress) => {
 
 // assumes walletAddress is valid
 export const cutText = (text, maxLength) => {
-    if (text.length < maxLength) return text
-    return text.slice(0, maxLength) + "...";
+    if (text === undefined || text.length < maxLength)
+        return text
+
+    return text.slice(0, maxLength) + "..."
 };
 
 // assumes isoString is valid
