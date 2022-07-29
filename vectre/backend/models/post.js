@@ -493,7 +493,7 @@ const likePost = function (session, postID, walletAddress) {
         } catch (error) {
             throw {
                 success: false,
-                message: "Failed like Post.",
+                message: "Failed like Post",
                 error: error.message
             }
         }
