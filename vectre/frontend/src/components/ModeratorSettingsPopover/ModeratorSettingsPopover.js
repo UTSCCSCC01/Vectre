@@ -1,4 +1,4 @@
-import { RiSettings5Fill } from 'react-icons/ri';
+import { BsGearWideConnected } from 'react-icons/bs';
 import IconSquareButton from '../Buttons/IconSquareButton/IconSquareButton';
 import TextButton from '../Buttons/TextButton/TextButton';
 import GenericButtonsPopoverWrapper from '../Containers/GenericButtonsPopoverWrapper';
@@ -10,7 +10,7 @@ const ModeratorSettingsPopover = ({
     const ModeratorSettingsButton = ({ onToggle }) => {
         return (
             <IconSquareButton
-                icon={<RiSettings5Fill size={'1.5rem'} />}
+                icon={<BsGearWideConnected size={'1.5rem'} />}
                 onClick={(e) => {
                     onToggle();
                     e.stopPropagation();

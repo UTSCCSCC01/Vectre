@@ -8,6 +8,9 @@ import ButtonLinkWrapper from '../Buttons/ButtonLinkWrapper/ButtonLinkWrapper';
 import TextButton from '../Buttons/TextButton/TextButton';
 
 const ContentWithSideButtons = ({
+    headerShow,
+    headerText,
+    headerIcon,
     sideButtonsList,
     ...otherProps
 }) => {
@@ -21,6 +24,12 @@ const ContentWithSideButtons = ({
                 columnGap={'30px'}>
                 <GridItem>
                     <Stack gap={'15px'}>
+                        <TextButton
+                            display={headerShow ? 'inline-flex' : 'none'}
+                            fontSize={'18px'}
+                            fontWeight={700}
+                            text={headerText}
+                            rightIcon={headerIcon} />
                         {
                             sideButtonsList.map((btn, i) => {
                                 if (btn.hidden) {
@@ -31,19 +40,17 @@ const ContentWithSideButtons = ({
                                         <ButtonLinkWrapper href={btn.link} key={i}>
                                             <TextButton
                                                 width={'100%'}
-                                                px={'17.5px'}
-                                                fontSize={'18px'}
-                                                fontWeight={700}
+                                                fontSize={'16px'}
+                                                fontWeight={500}
                                                 text={btn.text} />
                                         </ButtonLinkWrapper>
                                     )
                                 }
                                 return <TextButton
-                                    width={'100%'}
                                     key={i}
-                                    px={'17.5px'}
+                                    width={'100%'}
                                     fontSize={'18px'}
-                                    fontWeight={700}
+                                    fontWeight={500}
                                     text={btn.text}
                                     onClick={() => { btn.func() }} />
                             })

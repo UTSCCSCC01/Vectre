@@ -18,27 +18,9 @@ import {
 import { getCommunityFeed } from "../../redux/actions/feed";
 import CreatePostComponent from "../CreatePostComponent/CreatePostComponent";
 import { getCommunity, getRolesOfLoggedInUser } from "../../redux/actions/communities";
+import { BsGearWideConnected } from "react-icons/bs";
 
-const communitySideButtonsList = (userIsModerator) => [
-    {
-        hidden: userIsModerator,
-        text: "Create a Proposal",
-        func: () => { console.log("Creating a proposal...") }
-    },
-    {
-        text: "Vote for a Proposal",
-        func: () => { console.log("Voting for a proposal...") }
-    },
-    {
-        hidden: userIsModerator,
-        text: "Moderator Settings",
-        link: "settings"
-    },
-    {
-        text: "Announcements",
-        func: () => { console.log("anouncements") }
-    }
-]
+
 
 const Community = ({
     communityID
@@ -65,12 +47,27 @@ const Community = ({
         loadFeed()
     }, [feedSortType])
 
+    const communitySideButtonsList = (userIsModerator) => [
+        {
+            hidden: userIsModerator,
+            text: "Moderator List",
+            func: () => { console.log("mod list") }
+        },
+        {
+            hidden: userIsModerator,
+            text: "Banned Users",
+            func: () => { console.log("banned users") }
+        }
+    ]
+
     return (
         <>
             <base href={`/c/${communityID}/`} />
-            <ContentWithSideButtons sideButtonsList={loggedInUserRoles.includes("member") ? communitySideButtonsList(
-                !loggedInUserRoles.includes("moderator")
-            ) : []}>
+            <ContentWithSideButtons
+                sideButtonsList={loggedInUserRoles.includes("member") ? communitySideButtonsList(!loggedInUserRoles.includes("moderator")) : []}
+                headerText={'Moderator'}
+                headerIcon={<BsGearWideConnected size={'1.3rem'} />}
+                headerShow={loggedInUserRoles.includes("moderator")}>
                 <ProfileCommunityDetails communityData={communityData} />
                 <Stack
                     mt={"15px"}
