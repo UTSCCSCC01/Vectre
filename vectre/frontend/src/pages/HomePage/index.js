@@ -18,6 +18,7 @@ import { getFeed } from "../../redux/actions/feed";
 import CreatePostComponent from "../../components/CreatePostComponent/CreatePostComponent";
 import SortingButtonComponent from "../../components/SortingButtonComponent/SortingButtonComponent";
 import {loggedInUserCommunitiesSelector} from "../../redux/selectors/users";
+import {showLoading} from "../../redux/actions/global";
 
 const HomePage = () => {
     const loggedInUserCommunities = useSelector(loggedInUserCommunitiesSelector)
@@ -32,6 +33,7 @@ const HomePage = () => {
         dispatch(getFeed(feedIndex, feedSortType))
     }
     useEffect(() => {
+        dispatch(showLoading(true))
         loadFeed()
     }, [feedSortType])
 

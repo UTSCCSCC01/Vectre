@@ -34,7 +34,7 @@ const getByWalletAddress = (session, walletAddress) => {
      * @param wallet address of the user for searching
      * @returns an object with a boolean field 'success', field 'user' that holds the user object, and field 'message'.
      */
-    const query = `MATCH (user: User {walletAddress : $walletAddress}) RETURN user`
+    const query = `MATCH (user: User {walletAddress: $walletAddress}) RETURN user`
     return session.run(query, {
         walletAddress: walletAddress
     })
@@ -73,24 +73,26 @@ const getByWalletAddress = (session, walletAddress) => {
         })
 }
 
-const search = (session, searchVal) => {
+const search = (session, searchVal, tokenWalletAddress) => {
     const regex = `(?i).*${searchVal}.*`
     const query = [
         `MATCH (user: User)`,
         `WHERE user.username =~ $regex OR user.name =~ $regex`,
         searchVal.toLowerCase().startsWith("0x") ? `OR user.walletAddress =~ $regex` : "", // only search wallet if starts w/ 0x
         `OPTIONAL MATCH (user)<-[f:FOLLOWS]-(follower: User)`,
-        `RETURN user, count(f) as followerCount`
+        `OPTIONAL MATCH (tokenUser:User{walletAddress:$tokenWalletAddress})-[tokenF:FOLLOWS]->(user)`,
+        `RETURN user, count(f) AS followerCount, count(tokenF) AS tokenF`
     ].join('\n');
     return session.run(query, {
-        regex: regex
+        regex: regex,
+        tokenWalletAddress: tokenWalletAddress
     })
         .then((results) => {
             let users = []
             results.records.forEach((record) => {
                 let user = new User(record.get('user'))
                 user.followerCount = record.get("followerCount").low
-
+                user.alreadyFollowed = record.get('tokenF').low > 0; // specific user is already followed by tokenWalletAddress
                 users.push(user)
             })
             return {
