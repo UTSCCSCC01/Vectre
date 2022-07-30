@@ -115,7 +115,7 @@ const create = function (session, ownerWalletAddress, newCommunity) {
     const query = [
         'MATCH (o: User {walletAddress: $owner})',
         'CREATE (c: Community $format)',
-        'SET c.memberCount = toInteger(1)',
+        'SET c.memberCount = toInteger(1), c.trendingCount = toInteger(1)',
         'CREATE (o)-[:JOINS]->(c)',
         'CREATE (o)-[:MODERATES]->(c)',
         'CREATE (o)-[link: OWNS]->(c)',
@@ -132,8 +132,7 @@ const create = function (session, ownerWalletAddress, newCommunity) {
         instagramLink: newCommunity.instagramLink ? newCommunity.instagramLink : null,
         twitterLink: newCommunity.twitterLink ? newCommunity.twitterLink : null,
         websiteLink: newCommunity.websiteLink ? newCommunity.websiteLink : null,
-        ethLink: newCommunity.ethLink ? newCommunity.ethLink : null,
-        trendingCount: 1,
+        ethLink: newCommunity.ethLink ? newCommunity.ethLink : null
     }
 
     return session.run(query, {
@@ -471,7 +470,7 @@ const removeMember = function (session, walletAddress, communityID) {
         ].join("\n"),
         [
             'MATCH (u: User {walletAddress: $walletAddress})-[mem_link:JOINS]->(c: Community {communityID: $communityID})',
-            'SET c.memberCount = toInteger(c.memberCount - 1)',
+            'SET c.memberCount = toInteger(c.memberCount - 1), c.trendingCount = toInteger(c.trendingCount - 1)',
             'DELETE mem_link'
         ].join("\n")
     ]
@@ -760,7 +759,6 @@ const getCommunityFeed = function (session, communityID, walletAddress, start, s
 }
 
 const getTrendingCommunities = function (session, start, size) {
-
     if (start < 0) {
         throw {
             success: false,
@@ -774,11 +772,11 @@ const getTrendingCommunities = function (session, start, size) {
     }
 
     const query = [
-        `MATCH (c: Community) RETURN c`,
+        `MATCH (c: Community)`,
         `RETURN c`,
         `ORDER BY c.trendingCount DESC`,
         `SKIP toInteger($start)`,
-        `LIMIT toInteger($size)`
+        `LIMIT toInteger($size)`,
     ].join('\n');
 
     return session.run(query, {
