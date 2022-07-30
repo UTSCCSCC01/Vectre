@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { cutText } from "../../../utils/Utils";
+import { cutText, formatNumberItemString } from "../../../utils/Utils";
 import ToggleHollowButton from "../../Buttons/ToggleHollowButton/ToggleHollowButton";
 import { joinCommunity, leaveCommunity } from "../../../redux/actions/communities";
 import React, { useState } from "react";
@@ -97,9 +97,9 @@ const IndividualSearchResult = ({
                         fontWeight={400}
                         color={"brand.400"}>
                         {type === SEARCH_RESULT_TYPES.USER ?
-                            (result.followerCount ? result.followerCount : 0) + " followers"
+                            formatNumberItemString(result.followerCount ? result.followerCount : 0, "follower")
                             :
-                            (result.memberCount ? result.memberCount : 0) + " members"
+                            formatNumberItemString(result.memberCount ? result.memberCount : 0, "member")
                         }
                     </Box>
                 </Flex>
