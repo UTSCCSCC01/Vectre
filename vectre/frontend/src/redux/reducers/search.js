@@ -40,12 +40,12 @@ const search = (state = initialState, action) => {
         case DO_FOLLOW_SEARCHED_USER:
             return {
                 ...state,
-                users: state.users.map((user, i) => user.walletAddress === action.walletAddress ? { ...user, alreadyFollowed: true } : user)
+                users: state.users.map((user, i) => user.walletAddress === action.walletAddress ? { ...user, alreadyFollowed: true, followerCount: user.followerCount + 1 } : user)
             }
         case DO_UNFOLLOW_SEARCHED_USER:
             return {
                 ...state,
-                users: state.users.map((user, i) => user.walletAddress === action.walletAddress ? { ...user, alreadyFollowed: false } : user)
+                users: state.users.map((user, i) => user.walletAddress === action.walletAddress ? { ...user, alreadyFollowed: false, followerCount: user.followerCount - 1 } : user)
             }
         case STORE_SEARCHED_COMMUNITIES:
             return {
@@ -55,12 +55,12 @@ const search = (state = initialState, action) => {
         case DO_JOIN_SEARCHED_COMMUNITY:
             return {
                 ...state,
-                communities: state.communities.map((com, i) => com.communityID === action.communityID ? { ...com, alreadyJoined: true } : com)
+                communities: state.communities.map((com, i) => com.communityID === action.communityID ? { ...com, alreadyJoined: true, memberCount: com.memberCount + 1 } : com)
             }
         case DO_LEAVE_SEARCHED_COMMUNITY:
             return {
                 ...state,
-                communities: state.communities.map((com, i) => com.communityID === action.communityID ? { ...com, alreadyJoined: false } : com)
+                communities: state.communities.map((com, i) => com.communityID === action.communityID ? { ...com, alreadyJoined: false, memberCount: com.memberCount - 1 } : com)
             }
         case STORE_SEARCHED_POSTS:
             var newSearchedPosts = [

@@ -174,7 +174,6 @@ function* updateDashboard(action) {
 function* followUser(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + USERS.FOLLOW_USER.replace("{walletAddress}", action.walletAddressToFollow), {}), responseData = response[1]
-        console.log(action);
         if (responseData.success) {
             if (action.callBack) {
                 action.callBack()
