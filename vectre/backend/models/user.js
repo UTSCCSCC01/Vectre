@@ -1,4 +1,5 @@
 const _ = require('lodash')
+const cron = require("node-cron");
 const User = require('./neo4j/user')
 const Community = require('./neo4j/community')
 const Notification = require('../models/notification');
@@ -705,6 +706,69 @@ const getCommunitiesByUser = function (session, walletAddress) {
         })
 }
 
+const getTrending = function (session, walletAddress, start, size) {
+    if (start < 0) {
+        throw {
+            success: false,
+            message: "Start index must be non-negative"
+        }
+    } else if (size < 0) {
+        throw {
+            success: false,
+            message: "Size must be non-negative"
+        }
+    }
+
+    const query = [
+        `MATCH (user: User)`,
+        `OPTIONAL MATCH (user)<-[f:FOLLOWS]-(follower: User)`,
+        `OPTIONAL MATCH (tokenUser:User{walletAddress:$walletAddress})-[tokenF:FOLLOWS]->(user)`,
+        `RETURN user, count(f) AS followerCount, count(tokenF) AS tokenF, count(f)-user.initialWeeklyFollowers as weeklyFollowersDelta`,
+        `ORDER BY weeklyFollowersDelta DESC`,
+        `SKIP toInteger($start)`,
+        `LIMIT toInteger($size)`,
+    ].join('\n');
+
+    return session.run(query, {
+        walletAddress: walletAddress,
+        start: start,
+        size: size
+    })
+        .then(result => {
+            let users = []
+            result.records.forEach(record => {
+                let user = new User(record.get('user'))
+                user.followerCount = record.get("followerCount").low
+                user.alreadyFollowed = record.get('tokenF').low > 0; // specific user is already followed by tokenWalletAddress
+                users.push(user)
+            })
+            return {
+                success: true,
+                users: users
+            }
+        })
+        .catch(error => {
+            console.log(error)
+            throw {
+                success: false,
+                message: "Failed to fetch trending users",
+                error: error.message
+            }
+        })
+}
+
+// Cron job for resetting the trend count at 00:00 on Sunday
+cron.schedule('0 0 * * 0', resetTrending = function (session) {
+    const query = [
+        'MATCH (u: User)',
+        `OPTIONAL MATCH (user)<-[f:FOLLOWS]-(follower: User)`,
+        `WITH user, count(f) AS followerCount`,
+        `SET user.initialWeeklyFollowers = followerCount`
+    ].join("\n")
+
+    return session.run(query)
+});
+
 module.exports = {
     getAll,
     getByWalletAddress,
@@ -723,4 +787,5 @@ module.exports = {
     updateDashboard,
     getCommunitiesByUser,
     getFunds,
+    getTrending
 }
