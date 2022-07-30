@@ -3,11 +3,11 @@ import {
     PopoverTrigger,
     PopoverContent,
     Flex,
-    Button,
     Stack,
     useDisclosure
 } from "@chakra-ui/react";
-import { AiFillClockCircle, AiFillFilter } from "react-icons/ai";
+import { AiFillClockCircle } from "react-icons/ai";
+import { FaSort } from "react-icons/fa";
 import { RiHeart2Fill } from "react-icons/ri";
 
 import { useDispatch } from "react-redux";
@@ -45,7 +45,7 @@ const SortingButtonComponent = () => {
                                 px={'15px'}
                                 height={'fit-content'}
                                 width={'130px'}
-                                rightIcon={<AiFillFilter size={'1.2rem'} />}
+                                rightIcon={<FaSort size={'1.3rem'} />}
                                 onClick={() => {
                                     onToggle()
                                 }}
@@ -66,7 +66,7 @@ const SortingButtonComponent = () => {
                             color={'primary.400'}
                             bg={'rgba(228, 239, 255, 0.62)'}
                             onClick={() => { updateFeedSortType(FEED_SORT_TYPE.LIKES) }}
-                            text={"Most liked"}
+                            text={"Most Likes"}
                             rightIcon={<RiHeart2Fill size={'1.2rem'} />} />
                         <TextButton
                             height={'fit-content'}

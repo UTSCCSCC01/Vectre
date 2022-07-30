@@ -1,4 +1,5 @@
 const _ = require('lodash')
+const cron = require("node-cron");
 const User = require('./neo4j/user')
 const Community = require('./neo4j/community')
 const Notification = require('../models/notification');
@@ -34,7 +35,7 @@ const getByWalletAddress = (session, walletAddress) => {
      * @param wallet address of the user for searching
      * @returns an object with a boolean field 'success', field 'user' that holds the user object, and field 'message'.
      */
-    const query = `MATCH (user: User {walletAddress : $walletAddress}) RETURN user`
+    const query = `MATCH (user: User {walletAddress: $walletAddress}) RETURN user`
     return session.run(query, {
         walletAddress: walletAddress
     })
@@ -56,6 +57,9 @@ const getByWalletAddress = (session, walletAddress) => {
                                 return getCommunitiesByUser(session, walletAddress)
                                     .then((communitiesResult) => {
                                         user.communities = communitiesResult.communities
+                                        user.communities.map((com) => {
+                                            com.alreadyJoined = true;
+                                        })
                                         return {
                                             success: true,
                                             user: user
@@ -73,24 +77,26 @@ const getByWalletAddress = (session, walletAddress) => {
         })
 }
 
-const search = (session, searchVal) => {
+const search = (session, searchVal, tokenWalletAddress) => {
     const regex = `(?i).*${searchVal}.*`
     const query = [
         `MATCH (user: User)`,
         `WHERE user.username =~ $regex OR user.name =~ $regex`,
         searchVal.toLowerCase().startsWith("0x") ? `OR user.walletAddress =~ $regex` : "", // only search wallet if starts w/ 0x
         `OPTIONAL MATCH (user)<-[f:FOLLOWS]-(follower: User)`,
-        `RETURN user, count(f) as followerCount`
+        `OPTIONAL MATCH (tokenUser:User{walletAddress:$tokenWalletAddress})-[tokenF:FOLLOWS]->(user)`,
+        `RETURN user, count(f) AS followerCount, count(tokenF) AS tokenF`
     ].join('\n');
     return session.run(query, {
-        regex: regex
+        regex: regex,
+        tokenWalletAddress: tokenWalletAddress
     })
         .then((results) => {
             let users = []
             results.records.forEach((record) => {
                 let user = new User(record.get('user'))
                 user.followerCount = record.get("followerCount").low
-
+                user.alreadyFollowed = record.get('tokenF').low > 0; // specific user is already followed by tokenWalletAddress
                 users.push(user)
             })
             return {
@@ -687,6 +693,69 @@ const getCommunitiesByUser = function (session, walletAddress) {
         })
 }
 
+const getTrending = function (session, walletAddress, start, size) {
+    if (start < 0) {
+        throw {
+            success: false,
+            message: "Start index must be non-negative"
+        }
+    } else if (size < 0) {
+        throw {
+            success: false,
+            message: "Size must be non-negative"
+        }
+    }
+
+    const query = [
+        `MATCH (user: User)`,
+        `OPTIONAL MATCH (user)<-[f:FOLLOWS]-(follower: User)`,
+        `OPTIONAL MATCH (tokenUser:User{walletAddress:$walletAddress})-[tokenF:FOLLOWS]->(user)`,
+        `RETURN user, count(f) AS followerCount, count(tokenF) AS tokenF, count(f)-user.initialWeeklyFollowers as weeklyFollowersDelta`,
+        `ORDER BY weeklyFollowersDelta DESC`,
+        `SKIP toInteger($start)`,
+        `LIMIT toInteger($size)`,
+    ].join('\n');
+
+    return session.run(query, {
+        walletAddress: walletAddress,
+        start: start,
+        size: size
+    })
+        .then(result => {
+            let users = []
+            result.records.forEach(record => {
+                let user = new User(record.get('user'))
+                user.followerCount = record.get("followerCount").low
+                user.alreadyFollowed = record.get('tokenF').low > 0; // specific user is already followed by tokenWalletAddress
+                users.push(user)
+            })
+            return {
+                success: true,
+                users: users
+            }
+        })
+        .catch(error => {
+            console.log(error)
+            throw {
+                success: false,
+                message: "Failed to fetch trending users",
+                error: error.message
+            }
+        })
+}
+
+// Cron job for resetting the trend count at 00:00 on Sunday
+cron.schedule('0 0 * * 0', resetTrending = function (session) {
+    const query = [
+        'MATCH (u: User)',
+        `OPTIONAL MATCH (user)<-[f:FOLLOWS]-(follower: User)`,
+        `WITH user, count(f) AS followerCount`,
+        `SET user.initialWeeklyFollowers = followerCount`
+    ].join("\n")
+
+    return session.run(query)
+});
+
 module.exports = {
     getAll,
     getByWalletAddress,
@@ -705,4 +774,5 @@ module.exports = {
     updateDashboard,
     getCommunitiesByUser,
     getFunds,
+    getTrending
 }
