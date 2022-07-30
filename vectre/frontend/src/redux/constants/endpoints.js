@@ -45,5 +45,11 @@ export const COMMUNITY = {
     UPDATE_COMMUNITY: "/communities/{communityID}/update",
     GET_ROLES_LOGGED_IN_USER: "/communities/{communityID}/members/{walletAddress}/roles",
     JOIN_COMMUNITY: "/communities/{communityID}/join",
-    LEAVE_COMMUNITY: "/communities/{communityID}/leave"
+    LEAVE_COMMUNITY: "/communities/{communityID}/leave",
+
+    MODERATION: {
+        PROMOTE_MEMBER: "/communities/{communityID}/promote/{walletAddress}",
+        BAN_MEMBER: "/communities/{communityID}/ban/{walletAddress}",
+        UNBAN_MEMBER: "/communities/{communityID}/unban/{walletAddress}"
+    }
 }

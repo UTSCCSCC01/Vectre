@@ -1,13 +1,14 @@
 import { useDisclosure } from '@chakra-ui/react';
 import { useState } from 'react';
 import { BsGearWideConnected } from 'react-icons/bs';
-import { useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import { loggedInUserRolesSelector } from '../../redux/selectors/communities';
 import { loggedInUserSelector } from '../../redux/selectors/users';
 import IconSquareButton from '../Buttons/IconSquareButton/IconSquareButton';
 import TextButton from '../Buttons/TextButton/TextButton';
 import GenericButtonsPopoverWrapper from '../Containers/GenericButtonsPopoverWrapper';
 import GenericWarningModal, { GENERIC_WARNING_TYPE } from '../Modals/GenericWarningModal/GenericWarningModal';
+import {banMember, promoteMember} from "../../redux/actions/communities";
 
 const ModeratorSettingsPopover = ({
     item
@@ -15,6 +16,7 @@ const ModeratorSettingsPopover = ({
 
     const loggedInUser = useSelector(loggedInUserSelector);
     const loggedInUserRoles = useSelector(loggedInUserRolesSelector);
+    const dispatch = useDispatch()
 
     const ModeratorSettingsButton = ({ onToggle }) => {
         return (
@@ -31,7 +33,7 @@ const ModeratorSettingsPopover = ({
         {
             isHidden: (loggedInUser.walletAddress === item.author.walletAddress) || (loggedInUserRoles.includes("moderator")),
             typeData: GENERIC_WARNING_TYPE.PROMOTE,
-            onClick: () => console.log("promoting" + item.author.username)
+            onClick: () => dispatch(promoteMember(item.community, item.author.walletAddress, (href) => { window.location.href = href }))
         },
         {
             typeData: GENERIC_WARNING_TYPE.DELETE,
@@ -40,7 +42,7 @@ const ModeratorSettingsPopover = ({
         {
             isHidden: loggedInUser.walletAddress === item.author.walletAddress,
             typeData: GENERIC_WARNING_TYPE.BAN,
-            onClick: () => console.log("banning" + item.author.username)
+            onClick: () => dispatch(banMember(item.community, item.author.walletAddress, (href) => { window.location.href = href }))
         }
     ]
 

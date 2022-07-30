@@ -7,6 +7,7 @@ import {
     STORE_ROLES_LOGGED_IN_USER,
     JOIN_COMMUNITY,
     LEAVE_COMMUNITY,
+    MODERATION,
 } from "../constants/communities";
 
 export const createCommunity = (community, redirectWindow) => ({
@@ -49,4 +50,24 @@ export const leaveCommunity = (communityID, callBack) => ({
     type: LEAVE_COMMUNITY,
     communityID,
     callBack
+})
+
+// Moderation
+export const promoteMember = (communityID, walletAddress, redirectWindow) => ({
+    type: MODERATION.PROMOTE_MEMBER,
+    communityID,
+    walletAddress,
+    redirectWindow
+})
+export const banMember = (communityID, walletAddress, redirectWindow) => ({
+    type: MODERATION.BAN_MEMBER,
+    communityID,
+    walletAddress,
+    redirectWindow
+})
+export const unbanMember = (communityID, walletAddress, redirectWindow) => ({
+    type: MODERATION.UNBAN_MEMBER,
+    communityID,
+    walletAddress,
+    redirectWindow
 })
