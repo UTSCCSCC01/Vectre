@@ -5,8 +5,8 @@ import {
 import ContentWIthNavContainer from "../../components/Containers/ContentWIthNavContainer";
 import {trendingCommunitiesSelector} from "../../redux/selectors/communities";
 import {useDispatch, useSelector} from "react-redux";
-import SearchResultContainer from "../../components/Containers/SearchResult";
 import {getTrendingCommunities} from "../../redux/actions/communities";
+import SearchResultContainer from "../../components/Search/SearchResult/SearchResult";
 
 const TrendingCommunitiesPage = () => {
     const trendingCommunities = useSelector(trendingCommunitiesSelector)
