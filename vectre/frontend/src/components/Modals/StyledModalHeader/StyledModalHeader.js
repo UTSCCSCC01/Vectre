@@ -10,7 +10,8 @@ const StyledModalHeader = ({
     icon,
     hideClose,
     color = 'primary.400',
-    fontSize = "28px"
+    fontSize = "28px",
+    fontWeight = 700
 }) => {
     return (
         <ModalHeader
@@ -31,8 +32,8 @@ const StyledModalHeader = ({
                 color={color}
             >
                 <Text
-                    fontWeight={700}
                     fontSize={fontSize}
+                    fontWeight={fontWeight}
                     mr="15px">
                     {headerText}
                 </Text>
