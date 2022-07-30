@@ -7,12 +7,16 @@ import {
     STORE_UNREADSTATUS,
     STORE_NFT,
     STORE_FUNDS,
+    DO_JOIN_LOGGED_IN_USER_COMMUNITY,
+    DO_LEAVE_LOGGED_IN_USER_COMMUNITY,
 } from "../constants/users";
 
 const initialState = {
     user: {},
     users: [],
-    loggedInUser: {},
+    loggedInUser: {
+        communities: []
+    },
     nonce: "",
     notifications: [],
     unreadStatus: false,
@@ -61,6 +65,22 @@ const users = (state = initialState, action) => {
             return {
                 ...state,
                 funds: action.funds
+            }
+        case DO_JOIN_LOGGED_IN_USER_COMMUNITY:
+            return {
+                ...state,
+                loggedInUser: {
+                    ...state.loggedInUser,
+                    communities: state.loggedInUser.communities.map((com, i) => com.communityID === action.communityID ? { ...com, alreadyJoined: true } : com)
+                }
+            }
+        case DO_LEAVE_LOGGED_IN_USER_COMMUNITY:
+            return {
+                ...state,
+                loggedInUser: {
+                    ...state.loggedInUser,
+                    communities: state.loggedInUser.communities.map((com, i) => com.communityID === action.communityID ? { ...com, alreadyJoined: false } : com)
+                }
             }
         default:
             return state

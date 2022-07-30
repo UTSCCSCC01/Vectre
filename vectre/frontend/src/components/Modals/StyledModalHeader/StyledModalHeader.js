@@ -7,12 +7,17 @@ import {
 
 const StyledModalHeader = ({
     headerText,
-    icon
+    icon,
+    hideClose,
+    color = 'primary.400',
+    fontSize = "28px",
+    fontWeight = 700
 }) => {
     return (
         <ModalHeader
             px={{ base: '24px', md: '64px' }}>
             <ModalCloseButton
+                display={hideClose ? 'none' : 'initial'}
                 color={'primary.400'}
                 top={4}
                 left={4}
@@ -24,11 +29,11 @@ const StyledModalHeader = ({
             <Flex
                 justifyContent={'center'}
                 alignItems={'center'}
-                color={'primary.400'}
+                color={color}
             >
                 <Text
-                    fontWeight={700}
-                    fontSize="28px"
+                    fontSize={fontSize}
+                    fontWeight={fontWeight}
                     mr="15px">
                     {headerText}
                 </Text>
