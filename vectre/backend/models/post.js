@@ -560,7 +560,7 @@ const getLikesOnPost = function (session, postID) {
         });
 }
 
-const getUserFeed = function (session, walletAddress, start, size, sortType, sortOrder) {
+const getUserFeed = async function (session, walletAddress, start, size, sortType, sortOrder) {
     sortType = sortType.toLowerCase(), sortOrder = sortOrder.toLowerCase()
 
     if (start < 0) {
@@ -644,43 +644,62 @@ const getUserFeed = function (session, walletAddress, start, size, sortType, sor
         ].join('\n');
     }
 
-    return session.run(query, {
-        walletAddress: walletAddress,
-        start: start,
-        size: size
-    })
-        .then((results) => {
-            let posts = []
-            results.records.forEach((record) => {
-                let post = new Post(record.get("post"))
-                post.author = new User(record.get("author"))
-                post.comment = String(record.get("comment").low);
-                post.community = record.get('communityID') ? String(record.get('communityID')) : null
-                post.alreadyLiked = record.get('likes').low > 0
-                if (post.repostPostID) {
-                    if (!record.get('repost')) {
-                        post.repostPostID = "removed"
-                    } else {
-                        post.repostPost = new Post(record.get('repost'))
-                        post.repostPost.author = new User(record.get('repostAuthor'))
-                    }
-                }
-                if (record.get('mod_link')) post.verified = true
-                post.author.roles = []
-                posts.push(post)
-            })
-            return {
-                success: true,
-                posts: posts
-            }
+    try {
+        const feedQuery = await session.run(query, {
+            walletAddress: walletAddress,
+            start: start,
+            size: size
         })
-        .catch((error) => {
-            throw {
-                success: false,
-                message: "Failed to get feed",
-                error: error.message
+        let posts = []
+        feedQuery.records.forEach(async (record) => {
+            let post = new Post(record.get("post"))
+            post.author = new User(record.get("author"))
+            post.comment = String(record.get("comment").low);
+            post.community = record.get('communityID') ? String(record.get('communityID')) : null
+            post.alreadyLiked = record.get('likes').low > 0
+            if (post.repostPostID) {
+                if (!record.get('repost')) post.repostPostID = "removed"
+                else {
+                    post.repostPost = new Post(record.get('repost'))
+                    post.repostPost.author = new User(record.get('repostAuthor'))
+                }
             }
-        });
+            if (record.get('mod_link')) post.verified = true
+            post.author.roles = []
+            posts.push(post)
+        })
+
+        const query2 = [
+            `UNWIND $posts as post`,
+            'MATCH (user: User {walletAddress: post.author.walletAddress})-[r]->(c: Community {communityID: post.community})',
+            'RETURN DISTINCT user.walletAddress, type(r)'
+        ].join('\n');
+
+        const rolesQuery = await session.run(query2, {
+            posts: posts
+        })
+
+        rolesQuery.records.forEach((record) => {
+            var postWalletAddress = record.get("user.walletAddress")
+            var relationship = record.get("type(r)")
+            posts.map((post) => {
+                if (post.author.walletAddress === postWalletAddress)
+                    post.author.roles.push(getRoleFromRelationship(relationship))
+            })
+        })
+
+
+        return {
+            success: true,
+            posts: posts
+        }
+    } catch (error) {
+        throw {
+            success: false,
+            message: "Failed to get feed",
+            error: error.message
+        }
+    }
 }
 
 const deletePostsByID = function (session, postList) {

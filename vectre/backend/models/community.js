@@ -630,72 +630,69 @@ const getCommunityFeed = async function (session, communityID, walletAddress, st
         `LIMIT toInteger($size)`
     ].join('\n');
 
-    const existsCheck = await exists(session, communityID).catch((error) => {
+    try {
+        const existsCheck = await exists(session, communityID)
+        if (existsCheck.result) { // Community exists
+            const sessionRun = await session.run(query, {
+                communityID: communityID,
+                walletAddress: walletAddress,
+                start: start,
+                size: size
+            })
+            let posts = []
+            sessionRun.records.forEach(async (record) => {
+                let post = new Post(record.get("post"))
+                post.author = new User(record.get("author"))
+                post.comment = String(record.get("comment").low);
+                post.community = record.get('com.communityID') ? String(record.get('com.communityID')) : null
+                post.alreadyLiked = record.get('likes').low > 0
+                if (post.repostPostID) {
+                    if (!record.get('repost')) post.repostPostID = "removed"
+                    else {
+                        post.repostPost = new Post(record.get('repost'))
+                        post.repostPost.author = new User(record.get('repostAuthor'))
+                    }
+                }
+                if (record.get('mod_link')) post.verified = true
+                post.author.roles = []
+                posts.push(post)
+            })
+
+            const query2 = [
+                `UNWIND $posts as post`,
+                'MATCH (user: User {walletAddress: post.author.walletAddress})-[r]->(c: Community {communityID: $communityID})',
+                'RETURN DISTINCT user.walletAddress, type(r)'
+            ].join('\n');
+
+            const sessionRun2 = await session.run(query2, {
+                communityID: communityID,
+                posts: posts
+            })
+
+            sessionRun2.records.forEach((record) => {
+                var postWalletAddress = record.get("user.walletAddress")
+                var relationship = record.get("type(r)")
+                posts.map((post) => {
+                    if (post.author.walletAddress === postWalletAddress)
+                        post.author.roles.push(getRoleFromRelationship(relationship))
+                })
+            })
+
+            return {
+                success: true,
+                posts: posts
+            }
+        } else {
+            throw {
+                success: false,
+                message: "Community does not exist"
+            }
+        }
+    } catch (error) {
         throw {
             success: false,
             message: "Failed to get feed",
             error: error.message
-        }
-    });
-
-    if (existsCheck.result) { // Community exists
-        const sessionRun = await session.run(query, {
-            communityID: communityID,
-            walletAddress: walletAddress,
-            start: start,
-            size: size
-        })
-        let posts = []
-        sessionRun.records.forEach(async (record) => {
-            let post = new Post(record.get("post"))
-            post.author = new User(record.get("author"))
-            post.comment = String(record.get("comment").low);
-            post.community = record.get('com.communityID') ? String(record.get('com.communityID')) : null
-            post.alreadyLiked = record.get('likes').low > 0
-            if (post.repostPostID) {
-                if (!record.get('repost')) {
-                    post.repostPostID = "removed"
-                } else {
-                    post.repostPost = new Post(record.get('repost'))
-                    post.repostPost.author = new User(record.get('repostAuthor'))
-                }
-            }
-            if (record.get('mod_link')) post.verified = true
-            post.author.roles = []
-            posts.push(post)
-        })
-
-        const query2 = [
-            `UNWIND $posts as post`,
-            'MATCH (user: User {walletAddress: post.author.walletAddress})-[r]->(c: Community {communityID: $communityID})',
-            'RETURN DISTINCT user.walletAddress, type(r)'
-        ].join('\n');
-
-        const sessionRun2 = await session.run(query2, {
-            communityID: communityID,
-            posts: posts
-        })
-
-        sessionRun2.records.forEach((record) => {
-            var postWalletAddress = record.get("user.walletAddress")
-            var relationship = record.get("type(r)")
-            console.log(postWalletAddress, relationship);
-            posts.map((post) => {
-                if (post.author.walletAddress === postWalletAddress) {
-                    post.author.roles.push(getRoleFromRelationship(relationship))
-                }
-            })
-        })
-
-        return {
-            success: true,
-            posts: posts
-        }
-    }
-    else {
-        throw {
-            success: false,
-            message: "Community does not exist"
         }
     }
 }
