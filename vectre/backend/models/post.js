@@ -591,7 +591,8 @@ const getUserFeed = function (session, walletAddress, start, size, sortType, sor
             `OPTIONAL MATCH (repostAuthor:User)`,
             `WHERE repostAuthor.walletAddress = repost.author`,
             `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
-            `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID AS communityID`,
+            `OPTIONAL MATCH (author)-[mod_link:MODERATES]->(com)`,
+            `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID AS communityID, mod_link`,
             `ORDER BY ${orderBy} ${order}`,
 
             `UNION`,
@@ -607,9 +608,10 @@ const getUserFeed = function (session, walletAddress, start, size, sortType, sor
             `OPTIONAL MATCH (repostAuthor:User)`,
             `WHERE repostAuthor.walletAddress = repost.author`,
             `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
-            `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID AS communityID`,
+            `OPTIONAL MATCH (author)-[mod_link:MODERATES]->(com)`,
+            `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID AS communityID, mod_link`,
             `}`,
-            `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, likes, comment, communityID`,
+            `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, likes, comment, communityID, mod_link`,
             `ORDER BY ${orderBy} ${order}`,
             `SKIP toInteger($start)`,
             `LIMIT toInteger($size)`
@@ -624,7 +626,8 @@ const getUserFeed = function (session, walletAddress, start, size, sortType, sor
             `OPTIONAL MATCH (repostAuthor:User)`,
             `WHERE repostAuthor.walletAddress = repost.author`,
             `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
-            `RETURN DISTINCT post, author, repost, repostAuthor, 0 AS likes, count(c) AS comment, com.communityID AS communityID`,
+            `OPTIONAL MATCH (author)-[mod_link:MODERATES]->(com)`,
+            `RETURN DISTINCT post, author, repost, repostAuthor, 0 AS likes, count(c) AS comment, com.communityID AS communityID, mod_link`,
             `ORDER BY ${orderBy} ${order}`,
             `SKIP toInteger($start)`,
             `LIMIT toInteger($size)`
@@ -652,7 +655,8 @@ const getUserFeed = function (session, walletAddress, start, size, sortType, sor
                         post.repostPost.author = new User(record.get('repostAuthor'))
                     }
                 }
-
+                if (record.get('mod_link')) post.verified = true
+                post.author.roles = []
                 posts.push(post)
             })
             return {
@@ -664,7 +668,7 @@ const getUserFeed = function (session, walletAddress, start, size, sortType, sor
             throw {
                 success: false,
                 message: "Failed to get feed",
-                error: error
+                error: error.message
             }
         });
 }
