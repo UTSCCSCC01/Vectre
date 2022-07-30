@@ -128,7 +128,6 @@ router.get('/login/currentUser', authenticateToken, (req, res) => {
 router.put('/:walletAddress/update', authenticateToken, (req, res) => {
     if (req.walletAddress === req.params.walletAddress) {
         (async () => {
-            console.log(req.body)
             var profilePicLink = "";
             var bannerLink = "";
             var tokenID = "";

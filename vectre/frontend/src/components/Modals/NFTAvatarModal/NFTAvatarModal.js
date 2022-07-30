@@ -186,15 +186,12 @@ function NFTAvatarModal({
                     <ModalFooter>
                         <Button
                             onClick={(e) => {
-                                console.log("hi");
                                 onClose();
                                 if (selectedList.length === 0) {
                                     setProfilePicImageLink(null);
                                     setProfilePicTokenID(null);
                                 }
                                 else {
-                                    console.log(selectedList[0].tokenID)
-                                    console.log(selectedList[0].imageURL)
                                     setProfilePicTokenID(String(selectedList[0].tokenID));
                                     setProfilePicImageLink(String(selectedList[0].imageURL));
                                 }
