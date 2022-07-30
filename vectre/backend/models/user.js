@@ -551,7 +551,11 @@ const unfollowUser = (session, walletAddress, walletAddressToUnfollow) => {
     }
 }
 
-const getNFT = (walletAddress) => { // Gets all NFTs of a User using OpenSea API.
+const getNFT = (session, walletAddress) => { // Gets all NFTs of a User using OpenSea API.
+    // const getQuery = `MATCH (u:User {walletAddress: ${walletAddress}}) RETURN u.profilePicTokenID`
+    // const setQuery = `MATCH (u:User {walletAddress: ${walletAddress}}) SET u.profilePicTokenID = null RETURN u`
+    // var nftExists = false;
+
     return fetch(`https://testnets-api.opensea.io/api/v1/assets?owner=${walletAddress}&order_direction=desc&offset=0&limit=20&include_orders=false`)
         .then(res => {
             if (res.status !== 200) {
@@ -580,8 +584,12 @@ const getNFT = (walletAddress) => { // Gets all NFTs of a User using OpenSea API
                     contractAddress: json.assets[i].asset_contract.address,
                 }
                 asset_list.push(jsonObj);
-            }
 
+                // Validate Avatar NFT:
+                // if (json.assets[i].id == parseInt(profilePicTokenID)) {
+                //     nftExists = true;
+                // }
+            }
             return {
                 success: true,
                 nft: asset_list,
