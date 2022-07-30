@@ -15,12 +15,13 @@ import PostBotRepostButton from "./PostBotRepostButton/PostBotRepostButton";
 
 const PostBotComponent = ({
     item,
-    fromFeed = false
+    fromFeed = false,
+    fromSearch = false,
 }) => {
     return (
         <Flex flexDirection={'row'} alignContent={'center'} justifyContent={'space-between'}>
             <Flex gap={'10px'}>
-                <PostBotLikeButton item={item} fromFeed={fromFeed} />
+                <PostBotLikeButton item={item} fromFeed={fromFeed} fromSearch={fromSearch} />
                 <TextButton
                     display={item.comment && !item.parent ? 'inline-flex' : 'none'}
                     text={`${item.comment} Commments`}

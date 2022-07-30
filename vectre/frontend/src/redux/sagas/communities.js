@@ -15,14 +15,12 @@ import {
     GET_ROLES_LOGGED_IN_USER,
     JOIN_COMMUNITY,
     LEAVE_COMMUNITY,
-    SEARCH_COMMUNITIES,
 } from "../constants/communities";
 import {
     getCommunity,
     getRolesOfLoggedInUser,
     storeCommunity,
     storeRolesOfLoggedInUser,
-    storeSearchedCommunities,
     storeTrendingCommunities
 } from "../actions/communities";
 
@@ -72,20 +70,6 @@ function* getTrendingCommunities() {
     }
 }
 
-function* searchCommunities(action) {
-    try {
-        const response = yield call(getRequest, BASE_API_URL + COMMUNITY.SEARCH_COMMUNITIES.replace("{searchVal}", action.searchVal)), responseData = response[1]
-        if (responseData.success) {
-            yield put(storeSearchedCommunities(responseData.communities))
-        } else {
-            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
-        }
-    } catch (error) {
-        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get communities"))
-        console.log(error)
-    }
-}
-
 function* updateCommunitySaga(action) {
     try {
         const response = yield call(putRequest, BASE_API_URL + COMMUNITY.UPDATE_COMMUNITY.replace("{communityID}", action.communityID), action.community), responseData = response[1]
@@ -128,6 +112,10 @@ function* joinCommunity(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + COMMUNITY.JOIN_COMMUNITY.replace("{communityID}", action.communityID)), responseData = response[1]
         if (responseData.success) {
+            if (action.callBack) {
+                action.callBack()
+                return;
+            }
             yield put(getCommunity(action.communityID))
             yield put(getRolesOfLoggedInUser(action.communityID))
             yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
@@ -144,6 +132,10 @@ function* leaveCommunity(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + COMMUNITY.LEAVE_COMMUNITY.replace("{communityID}", action.communityID)), responseData = response[1]
         if (responseData.success) {
+            if (action.callBack) {
+                action.callBack()
+                return;
+            }
             yield put(getCommunity(action.communityID))
             yield put(getRolesOfLoggedInUser(action.communityID))
             yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
@@ -160,7 +152,6 @@ function* communitySaga() {
     yield takeLatest(CREATE_COMMUNITY, createCommunitySaga)
     yield takeLatest(GET_COMMUNITY, getCommunitySaga)
     yield takeLatest(GET_TRENDING_COMMUNITIES, getTrendingCommunities)
-    yield takeLatest(SEARCH_COMMUNITIES, searchCommunities)
     yield takeLatest(UPDATE_COMMUNITY, updateCommunitySaga)
     yield takeLatest(GET_ROLES_LOGGED_IN_USER, getRolesOfLoggedInUserSaga)
     yield takeLatest(JOIN_COMMUNITY, joinCommunity)
