@@ -617,6 +617,85 @@ const getUserFeed = function (session, walletAddress, start, size, sortType, sor
         });
 }
 
+const search = function (session, searchVal, walletAddress, start, size, sortType, sortOrder) {
+    sortType = sortType.toLowerCase(), sortOrder = sortOrder.toLowerCase()
+
+    if (start < 0) {
+        throw {
+            success: false,
+            message: "Start index must be non-negative"
+        }
+    } else if (size < 0) {
+        throw {
+            success: false,
+            message: "Size must be non-negative"
+        }
+    } else if (!Object.values(FEED_SORT.TYPES).includes(sortType)) {
+        throw {
+            success: false,
+            message: "Invalid sort type"
+        }
+    } else if (!Object.values(FEED_SORT.ORDER).includes(sortOrder)) {
+        throw {
+            success: false,
+            message: "Invalid sort order"
+        }
+    }
+
+    const orderBy = sortType === FEED_SORT.TYPES.TIMESTAMP ? "post.timestamp" : "post.likes",
+        order = sortOrder === FEED_SORT.ORDER.DESC ? "DESC" : ""
+
+    const regex = `(?i).*${searchVal}.*`
+    const query = [
+        `MATCH (author:User)-[:POSTED]->(post: Post)`,
+        `WHERE post.parent IS NULL AND post.text =~ $regex`, // Prevent comments in feed
+        `OPTIONAL MATCH (user:User{walletAddress: $walletAddress})-[l:LIKED]->(post)`,
+        `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
+        `OPTIONAL MATCH (repost:Post)`,
+        `WHERE repost.postID = post.repostPostID`,
+        `OPTIONAL MATCH (repostAuthor:User)`,
+        `WHERE repostAuthor.walletAddress = repost.author`,
+        `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
+        `RETURN DISTINCT post, author, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID AS communityID`,
+        `ORDER BY ${orderBy} ${order}`,
+        `SKIP toInteger($start)`,
+        `LIMIT toInteger($size)`
+    ].join('\n');
+
+    return session.run(query, {
+        regex: regex,
+        walletAddress: walletAddress,
+        start: start,
+        size: size
+    })
+        .then((results) => {
+            let posts = []
+            results.records.forEach((record) => {
+                let post = new Post(record.get("post"))
+                post.author = new User(record.get("author"))
+                post.comment = String(record.get("comment").low);
+                post.community = record.get('communityID') ? String(record.get('communityID')) : null
+                post.alreadyLiked = record.get('likes').low > 0
+                if (post.repostPostID) {
+                    post.repostPost = new Post(record.get('repost'))
+                    post.repostPost.author = new User(record.get('repostAuthor'))
+                }
+
+                posts.push(post)
+            })
+            return {
+                success: true,
+                posts: posts
+            }
+        })
+        .catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to search posts",
+                error: error.message
+            }
+        })
+}
 
 module.exports = {
     createPost,
@@ -629,5 +708,6 @@ module.exports = {
     unlikePost,
     getLikesOnPost,
     checkIfAlreadyLiked,
-    getUserFeed
+    getUserFeed,
+    search
 };

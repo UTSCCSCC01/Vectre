@@ -7,8 +7,6 @@ import {
     STORE_ROLES_LOGGED_IN_USER,
     JOIN_COMMUNITY,
     LEAVE_COMMUNITY,
-    SEARCH_COMMUNITIES,
-    STORE_SEARCHED_COMMUNITIES
 } from "../constants/communities";
 
 export const createCommunity = (community, redirectWindow) => ({
@@ -24,15 +22,6 @@ export const getCommunity = (communityID) => ({
 export const storeCommunity = (community) => ({
     type: STORE_COMMUNITY,
     community
-})
-
-export const searchCommunities = (searchVal) => ({
-    type: SEARCH_COMMUNITIES,
-    searchVal
-})
-export const storeSearchedCommunities = (searchedCommunities) => ({
-    type: STORE_SEARCHED_COMMUNITIES,
-    searchedCommunities
 })
 
 export const updateCommunity = (communityID, community, redirectWindow) => ({
@@ -51,11 +40,13 @@ export const storeRolesOfLoggedInUser = (roles) => ({
     roles
 })
 
-export const joinCommunity = (communityID) => ({
+export const joinCommunity = (communityID, callBack) => ({
     type: JOIN_COMMUNITY,
-    communityID
+    communityID,
+    callBack
 })
-export const leaveCommunity = (communityID) => ({
+export const leaveCommunity = (communityID, callBack) => ({
     type: LEAVE_COMMUNITY,
-    communityID
+    communityID,
+    callBack
 })
