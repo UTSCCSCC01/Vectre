@@ -2,19 +2,16 @@ import {
     Container,
     Grid,
     GridItem,
-    Stack, 
-    Icon, 
-    Image, 
-    useDisclosure, 
+    Stack,
+    useDisclosure,
     Box
 } from '@chakra-ui/react'
 import ButtonLinkWrapper from '../Buttons/ButtonLinkWrapper/ButtonLinkWrapper';
-import CommunityButton from '../Buttons/CommunityButton/CommunityButton';
 import TextButton from '../Buttons/TextButton/TextButton';
-import {IoIosPeople} from 'react-icons/io'; 
-import {BsFillArrowRightCircleFill} from 'react-icons/bs';
+import { IoIosPeople } from 'react-icons/io';
+import { BsFillArrowRightCircleFill } from 'react-icons/bs';
 import PersonalCommunityModal from '../Modals/PersonalCommunityModal/PersonalCommunityModal';
-import {getAvatarOrDefault} from "../../utils/Utils";
+import { cutText, getAvatarOrDefault } from "../../utils/Utils";
 
 const ContentWithCommunityButtons = ({
     sideButtonsList,
@@ -39,30 +36,35 @@ const ContentWithCommunityButtons = ({
                                 fontSize={'18px'}
                                 fontWeight={700}
                                 text={"My Communities"}
-                                rightIcon={<IoIosPeople px={'18px'}/>} />
+                                rightIcon={<IoIosPeople px={'18px'} />} />
                         </ButtonLinkWrapper>
                         {someButtons.map((btn, i) =>
-                                <ButtonLinkWrapper href={"/c/" + btn.communityID}>
-                                    <CommunityButton
-                                            width={'100%'}
-                                            px={'17.5px'}
-                                            fontSize={'18px'}
-                                            fontWeight={200}
-                                            text={btn.communityID}
-                                            imgSrc={getAvatarOrDefault(btn.profilePic)}/>
-                                </ButtonLinkWrapper>
+                            <ButtonLinkWrapper href={"/c/" + btn.communityID}>
+                                <TextButton
+                                    justifyContent={'flex-start'}
+                                    gap={'8px'}
+                                    width={'100%'}
+                                    px={'17.5px'}
+                                    fontSize={'18px'}
+                                    fontWeight={400}
+                                    text={"<" + cutText(btn.communityID, 10) + ">"}
+                                    imgSrc={getAvatarOrDefault(btn.profilePic)}
+                                />
+                            </ButtonLinkWrapper>
                         )}
                         <Box onClick={onOpen}>
                             <TextButton
+                                justifyContent={'flex-start'}
+                                gap={'8px'}
                                 width={'100%'}
                                 px={'17.5px'}
                                 fontSize={'18px'}
-                                fontWeight={700}
+                                fontWeight={400}
                                 text={"View More"}
-                                leftIcon={<BsFillArrowRightCircleFill px={'18px'} />} 
-                                />
+                                leftIcon={<BsFillArrowRightCircleFill size={'1.3rem'} />}
+                            />
                         </Box>
-                        <PersonalCommunityModal isOpen={isOpen} onClose={onClose} communitiesList={sideButtonsList}/>
+                        <PersonalCommunityModal isOpen={isOpen} onClose={onClose} communitiesList={sideButtonsList} />
                     </Stack>
                 </GridItem>
                 <GridItem>
