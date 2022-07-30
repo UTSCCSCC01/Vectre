@@ -5,6 +5,7 @@ import {
     ModalContent,
     ModalBody,
     ModalFooter,
+    useDisclosure,
     Button,
     Flex,
     Image
@@ -15,13 +16,19 @@ import { RiImageAddFill } from 'react-icons/ri'
 import StyledModalHeader from "../../../StyledModalHeader/StyledModalHeader";
 import { getAvatarOrDefault } from "../../../../../utils/Utils";
 import TextButton from "../../../../Buttons/TextButton/TextButton";
+import NFTAvatarModal from "../../../NFTAvatarModal/NFTAvatarModal"
+
 
 const ProfilePicEditModal = ({
     data,
     isOpen,
     onClose,
     profilePicImageData,
-    setProfilePicImageData
+    setProfilePicImageData,
+    profilePicTokenID,
+    setProfilePicTokenID,
+    profilePicImageLink,
+    setProfilePicImageLink
 }) => {
 
     const profilePicHiddenFileInput = React.useRef(null);
@@ -32,6 +39,7 @@ const ProfilePicEditModal = ({
     const profilePicHandleChange = (event) => {
         setProfilePicImageData(document.getElementById("profilePicImageInput").files[0]);
     };
+    const { isOpen: isOpenNFT, onOpen: onOpenNFT, onClose: onCloseNFT } = useDisclosure()
 
     return (
         <>
@@ -58,12 +66,13 @@ const ProfilePicEditModal = ({
                             gap={'20px'}>
                             <Image
                                 border={'5px solid white'}
-                                src={profilePicImageData ? URL.createObjectURL(profilePicImageData) : getAvatarOrDefault(data.profilePic)}
+                                src={profilePicImageLink ? profilePicImageLink : (profilePicImageData ? URL.createObjectURL(profilePicImageData) : getAvatarOrDefault(data.profilePic))}
                                 fit={'cover'}
                                 overflow={'hidden'}
                                 borderRadius={'full'}
                                 boxSize={'160px'} />
                             <TextButton
+                                onClick={onOpenNFT}
                                 display={data.walletAddress ? 'inline-flex' : 'none'}
                                 text={'Select NFT'}
                                 fontWeight={700}
@@ -115,6 +124,16 @@ const ProfilePicEditModal = ({
                     </ModalFooter>
                 </ModalContent>
             </Modal>
+            <NFTAvatarModal
+                isOpen={isOpenNFT}
+                onClose={onCloseNFT}
+                data={data}
+                profilePicImageData={profilePicImageData}
+                setProfilePicImageData={setProfilePicImageData}
+                profilePicTokenID={profilePicTokenID}
+                setProfilePicTokenID={setProfilePicTokenID}
+                profilePicImageLink={profilePicImageLink}
+                setProfilePicImageLink={setProfilePicImageLink} />
         </>
     );
 }

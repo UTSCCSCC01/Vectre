@@ -13,6 +13,7 @@ const NFTImage = ({
    selectedList,
    setSelectedList,
    nftItem,
+   maxSelected
 }) => {
    var [selected, setSelected] = useBoolean();
    const dispatch = useDispatch();
@@ -28,7 +29,7 @@ const NFTImage = ({
          height={'200px'}
          border={selected ? '5px var(--chakra-colors-primary-400) solid' : '2px rgba(200, 200, 200, 0.6) solid'}
          onClick={() => {
-            if (selectedList.length < 3 || (selectedList.length === 3 && selected === true)) {
+            if (selectedList.length < maxSelected || (selectedList.length === maxSelected && selected === true)) {
                setSelected.toggle();
                if (!selected === true) {
                   handleSelectAdd(selectedList, nftItem, setSelectedList);
@@ -37,8 +38,13 @@ const NFTImage = ({
                   handleSelectDelete(selectedList, nftItem, setSelectedList);
                }
             }
-            if (selectedList.length === 3 && selected === false) {
-               dispatch(showToast(TOAST_STATUSES.ERROR, "Select a maximum of three NFTs"));
+            if (selectedList.length === maxSelected && selected === false) {
+               if (maxSelected > 1) {
+                  dispatch(showToast(TOAST_STATUSES.ERROR, "Select a maximum of " + maxSelected + " NFTs"));
+               }
+               else {
+                  dispatch(showToast(TOAST_STATUSES.ERROR, "Please select only one NFT"));
+               }
             }
          }}
       />

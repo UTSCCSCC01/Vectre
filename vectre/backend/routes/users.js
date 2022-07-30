@@ -130,15 +130,22 @@ router.put('/:walletAddress/update', authenticateToken, (req, res) => {
         (async () => {
             var profilePicLink = "";
             var bannerLink = "";
-            if (req.body.profilePicImageData) {
-                const img1 = await upload(req.body.profilePicImageData);
-                profilePicLink = img1.data.link;
+            var tokenID = "";
+            if (req.body.profilePicTokenID) {
+                tokenID = req.body.profilePicTokenID;
+                profilePicLink = req.body.profilePicImageLink;
+            }
+            else {
+                if (req.body.profilePicImageData) {
+                    const img1 = await upload(req.body.profilePicImageData);
+                    profilePicLink = img1.data.link;
+                }
             }
             if (req.body.bannerImageData) {
                 const img2 = await upload(req.body.bannerImageData);
                 bannerLink = img2.data.link;
             }
-            User.updateProfile(dbUtils.getSession(req), req.params.walletAddress, req.body, profilePicLink, bannerLink)
+            User.updateProfile(dbUtils.getSession(req), req.params.walletAddress, req.body, profilePicLink, bannerLink, tokenID)
                 .then((result) => res.send(result))
                 .catch((error) => res.send(error))
         })();
