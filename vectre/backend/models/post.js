@@ -6,7 +6,7 @@ const imgUtils = require('../utils/images')
 const Notification = require("../models/notification")
 const { ROLES } = require("../models/neo4j/community");
 const Community = require("./community")
-const {FEED_SORT} = require("./neo4j/post");
+const { FEED_SORT } = require("./neo4j/post");
 
 const createPost = function (session, authorWalletAddress, body, imageURL) {
     if (!body.text) {
@@ -16,118 +16,133 @@ const createPost = function (session, authorWalletAddress, body, imageURL) {
         }
     }
     const postID = nano()
-    const timestamp = new Date().toISOString()
-    return Community.isRole(session, authorWalletAddress, body.communityID, ROLES.MEMBER.type)
-        .then(memberCheck => {
-            if (!memberCheck.emptyInput) {
-                if (memberCheck.success) {
-                    if (!memberCheck.result) {
-                        // Author is not a member of Community
-                        return {
-                            success: false,
-                            message: "Author is not a Member of Community"
-                        }
-                    }
-                } else {
-                    // User or Community does not exist
+    const timestamp = new Date().toISOString();
+
+    return (async () => {
+        // Check if author cannot make post inside community, if community is provided.
+        if (body.communityID) {
+            try {
+                const memberCheck = await Community.isRole(session, authorWalletAddress, body.communityID, ROLES.MEMBER.type)
+                if (!memberCheck.success) {
                     return {
                         success: false,
-                        message: "User or Community does not exist"
+                        message: "User or Community does not exist."
+                    }
+                }
+                if (!memberCheck.result) {
+                    return {
+                        success: false,
+                        message: "You are not a member of this community"
+                    }
+                }
+                const bannedResult = await Community.isRole(session, authorWalletAddress, body.communityID, ROLES.BANNED.type)
+                if (bannedResult.result) {
+                    return {
+                        success: false,
+                        message: "You are banned from this community"
                     }
                 }
             }
+            catch (error) {
+                throw {
+                    success: false,
+                    message: "Failed to create Post",
+                    error: error.message
+                }
+            }
+        }
 
-            if (body.repostPostID) { // Repost
-                return getPostByID(session, null, body.repostPostID)
-                    .then((result) => {
-                        if (result.success) {
-                            if (result.post.repostPostID) { // Prevent repost of repost
-                                throw {
-                                    success: false,
-                                    message: "Cannot create repost of repost"
-                                }
-                            }
-                            const query = [
-                                `CREATE (p:Post {postID: $postID, repostPostID: $repostPostID, text: $text, imageURL: $imageURL, author: $author, timestamp: $timestamp, likes: 0, edited: false, parent: null})`,
-                                `WITH (p)`,
-                                `MATCH (u:User {walletAddress: $author}), (repost:Post {postID: $repostPostID})`,
-                                `CREATE (u)-[r:POSTED]->(p)`
-                            ].join('\n');
-
-                            return session.run(query, {
-                                postID: postID,
-                                repostPostID: body.repostPostID,
-                                text: body.text,
-                                imageURL: imageURL, // optional
-                                author: authorWalletAddress,
-                                timestamp: timestamp
-                            })
-                                .then((result2) => {
-                                    if (body.communityID) {
-                                        Community.linkPost(session, authorWalletAddress, postID, body.communityID)
-                                    }
-                                    return {
-                                        success: true,
-                                        message: "Successfully created repost",
-                                        newPostID: postID
-                                    }
-                                })
-                                .catch((error) => {
-                                    throw {
-                                        success: false,
-                                        message: "Failed to create repost",
-                                        error: error
-                                    }
-                                });
-                        } else {
+        if (body.repostPostID) { // Repost
+            return getPostByID(session, null, body.repostPostID)
+                .then((result) => {
+                    if (result.success) {
+                        if (result.post.repostPostID) { // Prevent repost of repost
                             throw {
                                 success: false,
-                                message: result.message
+                                message: "Cannot create repost of repost"
                             }
                         }
-                    })
-                    .catch((error) => {
-                        throw {
-                            success: false,
-                            message: "Failed to create repost",
-                            error: error.message
-                        }
-                    });
-            } else {
-                const query = [
-                    `CREATE (p:Post {postID: $postID, text: $text, imageURL: $imageURL, author: $author, timestamp: $timestamp, likes: 0, edited: false, parent: null})`,
-                    `WITH (p)`,
-                    `MATCH (u:User)`,
-                    `WHERE u.walletAddress = $author`,
-                    `CREATE (u)-[r:POSTED]->(p)`
-                ].join('\n');
 
-                return session.run(query, {
-                    postID: postID,
-                    text: body.text,
-                    imageURL: imageURL, // optional
-                    author: authorWalletAddress,
-                    timestamp: timestamp
-                })
-                    .then((result) => {
-                        if (body.communityID) {
-                            Community.linkPost(session, authorWalletAddress, postID, body.communityID)
-                        }
-                        return {
-                            success: true,
-                            message: "Successfully created post",
-                            newPostID: postID
-                        }
-                    })
-                    .catch((error) => {
+                        const query = [
+                            `CREATE (p:Post {postID: $postID, repostPostID: $repostPostID, text: $text, imageURL: $imageURL, author: $author, timestamp: $timestamp, likes: 0, edited: false, parent: null})`,
+                            `WITH (p)`,
+                            `MATCH (u:User {walletAddress: $author}), (repost:Post {postID: $repostPostID})`,
+                            `CREATE (u)-[r:POSTED]->(p)`
+                        ].join('\n');
+
+                        return session.run(query, {
+                            postID: postID,
+                            repostPostID: body.repostPostID,
+                            text: body.text,
+                            imageURL: imageURL, // optional
+                            author: authorWalletAddress,
+                            timestamp: timestamp
+                        })
+                            .then((result2) => {
+                                if (body.communityID) {
+                                    Community.linkPost(session, authorWalletAddress, postID, body.communityID)
+                                }
+                                return {
+                                    success: true,
+                                    message: "Successfully created repost",
+                                    newPostID: postID
+                                }
+                            })
+                            .catch((error) => {
+                                throw {
+                                    success: false,
+                                    message: "Failed to create repost",
+                                    error: error
+                                }
+                            });
+                    } else {
                         throw {
                             success: false,
-                            message: "Failed to create post",
-                            error: error.message
+                            message: result.message
                         }
-                    });
-            }
-        })
+                    }
+                })
+                .catch((error) => {
+                    throw {
+                        success: false,
+                        message: "Failed to create repost",
+                        error: error.message
+                    }
+                });
+        } else {
+            const query = [
+                `CREATE (p:Post {postID: $postID, text: $text, imageURL: $imageURL, author: $author, timestamp: $timestamp, likes: 0, edited: false, parent: null})`,
+                `WITH (p)`,
+                `MATCH (u:User)`,
+                `WHERE u.walletAddress = $author`,
+                `CREATE (u)-[r:POSTED]->(p)`
+            ].join('\n');
+            return session.run(query, {
+                postID: postID,
+                text: body.text,
+                imageURL: imageURL, // optional
+                author: authorWalletAddress,
+                timestamp: timestamp
+            })
+                .then((result) => {
+                    if (body.communityID) {
+                        Community.linkPost(session, authorWalletAddress, postID, body.communityID)
+                    }
+                    return {
+                        success: true,
+                        message: "Successfully created post",
+                        newPostID: postID
+                    }
+                })
+                .catch((error) => {
+                    throw {
+                        success: false,
+                        message: "Failed to create post",
+                        error: error.message
+                    }
+                });
+        }
+    })();
 };
 
 const createComment = function (session, authorWalletAddress, postID, body) {
@@ -138,40 +153,65 @@ const createComment = function (session, authorWalletAddress, postID, body) {
         }
     }
     const commentPostID = nano()
-    const timestamp = new Date().toISOString()
-    const query = [
-        `CREATE (p:Post {postID: $commentPostID, text: $text, author: $authorWalletAddress, timestamp: $timestamp, likes: 0, edited: false, parent: $parentPostID})`,
-        `WITH (p)`,
-        `MATCH (u:User), (parent:Post)`,
-        `WHERE u.walletAddress = $authorWalletAddress AND parent.postID = $parentPostID`,
-        `CREATE (u)-[r:POSTED]->(p), (p)-[r2:COMMENTED_ON]->(parent)`,
-        `RETURN parent`
-    ].join('\n');
+    const timestamp = new Date().toISOString();
 
-    return session.run(query, {
-        commentPostID: commentPostID,
-        parentPostID: postID,
-        text: body.text,
-        authorWalletAddress: authorWalletAddress,
-        timestamp: timestamp
-    })
-        .then((result) => {
-            var parentAuthor = new Post(result.records[0].get('parent')).author
-            return Notification.create(session, "comment", parentAuthor, authorWalletAddress, commentPostID)
-                .then((result2) => {
+    return (async () => {
+        try {
+            const postCheck = await getPostByID(session, null, postID)
+            if (!postCheck.success) {
+                throw { message: postCheck.message }
+            }
+            if (postCheck.post.community) {
+                const bannedCheck = await Community.isRole(session, authorWalletAddress, postCheck.post.community, ROLES.BANNED.type)
+                if (bannedCheck.result) {
                     return {
-                        success: true,
-                        message: "Successfully created comment"
+                        success: false,
+                        message: `You are banned from this community`
                     }
-                })
-        })
-        .catch((error) => {
+                }
+            }
+        } catch (error) {
             throw {
                 success: false,
-                message: "Failed to create comment",
-                error: error
+                message: "Failed to create comment.",
+                error: error.message
             }
-        });
+        }
+
+        const query = [
+            `CREATE (p:Post {postID: $commentPostID, text: $text, author: $authorWalletAddress, timestamp: $timestamp, likes: 0, edited: false, parent: $parentPostID})`,
+            `WITH (p)`,
+            `MATCH (u:User), (parent:Post)`,
+            `WHERE u.walletAddress = $authorWalletAddress AND parent.postID = $parentPostID`,
+            `CREATE (u)-[r:POSTED]->(p), (p)-[r2:COMMENTED_ON]->(parent)`,
+            `RETURN parent`
+        ].join('\n');
+
+        return session.run(query, {
+            commentPostID: commentPostID,
+            parentPostID: postID,
+            text: body.text,
+            authorWalletAddress: authorWalletAddress,
+            timestamp: timestamp
+        })
+            .then((result) => {
+                var parentAuthor = new Post(result.records[0].get('parent')).author
+                return Notification.create(session, "comment", parentAuthor, authorWalletAddress, commentPostID)
+                    .then((result2) => {
+                        return {
+                            success: true,
+                            message: "Successfully created comment"
+                        }
+                    })
+            })
+            .catch((error) => {
+                throw {
+                    success: false,
+                    message: "Failed to create comment",
+                    error: error
+                }
+            });
+    })();
 };
 
 const update = function (session, walletAddress, postID, body) {
@@ -250,8 +290,12 @@ const getPostsByUser = function (session, walletAddress, profileWalletAddress) {
                 postRecord.alreadyLiked = record.get('likes').low > 0;
                 postRecord.community = record.get('com.communityID') ? String(record.get('com.communityID')) : null
                 if (postRecord.repostPostID) {
-                    postRecord.repostPost = new Post(record.get('repost'))
-                    postRecord.repostPost.author = new User(record.get('repostAuthor'))
+                    if (!record.get('repost')) {
+                        postRecord.repostPostID = "removed"
+                    } else {
+                        postRecord.repostPost = new Post(record.get('repost'))
+                        postRecord.repostPost.author = new User(record.get('repostAuthor'))
+                    }
                 }
                 posts.push(postRecord)
             })
@@ -326,8 +370,12 @@ const getPostByID = function (session, walletAddress, postID) {
             post.comment = String(queryRecord.get("comment").low);
             post.community = queryRecord.get('com.communityID') ? String(queryRecord.get('com.communityID')) : null
             if (post.repostPostID) {
-                post.repostPost = new Post(queryRecord.get('repost'))
-                post.repostPost.author = new User(queryRecord.get('repostAuthor'))
+                if (!queryRecord.get('repost')) {
+                    post.repostPostID = "removed"
+                } else {
+                    post.repostPost = new Post(queryRecord.get('repost'))
+                    post.repostPost.author = new User(queryRecord.get('repostAuthor'))
+                }
             }
 
             if (walletAddress !== null) {
@@ -433,8 +481,8 @@ const likePost = function (session, postID, walletAddress) {
         .catch((error) => {
             throw {
                 success: false,
-                message: "Failed to like post",
-                error: error
+                message: "Failed like Post",
+                error: error.message
             }
         })
 };
@@ -534,32 +582,32 @@ const getUserFeed = function (session, walletAddress, start, size, sortType, sor
     if (walletAddress !== null) {
         query = [
             `CALL {`,
-                `MATCH (currentUser: User {walletAddress: $walletAddress})-[:FOLLOWS]->(author:User)-[:POSTED]->(post: Post)`,
-                `WHERE post.parent IS NULL`, // Prevent comments in feed
-                `OPTIONAL MATCH (currentUser)-[l:LIKED]->(post)`,
-                `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
-                `OPTIONAL MATCH (repost:Post)`,
-                `WHERE repost.postID = post.repostPostID`,
-                `OPTIONAL MATCH (repostAuthor:User)`,
-                `WHERE repostAuthor.walletAddress = repost.author`,
-                `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
-                `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID AS communityID`,
-                `ORDER BY ${orderBy} ${order}`,
+            `MATCH (currentUser: User {walletAddress: $walletAddress})-[:FOLLOWS]->(author:User)-[:POSTED]->(post: Post)`,
+            `WHERE post.parent IS NULL`, // Prevent comments in feed
+            `OPTIONAL MATCH (currentUser)-[l:LIKED]->(post)`,
+            `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
+            `OPTIONAL MATCH (repost:Post)`,
+            `WHERE repost.postID = post.repostPostID`,
+            `OPTIONAL MATCH (repostAuthor:User)`,
+            `WHERE repostAuthor.walletAddress = repost.author`,
+            `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
+            `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID AS communityID`,
+            `ORDER BY ${orderBy} ${order}`,
 
-                `UNION`,
+            `UNION`,
 
-                `MATCH (currentUser)-[:JOINS]->(:Community)<-[:POSTED_TO]-(post: Post)`,
-                `WHERE post.parent IS NULL`, // Prevent comments in feed
-                `OPTIONAL MATCH (author:User)`,
-                `WHERE author.walletAddress = post.author`,
-                `OPTIONAL MATCH (currentUser)-[l:LIKED]->(post)`,
-                `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
-                `OPTIONAL MATCH (repost:Post)`,
-                `WHERE repost.postID = post.repostPostID`,
-                `OPTIONAL MATCH (repostAuthor:User)`,
-                `WHERE repostAuthor.walletAddress = repost.author`,
-                `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
-                `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID AS communityID`,
+            `MATCH (currentUser)-[:JOINS]->(:Community)<-[:POSTED_TO]-(post: Post)`,
+            `WHERE post.parent IS NULL`, // Prevent comments in feed
+            `OPTIONAL MATCH (author:User)`,
+            `WHERE author.walletAddress = post.author`,
+            `OPTIONAL MATCH (currentUser)-[l:LIKED]->(post)`,
+            `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
+            `OPTIONAL MATCH (repost:Post)`,
+            `WHERE repost.postID = post.repostPostID`,
+            `OPTIONAL MATCH (repostAuthor:User)`,
+            `WHERE repostAuthor.walletAddress = repost.author`,
+            `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
+            `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID AS communityID`,
             `}`,
             `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, likes, comment, communityID`,
             `ORDER BY ${orderBy} ${order}`,
@@ -597,8 +645,12 @@ const getUserFeed = function (session, walletAddress, start, size, sortType, sor
                 post.community = record.get('communityID') ? String(record.get('communityID')) : null
                 post.alreadyLiked = record.get('likes').low > 0
                 if (post.repostPostID) {
-                    post.repostPost = new Post(record.get('repost'))
-                    post.repostPost.author = new User(record.get('repostAuthor'))
+                    if (!record.get('repost')) {
+                        post.repostPostID = "removed"
+                    } else {
+                        post.repostPost = new Post(record.get('repost'))
+                        post.repostPost.author = new User(record.get('repostAuthor'))
+                    }
                 }
 
                 posts.push(post)
@@ -617,6 +669,149 @@ const getUserFeed = function (session, walletAddress, start, size, sortType, sor
         });
 }
 
+const deletePostsByID = function (session, postList) {
+    const query = [
+        'MATCH (p: Post)',
+        'WHERE p.postID IN $postList',
+        'OPTIONAL MATCH (c:Post)-[:COMMENTED_ON]->(p)',
+        'DETACH DELETE c, p',
+    ].join("\n")
+
+    return session.run(query, {
+        postList: postList
+    })
+        .then(result => {
+            return {
+                success: true,
+                message: "Successfully deleted provided posts."
+            }
+        })
+}
+
+const removeCommunityPostsFromUser = function (session, communityID, walletAddress) {
+    const query = [
+        'MATCH (u: User {walletAddress: $walletAddress})-[:POSTED]->(p: Post)-[:POSTED_TO]->(c: Community {communityID: $communityID})',
+        'RETURN p.postID AS id'
+    ].join("\n")
+
+    return session.run(query, {
+        walletAddress: walletAddress,
+        communityID: communityID
+    })
+        .then(postsResult => {
+            let posts = []
+            postsResult.records.forEach(postRecord => {
+                posts.push(postRecord.get('id'))
+            })
+            return deletePostsByID(session, posts)
+        })
+}
+
+const deletePost = function (session, walletAddress, postID) {
+    return getPostByID(session, null, postID)
+        .then(postCheck => {
+            if (postCheck.post.author.walletAddress !== walletAddress) {
+                throw {
+                    success: false,
+                    message: "User is not the author of the post"
+                }
+            }
+            return deletePostsByID(session, [postID])
+                .then(result => {
+                    return {
+                        success: true,
+                        message: "Successfully deleted post"
+                    }
+                })
+        })
+        .catch(error => {
+            throw {
+                success: false,
+                message: "Failed to delete post",
+                error: error.message
+            }
+        })
+}
+
+const search = function (session, searchVal, walletAddress, start, size, sortType, sortOrder) {
+    sortType = sortType.toLowerCase(), sortOrder = sortOrder.toLowerCase()
+
+    if (start < 0) {
+        throw {
+            success: false,
+            message: "Start index must be non-negative"
+        }
+    } else if (size < 0) {
+        throw {
+            success: false,
+            message: "Size must be non-negative"
+        }
+    } else if (!Object.values(FEED_SORT.TYPES).includes(sortType)) {
+        throw {
+            success: false,
+            message: "Invalid sort type"
+        }
+    } else if (!Object.values(FEED_SORT.ORDER).includes(sortOrder)) {
+        throw {
+            success: false,
+            message: "Invalid sort order"
+        }
+    }
+
+    const orderBy = sortType === FEED_SORT.TYPES.TIMESTAMP ? "post.timestamp" : "post.likes",
+        order = sortOrder === FEED_SORT.ORDER.DESC ? "DESC" : ""
+
+    const regex = `(?i).*${searchVal}.*`
+    const query = [
+        `MATCH (author:User)-[:POSTED]->(post: Post)`,
+        `WHERE post.parent IS NULL AND post.text =~ $regex`, // Prevent comments in feed
+        `OPTIONAL MATCH (user:User{walletAddress: $walletAddress})-[l:LIKED]->(post)`,
+        `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
+        `OPTIONAL MATCH (repost:Post)`,
+        `WHERE repost.postID = post.repostPostID`,
+        `OPTIONAL MATCH (repostAuthor:User)`,
+        `WHERE repostAuthor.walletAddress = repost.author`,
+        `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
+        `RETURN DISTINCT post, author, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID AS communityID`,
+        `ORDER BY ${orderBy} ${order}`,
+        `SKIP toInteger($start)`,
+        `LIMIT toInteger($size)`
+    ].join('\n');
+
+    return session.run(query, {
+        regex: regex,
+        walletAddress: walletAddress,
+        start: start,
+        size: size
+    })
+        .then((results) => {
+            let posts = []
+            results.records.forEach((record) => {
+                let post = new Post(record.get("post"))
+                post.author = new User(record.get("author"))
+                post.comment = String(record.get("comment").low);
+                post.community = record.get('communityID') ? String(record.get('communityID')) : null
+                post.alreadyLiked = record.get('likes').low > 0
+                if (post.repostPostID) {
+                    post.repostPost = new Post(record.get('repost'))
+                    post.repostPost.author = new User(record.get('repostAuthor'))
+                }
+
+                posts.push(post)
+            })
+            return {
+                success: true,
+                posts: posts
+            }
+        })
+        .catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to search posts",
+                error: error.message
+            }
+        })
+}
 
 module.exports = {
     createPost,
@@ -629,5 +824,9 @@ module.exports = {
     unlikePost,
     getLikesOnPost,
     checkIfAlreadyLiked,
-    getUserFeed
+    getUserFeed,
+    deletePostsByID,
+    removeCommunityPostsFromUser,
+    delete: deletePost,
+    search
 };

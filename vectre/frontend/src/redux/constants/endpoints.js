@@ -24,6 +24,7 @@ export const POSTS = {
     CREATE_POST: "/posts/create",
     GET_FEED: "/posts/feed",
     GET_POST: "/posts/{postID}",
+    SEARCH_POSTS: "/posts/search/{searchVal}",
     CREATE_REPOST: "/posts/create",
     CREATE_COMMENT: "/posts/create/{postID}/comment",
     GET_COMMENTS: "/posts/{postID}/comments",
