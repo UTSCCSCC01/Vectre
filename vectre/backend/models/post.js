@@ -356,27 +356,30 @@ const getPostByID = function (session, walletAddress, postID) {
         `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
         `WHERE post.author = author.walletAddress`,
         `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
+        `OPTIONAL MATCH (author)-[mod_link:MODERATES]->(com)`,
         `WHERE post.postID = $postID`,
-        `RETURN DISTINCT author, post, count(c) AS comment, repost, repostAuthor, com.communityID`
+        `RETURN DISTINCT author, post, count(c) AS comment, repost, repostAuthor, com.communityID, mod_link`
     ].join('\n');
 
     return session.run(query, {
         postID: postID
     })
         .then((result) => {
-            let queryRecord = result.records[0]
-            var post = new Post(queryRecord.get('post'))
-            post.author = new User(queryRecord.get('author'))
-            post.comment = String(queryRecord.get("comment").low);
-            post.community = queryRecord.get('com.communityID') ? String(queryRecord.get('com.communityID')) : null
+            let record = result.records[0]
+            var post = new Post(record.get('post'))
+            post.author = new User(record.get('author'))
+            post.comment = String(record.get("comment").low);
+            post.community = record.get('com.communityID') ? String(record.get('com.communityID')) : null
             if (post.repostPostID) {
-                if (!queryRecord.get('repost')) {
+                if (!record.get('repost')) {
                     post.repostPostID = "removed"
                 } else {
-                    post.repostPost = new Post(queryRecord.get('repost'))
-                    post.repostPost.author = new User(queryRecord.get('repostAuthor'))
+                    post.repostPost = new Post(record.get('repost'))
+                    post.repostPost.author = new User(record.get('repostAuthor'))
                 }
             }
+            if (record.get('mod_link')) post.verified = true
+            post.author.roles = []
 
             if (walletAddress !== null) {
                 return checkIfAlreadyLiked(session, postID, walletAddress)
@@ -398,7 +401,6 @@ const getPostByID = function (session, walletAddress, postID) {
                         throw {
                             success: false,
                             message: "Failed to check if post was already liked",
-                            error: error
                         }
                     })
             }
