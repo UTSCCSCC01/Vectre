@@ -398,10 +398,10 @@ const removeMember = function (session, walletAddress, communityID) {
                     // Check if User is the only moderator.
                     return getUsersByRole(session, communityID, ROLES.MODERATOR.type)
                         .then(result => {
-                            if (result.moderator.length == 1) {
-                                throw {
+                            if (result.moderator.length === 1) {
+                                return {
                                     success: false,
-                                    message: "Cannot unfollow Community as sole Moderator"
+                                    message: "Cannot leave community as last moderator"
                                 }
                             }
                             // User is not the a moderator, use query 0 tp remove.
