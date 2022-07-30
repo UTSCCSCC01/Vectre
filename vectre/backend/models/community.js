@@ -1,11 +1,11 @@
 const _ = require('lodash');
+const cron = require('node-cron');
 const { getRelationshipFromRole } = require('../utils/Utils');
 const Community = require('./neo4j/community')
 const { ROLES } = require("./neo4j/community");
 const User = require('./neo4j/user')
 const Post = require('./neo4j/post')
 const { FEED_SORT } = require("./neo4j/post");
-const cron = require('node-cron');
 
 // helper functions
 const filterBody = function (body) {

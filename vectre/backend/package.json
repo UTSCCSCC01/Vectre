@@ -21,6 +21,8 @@
     "morgan": "~1.9.1",
     "nanoid": "^3.0.0",
     "neo4j-driver": "^4.4.5",
-    "nodemon": "^2.0.16"
+    "node-cron": "^3.0.1",
+    "nodemon": "^2.0.16",
+    "uuid": "^8.3.2"
   }
 }
