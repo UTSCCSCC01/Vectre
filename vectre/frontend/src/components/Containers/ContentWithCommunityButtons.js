@@ -3,22 +3,19 @@ import {
     Grid,
     GridItem,
     Stack,
-    useDisclosure,
-    Box
+    useDisclosure
 } from '@chakra-ui/react'
-import ButtonLinkWrapper from '../Buttons/ButtonLinkWrapper/ButtonLinkWrapper';
 import TextButton from '../Buttons/TextButton/TextButton';
 import { IoIosPeople } from 'react-icons/io';
-import { BsFillArrowRightCircleFill } from 'react-icons/bs';
 import PersonalCommunityModal from '../Modals/PersonalCommunityModal/PersonalCommunityModal';
-import { cutText, getAvatarOrDefault } from "../../utils/Utils";
+import CommunityProfileEditModal from '../Modals/CommunityProfileEditModal/CommunityProfileEditModal';
 
 const ContentWithCommunityButtons = ({
     sideButtonsList,
     ...otherProps
 }) => {
     const { isOpen, onClose, onOpen } = useDisclosure();
-    const someButtons = sideButtonsList.slice(0, 5);;
+    const { isOpen: createCommunityIsOpen, onClose: createCommunityOnClose, onOpen: createCommunityOnOpen } = useDisclosure();
     return (
         <Container
             maxW={'8xl'}
@@ -35,34 +32,17 @@ const ContentWithCommunityButtons = ({
                             fontSize={'18px'}
                             fontWeight={700}
                             text={"My Communities"}
-                            rightIcon={<IoIosPeople size={'1.3rem'} />} />
-                        {someButtons.map((btn, i) =>
-                            <ButtonLinkWrapper href={"/c/" + btn.communityID}>
-                                <TextButton
-                                    justifyContent={'flex-start'}
-                                    gap={'8px'}
-                                    width={'100%'}
-                                    px={'17.5px'}
-                                    fontSize={'18px'}
-                                    fontWeight={400}
-                                    text={"<" + cutText(btn.communityID, 10) + ">"}
-                                    imgSrc={getAvatarOrDefault(btn.profilePic)}
-                                />
-                            </ButtonLinkWrapper>
-                        )}
-                        <Box onClick={onOpen}>
-                            <TextButton
-                                justifyContent={'flex-start'}
-                                gap={'8px'}
-                                width={'100%'}
-                                px={'17.5px'}
-                                fontSize={'18px'}
-                                fontWeight={400}
-                                text={"View More"}
-                                leftIcon={<BsFillArrowRightCircleFill size={'1.3rem'} />}
-                            />
-                        </Box>
+                            rightIcon={<IoIosPeople size={'1.3rem'} />}
+                            onClick={onOpen} />
                         <PersonalCommunityModal isOpen={isOpen} onClose={onClose} communitiesList={sideButtonsList} />
+                        <TextButton
+                            width={'100%'}
+                            px={'17.5px'}
+                            fontSize={'18px'}
+                            fontWeight={700}
+                            text={"Create a Community"}
+                            onClick={createCommunityOnOpen} />
+                        <CommunityProfileEditModal communityData={{}} isOpen={createCommunityIsOpen} onClose={createCommunityOnClose} isEdit={false} />
                     </Stack>
                 </GridItem>
                 <GridItem>
