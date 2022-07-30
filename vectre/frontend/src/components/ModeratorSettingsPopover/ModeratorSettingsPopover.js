@@ -31,7 +31,7 @@ const ModeratorSettingsPopover = ({
 
     const buttonsList = [
         {
-            isHidden: (loggedInUser.walletAddress === item.author.walletAddress) || (loggedInUserRoles.includes("moderator")),
+            isHidden: (loggedInUser.walletAddress === item.author.walletAddress) || !loggedInUserRoles.includes("moderator") || item.author.roles.includes("moderator"),
             typeData: GENERIC_WARNING_TYPE.PROMOTE,
             onClick: () => dispatch(promoteMember(item.community, item.author.walletAddress, (href) => { window.location.href = href }))
         },
