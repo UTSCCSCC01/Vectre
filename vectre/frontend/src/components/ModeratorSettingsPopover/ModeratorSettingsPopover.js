@@ -8,7 +8,7 @@ import IconSquareButton from '../Buttons/IconSquareButton/IconSquareButton';
 import TextButton from '../Buttons/TextButton/TextButton';
 import GenericButtonsPopoverWrapper from '../Containers/GenericButtonsPopoverWrapper';
 import GenericWarningModal, { GENERIC_WARNING_TYPE } from '../Modals/GenericWarningModal/GenericWarningModal';
-import {banMember, promoteMember} from "../../redux/actions/communities";
+import {banMember, deletePostAsModerator, promoteMember} from "../../redux/actions/communities";
 
 const ModeratorSettingsPopover = ({
     item
@@ -31,13 +31,13 @@ const ModeratorSettingsPopover = ({
 
     const buttonsList = [
         {
-            isHidden: (loggedInUser.walletAddress === item.author.walletAddress) || !loggedInUserRoles.includes("moderator") || item.author.roles.includes("moderator"),
+            isHidden: (loggedInUser.walletAddress === item.author.walletAddress) || item.author.roles.includes("moderator"),
             typeData: GENERIC_WARNING_TYPE.PROMOTE,
             onClick: () => dispatch(promoteMember(item.community, item.author.walletAddress, (href) => { window.location.href = href }))
         },
         {
             typeData: GENERIC_WARNING_TYPE.DELETE,
-            onClick: () => console.log("deleting" + item.author.username)
+            onClick: () => dispatch(deletePostAsModerator(item.community, item.postID, (href) => { window.location.href = href }))
         },
         {
             isHidden: loggedInUser.walletAddress === item.author.walletAddress,

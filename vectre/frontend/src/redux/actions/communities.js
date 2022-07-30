@@ -71,3 +71,9 @@ export const unbanMember = (communityID, walletAddress, redirectWindow) => ({
     walletAddress,
     redirectWindow
 })
+export const deletePostAsModerator = (communityID, postID, redirectWindow) => ({
+    type: MODERATION.DELETE_POST,
+    communityID,
+    postID,
+    redirectWindow
+})

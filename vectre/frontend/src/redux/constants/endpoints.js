@@ -50,6 +50,7 @@ export const COMMUNITY = {
     MODERATION: {
         PROMOTE_MEMBER: "/communities/{communityID}/promote/{walletAddress}",
         BAN_MEMBER: "/communities/{communityID}/ban/{walletAddress}",
-        UNBAN_MEMBER: "/communities/{communityID}/unban/{walletAddress}"
+        UNBAN_MEMBER: "/communities/{communityID}/unban/{walletAddress}",
+        DELETE_POST: "/communities/{communityID}/delete/{postID}",
     }
 }

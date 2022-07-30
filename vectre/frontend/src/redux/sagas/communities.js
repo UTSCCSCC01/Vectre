@@ -184,6 +184,24 @@ function* unbanMember(action) {
         console.log(error)
     }
 }
+function* deletePost(action) {
+    try {
+        const response = yield call(postRequest, BASE_API_URL + COMMUNITY.MODERATION.DELETE_POST
+            .replace("{communityID}", action.communityID)
+            .replace("{postID}", action.postID)
+        ), responseData = response[1]
+        if (responseData.success) {
+            yield put(action.redirectWindow(`/c/${action.communityID}`))
+            yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+    } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to delete post"))
+        console.log(error)
+    }
+}
+
 
 function* communitySaga() {
     yield takeLatest(CREATE_COMMUNITY, createCommunitySaga)
@@ -196,6 +214,7 @@ function* communitySaga() {
     yield takeLatest(MODERATION.PROMOTE_MEMBER, promoteMember)
     yield takeLatest(MODERATION.BAN_MEMBER, banMember)
     yield takeLatest(MODERATION.UNBAN_MEMBER, unbanMember)
+    yield takeLatest(MODERATION.DELETE_POST, deletePost)
 }
 
 export default communitySaga

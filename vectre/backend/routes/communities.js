@@ -98,7 +98,7 @@ router.post("/:communityID/unban/:walletAddress", authenticateToken, (req, res, 
 
 // POST /communities/:communityID/delete/:postID
 router.post('/:communityID/delete/:postID', authenticateToken, (req, res, next) => {
-    CommunityModerator.deletePost(dbUtils.getSession(req), req.params.communityID, req.walletAddres, req.params.postID)
+    CommunityModerator.deletePost(dbUtils.getSession(req), req.params.communityID, req.walletAddress, req.params.postID)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
