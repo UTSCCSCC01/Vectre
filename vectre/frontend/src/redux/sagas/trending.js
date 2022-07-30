@@ -19,11 +19,7 @@ import {
 function* getTrendingUsers() {
     try {
         yield put(showLoading(true))
-        const defaultSize = 10
-        const response = yield call(postRequest, BASE_API_URL + USERS.GET_TRENDING_USERS, {
-            start: 0,
-            size: defaultSize
-        }), responseData = response[1]
+        const response = yield call(getRequest, BASE_API_URL + USERS.GET_TRENDING_USERS), responseData = response[1]
         if (responseData.success) {
             yield put(storeTrendingUsers(responseData.users))
         } else {
@@ -38,11 +34,7 @@ function* getTrendingUsers() {
 function* getTrendingCommunities() {
     try {
         yield put(showLoading(true))
-        const defaultSize = 10
-        const response = yield call(postRequest, BASE_API_URL + COMMUNITY.GET_TRENDING_COMMUNITIES, {
-            start: 0,
-            size: defaultSize
-        }), responseData = response[1]
+        const response = yield call(getRequest, BASE_API_URL + COMMUNITY.GET_TRENDING_COMMUNITIES), responseData = response[1]
         if (responseData.success) {
             yield put(storeTrendingCommunities(responseData.communities))
         } else {
