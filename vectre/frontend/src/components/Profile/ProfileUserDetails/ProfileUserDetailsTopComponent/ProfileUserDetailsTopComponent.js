@@ -27,6 +27,7 @@ const ProfileUserDetailsTopComponent = ({
                     zIndex={'2'}>
                     <Image
                         border={'5px solid white'}
+                        bg={'white'}
                         src={getAvatarOrDefault(props.user.profilePic)}
                         fit={'cover'}
                         overflow={'hidden'}
@@ -39,6 +40,7 @@ const ProfileUserDetailsTopComponent = ({
                     borderRadius={'6px'}
                     height={'215px'}>
                     <Image
+                        bg={'white'}
                         src={getBannerOrDefault(props.user.banner)}
                         fit={'cover'}
                         overflow={'hidden'}

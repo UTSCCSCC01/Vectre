@@ -31,6 +31,7 @@ const EntityCard = ({
                     gap={'15px'}>
                     <Image
                         border={'5px solid white'}
+                        bg={'white'}
                         src={getAvatarOrDefault(data.profilePic)}
                         fit={'cover'}
                         overflow={'hidden'}
