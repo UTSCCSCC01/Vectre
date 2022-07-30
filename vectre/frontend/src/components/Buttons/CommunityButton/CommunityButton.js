@@ -2,6 +2,7 @@ import {
     Button, 
     Image, 
 } from '@chakra-ui/react';
+import {cutText} from '../../../utils/Utils'; 
 
 const CommunityButton = ({
     display,
@@ -15,7 +16,7 @@ const CommunityButton = ({
     imgSrc, 
     ...otherProps
 }) => {
-    text = "<" + text + ">"; 
+    text = "<" + cutText(text, 10) + ">"; 
     return (
         <Button
             display={display ? display : 'inline-flex'}
@@ -30,7 +31,7 @@ const CommunityButton = ({
             lineHeight={'1'}
             {...otherProps} // other props can be passed into here
         >
-            <Image src={imgSrc} align={'left'}/>
+            <Image src={imgSrc} align={'left'} height={'30px'} width={'auto'}/>
             {text}
         </Button>
     );

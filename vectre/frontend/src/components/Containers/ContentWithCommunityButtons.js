@@ -42,7 +42,7 @@ const ContentWithCommunityButtons = ({
                                 rightIcon={<IoIosPeople px={'18px'}/>} />
                         </ButtonLinkWrapper>
                         {someButtons.map((btn, i) =>
-                                <ButtonLinkWrapper href={""}>
+                                <ButtonLinkWrapper href={"/c/" + btn.communityID}>
                                     <CommunityButton
                                             width={'100%'}
                                             px={'17.5px'}
@@ -62,7 +62,7 @@ const ContentWithCommunityButtons = ({
                                 leftIcon={<BsFillArrowRightCircleFill px={'18px'} />} 
                                 />
                         </Box>
-                        <PersonalCommunityModal position={'relative'} isOpen={isOpen} onClose={onClose}/>
+                        <PersonalCommunityModal isOpen={isOpen} onClose={onClose} communitiesList={sideButtonsList}/>
                     </Stack>
                 </GridItem>
                 <GridItem>
