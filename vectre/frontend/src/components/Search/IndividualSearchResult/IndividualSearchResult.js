@@ -15,6 +15,7 @@ import {
 import { Box, Flex } from "@chakra-ui/react";
 
 const IndividualSearchResult = ({
+    bg,
     result
 }) => {
     const dispatch = useDispatch();
@@ -48,6 +49,7 @@ const IndividualSearchResult = ({
     return (
         <>
             <EntityCard
+                bg={bg}
                 primaryText={cutText(result.name, 20)}
                 secondaryText={type === SEARCH_RESULT_TYPES.USER ? "@" + result.username : "< " + result.communityID + " >"}
                 tertiaryText={cutText(result.bio, 40)}
