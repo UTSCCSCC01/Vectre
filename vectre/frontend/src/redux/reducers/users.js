@@ -14,7 +14,9 @@ const initialState = {
     user: {},
     users: [],
     searchedUsers: [],
-    loggedInUser: {},
+    loggedInUser: {
+        communities: []
+    },
     nonce: "",
     notifications: [],
     unreadStatus: false,

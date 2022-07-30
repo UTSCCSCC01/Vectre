@@ -17,57 +17,10 @@ import { useEffect } from "react";
 import { getFeed } from "../../redux/actions/feed";
 import CreatePostComponent from "../../components/CreatePostComponent/CreatePostComponent";
 import SortingButtonComponent from "../../components/SortingButtonComponent/SortingButtonComponent";
-// import {default_profile} from "../../assets/images/default_profile_pic.jpg"; 
+import {loggedInUserCommunitiesSelector} from "../../redux/selectors/users";
 
 const HomePage = () => {
-    const sideButtonsList = [
-        {
-            hidden: false, 
-            link: "#", 
-            function: () => {
-
-            }, 
-            text: "community 1", 
-            imgSrc: "http://img.mp.sohu.com/upload/20170529/23d0bcbcfa46413ba1342c179cbf41d1_th.png"
-        }, 
-        {
-            hidden: false, 
-            link: "#", 
-            function: () => {
-
-            }, 
-            text: "community 2", 
-            imgSrc: "http://img.mp.sohu.com/upload/20170529/23d0bcbcfa46413ba1342c179cbf41d1_th.png"
-        }, 
-        {
-            hidden: false, 
-            link: "#", 
-            function: () => {
-
-            }, 
-            text: "community 3", 
-            imgSrc: "http://img.mp.sohu.com/upload/20170529/23d0bcbcfa46413ba1342c179cbf41d1_th.png"
-        }, 
-        {
-            hidden: false, 
-            link: "#", 
-            function: () => {
-
-            }, 
-            text: "community 4", 
-            imgSrc: "http://img.mp.sohu.com/upload/20170529/23d0bcbcfa46413ba1342c179cbf41d1_th.png"
-        }, 
-        {
-            hidden: false, 
-            link: "#", 
-            function: () => {
-
-            }, 
-            text: "community 5", 
-            imgSrc: "http://img.mp.sohu.com/upload/20170529/23d0bcbcfa46413ba1342c179cbf41d1_th.png"
-        }, 
-
-    ]
+    const loggedInUserCommunities = useSelector(loggedInUserCommunitiesSelector)
 
     const feed = useSelector(feedSelector)
     const feedIndex = useSelector(feedIndexSelector)
@@ -84,7 +37,7 @@ const HomePage = () => {
 
     return (
         <ContentWIthNavContainer>
-            <ContentWithCommunityButtons sideButtonsList={sideButtonsList}>
+            <ContentWithCommunityButtons sideButtonsList={loggedInUserCommunities}>
                 <CreatePostComponent />
                 <SortingButtonComponent />
                 <Stack mt={"20px"} alignSelf={'center'} gap={'36px'}>

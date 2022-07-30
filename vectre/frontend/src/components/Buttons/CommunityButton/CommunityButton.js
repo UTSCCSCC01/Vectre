@@ -30,7 +30,7 @@ const CommunityButton = ({
             lineHeight={'1'}
             {...otherProps} // other props can be passed into here
         >
-            <Image src={'../../assets/images/default_profile_pic.jpg'} align={'left'}/>
+            <Image src={imgSrc} align={'left'}/>
             {text}
         </Button>
     );
