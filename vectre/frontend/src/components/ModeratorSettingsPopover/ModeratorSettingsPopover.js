@@ -1,21 +1,19 @@
 import { useDisclosure } from '@chakra-ui/react';
 import { useState } from 'react';
 import { BsGearWideConnected } from 'react-icons/bs';
-import {useDispatch, useSelector} from 'react-redux';
-import { loggedInUserRolesSelector } from '../../redux/selectors/communities';
+import { useDispatch, useSelector } from 'react-redux';
 import { loggedInUserSelector } from '../../redux/selectors/users';
 import IconSquareButton from '../Buttons/IconSquareButton/IconSquareButton';
 import TextButton from '../Buttons/TextButton/TextButton';
 import GenericButtonsPopoverWrapper from '../Containers/GenericButtonsPopoverWrapper';
 import GenericWarningModal, { GENERIC_WARNING_TYPE } from '../Modals/GenericWarningModal/GenericWarningModal';
-import {banMember, deletePostAsModerator, promoteMember} from "../../redux/actions/communities";
+import { banMember, deletePostAsModerator, promoteMember } from "../../redux/actions/communities";
 
 const ModeratorSettingsPopover = ({
     item
 }) => {
 
     const loggedInUser = useSelector(loggedInUserSelector);
-    const loggedInUserRoles = useSelector(loggedInUserRolesSelector);
     const dispatch = useDispatch()
 
     const ModeratorSettingsButton = ({ onToggle }) => {

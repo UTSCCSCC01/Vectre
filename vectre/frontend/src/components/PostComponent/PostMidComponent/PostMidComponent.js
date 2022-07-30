@@ -1,7 +1,9 @@
 import {
     Stack,
     Flex,
-    Image
+    Image,
+    Box,
+    Text
 } from '@chakra-ui/react';
 
 import RepostComponent from '../RepostComponent/RepostComponent';
@@ -26,10 +28,29 @@ const PostMidComponent = ({
             </Flex>
             {
                 item.repostPostID ? (
-                    <Stack
-                        display={'inline-flex'}>
-                        <RepostComponent item={item.repostPost} />
-                    </Stack>
+                    item.repostPostID === "removed" ? (
+                        <>
+                            <Flex
+                                height={'fit-content'}
+                                bg={'rgba(198, 219, 255, 0.44)'}
+                                border={'3px solid #C6DBFF'}
+                                borderRadius={'6px'}
+                                px={'18px'}
+                                py={'15px'}
+                                cursor={'default'}
+                                justifyContent={'center'}
+                                alignItems={'center'}
+                                onClick={((e) => {
+                                    e.stopPropagation();
+                                })}>
+                                <Text>This post has been deleted 😭</Text>
+                            </Flex>
+                        </>
+                    ) :
+                        <Stack
+                            display={'inline-flex'}>
+                            <RepostComponent item={item.repostPost} />
+                        </Stack>
                 ) : (
                     <Stack
                         display={item.imageURL ? 'inline-flex' : 'none'}>
