@@ -758,7 +758,7 @@ const getCommunityFeed = function (session, communityID, walletAddress, start, s
         });
 }
 
-const getTrendingCommunities = function (session, walletAddress, start, size) {
+const getTrending = function (session, walletAddress, start, size) {
     if (start < 0) {
         throw {
             success: false,
@@ -800,7 +800,7 @@ const getTrendingCommunities = function (session, walletAddress, start, size) {
         .catch(error => {
             throw {
                 success: false,
-                message: "Failed to fetch all communities",
+                message: "Failed to fetch trending communities",
                 error: error.message
             }
         })
@@ -829,5 +829,5 @@ module.exports = {
     isRole,
     linkPost,
     getCommunityFeed,
-    getTrendingCommunities
+    getTrending
 }

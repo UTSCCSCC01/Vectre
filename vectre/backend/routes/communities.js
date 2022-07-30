@@ -27,7 +27,7 @@ router.get('/', (req, res, next) => {
 
 // GET /communities/trending
 router.get('/trending', storeWalletAddressFromToken, (req, res, next) => {
-    Community.getTrendingCommunities(dbUtils.getSession(req), req.walletAddress,0, 5)
+    Community.getTrending(dbUtils.getSession(req), req.walletAddress,0, 5)
         .then(result => res.send(result))
         .catch(error => res.send(error))
 })
