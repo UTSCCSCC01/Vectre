@@ -5,6 +5,7 @@ import postsSaga from "./posts";
 import notificationSaga from './notifications';
 import feedSaga from "./feed";
 import searchSaga from "./search";
+import trendingSaga from "./trending";
 
 const headers = {
     'Content-Type': 'application/json',
@@ -50,5 +51,6 @@ export default function* root() {
         notificationSaga(),
         feedSaga(),
         searchSaga(),
+        trendingSaga()
     ]);
 }

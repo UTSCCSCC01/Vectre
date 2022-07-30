@@ -6,9 +6,7 @@ import {
     GET_ROLES_LOGGED_IN_USER,
     STORE_ROLES_LOGGED_IN_USER,
     JOIN_COMMUNITY,
-    LEAVE_COMMUNITY,
-    GET_TRENDING_COMMUNITIES,
-    STORE_TRENDING_COMMUNITIES,
+    LEAVE_COMMUNITY
 } from "../constants/communities";
 
 export const createCommunity = (community, redirectWindow) => ({
@@ -24,14 +22,6 @@ export const getCommunity = (communityID) => ({
 export const storeCommunity = (community) => ({
     type: STORE_COMMUNITY,
     community
-})
-
-export const getTrendingCommunities = () => ({
-    type: GET_TRENDING_COMMUNITIES,
-})
-export const storeTrendingCommunities = (trendingCommunities) => ({
-    type: STORE_TRENDING_COMMUNITIES,
-    trendingCommunities
 })
 
 export const updateCommunity = (communityID, community, redirectWindow) => ({

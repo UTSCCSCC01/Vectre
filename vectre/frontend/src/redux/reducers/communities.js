@@ -6,8 +6,7 @@ import {
 
 const initialState = {
     community: {},
-    loggedInUserRoles: [],
-    trending: []
+    loggedInUserRoles: []
 }
 
 const communities = (state = initialState, action) => {
@@ -16,11 +15,6 @@ const communities = (state = initialState, action) => {
             return {
                 ...state,
                 community: action.community
-            }
-        case STORE_TRENDING_COMMUNITIES:
-            return {
-                ...state,
-                trending: action.trendingCommunities
             }
         case STORE_ROLES_LOGGED_IN_USER:
             return {

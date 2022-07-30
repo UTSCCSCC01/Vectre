@@ -3,9 +3,9 @@ import {
   Box,
 } from "@chakra-ui/react";
 import ContentWIthNavContainer from "../../components/Containers/ContentWIthNavContainer";
-import {trendingCommunitiesSelector} from "../../redux/selectors/communities";
+import {trendingCommunitiesSelector} from "../../redux/selectors/trending";
 import {useDispatch, useSelector} from "react-redux";
-import {getTrendingCommunities} from "../../redux/actions/communities";
+import {getTrendingCommunities} from "../../redux/actions/trending";
 import SearchResultContainer from "../../components/Search/SearchResult/SearchResult";
 
 const TrendingCommunitiesPage = () => {
