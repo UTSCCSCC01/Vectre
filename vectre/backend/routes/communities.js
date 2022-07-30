@@ -26,7 +26,7 @@ router.get('/', (req, res, next) => {
 })
 
 // GET /communities/trending
-router.get('/:communityID', (req, res, next) => {
+router.get('/trending', (req, res, next) => {
     Community.getTrendingCommunities(dbUtils.getSession(req), 0, 5)
         .then(result => res.send(result))
         .catch(error => res.send(error))
