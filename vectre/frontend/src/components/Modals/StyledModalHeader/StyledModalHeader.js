@@ -6,15 +6,18 @@ import {
 } from '@chakra-ui/react'
 
 const StyledModalHeader = ({
-    headerFontSize = '28px',
-    headerFontWeight = 700,
     headerText,
-    icon
+    icon,
+    hideClose,
+    color = 'primary.400',
+    fontSize = "28px",
+    fontWeight = 700
 }) => {
     return (
         <ModalHeader
             px={{ base: '24px', md: '64px' }}>
             <ModalCloseButton
+                display={hideClose ? 'none' : 'initial'}
                 color={'primary.400'}
                 top={4}
                 left={4}
@@ -26,11 +29,11 @@ const StyledModalHeader = ({
             <Flex
                 justifyContent={'center'}
                 alignItems={'center'}
-                color={'primary.400'}
+                color={color}
             >
                 <Text
-                    fontSize={headerFontSize}
-                    fontWeight={headerFontWeight}
+                    fontSize={fontSize}
+                    fontWeight={fontWeight}
                     mr="15px">
                     {headerText}
                 </Text>

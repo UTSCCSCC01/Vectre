@@ -1,9 +1,12 @@
 import {
     Modal,
     ModalOverlay,
-    ModalContent
+    ModalContent,
+    ModalBody,
+    Flex
 } from "@chakra-ui/react";
 import { IoIosPeople } from 'react-icons/io';
+import { cutText } from "../../../utils/Utils";
 import ToggleHollowButton from "../../Buttons/ToggleHollowButton/ToggleHollowButton";
 import EntityCard from "../../EntityCard/EntityCard";
 import StyledModalHeader from "../StyledModalHeader/StyledModalHeader"
@@ -16,6 +19,8 @@ const PersonalCommunityModal = ({
     return (
         <>
             <Modal
+                size={"lg"}
+                scrollBehavior={'inside'}
                 isOpen={isOpen}
                 onClose={onClose}
                 position={'absolute'}
@@ -25,39 +30,41 @@ const PersonalCommunityModal = ({
                 <ModalOverlay
                     bg={'rgba(255, 255, 255, 0.01)'}
                     backdropFilter='blur(20px)'
-                    />
+                />
                 <ModalContent
-                    height={'500px'}
-                    width={'600px'}
-                    alignItems={'left'}
-                    padding={'30px'}
+                    height={'40vh'}
+                    py={'15px'}
                     bg={'rgba(255, 255, 255, 0.92)'}
-                    gap={'10px'}
-                    >
+                >
                     <StyledModalHeader
                         headerText={'My Communities'}
-                        headerFontSize={"20px"}
-                        icon={<IoIosPeople />} 
-                        overFlowY={'scroll'}/>
-                    {communitiesList.map((community, i) =>
-                        <EntityCard
-                            key={i}
-                            primaryText={community.name}
-                            secondaryText={"< " + community.communityID + " >"}
-                            href={"/c/" + community.communityID}
-                            data={community} 
-                            height = {'10px'}
-                            >
-                            <ToggleHollowButton
-                                onText={'Joined'}
-                                offText={'Join'}
-                                isOn={community.alreadyJoined}
-                                bg={'#3B82F68F'}
-                                color={'white'}
-                                border={'none'}
-                                onClick={() => console.log("Peter was here")} />
-                        </EntityCard>
-                    )}
+                        fontSize={"20px"}
+                        hideClose={true}
+                        icon={<IoIosPeople />} />
+                    <ModalBody
+                        py={'0px'}
+                        px={'32px'}>
+                        <Flex flexDirection={'column'} gap={'5px'}>
+                            {communitiesList.map((community, i) =>
+                                <>
+                                    <EntityCard
+                                        key={i}
+                                        iconBoxSize={'40px'}
+                                        bg={"none"}
+                                        primaryText={cutText(community.name, 23)}
+                                        secondaryText={"< " + cutText(community.communityID, 28) + " >"}
+                                        href={"/c/" + community.communityID}
+                                        data={community} >
+                                        <ToggleHollowButton
+                                            onText={'Joined'}
+                                            offText={'Join'}
+                                            isOn={community.alreadyJoined}
+                                            onClick={() => console.log("Peter was here")} />
+                                    </EntityCard>
+                                </>
+                            )}
+                        </Flex>
+                    </ModalBody>
                 </ModalContent>
             </Modal>
         </>
