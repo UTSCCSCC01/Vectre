@@ -62,7 +62,7 @@ const Trending = () => {
                         gap={'22px'}>
                         {trendingCommunities.map((result, i) => {
                             return (
-                                <IndividualSearchResult bg={'rgba(198, 219, 255, 0.11)'} key={i} result={result} />
+                                <IndividualSearchResult bg={'rgba(198, 219, 255, 0.11)'} key={i} result={result} trending={true} />
                             )
                         })}
                     </Flex>
@@ -72,7 +72,7 @@ const Trending = () => {
                     gap={'22px'}>
                     {trendingUsers.map((result, i) => {
                         return (
-                            <IndividualSearchResult key={i} result={result} />
+                            <IndividualSearchResult key={i} result={result} trending={true} />
                         )
                     })}
                 </Flex>

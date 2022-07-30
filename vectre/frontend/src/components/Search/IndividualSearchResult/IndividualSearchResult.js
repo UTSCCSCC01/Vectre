@@ -7,16 +7,23 @@ import { followUser, unfollowUser } from "../../../redux/actions/users";
 import { loggedInUserSelector } from "../../../redux/selectors/users";
 import EntityCard from "../../EntityCard/EntityCard";
 import {
-    doFollowSearchedUsers,
-    doJoinSearchedCommunities,
-    doLeaveSearchedCommunities,
-    doUnfollowSearchedUsers
+    doFollowSearchedUser,
+    doJoinSearchedCommunity,
+    doLeaveSearchedCommunity,
+    doUnfollowSearchedUser
 } from "../../../redux/actions/search";
 import { Box, Flex } from "@chakra-ui/react";
+import {
+    doFollowTrendingUser,
+    doJoinTrendingCommunity,
+    doLeaveTrendingCommunity,
+    doUnfollowTrendingUser
+} from "../../../redux/actions/trending";
 
 const IndividualSearchResult = ({
     bg,
-    result
+    result,
+    trending=false
 }) => {
     const dispatch = useDispatch();
     const loggedInUser = useSelector(loggedInUserSelector);
@@ -28,19 +35,34 @@ const IndividualSearchResult = ({
 
     const onCommunitiesFollowClick = () => {
         if (result.alreadyJoined) {
-            dispatch(leaveCommunity(result.communityID, () => dispatch(doLeaveSearchedCommunities(result.communityID))))
+            dispatch(leaveCommunity(result.communityID, trending ?
+                () => dispatch(doLeaveTrendingCommunity(result.communityID))
+                :
+                () => dispatch(doLeaveSearchedCommunity(result.communityID))
+            ))
         }
         else {
-            dispatch(joinCommunity(result.communityID, () => dispatch(doJoinSearchedCommunities(result.communityID))))
+            dispatch(joinCommunity(result.communityID, trending ?
+                () => dispatch(doJoinTrendingCommunity(result.communityID))
+                :
+                () => dispatch(doJoinSearchedCommunity(result.communityID))
+            ))
         }
     }
 
     const onUsersFollowClick = () => {
         if (result.alreadyFollowed) {
-            dispatch(unfollowUser(result.walletAddress, null, null, () => dispatch(doUnfollowSearchedUsers(result.walletAddress))))
+            dispatch(unfollowUser(result.walletAddress, null, null, trending ?
+                () => dispatch(doUnfollowTrendingUser(result.walletAddress))
+                :
+                () => dispatch(doUnfollowSearchedUser(result.walletAddress))
+            ))
         }
         else {
-            dispatch(followUser(result.walletAddress, null, null, () => dispatch(doFollowSearchedUsers(result.walletAddress))))
+            dispatch(followUser(result.walletAddress, null, null, trending ?
+                () => dispatch(doFollowTrendingUser(result.walletAddress))
+                :
+                () => dispatch(doFollowSearchedUser(result.walletAddress))))
         }
     }
 
