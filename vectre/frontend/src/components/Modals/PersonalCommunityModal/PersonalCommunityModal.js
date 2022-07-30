@@ -34,7 +34,7 @@ const PersonalCommunityModal = ({
                 <ModalContent
                     height={'500px'}
                     width={'500px'}
-                    alignItems={'center'}>
+                    alignItems={'left'}>
                     <TextButton bg={'none'} 
                         _hover={'none'} 
                         _click={'none'} 
@@ -44,7 +44,7 @@ const PersonalCommunityModal = ({
                         <EntityCard Key={community.communityID} primaryText={community.name} 
                         secondaryText={community.communityID} 
                         href={"/c/" + community.communityID}
-                        data={{'nice':'nice'}}/>
+                        data={{'nice':'nice'}} />
                     )}
                     <ModalFooter>
                         <TextButton text={'View More'}/>
