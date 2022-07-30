@@ -1,5 +1,5 @@
 import ContentWIthNavContainer from "../../components/Containers/ContentWIthNavContainer";
-import ContentWithSideButtons from "../../components/Containers/ContentWithSideButtons";
+import ContentWithCommunityButtons from "../../components/Containers/ContentWithCommunityButtons";
 import PostComponent from "../../components/PostComponent/PostComponent";
 import {
     Box,
@@ -17,10 +17,11 @@ import { useEffect } from "react";
 import { getFeed } from "../../redux/actions/feed";
 import CreatePostComponent from "../../components/CreatePostComponent/CreatePostComponent";
 import SortingButtonComponent from "../../components/SortingButtonComponent/SortingButtonComponent";
+import {loggedInUserCommunitiesSelector} from "../../redux/selectors/users";
+import {showLoading} from "../../redux/actions/global";
 
 const HomePage = () => {
-    const sideButtonsList = [
-    ]
+    const loggedInUserCommunities = useSelector(loggedInUserCommunitiesSelector)
 
     const feed = useSelector(feedSelector)
     const feedIndex = useSelector(feedIndexSelector)
@@ -32,12 +33,13 @@ const HomePage = () => {
         dispatch(getFeed(feedIndex, feedSortType))
     }
     useEffect(() => {
+        dispatch(showLoading(true))
         loadFeed()
     }, [feedSortType])
 
     return (
         <ContentWIthNavContainer>
-            <ContentWithSideButtons sideButtonsList={sideButtonsList}>
+            <ContentWithCommunityButtons sideButtonsList={loggedInUserCommunities}>
                 <CreatePostComponent />
                 <SortingButtonComponent />
                 <Stack mt={"20px"} alignSelf={'center'} gap={'36px'}>
@@ -52,7 +54,7 @@ const HomePage = () => {
                         <Button onClick={loadFeed}>Load more</Button>
                         : null}
                 </Stack>
-            </ContentWithSideButtons>
+            </ContentWithCommunityButtons>
         </ContentWIthNavContainer>
     )
 }

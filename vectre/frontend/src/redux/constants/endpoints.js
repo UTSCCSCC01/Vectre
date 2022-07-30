@@ -17,13 +17,16 @@ export const USERS = {
 
     GET_NFT: "/users/{walletAddress}/nft",
     UPDATE_DASHBOARD: "/users/{walletAddress}/updateDashboard",
-    GET_FUNDS: "/users/funds"
+    GET_FUNDS: "/users/funds",
+
+    GET_TRENDING_USERS: "/users/trending"
 }
 
 export const POSTS = {
     CREATE_POST: "/posts/create",
     GET_FEED: "/posts/feed",
     GET_POST: "/posts/{postID}",
+    SEARCH_POSTS: "/posts/search/{searchVal}",
     CREATE_REPOST: "/posts/create",
     CREATE_COMMENT: "/posts/create/{postID}/comment",
     GET_COMMENTS: "/posts/{postID}/comments",
@@ -44,5 +47,7 @@ export const COMMUNITY = {
     UPDATE_COMMUNITY: "/communities/{communityID}/update",
     GET_ROLES_LOGGED_IN_USER: "/communities/{communityID}/members/{walletAddress}/roles",
     JOIN_COMMUNITY: "/communities/{communityID}/join",
-    LEAVE_COMMUNITY: "/communities/{communityID}/leave"
+    LEAVE_COMMUNITY: "/communities/{communityID}/leave",
+
+    GET_TRENDING_COMMUNITIES: "/communities/trending"
 }

@@ -11,7 +11,7 @@ import { FaUser } from 'react-icons/fa'
 import FormInput from "../FormInput/FormInput";
 import FormTextArea from "../FormTextArea/FormTextArea";
 import StyledModalHeader from "../StyledModalHeader/StyledModalHeader";
-import BannerProfileEditPicsWrapper from "../BannerProfileEditPicsWrapper/BannerProfileEditPicsWrapper";
+import BannerProfileEditPicsWrapper from "../BannerProfileEditPicsWrapper/BannerProfileEditPicsWrapper"
 import { getBase64Async } from "../../../utils/Utils";
 
 const ProfileEditModal = ({
@@ -23,6 +23,8 @@ const ProfileEditModal = ({
 }) => {
 
     const [profilePicImageData, setProfilePicImageData] = useState(null);
+    const [profilePicImageLink, setProfilePicImageLink] = useState(null);
+    const [profilePicTokenID, setProfilePicTokenID] = useState(null);
     const [bannerImageData, setBannerImageData] = useState(null);
 
     const handleProfileEditSubmit = async (event) => {
@@ -32,16 +34,28 @@ const ProfileEditModal = ({
             username: event.target.username.value,
             bio: event.target.bio.value
         }
-        if (profilePicImageData) {
-            const result = await getBase64Async(profilePicImageData);
-            updatedUser.profilePicImageData = result;
+        if (profilePicTokenID) {
+            if (profilePicImageLink) {
+                updatedUser.profilePicTokenID = profilePicTokenID;
+                updatedUser.profilePicImageLink = profilePicImageLink;
+                updatedUser.profilePicImageData = null;
+            }
+        }
+        else {
+            if (profilePicImageData) {
+                const result = await getBase64Async(profilePicImageData);
+                updatedUser.profilePicImageData = result;
+                updatedUser.profilePicTokenID = null;
+            }
         }
         if (bannerImageData) {
             const result = await getBase64Async(bannerImageData);
             updatedUser.bannerImageData = result;
         }
-        setProfilePicImageData(null);
         setBannerImageData(null);
+        setProfilePicTokenID(null);
+        setProfilePicImageLink(null);
+        setProfilePicImageData(null);
         updateUser(updatedUser)
         closeModal()
     }
@@ -72,7 +86,11 @@ const ProfileEditModal = ({
                                 bannerImageData={bannerImageData}
                                 setBannerImageData={setBannerImageData}
                                 profilePicImageData={profilePicImageData}
-                                setProfilePicImageData={setProfilePicImageData} />
+                                setProfilePicImageData={setProfilePicImageData}
+                                profilePicTokenID={profilePicTokenID}
+                                setProfilePicTokenID={setProfilePicTokenID}
+                                profilePicImageLink={profilePicImageLink}
+                                setProfilePicImageLink={setProfilePicImageLink} />
                             <FormInput inputID={'name'} inputDefaultValue={loggedInUser.name} inputLabelText={'Name:'} isRequired={true} />
                             <FormInput inputID={'username'} inputDefaultValue={loggedInUser.username} inputLabelText={'Username:'} isRequired={true} />
                             <FormTextArea inputID={'bio'} inputDefaultValue={loggedInUser.bio} inputLabelText={'Bio:'} />

@@ -7,6 +7,7 @@ const User = require('../models/user'),
 const dbUtils = require('../utils/neo4j/dbUtils');
 const { authenticateToken, storeWalletAddressFromToken } = require("../utils/auth");
 const { upload } = require('../utils/images');
+const Community = require("../models/community");
 
 // GET /users
 router.get('/', (req, res, next) => {
@@ -29,6 +30,13 @@ router.get('/funds', authenticateToken, (req, res) => {
     }
 })
 
+// GET /communities/trending
+router.get('/trending', storeWalletAddressFromToken, (req, res, next) => {
+    User.getTrending(dbUtils.getSession(req), req.walletAddress, 0, 5)
+        .then(result => res.send(result))
+        .catch(error => res.send(error))
+})
+
 // GET /users/{walletAddress}
 router.get('/:walletAddress', (req, res) => {
     User.getByWalletAddress(dbUtils.getSession(req), req.params.walletAddress)
@@ -37,8 +45,8 @@ router.get('/:walletAddress', (req, res) => {
 })
 
 // GET /users/search/{searchVal}
-router.get('/search/:searchVal', (req, res) => {
-    User.search(dbUtils.getSession(req), req.params.searchVal)
+router.get('/search/:searchVal', storeWalletAddressFromToken, (req, res) => {
+    User.search(dbUtils.getSession(req), req.params.searchVal, req.walletAddress)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
@@ -122,15 +130,22 @@ router.put('/:walletAddress/update', authenticateToken, (req, res) => {
         (async () => {
             var profilePicLink = "";
             var bannerLink = "";
-            if (req.body.profilePicImageData) {
-                const img1 = await upload(req.body.profilePicImageData);
-                profilePicLink = img1.data.link;
+            var tokenID = "";
+            if (req.body.profilePicTokenID) {
+                tokenID = req.body.profilePicTokenID;
+                profilePicLink = req.body.profilePicImageLink;
+            }
+            else {
+                if (req.body.profilePicImageData) {
+                    const img1 = await upload(req.body.profilePicImageData);
+                    profilePicLink = img1.data.link;
+                }
             }
             if (req.body.bannerImageData) {
                 const img2 = await upload(req.body.bannerImageData);
                 bannerLink = img2.data.link;
             }
-            User.updateProfile(dbUtils.getSession(req), req.params.walletAddress, req.body, profilePicLink, bannerLink)
+            User.updateProfile(dbUtils.getSession(req), req.params.walletAddress, req.body, profilePicLink, bannerLink, tokenID)
                 .then((result) => res.send(result))
                 .catch((error) => res.send(error))
         })();

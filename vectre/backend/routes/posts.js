@@ -8,8 +8,17 @@ const { upload } = require('../utils/images');
 const { FEED_SORT } = require("../models/neo4j/post");
 
 // Posts
+// POST /posts/search
+router.post('/search/:searchVal', storeWalletAddressFromToken, (req, res, next) => {
+    const start = req.body.start ? req.body.start : 0,
+        size = req.body.size ? req.body.size : 10,
+        sortType = req.body.sort ? req.body.sort : FEED_SORT.TYPES.TIMESTAMP,
+        sortOrder = req.body.order ? req.body.order : FEED_SORT.ORDER.DESC
+    Post.search(dbUtils.getSession(req), req.params.searchVal, req.walletAddress, start, size, sortType, sortOrder)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
 // POST /posts/feed
-
 router.post('/feed', storeWalletAddressFromToken, (req, res, next) => {
     const start = req.body.start ? req.body.start : 0,
         size = req.body.size ? req.body.size : 10,
