@@ -1,10 +1,12 @@
 const _ = require('lodash');
-const { getRelationshipFromRole } = require('../utils/Utils');
+const { getRoleFromRelationship, getRelationshipFromRole } = require('../utils/Utils');
 const Community = require('./neo4j/community')
 const { ROLES } = require("./neo4j/community");
 const User = require('./neo4j/user')
 const Post = require('./neo4j/post')
 const { FEED_SORT } = require("./neo4j/post");
+const { getSessionAgain } = require('../utils/neo4j/dbUtils');
+const post = require('./post');
 
 // helper functions
 const filterBody = function (body) {
@@ -406,7 +408,7 @@ const removeMember = function (session, walletAddress, communityID) {
                             return session.run(queries[0], format)
                                 .then(result => { return successReturn })
                         })
-                    
+
                 } else {
                     // Check if User is a member
                     return isRole(session, walletAddress, communityID, ROLES.MEMBER.type)
@@ -582,7 +584,7 @@ const communityUpdate = function (session, walletAddress, communityID, body) {
         })
 }
 
-const getCommunityFeed = function (session, communityID, walletAddress, start, size, sortType, sortOrder) {
+const getCommunityFeed = async function (session, communityID, walletAddress, start, size, sortType, sortOrder) {
     sortType = sortType.toLowerCase(), sortOrder = sortOrder.toLowerCase()
 
     if (start < 0) {
@@ -628,54 +630,74 @@ const getCommunityFeed = function (session, communityID, walletAddress, start, s
         `LIMIT toInteger($size)`
     ].join('\n');
 
-    return exists(session, communityID)
-        .then(idCheck => {
-            if (idCheck.result) { // Community exists
-                return session.run(query, {
-                    communityID: communityID,
-                    walletAddress: walletAddress,
-                    start: start,
-                    size: size
-                })
-                    .then((results) => {
-                        let posts = []
-                        results.records.forEach((record) => {
-                            let post = new Post(record.get("post"))
-                            post.author = new User(record.get("author"))
-                            post.comment = String(record.get("comment").low);
-                            post.community = record.get('com.communityID') ? String(record.get('com.communityID')) : null
-                            post.alreadyLiked = record.get('likes').low > 0
-                            if (post.repostPostID) {
-                                if (!record.get('repost')) {
-                                    post.repostPostID = "removed"
-                                } else {
-                                    post.repostPost = new Post(record.get('repost'))
-                                    post.repostPost.author = new User(record.get('repostAuthor'))
-                                }
-                            }
-                            if (record.get('mod_link')) post.verified = true
+    const existsCheck = await exists(session, communityID).catch((error) => {
+        throw {
+            success: false,
+            message: "Failed to get feed",
+            error: error.message
+        }
+    });
 
-                            posts.push(post)
-                        })
-                        return {
-                            success: true,
-                            posts: posts
-                        }
-                    })
-            } else {
-                throw {
-                    success: false,
-                    message: "Community does not exist"
+    if (existsCheck.result) { // Community exists
+        const sessionRun = await session.run(query, {
+            communityID: communityID,
+            walletAddress: walletAddress,
+            start: start,
+            size: size
+        })
+        let posts = []
+        sessionRun.records.forEach(async (record) => {
+            let post = new Post(record.get("post"))
+            post.author = new User(record.get("author"))
+            post.comment = String(record.get("comment").low);
+            post.community = record.get('com.communityID') ? String(record.get('com.communityID')) : null
+            post.alreadyLiked = record.get('likes').low > 0
+            if (post.repostPostID) {
+                if (!record.get('repost')) {
+                    post.repostPostID = "removed"
+                } else {
+                    post.repostPost = new Post(record.get('repost'))
+                    post.repostPost.author = new User(record.get('repostAuthor'))
                 }
             }
+            if (record.get('mod_link')) post.verified = true
+            post.author.roles = []
+            posts.push(post)
         })
-        .catch((error) => {
-            throw {
-                success: false,
-                message: "Failed to get feed",
-                error: error.message
-            }
-        });
+
+        const query2 = [
+            `UNWIND $posts as post`,
+            'MATCH (user: User {walletAddress: post.author.walletAddress})-[r]->(c: Community {communityID: $communityID})',
+            'RETURN DISTINCT user.walletAddress, type(r)'
+        ].join('\n');
+
+        const sessionRun2 = await session.run(query2, {
+            communityID: communityID,
+            posts: posts
+        })
+
+        sessionRun2.records.forEach((record) => {
+            var postWalletAddress = record.get("user.walletAddress")
+            var relationship = record.get("type(r)")
+            console.log(postWalletAddress, relationship);
+            posts.map((post) => {
+                if (post.author.walletAddress === postWalletAddress) {
+                    post.author.roles.push(getRoleFromRelationship(relationship))
+                }
+            })
+        })
+
+        return {
+            success: true,
+            posts: posts
+        }
+    }
+    else {
+        throw {
+            success: false,
+            message: "Community does not exist"
+        }
+    }
 }
 
 module.exports = {
