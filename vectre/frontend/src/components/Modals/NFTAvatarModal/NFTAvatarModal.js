@@ -10,6 +10,7 @@ import {
     Flex,
     Grid,
     Box,
+    systemProps,
 } from "@chakra-ui/react"
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -62,7 +63,14 @@ function handleSelectAdd(selectedList, nftItem, setSelectedList) {
 
 function NFTAvatarModal({
     isOpen,
-    onClose
+    onClose,
+    data,
+    profilePicImageData,
+    setProfilePicImageData,
+    profilePicTokenID,
+    setProfilePicTokenID,
+    profilePicImageLink,
+    setProfilePicImageLink
 }) {
     const [scrollBehavior] = React.useState('inside')
     const [selectedList, setSelectedList] = useState([]);
@@ -178,17 +186,20 @@ function NFTAvatarModal({
                     <ModalFooter>
                         <Button
                             onClick={(e) => {
+                                console.log("hi");
+                                onClose();
                                 if (selectedList.length === 0) {
-                                    const dashboard = JSON.stringify(selectedList)
-                                    dispatch(updateDashboard(loggedInUser.walletAddress, dashboard, () => { setSelectedList([]) }))
-                                    onClose();
+                                    setProfilePicImageLink(null);
+                                    setProfilePicTokenID(null);
                                 }
-                                else if (selectedList.length > 0) {
-                                    const dashboard = JSON.stringify(selectedList).replace(/"/g, "'");
-                                    dispatch(updateDashboard(loggedInUser.walletAddress, dashboard, () => { setSelectedList([]) }))
-                                    onClose();
+                                else {
+                                    console.log(selectedList[0].tokenID)
+                                    console.log(selectedList[0].imageURL)
+                                    setProfilePicTokenID(String(selectedList[0].tokenID));
+                                    setProfilePicImageLink(String(selectedList[0].imageURL));
                                 }
                                 e.stopPropagation();
+                                onClose();
                             }}
                             bg={'primary.400'}
                             color={'white'}

@@ -24,7 +24,11 @@ const ProfilePicEditModal = ({
     isOpen,
     onClose,
     profilePicImageData,
-    setProfilePicImageData
+    setProfilePicImageData,
+    profilePicTokenID,
+    setProfilePicTokenID,
+    profilePicImageLink,
+    setProfilePicImageLink
 }) => {
 
     const profilePicHiddenFileInput = React.useRef(null);
@@ -62,7 +66,7 @@ const ProfilePicEditModal = ({
                             gap={'20px'}>
                             <Image
                                 border={'5px solid white'}
-                                src={profilePicImageData ? URL.createObjectURL(profilePicImageData) : getAvatarOrDefault(data.profilePic)}
+                                src={profilePicImageLink ? profilePicImageLink : (profilePicImageData ? URL.createObjectURL(profilePicImageData) : getAvatarOrDefault(data.profilePic))}
                                 fit={'cover'}
                                 overflow={'hidden'}
                                 borderRadius={'full'}
@@ -120,7 +124,16 @@ const ProfilePicEditModal = ({
                     </ModalFooter>
                 </ModalContent>
             </Modal>
-            <NFTAvatarModal isOpen={isOpenNFT} onClose={onCloseNFT} />
+            <NFTAvatarModal
+                isOpen={isOpenNFT}
+                onClose={onCloseNFT}
+                data={data}
+                profilePicImageData={profilePicImageData}
+                setProfilePicImageData={setProfilePicImageData}
+                profilePicTokenID={profilePicTokenID}
+                setProfilePicTokenID={setProfilePicTokenID}
+                profilePicImageLink={profilePicImageLink}
+                setProfilePicImageLink={setProfilePicImageLink} />
         </>
     );
 }

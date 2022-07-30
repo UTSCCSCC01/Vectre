@@ -11,7 +11,11 @@ import ProfilePicEditModal from "./ProfilePicEditModal/ProfilePicEditModal";
 const ProfilePic = ({
     data,
     profilePicImageData,
-    setProfilePicImageData
+    setProfilePicImageData,
+    profilePicTokenID,
+    setProfilePicTokenID,
+    profilePicImageLink,
+    setProfilePicImageLink
 }) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     return (
@@ -23,7 +27,7 @@ const ProfilePic = ({
                 marginLeft={'-60px'}>
                 <Image
                     border={'5px solid white'}
-                    src={profilePicImageData ? URL.createObjectURL(profilePicImageData) : getAvatarOrDefault(data.profilePic)}
+                    src={profilePicImageLink ? profilePicImageLink : (profilePicImageData ? URL.createObjectURL(profilePicImageData) : getAvatarOrDefault(data.profilePic))}
                     fit={'cover'}
                     overflow={'hidden'}
                     borderRadius={'full'}
@@ -41,7 +45,16 @@ const ProfilePic = ({
                     onClick={onOpen}
                 />
             </Box>
-            <ProfilePicEditModal data={data} isOpen={isOpen} onClose={onClose} profilePicImageData={profilePicImageData} setProfilePicImageData={setProfilePicImageData} />
+            <ProfilePicEditModal
+                data={data}
+                isOpen={isOpen}
+                onClose={onClose}
+                profilePicImageData={profilePicImageData}
+                setProfilePicImageData={setProfilePicImageData}
+                profilePicTokenID={profilePicTokenID}
+                setProfilePicTokenID={setProfilePicTokenID}
+                profilePicImageLink={profilePicImageLink}
+                setProfilePicImageLink={setProfilePicImageLink} />
         </>
     )
 }
