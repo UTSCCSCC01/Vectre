@@ -26,6 +26,13 @@ router.get('/', (req, res, next) => {
         .catch(error => res.send(error))
 })
 
+// GET /communities/trending
+router.get('/trending', storeWalletAddressFromToken, (req, res, next) => {
+    Community.getTrending(dbUtils.getSession(req), req.walletAddress,0, 5)
+        .then(result => res.send(result))
+        .catch(error => res.send(error))
+})
+
 // GET /communities/:communityID
 router.get('/:communityID', (req, res, next) => {
     Community.get(dbUtils.getSession(req), req.params.communityID)
@@ -34,8 +41,8 @@ router.get('/:communityID', (req, res, next) => {
 })
 
 // GET /users/search/{searchVal}
-router.get('/search/:searchVal', (req, res) => {
-    Community.search(dbUtils.getSession(req), req.params.searchVal)
+router.get('/search/:searchVal', storeWalletAddressFromToken, (req, res) => {
+    Community.search(dbUtils.getSession(req), req.params.searchVal, req.walletAddress)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })

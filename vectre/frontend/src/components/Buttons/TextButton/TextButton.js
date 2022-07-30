@@ -1,5 +1,5 @@
 import {
-    Button
+    Button, Image
 } from '@chakra-ui/react';
 
 const TextButton = ({
@@ -11,6 +11,9 @@ const TextButton = ({
     color,
     bg,
     text,
+    lineHeight,
+    imgSrc,
+    imgSize = '25px',
     ...otherProps
 }) => {
     return (
@@ -23,9 +26,17 @@ const TextButton = ({
             color={color ? color : 'primary.400'}
             bg={bg ? bg : 'white'}
             _focus={{ outline: 0 }}
-            lineHeight={'1'}
+            lineHeight={lineHeight ? lineHeight : '1'}
             {...otherProps} // other props can be passed into here
         >
+            {
+                imgSrc && (<Image
+                    src={imgSrc}
+                    fit={'cover'}
+                    overflow={'hidden'}
+                    borderRadius={'full'}
+                    boxSize={imgSize} />)
+            }
             {text}
         </Button>
     );

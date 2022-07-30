@@ -4,10 +4,8 @@ import {
     LOGIN_USER,
     GET_USER,
     GET_USERS,
-    SEARCH_USERS,
     STORE_USER,
     STORE_USERS,
-    STORE_SEARCHED_USERS,
     CREATE_USER,
     UPDATE_USER,
     GET_LOGGED_IN_USER,
@@ -22,6 +20,8 @@ import {
     GET_FUNDS,
     STORE_FUNDS,
     UPDATE_DASHBOARD,
+    DO_JOIN_LOGGED_IN_USER_COMMUNITY,
+    DO_LEAVE_LOGGED_IN_USER_COMMUNITY,
 } from "../constants/users";
 
 // Login
@@ -38,6 +38,15 @@ export const loginUser = (walletAddress, signedNonce, redirectWindow) => ({
     walletAddress,
     signedNonce,
     redirectWindow
+})
+
+export const joinLoginUserCommunity = (communityID) => ({
+    type: DO_JOIN_LOGGED_IN_USER_COMMUNITY,
+    communityID
+})
+export const leaveLoginUserCommunity = (communityID) => ({
+    type: DO_LEAVE_LOGGED_IN_USER_COMMUNITY,
+    communityID
 })
 
 export const getNFT = (walletAddress) => ({
@@ -72,15 +81,6 @@ export const getUsers = () => ({
 export const storeUsers = (users) => ({
     type: STORE_USERS,
     users
-})
-
-export const searchUsers = (searchVal) => ({
-    type: SEARCH_USERS,
-    searchVal
-})
-export const storeSearchedUsers = (searchedUsers) => ({
-    type: STORE_SEARCHED_USERS,
-    searchedUsers
 })
 
 export const getLoggedInUser = () => ({
@@ -125,15 +125,17 @@ export const updateDashboard = (walletAddress, dashboard, resetSelectedList) => 
     resetSelectedList
 })
 
-export const followUser = (walletAddressToFollow, profileWalletAddress, toggleFollowList) => ({
+export const followUser = (walletAddressToFollow, profileWalletAddress, toggleFollowList, callBack) => ({
     type: FOLLOW_USER,
     walletAddressToFollow,
     profileWalletAddress,
-    toggleFollowList
+    toggleFollowList,
+    callBack
 })
-export const unfollowUser = (walletAddressToUnfollow, profileWalletAddress, toggleFollowList) => ({
+export const unfollowUser = (walletAddressToUnfollow, profileWalletAddress, toggleFollowList, callBack) => ({
     type: UNFOLLOW_USER,
     walletAddressToUnfollow,
     profileWalletAddress,
-    toggleFollowList
+    toggleFollowList,
+    callBack
 })
