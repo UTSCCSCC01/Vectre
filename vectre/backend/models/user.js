@@ -721,7 +721,7 @@ const getTrending = function (session, walletAddress, start, size) {
         `OPTIONAL MATCH (user)<-[f:FOLLOWS]-(follower: User)`,
         `OPTIONAL MATCH (tokenUser:User{walletAddress:$walletAddress})-[tokenF:FOLLOWS]->(user)`,
         `RETURN user, count(f) AS followerCount, count(tokenF) AS tokenF, count(f)-user.initialWeeklyFollowers as weeklyFollowersDelta`,
-        `ORDER BY weeklyFollowerDelta DESC`,
+        `ORDER BY weeklyFollowersDelta DESC`,
         `SKIP toInteger($start)`,
         `LIMIT toInteger($size)`,
     ].join('\n');
@@ -745,6 +745,7 @@ const getTrending = function (session, walletAddress, start, size) {
             }
         })
         .catch(error => {
+            console.log(error)
             throw {
                 success: false,
                 message: "Failed to fetch trending users",
