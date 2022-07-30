@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const cron = require('node-cron');
 const { getRelationshipFromRole } = require('../utils/Utils');
 const Community = require('./neo4j/community')
 const { ROLES } = require("./neo4j/community");
@@ -114,7 +115,7 @@ const create = function (session, ownerWalletAddress, newCommunity) {
     const query = [
         'MATCH (o: User {walletAddress: $owner})',
         'CREATE (c: Community $format)',
-        'SET c.memberCount = toInteger(1)',
+        'SET c.memberCount = toInteger(1), c.trendingCount = toInteger(1)',
         'CREATE (o)-[:JOINS]->(c)',
         'CREATE (o)-[:MODERATES]->(c)',
         'CREATE (o)-[link: OWNS]->(c)',
@@ -131,7 +132,7 @@ const create = function (session, ownerWalletAddress, newCommunity) {
         instagramLink: newCommunity.instagramLink ? newCommunity.instagramLink : null,
         twitterLink: newCommunity.twitterLink ? newCommunity.twitterLink : null,
         websiteLink: newCommunity.websiteLink ? newCommunity.websiteLink : null,
-        ethLink: newCommunity.ethLink ? newCommunity.ethLink : null,
+        ethLink: newCommunity.ethLink ? newCommunity.ethLink : null
     }
 
     return session.run(query, {
@@ -332,7 +333,7 @@ const addMember = function (session, walletAddress, communityID) {
         'MATCH (u: User {walletAddress: $walletAddress})',
         'MATCH (c: Community {communityID: $communityID})',
         'MERGE (u)-[:JOINS]->(c)',
-        'SET c.memberCount = toInteger(c.memberCount + 1)'
+        'SET c.memberCount = toInteger(c.memberCount + 1), c.trendingCount = toInteger(c.trendingCount + 1)'
     ].join('\n')
 
     return isRole(session, walletAddress, communityID, ROLES.MEMBER.type)
@@ -469,7 +470,7 @@ const removeMember = function (session, walletAddress, communityID) {
         ].join("\n"),
         [
             'MATCH (u: User {walletAddress: $walletAddress})-[mem_link:JOINS]->(c: Community {communityID: $communityID})',
-            'SET c.memberCount = toInteger(c.memberCount - 1)',
+            'SET c.memberCount = toInteger(c.memberCount - 1), c.trendingCount = toInteger(c.trendingCount - 1)',
             'DELETE mem_link'
         ].join("\n")
     ]
@@ -757,6 +758,60 @@ const getCommunityFeed = function (session, communityID, walletAddress, start, s
         });
 }
 
+const getTrendingCommunities = function (session, start, size) {
+    if (start < 0) {
+        throw {
+            success: false,
+            message: "Start index must be non-negative"
+        }
+    } else if (size < 0) {
+        throw {
+            success: false,
+            message: "Size must be non-negative"
+        }
+    }
+
+    const query = [
+        `MATCH (c: Community)`,
+        `RETURN c`,
+        `ORDER BY c.trendingCount DESC`,
+        `SKIP toInteger($start)`,
+        `LIMIT toInteger($size)`,
+    ].join('\n');
+
+    return session.run(query, {
+        start: start,
+        size: size
+    })
+        .then(result => {
+            let communities = []
+            result.records.forEach(record => {
+                communities.push(new Community(record.get('c')))
+            })
+            return {
+                success: true,
+                communities: communities
+            }
+        })
+        .catch(error => {
+            throw {
+                success: false,
+                message: "Failed to fetch all communities",
+                error: error.message
+            }
+        })
+}
+
+// Cron job for resetting the trend count at 00:00 on Sunday
+cron.schedule('0 0 * * 0', resetTrending = function (session) {
+    const query = [
+        'MATCH (c: Community)',
+        'SET c.trendingCount = toInteger(0)',
+    ].join("\n")
+
+    return session.run(query)
+});
+
 module.exports = {
     get,
     getAll,
@@ -769,5 +824,6 @@ module.exports = {
     getRolesOfUsers,
     isRole,
     linkPost,
-    getCommunityFeed
+    getCommunityFeed,
+    getTrendingCommunities
 }
