@@ -6,6 +6,8 @@ import {
 } from '@chakra-ui/react'
 
 const StyledModalHeader = ({
+    headerFontSize = '28px',
+    headerFontWeight = 700,
     headerText,
     icon
 }) => {
@@ -27,8 +29,8 @@ const StyledModalHeader = ({
                 color={'primary.400'}
             >
                 <Text
-                    fontWeight={700}
-                    fontSize="28px"
+                    fontSize={headerFontSize}
+                    fontWeight={headerFontWeight}
                     mr="15px">
                     {headerText}
                 </Text>

@@ -29,15 +29,13 @@ const ContentWithCommunityButtons = ({
                 columnGap={'30px'}>
                 <GridItem>
                     <Stack gap={'15px'}>
-                        <ButtonLinkWrapper href={""}>
-                            <TextButton
-                                width={'100%'}
-                                px={'17.5px'}
-                                fontSize={'18px'}
-                                fontWeight={700}
-                                text={"My Communities"}
-                                rightIcon={<IoIosPeople px={'18px'} />} />
-                        </ButtonLinkWrapper>
+                        <TextButton
+                            width={'100%'}
+                            px={'17.5px'}
+                            fontSize={'18px'}
+                            fontWeight={700}
+                            text={"My Communities"}
+                            rightIcon={<IoIosPeople size={'1.3rem'} />} />
                         {someButtons.map((btn, i) =>
                             <ButtonLinkWrapper href={"/c/" + btn.communityID}>
                                 <TextButton

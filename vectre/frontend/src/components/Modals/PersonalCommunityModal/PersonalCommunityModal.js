@@ -1,21 +1,17 @@
 import {
     Modal,
     ModalOverlay,
-    ModalContent,
-    Image, 
-    Box, 
-    Heading,
-    Button,
-    ModalFooter
+    ModalContent
 } from "@chakra-ui/react";
-import {IoIosPeople} from 'react-icons/io'; 
-import TextButton from "../../Buttons/TextButton/TextButton";
+import { IoIosPeople } from 'react-icons/io';
+import ToggleHollowButton from "../../Buttons/ToggleHollowButton/ToggleHollowButton";
 import EntityCard from "../../EntityCard/EntityCard";
+import StyledModalHeader from "../StyledModalHeader/StyledModalHeader"
 
 const PersonalCommunityModal = ({
     isOpen,
     onClose,
-    communitiesList, 
+    communitiesList,
 }) => {
     return (
         <>
@@ -35,20 +31,24 @@ const PersonalCommunityModal = ({
                     height={'500px'}
                     width={'500px'}
                     alignItems={'left'}>
-                    <TextButton bg={'none'} 
-                        _hover={'none'} 
-                        _click={'none'} 
-                        rightIcon={<IoIosPeople/>} 
-                        text={'My Communities'} fontSize={'20px'}/>
-                    {communitiesList.map((community, i) => 
-                        <EntityCard Key={community.communityID} primaryText={community.name} 
-                        secondaryText={community.communityID} 
-                        href={"/c/" + community.communityID}
-                        data={{'nice':'nice'}} />
+                    <StyledModalHeader
+                        headerText={'My Communities'}
+                        headerFontSize={"18px"}
+                        icon={<IoIosPeople />} />
+                    {communitiesList.map((community, i) =>
+                        <EntityCard
+                            key={i}
+                            primaryText={community.name}
+                            secondaryText={"< " + community.communityID + " >"}
+                            href={"/c/" + community.communityID}
+                            data={community} >
+                            <ToggleHollowButton
+                                onText={'Joined'}
+                                offText={'Join'}
+                                isOn={community.alreadyJoined}
+                                onClick={() => console.log("Peter was here")} />
+                        </EntityCard>
                     )}
-                    <ModalFooter>
-                        <TextButton text={'View More'}/>
-                    </ModalFooter>
                 </ModalContent>
             </Modal>
         </>
