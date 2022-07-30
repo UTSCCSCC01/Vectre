@@ -9,6 +9,8 @@ import TextButton from '../Buttons/TextButton/TextButton';
 import { IoIosPeople } from 'react-icons/io';
 import PersonalCommunityModal from '../Modals/PersonalCommunityModal/PersonalCommunityModal';
 import CommunityProfileEditModal from '../Modals/CommunityProfileEditModal/CommunityProfileEditModal';
+import { useSelector } from 'react-redux';
+import { loggedInUserSelector } from '../../redux/selectors/users';
 
 const ContentWithCommunityButtons = ({
     sideButtonsList,
@@ -16,6 +18,7 @@ const ContentWithCommunityButtons = ({
 }) => {
     const { isOpen, onClose, onOpen } = useDisclosure();
     const { isOpen: createCommunityIsOpen, onClose: createCommunityOnClose, onOpen: createCommunityOnOpen } = useDisclosure();
+    const loggedInUser = useSelector(loggedInUserSelector)
     return (
         <Container
             maxW={'8xl'}
@@ -26,23 +29,27 @@ const ContentWithCommunityButtons = ({
                 columnGap={'30px'}>
                 <GridItem>
                     <Stack gap={'15px'}>
-                        <TextButton
-                            width={'100%'}
-                            px={'17.5px'}
-                            fontSize={'18px'}
-                            fontWeight={700}
-                            text={"My Communities"}
-                            rightIcon={<IoIosPeople size={'1.3rem'} />}
-                            onClick={onOpen} />
-                        <PersonalCommunityModal isOpen={isOpen} onClose={onClose} communitiesList={sideButtonsList} />
-                        <TextButton
-                            width={'100%'}
-                            px={'17.5px'}
-                            fontSize={'18px'}
-                            fontWeight={700}
-                            text={"Create a Community"}
-                            onClick={createCommunityOnOpen} />
-                        <CommunityProfileEditModal communityData={{}} isOpen={createCommunityIsOpen} onClose={createCommunityOnClose} isEdit={false} />
+                        {loggedInUser.walletAddress ? (
+                            <>
+                                <TextButton
+                                    width={'100%'}
+                                    px={'17.5px'}
+                                    fontSize={'18px'}
+                                    fontWeight={700}
+                                    text={"My Communities"}
+                                    rightIcon={<IoIosPeople size={'1.3rem'} />}
+                                    onClick={onOpen} />
+                                <PersonalCommunityModal isOpen={isOpen} onClose={onClose} communitiesList={sideButtonsList} />
+                                <TextButton
+                                    width={'100%'}
+                                    px={'17.5px'}
+                                    fontSize={'18px'}
+                                    fontWeight={700}
+                                    text={"Create a Community"}
+                                    onClick={createCommunityOnOpen} />
+                                <CommunityProfileEditModal communityData={{}} isOpen={createCommunityIsOpen} onClose={createCommunityOnClose} isEdit={false} />
+                            </>
+                        ) : null}
                     </Stack>
                 </GridItem>
                 <GridItem>
