@@ -1,4 +1,5 @@
 import {
+    Box,
     Container,
     Grid,
     GridItem,
@@ -29,7 +30,11 @@ const ContentWithSideButtons = ({
                             fontSize={'18px'}
                             fontWeight={700}
                             text={headerText}
-                            rightIcon={headerIcon} />
+                            rightIcon={headerIcon}
+                            cursor={'default'}
+                            _hover={{ bg: "white" }}
+                            _active={{ bg: "white" }}
+                        />
                         {
                             sideButtonsList.map((btn, i) => {
                                 if (btn.hidden) {
