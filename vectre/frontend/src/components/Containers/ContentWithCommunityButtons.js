@@ -4,7 +4,9 @@ import {
     GridItem,
     Stack, 
     Icon, 
-    Image
+    Image, 
+    useDisclosure, 
+    Box
 } from '@chakra-ui/react'
 import ButtonLinkWrapper from '../Buttons/ButtonLinkWrapper/ButtonLinkWrapper';
 import CommunityButton from '../Buttons/CommunityButton/CommunityButton';
@@ -12,11 +14,14 @@ import TextButton from '../Buttons/TextButton/TextButton';
 import {IoIosPeople} from 'react-icons/io'; 
 import {BsFillArrowRightCircleFill} from 'react-icons/bs'; 
 import default_profile from "../../assets/images/default_profile_pic.jpg"; 
+import PersonalCommunityModal from '../Modals/PersonalCommunityModal/PersonalCommunityModal';
 
 const ContentWithCommunityButtons = ({
     sideButtonsList,
     ...otherProps
 }) => {
+    const { isOpen, onClose, onOpen } = useDisclosure();
+    const someButtons = sideButtonsList.slice(0, 5); 
     return (
         <Container
             maxW={'8xl'}
@@ -36,8 +41,8 @@ const ContentWithCommunityButtons = ({
                                                 text={"My Communities"}
                                                 rightIcon={<IoIosPeople px={'18px'}/>} />
                                         </ButtonLinkWrapper>
-                        {
-                            sideButtonsList.map((btn, i) => {
+                            {
+                            someButtons.map((btn, i) => {
                                 if (btn.hidden) {
                                     return null;
                                 }
@@ -61,20 +66,21 @@ const ContentWithCommunityButtons = ({
                                     fontSize={'18px'}
                                     fontWeight={700}
                                     text={btn.text}
-                                    onClick={() => { btn.func() }} />
+                                    onClick={() => {}} />
                             })
                         }
-                        <ButtonLinkWrapper href={""}>
+                        <Box onClick={onOpen}>
                             <TextButton
                                 width={'100%'}
                                 px={'17.5px'}
                                 fontSize={'18px'}
                                 fontWeight={700}
                                 text={"View More"}
-                                leftIcon={<BsFillArrowRightCircleFill px={'18px'}/>} 
-                                leftImage={default_profile}/>
+                                leftIcon={<BsFillArrowRightCircleFill px={'18px'} />} 
+                                />  
                             
-                        </ButtonLinkWrapper>
+                        </Box>
+                        <PersonalCommunityModal position={'relative'} isOpen={isOpen} onClose={onClose}/>
                     </Stack>
                 </GridItem>
                 <GridItem>

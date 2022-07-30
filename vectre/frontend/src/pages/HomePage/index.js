@@ -23,13 +23,49 @@ const HomePage = () => {
     const sideButtonsList = [
         {
             hidden: false, 
-            link: "./", 
+            link: "#", 
             function: () => {
 
             }, 
             text: "community 1", 
-            imgSrc: "../../assets/images/default_profile_pic.jpg"
-        }
+            imgSrc: "http://img.mp.sohu.com/upload/20170529/23d0bcbcfa46413ba1342c179cbf41d1_th.png"
+        }, 
+        {
+            hidden: false, 
+            link: "#", 
+            function: () => {
+
+            }, 
+            text: "community 2", 
+            imgSrc: "http://img.mp.sohu.com/upload/20170529/23d0bcbcfa46413ba1342c179cbf41d1_th.png"
+        }, 
+        {
+            hidden: false, 
+            link: "#", 
+            function: () => {
+
+            }, 
+            text: "community 3", 
+            imgSrc: "http://img.mp.sohu.com/upload/20170529/23d0bcbcfa46413ba1342c179cbf41d1_th.png"
+        }, 
+        {
+            hidden: false, 
+            link: "#", 
+            function: () => {
+
+            }, 
+            text: "community 4", 
+            imgSrc: "http://img.mp.sohu.com/upload/20170529/23d0bcbcfa46413ba1342c179cbf41d1_th.png"
+        }, 
+        {
+            hidden: false, 
+            link: "#", 
+            function: () => {
+
+            }, 
+            text: "community 5", 
+            imgSrc: "http://img.mp.sohu.com/upload/20170529/23d0bcbcfa46413ba1342c179cbf41d1_th.png"
+        }, 
 
     ]
 

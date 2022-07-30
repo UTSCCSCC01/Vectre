@@ -1,6 +1,6 @@
 import {
     Button, 
-    Image
+    Image, 
 } from '@chakra-ui/react';
 
 const CommunityButton = ({
@@ -21,6 +21,7 @@ const CommunityButton = ({
             display={display ? display : 'inline-flex'}
             px={px ? px : '15px'}
             py={py ? py : '5.5px'}
+            gap={'20px'}
             fontSize={fontSize ? fontSize : '12px'}
             fontWeight={fontWeight ? fontWeight : 500}
             color={color ? color : 'primary.400'}
