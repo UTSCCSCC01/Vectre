@@ -758,7 +758,7 @@ const getCommunityFeed = function (session, communityID, walletAddress, start, s
         });
 }
 
-const getTrendingCommunities = function (session, start, size) {
+const getTrendingCommunities = function (session, walletAddress, start, size) {
     if (start < 0) {
         throw {
             success: false,
@@ -772,21 +772,25 @@ const getTrendingCommunities = function (session, start, size) {
     }
 
     const query = [
-        `MATCH (c: Community)`,
-        `RETURN c, c.memberCount-c.initialWeeklyMemberCount as weeklyMemberDelta`,
+        `MATCH (community: Community)`,
+        `OPTIONAL MATCH (user:User{walletAddress:$walletAddress})-[j:JOINS]->(community)`,
+        `RETURN community, count(j) AS join, community.memberCount-community.initialWeeklyMemberCount as weeklyMemberDelta`,
         `ORDER BY weeklyMemberDelta DESC`,
         `SKIP toInteger($start)`,
         `LIMIT toInteger($size)`,
     ].join('\n');
 
     return session.run(query, {
+        walletAddress: walletAddress,
         start: start,
         size: size
     })
         .then(result => {
             let communities = []
             result.records.forEach(record => {
-                communities.push(new Community(record.get('c')))
+                let community = new Community(record.get('community'))
+                community.alreadyJoined = record.get('join').low > 0
+                communities.push(community)
             })
             return {
                 success: true,
