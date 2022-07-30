@@ -6,7 +6,7 @@ const Community = require('../models/community'),
 const { ROLES, MODERATOR_ACTIONS } = require("../models/neo4j/community");
 const { authenticateToken, storeWalletAddressFromToken } = require('../utils/auth');
 const dbUtils = require('../utils/neo4j/dbUtils');
-const {FEED_SORT} = require("../models/neo4j/post");
+const { FEED_SORT } = require("../models/neo4j/post");
 
 // POST /communities/feed
 router.post('/:communityID/feed', storeWalletAddressFromToken, (req, res, next) => {
@@ -34,8 +34,8 @@ router.get('/:communityID', (req, res, next) => {
 })
 
 // GET /users/search/{searchVal}
-router.get('/search/:searchVal', (req, res) => {
-    Community.search(dbUtils.getSession(req), req.params.searchVal)
+router.get('/search/:searchVal', storeWalletAddressFromToken, (req, res) => {
+    Community.search(dbUtils.getSession(req), req.params.searchVal, req.walletAddress)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })

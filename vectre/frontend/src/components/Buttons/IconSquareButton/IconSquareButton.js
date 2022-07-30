@@ -8,6 +8,7 @@ const IconSquareButton = ({
     px,
     py,
     color,
+    borderRadius,
     bg,
     icon,
     ...otherProps
@@ -19,13 +20,12 @@ const IconSquareButton = ({
             py={py ? py : '3px'}
             color={color ? color : 'primary.400'}
             bg={bg ? bg : 'white'}
-            borderRadius={'6px'}
+            borderRadius={borderRadius ? borderRadius : '6px'}
             alignItems={'center'}
             icon={icon ? icon : <RiQuestionFill size="1.6rem" color='red' />} // Shows red RiQuestionFill icon if icon is not given
             _focus={{ outline: 0 }}
             {...otherProps} // other props can be passed into here
-        >
-        </IconButton>
+        />
     );
 }
 

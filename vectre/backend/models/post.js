@@ -6,7 +6,7 @@ const imgUtils = require('../utils/images')
 const Notification = require("../models/notification")
 const { ROLES } = require("../models/neo4j/community");
 const Community = require("./community")
-const {FEED_SORT} = require("./neo4j/post");
+const { FEED_SORT } = require("./neo4j/post");
 
 const createPost = function (session, authorWalletAddress, body, imageURL) {
     if (!body.text) {
@@ -154,7 +154,7 @@ const createComment = function (session, authorWalletAddress, postID, body) {
     }
     const commentPostID = nano()
     const timestamp = new Date().toISOString();
-    
+
     return (async () => {
         try {
             const postCheck = await getPostByID(session, null, postID)
@@ -582,32 +582,32 @@ const getUserFeed = function (session, walletAddress, start, size, sortType, sor
     if (walletAddress !== null) {
         query = [
             `CALL {`,
-                `MATCH (currentUser: User {walletAddress: $walletAddress})-[:FOLLOWS]->(author:User)-[:POSTED]->(post: Post)`,
-                `WHERE post.parent IS NULL`, // Prevent comments in feed
-                `OPTIONAL MATCH (currentUser)-[l:LIKED]->(post)`,
-                `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
-                `OPTIONAL MATCH (repost:Post)`,
-                `WHERE repost.postID = post.repostPostID`,
-                `OPTIONAL MATCH (repostAuthor:User)`,
-                `WHERE repostAuthor.walletAddress = repost.author`,
-                `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
-                `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID AS communityID`,
-                `ORDER BY ${orderBy} ${order}`,
+            `MATCH (currentUser: User {walletAddress: $walletAddress})-[:FOLLOWS]->(author:User)-[:POSTED]->(post: Post)`,
+            `WHERE post.parent IS NULL`, // Prevent comments in feed
+            `OPTIONAL MATCH (currentUser)-[l:LIKED]->(post)`,
+            `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
+            `OPTIONAL MATCH (repost:Post)`,
+            `WHERE repost.postID = post.repostPostID`,
+            `OPTIONAL MATCH (repostAuthor:User)`,
+            `WHERE repostAuthor.walletAddress = repost.author`,
+            `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
+            `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID AS communityID`,
+            `ORDER BY ${orderBy} ${order}`,
 
-                `UNION`,
+            `UNION`,
 
-                `MATCH (currentUser)-[:JOINS]->(:Community)<-[:POSTED_TO]-(post: Post)`,
-                `WHERE post.parent IS NULL`, // Prevent comments in feed
-                `OPTIONAL MATCH (author:User)`,
-                `WHERE author.walletAddress = post.author`,
-                `OPTIONAL MATCH (currentUser)-[l:LIKED]->(post)`,
-                `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
-                `OPTIONAL MATCH (repost:Post)`,
-                `WHERE repost.postID = post.repostPostID`,
-                `OPTIONAL MATCH (repostAuthor:User)`,
-                `WHERE repostAuthor.walletAddress = repost.author`,
-                `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
-                `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID AS communityID`,
+            `MATCH (currentUser)-[:JOINS]->(:Community)<-[:POSTED_TO]-(post: Post)`,
+            `WHERE post.parent IS NULL`, // Prevent comments in feed
+            `OPTIONAL MATCH (author:User)`,
+            `WHERE author.walletAddress = post.author`,
+            `OPTIONAL MATCH (currentUser)-[l:LIKED]->(post)`,
+            `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
+            `OPTIONAL MATCH (repost:Post)`,
+            `WHERE repost.postID = post.repostPostID`,
+            `OPTIONAL MATCH (repostAuthor:User)`,
+            `WHERE repostAuthor.walletAddress = repost.author`,
+            `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
+            `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID AS communityID`,
             `}`,
             `RETURN DISTINCT currentUser, post, author, repost, repostAuthor, likes, comment, communityID`,
             `ORDER BY ${orderBy} ${order}`,
@@ -680,12 +680,12 @@ const deletePostsByID = function (session, postList) {
     return session.run(query, {
         postList: postList
     })
-    .then(result => {
-        return {
-            success: true,
-            message: "Successfully deleted provided posts."
-        }
-    })
+        .then(result => {
+            return {
+                success: true,
+                message: "Successfully deleted provided posts."
+            }
+        })
 }
 
 const removeCommunityPostsFromUser = function (session, communityID, walletAddress) {
@@ -698,13 +698,13 @@ const removeCommunityPostsFromUser = function (session, communityID, walletAddre
         walletAddress: walletAddress,
         communityID: communityID
     })
-    .then(postsResult => {
-        let posts = []
-        postsResult.records.forEach(postRecord => {
-            posts.push(postRecord.get('id'))
+        .then(postsResult => {
+            let posts = []
+            postsResult.records.forEach(postRecord => {
+                posts.push(postRecord.get('id'))
+            })
+            return deletePostsByID(session, posts)
         })
-        return deletePostsByID(session, posts)
-    })
 }
 
 const deletePost = function (session, walletAddress, postID) {
@@ -733,6 +733,86 @@ const deletePost = function (session, walletAddress, postID) {
         })
 }
 
+const search = function (session, searchVal, walletAddress, start, size, sortType, sortOrder) {
+    sortType = sortType.toLowerCase(), sortOrder = sortOrder.toLowerCase()
+
+    if (start < 0) {
+        throw {
+            success: false,
+            message: "Start index must be non-negative"
+        }
+    } else if (size < 0) {
+        throw {
+            success: false,
+            message: "Size must be non-negative"
+        }
+    } else if (!Object.values(FEED_SORT.TYPES).includes(sortType)) {
+        throw {
+            success: false,
+            message: "Invalid sort type"
+        }
+    } else if (!Object.values(FEED_SORT.ORDER).includes(sortOrder)) {
+        throw {
+            success: false,
+            message: "Invalid sort order"
+        }
+    }
+
+    const orderBy = sortType === FEED_SORT.TYPES.TIMESTAMP ? "post.timestamp" : "post.likes",
+        order = sortOrder === FEED_SORT.ORDER.DESC ? "DESC" : ""
+
+    const regex = `(?i).*${searchVal}.*`
+    const query = [
+        `MATCH (author:User)-[:POSTED]->(post: Post)`,
+        `WHERE post.parent IS NULL AND post.text =~ $regex`, // Prevent comments in feed
+        `OPTIONAL MATCH (user:User{walletAddress: $walletAddress})-[l:LIKED]->(post)`,
+        `OPTIONAL MATCH (comments:Post)-[c:COMMENTED_ON]->(post)`,
+        `OPTIONAL MATCH (repost:Post)`,
+        `WHERE repost.postID = post.repostPostID`,
+        `OPTIONAL MATCH (repostAuthor:User)`,
+        `WHERE repostAuthor.walletAddress = repost.author`,
+        `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
+        `RETURN DISTINCT post, author, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID AS communityID`,
+        `ORDER BY ${orderBy} ${order}`,
+        `SKIP toInteger($start)`,
+        `LIMIT toInteger($size)`
+    ].join('\n');
+
+    return session.run(query, {
+        regex: regex,
+        walletAddress: walletAddress,
+        start: start,
+        size: size
+    })
+        .then((results) => {
+            let posts = []
+            results.records.forEach((record) => {
+                let post = new Post(record.get("post"))
+                post.author = new User(record.get("author"))
+                post.comment = String(record.get("comment").low);
+                post.community = record.get('communityID') ? String(record.get('communityID')) : null
+                post.alreadyLiked = record.get('likes').low > 0
+                if (post.repostPostID) {
+                    post.repostPost = new Post(record.get('repost'))
+                    post.repostPost.author = new User(record.get('repostAuthor'))
+                }
+
+                posts.push(post)
+            })
+            return {
+                success: true,
+                posts: posts
+            }
+        })
+        .catch((error) => {
+            throw {
+                success: false,
+                message: "Failed to search posts",
+                error: error.message
+            }
+        })
+}
+
 module.exports = {
     createPost,
     createComment,
@@ -747,5 +827,6 @@ module.exports = {
     getUserFeed,
     deletePostsByID,
     removeCommunityPostsFromUser,
-    delete: deletePost
+    delete: deletePost,
+    search
 };

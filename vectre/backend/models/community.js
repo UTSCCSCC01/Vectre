@@ -4,7 +4,7 @@ const Community = require('./neo4j/community')
 const { ROLES } = require("./neo4j/community");
 const User = require('./neo4j/user')
 const Post = require('./neo4j/post')
-const {FEED_SORT} = require("./neo4j/post");
+const { FEED_SORT } = require("./neo4j/post");
 
 // helper functions
 const filterBody = function (body) {
@@ -219,20 +219,24 @@ const getAll = function (session) {
         })
 }
 
-const search = (session, searchVal) => {
+const search = (session, searchVal, walletAddress) => {
     const regex = `(?i).*${searchVal}.*`
     const query = [
         `MATCH (community: Community)`,
         `WHERE community.communityID =~ $regex OR community.name =~ $regex OR community.bio =~ $regex`,
-        `RETURN community`,
+        `OPTIONAL MATCH (user:User{walletAddress:$walletAddress})-[j:JOINS]->(community)`,
+        `RETURN community, count(j) AS join`,
     ].join('\n');
     return session.run(query, {
-        regex: regex
+        regex: regex,
+        walletAddress: walletAddress
     })
         .then((results) => {
             let communities = []
             results.records.forEach((record) => {
-                communities.push(new Community(record.get('community')))
+                communityRecord = new Community(record.get('community'));
+                communityRecord.alreadyJoined = record.get('join').low > 0;
+                communities.push(communityRecord)
             })
             return {
                 success: true,
