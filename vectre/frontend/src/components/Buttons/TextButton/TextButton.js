@@ -1,5 +1,5 @@
 import {
-    Button
+    Button, Image
 } from '@chakra-ui/react';
 
 const TextButton = ({
@@ -12,6 +12,8 @@ const TextButton = ({
     bg,
     text,
     lineHeight,
+    imgSrc,
+    imgSize = '25px',
     ...otherProps
 }) => {
     return (
@@ -27,6 +29,14 @@ const TextButton = ({
             lineHeight={lineHeight ? lineHeight : '1'}
             {...otherProps} // other props can be passed into here
         >
+            {
+                imgSrc && (<Image
+                    src={imgSrc}
+                    fit={'cover'}
+                    overflow={'hidden'}
+                    borderRadius={'full'}
+                    boxSize={imgSize} />)
+            }
             {text}
         </Button>
     );

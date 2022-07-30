@@ -7,6 +7,8 @@ import {
 import { getAvatarOrDefault } from "../../utils/Utils";
 
 const EntityCard = ({
+    key,
+    iconBoxSize = "68px",
     bg = "white",
     data,
     href,
@@ -16,7 +18,7 @@ const EntityCard = ({
     ...otherProps
 }) => {
     return (
-        <Link _hover={{ textDecoration: "none" }} href={href}>
+        <Link key={key} _hover={{ textDecoration: "none" }} href={href}>
             <Flex
                 justifyContent={"space-between"}
                 alignItems={"center"}
@@ -30,12 +32,11 @@ const EntityCard = ({
                     alignItems={"center"}
                     gap={'15px'}>
                     <Image
-                        border={'5px solid white'}
                         src={getAvatarOrDefault(data.profilePic)}
                         fit={'cover'}
                         overflow={'hidden'}
                         borderRadius={'full'}
-                        boxSize={'68px'} />
+                        boxSize={iconBoxSize} />
                     <Flex
                         flexDirection={'column'}
                         gap={'1px'}>

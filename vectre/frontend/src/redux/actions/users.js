@@ -20,6 +20,8 @@ import {
     GET_FUNDS,
     STORE_FUNDS,
     UPDATE_DASHBOARD,
+    DO_JOIN_LOGGED_IN_USER_COMMUNITY,
+    DO_LEAVE_LOGGED_IN_USER_COMMUNITY,
 } from "../constants/users";
 
 // Login
@@ -36,6 +38,15 @@ export const loginUser = (walletAddress, signedNonce, redirectWindow) => ({
     walletAddress,
     signedNonce,
     redirectWindow
+})
+
+export const joinLoginUserCommunity = (communityID) => ({
+    type: DO_JOIN_LOGGED_IN_USER_COMMUNITY,
+    communityID
+})
+export const leaveLoginUserCommunity = (communityID) => ({
+    type: DO_LEAVE_LOGGED_IN_USER_COMMUNITY,
+    communityID
 })
 
 export const getNFT = (walletAddress) => ({
