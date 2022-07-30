@@ -43,11 +43,10 @@ function* getCommunitySaga(action) {
         const response = yield call(getRequest, BASE_API_URL + COMMUNITY.GET_COMMUNITY.replace("{communityID}", action.communityID)), responseData = response[1]
         if (responseData.success) {
             yield put(storeCommunity(responseData.community))
-            yield put(showLoading(false))
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
-            yield put(showLoading(false))
         }
+        yield put(showLoading(false))
     } catch (error) {
         yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get community"))
         console.log(error)

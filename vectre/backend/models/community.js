@@ -1,11 +1,11 @@
 const _ = require('lodash');
+const cron = require('node-cron');
 const { getRoleFromRelationship, getRelationshipFromRole } = require('../utils/Utils');
 const Community = require('./neo4j/community')
 const { ROLES } = require("./neo4j/community");
 const User = require('./neo4j/user')
 const Post = require('./neo4j/post')
 const { FEED_SORT } = require("./neo4j/post");
-const { getSessionAgain } = require('../utils/neo4j/dbUtils');
 const post = require('./post');
 
 // helper functions
@@ -116,7 +116,7 @@ const create = function (session, ownerWalletAddress, newCommunity) {
     const query = [
         'MATCH (o: User {walletAddress: $owner})',
         'CREATE (c: Community $format)',
-        'SET c.memberCount = toInteger(1)',
+        'SET c.memberCount = toInteger(1), c.initialWeeklyMemberCount = toInteger(1)',
         'CREATE (o)-[:JOINS]->(c)',
         'CREATE (o)-[link:MODERATES]->(c)',
         'RETURN link'
@@ -132,7 +132,7 @@ const create = function (session, ownerWalletAddress, newCommunity) {
         instagramLink: newCommunity.instagramLink ? newCommunity.instagramLink : null,
         twitterLink: newCommunity.twitterLink ? newCommunity.twitterLink : null,
         websiteLink: newCommunity.websiteLink ? newCommunity.websiteLink : null,
-        ethLink: newCommunity.ethLink ? newCommunity.ethLink : null,
+        ethLink: newCommunity.ethLink ? newCommunity.ethLink : null
     }
 
     return session.run(query, {
@@ -697,6 +697,64 @@ const getCommunityFeed = async function (session, communityID, walletAddress, st
     }
 }
 
+const getTrending = function (session, walletAddress, start, size) {
+    if (start < 0) {
+        throw {
+            success: false,
+            message: "Start index must be non-negative"
+        }
+    } else if (size < 0) {
+        throw {
+            success: false,
+            message: "Size must be non-negative"
+        }
+    }
+
+    const query = [
+        `MATCH (community: Community)`,
+        `OPTIONAL MATCH (user:User{walletAddress:$walletAddress})-[j:JOINS]->(community)`,
+        `RETURN community, count(j) AS join, community.memberCount-community.initialWeeklyMemberCount as weeklyMemberDelta`,
+        `ORDER BY weeklyMemberDelta DESC`,
+        `SKIP toInteger($start)`,
+        `LIMIT toInteger($size)`,
+    ].join('\n');
+
+    return session.run(query, {
+        walletAddress: walletAddress,
+        start: start,
+        size: size
+    })
+        .then(result => {
+            let communities = []
+            result.records.forEach(record => {
+                let community = new Community(record.get('community'))
+                community.alreadyJoined = record.get('join').low > 0
+                communities.push(community)
+            })
+            return {
+                success: true,
+                communities: communities
+            }
+        })
+        .catch(error => {
+            throw {
+                success: false,
+                message: "Failed to fetch trending communities",
+                error: error.message
+            }
+        })
+}
+
+// Cron job for resetting the trend count at 00:00 on Sunday
+cron.schedule('0 0 * * 0', resetTrending = function (session) {
+    const query = [
+        'MATCH (c: Community)',
+        'SET c.initialWeeklyMemberCount = c.memberCount',
+    ].join("\n")
+
+    return session.run(query)
+});
+
 module.exports = {
     get,
     getAll,
@@ -710,4 +768,5 @@ module.exports = {
     isRole,
     linkPost,
     getCommunityFeed,
+    getTrending
 }

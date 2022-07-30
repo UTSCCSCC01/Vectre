@@ -17,7 +17,9 @@ export const USERS = {
 
     GET_NFT: "/users/{walletAddress}/nft",
     UPDATE_DASHBOARD: "/users/{walletAddress}/updateDashboard",
-    GET_FUNDS: "/users/funds"
+    GET_FUNDS: "/users/funds",
+
+    GET_TRENDING_USERS: "/users/trending"
 }
 
 export const POSTS = {
@@ -46,11 +48,11 @@ export const COMMUNITY = {
     GET_ROLES_LOGGED_IN_USER: "/communities/{communityID}/members/{walletAddress}/roles",
     JOIN_COMMUNITY: "/communities/{communityID}/join",
     LEAVE_COMMUNITY: "/communities/{communityID}/leave",
-
     MODERATION: {
         PROMOTE_MEMBER: "/communities/{communityID}/promote/{walletAddress}",
         BAN_MEMBER: "/communities/{communityID}/ban/{walletAddress}",
         UNBAN_MEMBER: "/communities/{communityID}/unban/{walletAddress}",
         DELETE_POST: "/communities/{communityID}/delete/{postID}",
-    }
+    },
+    GET_TRENDING_COMMUNITIES: "/communities/trending"
 }
