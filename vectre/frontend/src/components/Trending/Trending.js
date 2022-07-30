@@ -4,6 +4,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {trendingCommunitiesSelector} from "../../redux/selectors/trending";
 import {getTrendingCommunities} from "../../redux/actions/trending";
 import {Box} from "@chakra-ui/react";
+import {HiTrendingUp} from "react-icons/hi";
 
 const Trending = () => {
     const trendingCommunities = useSelector(trendingCommunitiesSelector)
@@ -32,7 +33,7 @@ const Trending = () => {
                 fontWeight={700}
                 color={"primary.400"}>
                 Trending
-                {/*<BsGlobe />*/}
+                <HiTrendingUp />
             </Box>
             <br />
             {/*<Box width={"100%"} display={"grid"} gridTemplateColumns={"1fr 1fr"} gridGap="24px">*/}
