@@ -6,6 +6,9 @@ import {
     Flex
 } from "@chakra-ui/react";
 import { IoIosPeople } from 'react-icons/io';
+import { useDispatch } from "react-redux";
+import { joinCommunity, leaveCommunity } from "../../../redux/actions/communities";
+import { joinLoginUserCommunity, leaveLoginUserCommunity } from "../../../redux/actions/users";
 import { cutText } from "../../../utils/Utils";
 import ToggleHollowButton from "../../Buttons/ToggleHollowButton/ToggleHollowButton";
 import EntityCard from "../../EntityCard/EntityCard";
@@ -16,6 +19,17 @@ const PersonalCommunityModal = ({
     onClose,
     communitiesList,
 }) => {
+    const dispatch = useDispatch();
+
+    const handleJoin = (community) => {
+        if (community.alreadyJoined) {
+            dispatch(leaveCommunity(community.communityID, () => dispatch(leaveLoginUserCommunity(community.communityID))))
+        }
+        else {
+            dispatch(joinCommunity(community.communityID, () => dispatch(joinLoginUserCommunity(community.communityID))))
+        }
+    }
+
     return (
         <>
             <Modal
@@ -46,22 +60,20 @@ const PersonalCommunityModal = ({
                         px={'32px'}>
                         <Flex flexDirection={'column'} gap={'5px'}>
                             {communitiesList.map((community, i) =>
-                                <>
-                                    <EntityCard
-                                        key={i}
-                                        iconBoxSize={'40px'}
-                                        bg={"none"}
-                                        primaryText={cutText(community.name, 23)}
-                                        secondaryText={"< " + cutText(community.communityID, 28) + " >"}
-                                        href={"/c/" + community.communityID}
-                                        data={community} >
-                                        <ToggleHollowButton
-                                            onText={'Joined'}
-                                            offText={'Join'}
-                                            isOn={community.alreadyJoined}
-                                            onClick={() => console.log("Peter was here")} />
-                                    </EntityCard>
-                                </>
+                                <EntityCard
+                                    key={i}
+                                    iconBoxSize={'40px'}
+                                    bg={"none"}
+                                    primaryText={cutText(community.name, 23)}
+                                    secondaryText={"< " + cutText(community.communityID, 28) + " >"}
+                                    href={"/c/" + community.communityID}
+                                    data={community} >
+                                    <ToggleHollowButton
+                                        onText={'Joined'}
+                                        offText={'Join'}
+                                        isOn={community.alreadyJoined}
+                                        onClick={() => handleJoin(community)} />
+                                </EntityCard>
                             )}
                         </Flex>
                     </ModalBody>
