@@ -25,6 +25,13 @@ router.get('/', (req, res, next) => {
         .catch(error => res.send(error))
 })
 
+// GET /communities/trending
+router.get('/trending', storeWalletAddressFromToken, (req, res, next) => {
+    Community.getTrending(dbUtils.getSession(req), req.walletAddress,0, 5)
+        .then(result => res.send(result))
+        .catch(error => res.send(error))
+})
+
 // GET /communities/:communityID
 router.get('/:communityID', (req, res, next) => {
     Community.get(dbUtils.getSession(req), req.params.communityID)
