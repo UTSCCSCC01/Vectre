@@ -1,8 +1,10 @@
+import { useDisclosure } from '@chakra-ui/react';
+import { useState } from 'react';
 import { BsGearWideConnected } from 'react-icons/bs';
 import IconSquareButton from '../Buttons/IconSquareButton/IconSquareButton';
 import TextButton from '../Buttons/TextButton/TextButton';
 import GenericButtonsPopoverWrapper from '../Containers/GenericButtonsPopoverWrapper';
-import { GENERIC_WARNING_TYPE } from '../Modals/GenericWarningModal/GenericWarningModal';
+import GenericWarningModal, { GENERIC_WARNING_TYPE } from '../Modals/GenericWarningModal/GenericWarningModal';
 
 const ModeratorSettingsPopover = ({
     item
@@ -33,6 +35,9 @@ const ModeratorSettingsPopover = ({
         }
     ]
 
+    const [type, setType] = useState(GENERIC_WARNING_TYPE.PROMOTE);
+    const { isOpen, onOpen, onClose } = useDisclosure();
+
     return (
         <>
             <GenericButtonsPopoverWrapper
@@ -52,7 +57,8 @@ const ModeratorSettingsPopover = ({
                                 bg={'rgba(228, 239, 255, 0.62)'}
                                 text={element.typeData.title}
                                 onClick={(e) => {
-                                    element.onClick();
+                                    setType(element.typeData);
+                                    onOpen();
                                     e.stopPropagation();
                                 }}
                                 rightIcon={element.typeData.icon} />
@@ -60,6 +66,7 @@ const ModeratorSettingsPopover = ({
                     </>}>
                 <ModeratorSettingsButton />
             </GenericButtonsPopoverWrapper>
+            <GenericWarningModal type={type} isOpen={isOpen} onClose={onClose} actionBtnOnClick={buttonsList.filter((element) => element.typeData === type)[0].onClick} />
         </>
     )
 }
