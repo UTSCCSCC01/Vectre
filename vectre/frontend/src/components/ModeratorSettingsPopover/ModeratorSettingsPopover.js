@@ -1,6 +1,9 @@
 import { useDisclosure } from '@chakra-ui/react';
 import { useState } from 'react';
 import { BsGearWideConnected } from 'react-icons/bs';
+import { useSelector } from 'react-redux';
+import { loggedInUserRolesSelector } from '../../redux/selectors/communities';
+import { loggedInUserSelector } from '../../redux/selectors/users';
 import IconSquareButton from '../Buttons/IconSquareButton/IconSquareButton';
 import TextButton from '../Buttons/TextButton/TextButton';
 import GenericButtonsPopoverWrapper from '../Containers/GenericButtonsPopoverWrapper';
@@ -9,6 +12,10 @@ import GenericWarningModal, { GENERIC_WARNING_TYPE } from '../Modals/GenericWarn
 const ModeratorSettingsPopover = ({
     item
 }) => {
+
+    const loggedInUser = useSelector(loggedInUserSelector);
+    const loggedInUserRoles = useSelector(loggedInUserRolesSelector);
+
     const ModeratorSettingsButton = ({ onToggle }) => {
         return (
             <IconSquareButton
@@ -22,6 +29,7 @@ const ModeratorSettingsPopover = ({
 
     const buttonsList = [
         {
+            isHidden: (loggedInUser.walletAddress === item.author.walletAddress) || (loggedInUserRoles.includes("moderator")),
             typeData: GENERIC_WARNING_TYPE.PROMOTE,
             onClick: () => console.log("promoting" + item.author.username)
         },
@@ -30,6 +38,7 @@ const ModeratorSettingsPopover = ({
             onClick: () => console.log("deleting" + item.author.username)
         },
         {
+            isHidden: loggedInUser.walletAddress === item.author.walletAddress,
             typeData: GENERIC_WARNING_TYPE.BAN,
             onClick: () => console.log("banning" + item.author.username)
         }
@@ -48,6 +57,7 @@ const ModeratorSettingsPopover = ({
                         {buttonsList.map((element, i) => (
                             <TextButton
                                 key={i}
+                                display={element.isHidden ? 'none' : 'inline-flex'}
                                 height={'fit-content'}
                                 py={'5px'}
                                 width={'100%'}
