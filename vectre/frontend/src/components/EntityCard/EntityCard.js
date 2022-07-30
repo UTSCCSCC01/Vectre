@@ -30,12 +30,11 @@ const EntityCard = ({
                     alignItems={"center"}
                     gap={'15px'}>
                     <Image
-                        border={'5px solid white'}
                         src={getAvatarOrDefault(data.profilePic)}
                         fit={'cover'}
                         overflow={'hidden'}
                         borderRadius={'full'}
-                        boxSize={'68px'} />
+                        boxSize={'62px'} />
                     <Flex
                         flexDirection={'column'}
                         gap={'1px'}>

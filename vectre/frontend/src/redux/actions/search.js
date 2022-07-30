@@ -25,11 +25,11 @@ export const storeSearchedUsers = (searchedUsers) => ({
     type: STORE_SEARCHED_USERS,
     searchedUsers
 })
-export const doFollowSearchedUsers = (walletAddress) => ({
+export const doFollowSearchedUser = (walletAddress) => ({
     type: DO_FOLLOW_SEARCHED_USER,
     walletAddress
 })
-export const doUnfollowSearchedUsers = (walletAddress) => ({
+export const doUnfollowSearchedUser = (walletAddress) => ({
     type: DO_UNFOLLOW_SEARCHED_USER,
     walletAddress
 })
@@ -42,11 +42,11 @@ export const storeSearchedCommunities = (searchedCommunities) => ({
     type: STORE_SEARCHED_COMMUNITIES,
     searchedCommunities
 })
-export const doJoinSearchedCommunities = (communityID) => ({
+export const doJoinSearchedCommunity = (communityID) => ({
     type: DO_JOIN_SEARCHED_COMMUNITY,
     communityID
 })
-export const doLeaveSearchedCommunities = (communityID) => ({
+export const doLeaveSearchedCommunity = (communityID) => ({
     type: DO_LEAVE_SEARCHED_COMMUNITY,
     communityID
 })

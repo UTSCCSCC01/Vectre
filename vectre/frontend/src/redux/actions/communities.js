@@ -6,7 +6,7 @@ import {
     GET_ROLES_LOGGED_IN_USER,
     STORE_ROLES_LOGGED_IN_USER,
     JOIN_COMMUNITY,
-    LEAVE_COMMUNITY,
+    LEAVE_COMMUNITY
 } from "../constants/communities";
 
 export const createCommunity = (community, redirectWindow) => ({

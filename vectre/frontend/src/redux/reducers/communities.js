@@ -1,6 +1,7 @@
 import {
     STORE_COMMUNITY,
     STORE_ROLES_LOGGED_IN_USER,
+    STORE_TRENDING_COMMUNITIES
 } from "../constants/communities";
 
 const initialState = {
