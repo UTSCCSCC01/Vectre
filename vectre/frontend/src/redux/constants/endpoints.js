@@ -17,7 +17,9 @@ export const USERS = {
 
     GET_NFT: "/users/{walletAddress}/nft",
     UPDATE_DASHBOARD: "/users/{walletAddress}/updateDashboard",
-    GET_FUNDS: "/users/funds"
+    GET_FUNDS: "/users/funds",
+
+    GET_TRENDING_USERS: "/users/trending"
 }
 
 export const POSTS = {
