@@ -56,6 +56,9 @@ const getByWalletAddress = (session, walletAddress) => {
                                 return getCommunitiesByUser(session, walletAddress)
                                     .then((communitiesResult) => {
                                         user.communities = communitiesResult.communities
+                                        user.communities.map((com) => {
+                                            com.alreadyJoined = true;
+                                        })
                                         return {
                                             success: true,
                                             user: user
