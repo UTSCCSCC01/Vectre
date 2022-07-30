@@ -11,8 +11,9 @@ import {
 
     SEARCH_POSTS,
     STORE_SEARCHED_POSTS,
+    CLEAR_SEARCHED_POSTS,
     DO_LIKE_SEARCHED_POST,
-    DO_UNLIKE_SEARCHED_POST,
+    DO_UNLIKE_SEARCHED_POST, STORE_SEARCHED_POSTS_SORT_TYPE, STORE_SEARCHED_USERS_COMMUNITIES_FILTER,
 } from "../constants/search";
 
 
@@ -50,13 +51,19 @@ export const doLeaveSearchedCommunities = (communityID) => ({
     communityID
 })
 
-export const searchPosts = (searchVal) => ({
+export const searchPosts = (searchVal, searchedPostsIndex, sortType) => ({
     type: SEARCH_POSTS,
-    searchVal
+    searchVal,
+    searchedPostsIndex,
+    sortType
 })
-export const storeSearchedPosts = (searchedPosts) => ({
+export const storeSearchedPosts = (searchedPosts, requestedSize) => ({
     type: STORE_SEARCHED_POSTS,
-    searchedPosts
+    searchedPosts,
+    requestedSize
+})
+export const clearSearchedPosts = () => ({
+    type: CLEAR_SEARCHED_POSTS
 })
 export const doLikeSearchedPost = (postID) => ({
     type: DO_LIKE_SEARCHED_POST,
@@ -65,4 +72,13 @@ export const doLikeSearchedPost = (postID) => ({
 export const doUnlikeSearchedPost = (postID) => ({
     type: DO_UNLIKE_SEARCHED_POST,
     postID
+})
+
+export const storeSearchedUsersCommunitiesFilter = (filter) => ({
+    type: STORE_SEARCHED_USERS_COMMUNITIES_FILTER,
+    filter
+})
+export const storeSearchedPostsSortType = (sortType) => ({
+    type: STORE_SEARCHED_POSTS_SORT_TYPE,
+    sortType
 })

@@ -3,11 +3,11 @@ import {
     Flex
 } from "@chakra-ui/react";
 import IconSquareButton from "../Buttons/IconSquareButton/IconSquareButton";
-import { AiFillFilter } from "react-icons/ai";
 
 const HeaderAndFilter = ({
-    text,
-    onClick
+    icon,
+    onToggle,
+    text
 }) => {
     return (
         <Flex
@@ -26,9 +26,9 @@ const HeaderAndFilter = ({
                 borderRadius={'10px'}
                 color={'#5A5A5A'}
                 width={'40px'}
-                icon={<AiFillFilter size={'1.3rem'} />}
+                icon={icon}
                 zIndex={5}
-                onClick={onClick}
+                onClick={onToggle}
             />
             <Box
                 position={'absolute'}

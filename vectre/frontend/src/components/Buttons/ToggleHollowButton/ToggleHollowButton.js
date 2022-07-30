@@ -1,11 +1,13 @@
 import TextButton from "../TextButton/TextButton"
 
 const ToggleHollowButton = ({
+    borderAccent = "#3B82F6",
+    accent = "#3B82F6",
     isOn,
     onClick,
     onText,
     offText,
-    fontSize = '10px',
+    fontSize = '11px',
     fontWeight = 400,
     px = '12.5px',
     py = '4.5px',
@@ -21,9 +23,9 @@ const ToggleHollowButton = ({
             px={px}
             py={py}
             text={isOn ? onText : offText}
-            bg={isOn ? 'primary.400' : 'white'}
-            color={isOn ? 'white' : 'primary.400'}
-            border={'1px solid #3B82F6'}
+            bg={isOn ? accent : 'white'}
+            color={isOn ? 'white' : accent}
+            border={'1px solid ' + borderAccent}
             width={width}
             onClick={(event) => {
                 event.preventDefault();

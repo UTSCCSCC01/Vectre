@@ -16,6 +16,18 @@ export const formatLikes = (num) => {
     return num.toString();
 };
 
+// assumes num is a valid number and item is a singlular noun
+export const formatNumberItemString = (num, item) => {
+    var newItem = formatLikes(num) + " " + item;
+    if (num === undefined) {
+        return "0";
+    }
+    if (num !== 1) {
+        newItem += "s"
+    }
+    return newItem;
+};
+
 // assumes walletAddress is valid
 export const formatWalletAddress = (walletAddress) => {
     if (walletAddress === undefined) return "Not a valid wallet address"
