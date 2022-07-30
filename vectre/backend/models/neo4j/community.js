@@ -14,8 +14,6 @@ const Community = module.exports = function (_node) {
         "twitterLink": _node.properties["twitterLink"] ? _node.properties["twitterLink"] : null,
         "websiteLink": _node.properties["websiteLink"] ? _node.properties["websiteLink"] : null,
         "ethLink": _node.properties["ethLink"] ? _node.properties["ethLink"] : null,
-
-        "trendingCount": _node.properties["trendingCount"].low,
     })
 }
 
