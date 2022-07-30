@@ -40,7 +40,7 @@ const PostTopComponent = ({
                         } />
                 </Link>
                 <Box
-                    display={item.author.verified ? 'inline-flex' : 'none'}
+                    display={item.verified ? 'inline-flex' : 'none'}
                     px={'8px'}
                     py={'3px'}
                     fontSize={'18px'}
