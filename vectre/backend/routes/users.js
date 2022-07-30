@@ -6,6 +6,7 @@ const User = require('../models/user'),
     Notification = require('../models/notification');
 const dbUtils = require('../utils/neo4j/dbUtils');
 const { authenticateToken, storeWalletAddressFromToken } = require("../utils/auth");
+const Community = require("../models/community");
 
 // GET /users
 router.get('/', (req, res, next) => {
@@ -26,6 +27,13 @@ router.get('/funds', authenticateToken, (req, res) => {
             message: "You do not have access to get this User's wallet funds."
         })
     }
+})
+
+// GET /communities/trending
+router.get('/trending', storeWalletAddressFromToken, (req, res, next) => {
+    User.getTrending(dbUtils.getSession(req), req.walletAddress, 0, 5)
+        .then(result => res.send(result))
+        .catch(error => res.send(error))
 })
 
 // GET /users/{walletAddress}
