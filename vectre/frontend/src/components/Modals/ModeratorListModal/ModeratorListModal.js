@@ -9,6 +9,7 @@ import EntityCard from "../../EntityCard/EntityCard";
 import EntityListModal from "../EntityListModal/EntityListModal"
 import VerifiedIcon from '../../../assets/icons/verified-icon.svg';
 import Blank from "../../Blank/Blank";
+import { VERIFIED_AVATAR_TYPES } from "../../VerifiedNFTAvatar/VerifiedNFTAvatar";
 
 const ModeratorListModal = ({
     isOpen,
@@ -35,7 +36,7 @@ const ModeratorListModal = ({
                         moderators.map((user, i) =>
                             <div key={i}>
                                 <EntityCard
-                                    iconBoxSize={'40px'}
+                                    iconType={VERIFIED_AVATAR_TYPES.POST}
                                     bg={"none"}
                                     primaryText={cutText(user.name, 23)}
                                     secondaryText={"@" + cutText(user.username, 28)}

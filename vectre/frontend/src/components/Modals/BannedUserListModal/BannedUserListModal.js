@@ -9,6 +9,7 @@ import EntityCard from "../../EntityCard/EntityCard";
 import EntityListModal from "../EntityListModal/EntityListModal"
 import { GENERIC_WARNING_TYPE } from '../GenericWarningModal/GenericWarningModal';
 import Blank from "../../Blank/Blank";
+import { VERIFIED_AVATAR_TYPES } from "../../VerifiedNFTAvatar/VerifiedNFTAvatar";
 
 const BannedUserListModal = ({
     isOpen,
@@ -38,7 +39,7 @@ const BannedUserListModal = ({
                         bannedUsers.map((user, i) =>
                             <div key={i}>
                                 <EntityCard
-                                    iconBoxSize={'40px'}
+                                    iconType={VERIFIED_AVATAR_TYPES.POST}
                                     bg={"none"}
                                     primaryText={cutText(user.name, 23)}
                                     secondaryText={"@" + cutText(user.username, 28)}
