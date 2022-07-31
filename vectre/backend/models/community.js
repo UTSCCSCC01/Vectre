@@ -545,7 +545,7 @@ const communityCreate = function (session, ownerWalletAddress, body) {
         })
 }
 
-const communityUpdate = function (session, walletAddress, communityID, body) {
+const communityUpdate = function (session, walletAddress, communityID, body, profilePicLink, bannerLink) {
     let filtered = filterBody(body)
     return communityValidate(filtered)
         .then(validateResult => {
@@ -562,6 +562,12 @@ const communityUpdate = function (session, walletAddress, communityID, body) {
                                                 message: `Community ID ${body.communityID} has already been taken.`
                                             }
                                         } else {
+                                            if (profilePicLink != "") {
+                                                filtered.profilePic = profilePicLink;
+                                            }
+                                            if (bannerLink != "") {
+                                                filtered.banner = bannerLink;
+                                            }
                                             return update(session, communityID, filtered)
                                         }
                                     })

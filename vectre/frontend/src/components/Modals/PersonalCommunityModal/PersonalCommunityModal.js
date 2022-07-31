@@ -5,6 +5,7 @@ import { joinLoginUserCommunity, leaveLoginUserCommunity } from "../../../redux/
 import { cutText } from "../../../utils/Utils";
 import ToggleHollowButton from "../../Buttons/ToggleHollowButton/ToggleHollowButton";
 import EntityCard from "../../EntityCard/EntityCard";
+import { VERIFIED_AVATAR_TYPES } from '../../VerifiedNFTAvatar/VerifiedNFTAvatar';
 import EntityListModal from "../EntityListModal/EntityListModal"
 
 const PersonalCommunityModal = ({
@@ -32,6 +33,7 @@ const PersonalCommunityModal = ({
                 onClose={onClose}>
                 {communitiesList.map((community, i) =>
                     <EntityCard
+                        iconType={VERIFIED_AVATAR_TYPES.POST}
                         key={i}
                         iconBoxSize={'40px'}
                         bg={"none"}

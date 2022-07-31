@@ -19,11 +19,12 @@ import {
     doLeaveTrendingCommunity,
     doUnfollowTrendingUser
 } from "../../../redux/actions/trending";
+import { VERIFIED_AVATAR_TYPES } from "../../VerifiedNFTAvatar/VerifiedNFTAvatar";
 
 const IndividualSearchResult = ({
     bg,
     result,
-    trending=false
+    trending = false
 }) => {
     const dispatch = useDispatch();
     const loggedInUser = useSelector(loggedInUserSelector);
@@ -71,6 +72,7 @@ const IndividualSearchResult = ({
     return (
         <>
             <EntityCard
+                iconType={trending ? VERIFIED_AVATAR_TYPES.TRENDING : VERIFIED_AVATAR_TYPES.SEARCH}
                 bg={bg}
                 primaryText={cutText(result.name, 20)}
                 secondaryText={type === SEARCH_RESULT_TYPES.USER ? "@" + result.username : "< " + result.communityID + " >"}

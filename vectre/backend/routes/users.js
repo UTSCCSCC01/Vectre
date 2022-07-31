@@ -6,6 +6,7 @@ const User = require('../models/user'),
     Notification = require('../models/notification');
 const dbUtils = require('../utils/neo4j/dbUtils');
 const { authenticateToken, storeWalletAddressFromToken } = require("../utils/auth");
+const { upload } = require('../utils/images');
 const Community = require("../models/community");
 
 // GET /users
@@ -52,7 +53,7 @@ router.get('/search/:searchVal', storeWalletAddressFromToken, (req, res) => {
 
 // GET /users/{walletAddress}/nft
 router.get('/:walletAddress/nft', (req, res) => {
-    User.getNFT(req.params.walletAddress)
+    User.getNFT(dbUtils.getSession(req), req.params.walletAddress)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
@@ -126,9 +127,26 @@ router.get('/login/currentUser', authenticateToken, (req, res) => {
 // PUT /users/{walletAddress}/update
 router.put('/:walletAddress/update', authenticateToken, (req, res) => {
     if (req.walletAddress === req.params.walletAddress) {
-        User.updateProfile(dbUtils.getSession(req), req.params.walletAddress, req.body)
-            .then((result) => res.send(result))
-            .catch((error) => res.send(error))
+        (async () => {
+            var profilePicLink = "";
+            var bannerLink = "";
+            var tokenID = null;
+            if (req.body.profilePicTokenID) {
+                tokenID = req.body.profilePicTokenID;
+                profilePicLink = req.body.profilePicImageLink;
+            } else if (req.body.profilePicImageData) { // No tokenID provided
+                tokenID = ""
+                const img1 = await upload(req.body.profilePicImageData);
+                profilePicLink = img1.data.link;
+            }
+            if (req.body.bannerImageData) {
+                const img2 = await upload(req.body.bannerImageData);
+                bannerLink = img2.data.link;
+            }
+            User.updateProfile(dbUtils.getSession(req), req.params.walletAddress, req.body, profilePicLink, bannerLink, tokenID)
+                .then((result) => res.send(result))
+                .catch((error) => res.send(error))
+        })();
     } else {
         res.status(403).send({
             success: false,

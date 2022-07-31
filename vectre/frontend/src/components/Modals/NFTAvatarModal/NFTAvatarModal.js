@@ -10,15 +10,16 @@ import {
     Flex,
     Grid,
     Box,
+    systemProps,
 } from "@chakra-ui/react"
 
 import { useDispatch, useSelector } from 'react-redux';
 import { loggedInUserSelector, nftSelector } from '../../../redux/selectors/users';
 
 import { BsFillCheckCircleFill } from 'react-icons/bs';
-import { BiSelectMultiple } from 'react-icons/bi';
+import { FaUserCircle } from 'react-icons/fa';
 
-import NFTImage from "../NFTImage/NFTImage";
+import NFTImage from "../../Dashboard/NFTImage/NFTImage";
 import { getNFT, updateDashboard } from "../../../redux/actions/users";
 
 function handleSelectDelete(selectedList, nftItem, setSelectedList) {
@@ -60,9 +61,16 @@ function handleSelectAdd(selectedList, nftItem, setSelectedList) {
     setSelectedList(newSelectedList)
 }
 
-function DashboardEditModal({
+function NFTAvatarModal({
     isOpen,
-    onClose
+    onClose,
+    data,
+    profilePicImageData,
+    setProfilePicImageData,
+    profilePicTokenID,
+    setProfilePicTokenID,
+    profilePicImageLink,
+    setProfilePicImageLink
 }) {
     const [scrollBehavior] = React.useState('inside')
     const [selectedList, setSelectedList] = useState([]);
@@ -111,11 +119,11 @@ function DashboardEditModal({
                                 alignSelf={'center'}
                                 _hover={{ textDecoration: "none" }}
                                 alignItems={'center'}
-                                rightIcon={<BiSelectMultiple />}
+                                rightIcon={<FaUserCircle />}
                                 color={'primary.400'}
                                 bg={'white'}
                                 _focus={{ outline: 0 }}>
-                                Select NFTs Below
+                                Select an NFT
                             </Button>
                         </Flex>
                         <Flex flexDirection={'row'} alignContent={'left'} justifyContent={'left'}>
@@ -129,9 +137,10 @@ function DashboardEditModal({
                                 _hover={{ textDecoration: "none" }}
                                 alignItems={'center'}
                                 color={'grey'}
+                                fontWeight={'light'}
                                 bg={'white'}
                                 _focus={{ outline: 0 }}>
-                                Select Up to 3 NFTs for the Dashboard!
+                                Select an NFT to use as a verified avatar!
                             </Button>
                         </Flex>
                         {nft.length !== 0 ?
@@ -148,7 +157,7 @@ function DashboardEditModal({
                                                         selectedList={selectedList}
                                                         setSelectedList={setSelectedList}
                                                         nftItem={nftItem}
-                                                        maxSelected={3}
+                                                        maxSelected={1}
                                                     />
                                                 </Box>
                                             )
@@ -177,24 +186,25 @@ function DashboardEditModal({
                     <ModalFooter>
                         <Button
                             onClick={(e) => {
+                                onClose();
                                 if (selectedList.length === 0) {
-                                    const dashboard = JSON.stringify(selectedList)
-                                    dispatch(updateDashboard(loggedInUser.walletAddress, dashboard, () => { setSelectedList([]) }))
-                                    onClose();
+                                    setProfilePicImageLink(null);
+                                    setProfilePicTokenID(null);
                                 }
-                                else if (selectedList.length > 0) {
-                                    const dashboard = JSON.stringify(selectedList).replace(/"/g, "'");
-                                    dispatch(updateDashboard(loggedInUser.walletAddress, dashboard, () => { setSelectedList([]) }))
-                                    onClose();
+                                else {
+                                    setProfilePicTokenID(String(selectedList[0].tokenID));
+                                    setProfilePicImageLink(String(selectedList[0].imageURL));
                                 }
                                 e.stopPropagation();
+                                onClose();
                             }}
                             bg={'primary.400'}
                             color={'white'}
                             _hover={{ textDecoration: "none" }}
                             rightIcon={<BsFillCheckCircleFill />}
+                            fontWeight={'medium'}
                             fontSize={'18px'}>
-                            Select Chosen NFTs
+                            Select Chosen NFT
                         </Button>
                     </ModalFooter>
                 </ModalContent>
@@ -203,4 +213,4 @@ function DashboardEditModal({
     )
 }
 
-export default DashboardEditModal;
+export default NFTAvatarModal;

@@ -6,8 +6,9 @@ import {
     Tooltip
 } from "@chakra-ui/react"
 
-import { getAvatarOrDefault, getBannerOrDefault, formatWalletAddress } from "../../../../utils/Utils";
+import { getBannerOrDefault, formatWalletAddress } from "../../../../utils/Utils";
 import React, { useState } from "react";
+import VerifiedNFTAvatar, { VERIFIED_AVATAR_TYPES } from "../../../VerifiedNFTAvatar/VerifiedNFTAvatar";
 
 const ProfileUserDetailsTopComponent = ({
     props
@@ -25,14 +26,7 @@ const ProfileUserDetailsTopComponent = ({
                     left={'50%'}
                     marginLeft={'-60px'}
                     zIndex={'2'}>
-                    <Image
-                        border={'5px solid white'}
-                        bg={'white'}
-                        src={getAvatarOrDefault(props.user.profilePic)}
-                        fit={'cover'}
-                        overflow={'hidden'}
-                        borderRadius={'full'}
-                        boxSize={'120px'} />
+                    <VerifiedNFTAvatar data={props.user} type={VERIFIED_AVATAR_TYPES.PROFILE} />
                 </Box>
                 <Box
                     border={'12px solid white'}

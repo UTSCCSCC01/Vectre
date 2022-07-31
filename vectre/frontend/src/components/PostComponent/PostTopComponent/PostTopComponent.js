@@ -6,9 +6,9 @@ import {
 } from '@chakra-ui/react';
 
 import VerifiedIcon from '../../../assets/icons/verified-icon.svg';
-import DefaultAvatar from '../../../assets/images/default-avatar.png';
 import TextButton from '../../Buttons/TextButton/TextButton'
 import { formatISO } from '../../../utils/Utils'
+import VerifiedNFTAvatar, { VERIFIED_AVATAR_TYPES } from '../../VerifiedNFTAvatar/VerifiedNFTAvatar';
 import { useSelector } from 'react-redux';
 import { loggedInUserRolesSelector } from '../../../redux/selectors/communities';
 import ModeratorSettingsPopover from '../../ModeratorSettingsPopover/ModeratorSettingsPopover';
@@ -30,13 +30,7 @@ const PostTopComponent = ({
                         fontSize={'18px'}
                         fontWeight={700}
                         leftIcon={
-                            <Image
-                                src={item.author.profilePic}
-                                fallbackSrc={DefaultAvatar}
-                                fit={'cover'}
-                                overflow={'hidden'}
-                                borderRadius={'full'}
-                                boxSize={'32px'} />
+                            <VerifiedNFTAvatar data={item.author} type={VERIFIED_AVATAR_TYPES.POST} />
                         } />
                 </Link>
                 <Box

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import {
     Modal,
     ModalOverlay,
@@ -8,14 +8,13 @@ import {
     Button
 } from "@chakra-ui/react"
 import { FaUserFriends } from 'react-icons/fa'
-import { ReactComponent as EditIcon } from "../../../assets/icons/edit-icon.svg";
 import FormInput from "../FormInput/FormInput";
 import FormTextArea from "../FormTextArea/FormTextArea";
 import StyledModalHeader from "../StyledModalHeader/StyledModalHeader";
-import BannerProfilePicWrapper from "../BannerProfilePicWrapper/BannerProfilePicWrapper";
+import BannerProfileEditPicsWrapper from "../BannerProfileEditPicsWrapper/BannerProfileEditPicsWrapper";
 import { useDispatch } from "react-redux";
 import { createCommunity, updateCommunity } from "../../../redux/actions/communities";
-import { redirectWindow } from "../../../utils/Utils";
+import { getBase64Async, redirectWindow } from "../../../utils/Utils";
 
 const CommunityProfileEditModal = ({
     communityData,
@@ -24,6 +23,44 @@ const CommunityProfileEditModal = ({
     isEdit
 }) => {
     const dispatch = useDispatch();
+
+    const [profilePicImageData, setProfilePicImageData] = useState(null);
+    const [bannerImageData, setBannerImageData] = useState(null);
+
+    const handleProfileEditSubmit = async (event) => {
+        event.preventDefault();
+
+        let updatedCommunity = {
+            name: event.target.name.value,
+            communityID: event.target.communityID.value,
+            bio: event.target.bio.value,
+            discordLink: event.target.discordLink.value,
+            instagramLink: event.target.instagramLink.value,
+            twitterLink: event.target.twitterLink.value,
+            websiteLink: event.target.websiteLink.value,
+            ethLink: event.target.ethLink.value,
+        }
+
+        if (profilePicImageData) {
+            const result = await getBase64Async(profilePicImageData);
+            updatedCommunity.profilePicImageData = result;
+        }
+        if (bannerImageData) {
+            const result = await getBase64Async(bannerImageData);
+            updatedCommunity.bannerImageData = result;
+        }
+        setProfilePicImageData(null);
+        setBannerImageData(null);
+
+        if (isEdit) {
+            dispatch(updateCommunity(communityData.communityID, updatedCommunity, redirectWindow))
+            onClose();
+        }
+        else {
+            dispatch(createCommunity(updatedCommunity, redirectWindow))
+        }
+    }
+
     return (
         <>
             <Modal
@@ -38,49 +75,20 @@ const CommunityProfileEditModal = ({
                     backdropFilter='blur(20px)'
                 />
                 <ModalContent
-                    py={'40px'}>
+                    py={'10px'}>
                     <StyledModalHeader headerText={isEdit ? 'Edit Community' : 'Create a Community'} icon={<FaUserFriends size={'2rem'} />} />
                     <ModalBody
                         px={{ base: '24px', md: '64px' }}>
                         <form
                             id="community-edit-form"
-                            onSubmit={(event) => {
-                                event.preventDefault();
-                                let updatedCommunity = {
-                                    name: event.target.name.value,
-                                    communityID: event.target.communityID.value,
-                                    bio: event.target.bio.value,
-                                    discordLink: event.target.discordLink.value,
-                                    instagramLink: event.target.instagramLink.value,
-                                    twitterLink: event.target.twitterLink.value,
-                                    websiteLink: event.target.websiteLink.value,
-                                    ethLink: event.target.ethLink.value,
-                                }
-                                if (isEdit) {
-                                    dispatch(updateCommunity(communityData.communityID, updatedCommunity, redirectWindow))
-                                    onClose();
-                                }
-                                else {
-                                    dispatch(createCommunity(updatedCommunity, redirectWindow))
-                                }
-                            }}
+                            onSubmit={handleProfileEditSubmit}
                         >
-                            <BannerProfilePicWrapper
-                                data={communityData}>
-                                <Button
-                                    alignSelf={'end'}
-                                    ml={'32px'}
-                                    background={'primary.400'}
-                                    color={'white'}
-                                    px={'46px'}
-                                    py={'11px'}
-                                    borderRadius={'6px'}
-                                    rightIcon={<EditIcon />}
-                                    _focus={{ outline: 0 }}
-                                    disabled={true}> {/* TODO: Implement edit avatar/banner */}
-                                    {isEdit ? "Edit" : "Choose"}
-                                </Button>
-                            </BannerProfilePicWrapper>
+                            <BannerProfileEditPicsWrapper
+                                data={communityData}
+                                bannerImageData={bannerImageData}
+                                setBannerImageData={setBannerImageData}
+                                profilePicImageData={profilePicImageData}
+                                setProfilePicImageData={setProfilePicImageData} />
                             {
                                 isEdit ? (
                                     <>
