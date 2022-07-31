@@ -6,7 +6,7 @@ import {
     communitySelector,
     loggedInUserRolesSelector,
 } from "../../redux/selectors/communities";
-import { Box, Flex, Stack } from "@chakra-ui/react";
+import { Box, Flex, Stack, useDisclosure } from "@chakra-ui/react";
 import PostComponent from "../PostComponent/PostComponent";
 import TextButton from "../Buttons/TextButton/TextButton";
 import {
@@ -18,27 +18,11 @@ import {
 import { getCommunityFeed } from "../../redux/actions/feed";
 import CreatePostComponent from "../CreatePostComponent/CreatePostComponent";
 import { getCommunity, getRolesOfLoggedInUser } from "../../redux/actions/communities";
+import { BsGearWideConnected } from "react-icons/bs";
+import BannedUserListModal from "../Modals/BannedUserListModal/BannedUserListModal";
+import ModeratorListModal from "../Modals/ModeratorListModal/ModeratorListModal";
 
-const communitySideButtonsList = (userIsModerator) => [
-    {
-        hidden: userIsModerator,
-        text: "Create a Proposal",
-        func: () => { console.log("Creating a proposal...") }
-    },
-    {
-        text: "Vote for a Proposal",
-        func: () => { console.log("Voting for a proposal...") }
-    },
-    {
-        hidden: userIsModerator,
-        text: "Moderator Settings",
-        link: "settings"
-    },
-    {
-        text: "Announcements",
-        func: () => { console.log("anouncements") }
-    }
-]
+
 
 const Community = ({
     communityID
@@ -46,6 +30,9 @@ const Community = ({
     const dispatch = useDispatch();
     const communityData = useSelector(communitySelector)
     const loggedInUserRoles = useSelector(loggedInUserRolesSelector);
+
+    const { isOpen: isOpenBanned, onOpen: onOpenBanned, onClose: onCloseBanned } = useDisclosure();
+    const { isOpen: isOpenModerator, onOpen: onOpenModerator, onClose: onCloseModerator } = useDisclosure();
 
     useEffect(() => {
         dispatch(getRolesOfLoggedInUser(communityID));
@@ -65,12 +52,27 @@ const Community = ({
         loadFeed()
     }, [feedSortType])
 
+    const communitySideButtonsList = (userIsModerator) => [
+        {
+            hidden: userIsModerator,
+            text: "Moderator List",
+            func: () => { onOpenModerator() }
+        },
+        {
+            hidden: userIsModerator,
+            text: "Banned Users",
+            func: () => { onOpenBanned() }
+        }
+    ]
+
     return (
         <>
             <base href={`/c/${communityID}/`} />
-            <ContentWithSideButtons sideButtonsList={loggedInUserRoles.includes("member") ? communitySideButtonsList(
-                !loggedInUserRoles.includes("moderator")
-            ) : []}>
+            <ContentWithSideButtons
+                sideButtonsList={loggedInUserRoles.includes("member") ? communitySideButtonsList(!loggedInUserRoles.includes("moderator")) : []}
+                headerText={'Moderator'}
+                headerIcon={<BsGearWideConnected size={'1.3rem'} />}
+                headerShow={loggedInUserRoles.includes("moderator")}>
                 <ProfileCommunityDetails communityData={communityData} />
                 <Stack
                     mt={"15px"}
@@ -100,6 +102,8 @@ const Community = ({
                     )
                     : null}
             </ContentWithSideButtons>
+            <BannedUserListModal isOpen={isOpenBanned} onClose={onCloseBanned} />
+            <ModeratorListModal isOpen={isOpenModerator} onClose={onCloseModerator} />
         </>
     )
 }

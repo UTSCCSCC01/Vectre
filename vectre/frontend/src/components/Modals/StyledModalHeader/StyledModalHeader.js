@@ -2,10 +2,12 @@ import {
     ModalHeader,
     ModalCloseButton,
     Flex,
-    Text
+    Text,
+    Image
 } from '@chakra-ui/react'
 
 const StyledModalHeader = ({
+    iconSRC,
     headerText,
     icon,
     hideClose,
@@ -37,6 +39,9 @@ const StyledModalHeader = ({
                     mr="15px">
                     {headerText}
                 </Text>
+                {
+                    iconSRC && (<Image src={iconSRC} boxSize={'1.5rem'} />)
+                }
                 {icon}
             </Flex>
         </ModalHeader>

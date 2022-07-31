@@ -46,8 +46,15 @@ export const COMMUNITY = {
     SEARCH_COMMUNITIES: "/communities/search/{searchVal}",
     UPDATE_COMMUNITY: "/communities/{communityID}/update",
     GET_ROLES_LOGGED_IN_USER: "/communities/{communityID}/members/{walletAddress}/roles",
+    GET_BANNED_USERS: "/communities/{communityID}/userWithRoles/banned",
+    GET_MODERATORS: "/communities/{communityID}/userWithRoles/moderator",
     JOIN_COMMUNITY: "/communities/{communityID}/join",
     LEAVE_COMMUNITY: "/communities/{communityID}/leave",
-
+    MODERATION: {
+        PROMOTE_MEMBER: "/communities/{communityID}/promote/{walletAddress}",
+        BAN_MEMBER: "/communities/{communityID}/ban/{walletAddress}",
+        UNBAN_MEMBER: "/communities/{communityID}/unban/{walletAddress}",
+        DELETE_POST: "/communities/{communityID}/delete/{postID}",
+    },
     GET_TRENDING_COMMUNITIES: "/communities/trending"
 }

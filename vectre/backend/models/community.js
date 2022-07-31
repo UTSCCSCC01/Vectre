@@ -1,11 +1,12 @@
 const _ = require('lodash');
 const cron = require('node-cron');
-const { getRelationshipFromRole } = require('../utils/Utils');
+const { getRoleFromRelationship, getRelationshipFromRole } = require('../utils/Utils');
 const Community = require('./neo4j/community')
 const { ROLES } = require("./neo4j/community");
 const User = require('./neo4j/user')
 const Post = require('./neo4j/post')
 const { FEED_SORT } = require("./neo4j/post");
+const post = require('./post');
 
 // helper functions
 const filterBody = function (body) {
@@ -307,7 +308,11 @@ const getUsersByRole = function (session, communityID, role) {
                     .then(result => {
                         let users = []
                         result.records.forEach(record => {
-                            users.push(new User(record.get('u')))
+                            let user = new User(record.get('u'));
+                            if (role === "banned") {
+                                user.alreadyBanned = true;
+                            }
+                            users.push(user)
                         })
                         let returnObject = {
                             success: true
@@ -397,10 +402,10 @@ const removeMember = function (session, walletAddress, communityID) {
                     // Check if User is the only moderator.
                     return getUsersByRole(session, communityID, ROLES.MODERATOR.type)
                         .then(result => {
-                            if (result.moderator.length == 1) {
-                                throw {
+                            if (result.moderator.length === 1) {
+                                return {
                                     success: false,
-                                    message: "Cannot unfollow Community as sole Moderator"
+                                    message: "Cannot leave community as last moderator"
                                 }
                             }
                             // User is not the a moderator, use query 0 tp remove.
@@ -583,7 +588,7 @@ const communityUpdate = function (session, walletAddress, communityID, body) {
         })
 }
 
-const getCommunityFeed = function (session, communityID, walletAddress, start, size, sortType, sortOrder) {
+const getCommunityFeed = async function (session, communityID, walletAddress, start, size, sortType, sortOrder) {
     sortType = sortType.toLowerCase(), sortOrder = sortOrder.toLowerCase()
 
     if (start < 0) {
@@ -629,54 +634,71 @@ const getCommunityFeed = function (session, communityID, walletAddress, start, s
         `LIMIT toInteger($size)`
     ].join('\n');
 
-    return exists(session, communityID)
-        .then(idCheck => {
-            if (idCheck.result) { // Community exists
-                return session.run(query, {
-                    communityID: communityID,
-                    walletAddress: walletAddress,
-                    start: start,
-                    size: size
-                })
-                    .then((results) => {
-                        let posts = []
-                        results.records.forEach((record) => {
-                            let post = new Post(record.get("post"))
-                            post.author = new User(record.get("author"))
-                            post.comment = String(record.get("comment").low);
-                            post.community = record.get('com.communityID') ? String(record.get('com.communityID')) : null
-                            post.alreadyLiked = record.get('likes').low > 0
-                            if (post.repostPostID) {
-                                if (!record.get('repost')) {
-                                    post.repostPostID = "removed"
-                                } else {
-                                    post.repostPost = new Post(record.get('repost'))
-                                    post.repostPost.author = new User(record.get('repostAuthor'))
-                                }
-                            }
-                            if (record.get('mod_link')) post.verified = true
-
-                            posts.push(post)
-                        })
-                        return {
-                            success: true,
-                            posts: posts
-                        }
-                    })
-            } else {
-                throw {
-                    success: false,
-                    message: "Community does not exist"
+    try {
+        const existsCheck = await exists(session, communityID)
+        if (existsCheck.result) { // Community exists
+            const sessionRun = await session.run(query, {
+                communityID: communityID,
+                walletAddress: walletAddress,
+                start: start,
+                size: size
+            })
+            let posts = []
+            sessionRun.records.forEach(async (record) => {
+                let post = new Post(record.get("post"))
+                post.author = new User(record.get("author"))
+                post.comment = String(record.get("comment").low);
+                post.community = record.get('com.communityID') ? String(record.get('com.communityID')) : null
+                post.alreadyLiked = record.get('likes').low > 0
+                if (post.repostPostID) {
+                    if (!record.get('repost')) post.repostPostID = "removed"
+                    else {
+                        post.repostPost = new Post(record.get('repost'))
+                        post.repostPost.author = new User(record.get('repostAuthor'))
+                    }
                 }
+                if (record.get('mod_link')) post.verified = true
+                post.author.roles = []
+                posts.push(post)
+            })
+
+            const query2 = [
+                `UNWIND $posts as post`,
+                'MATCH (user: User {walletAddress: post.author.walletAddress})-[r]->(c: Community {communityID: $communityID})',
+                'RETURN DISTINCT user.walletAddress, type(r)'
+            ].join('\n');
+
+            const sessionRun2 = await session.run(query2, {
+                communityID: communityID,
+                posts: posts
+            })
+
+            sessionRun2.records.forEach((record) => {
+                var postWalletAddress = record.get("user.walletAddress")
+                var relationship = record.get("type(r)")
+                posts.map((post) => {
+                    if (post.author.walletAddress === postWalletAddress)
+                        post.author.roles.push(getRoleFromRelationship(relationship))
+                })
+            })
+
+            return {
+                success: true,
+                posts: posts
             }
-        })
-        .catch((error) => {
+        } else {
             throw {
                 success: false,
-                message: "Failed to get feed",
-                error: error.message
+                message: "Community does not exist"
             }
-        });
+        }
+    } catch (error) {
+        throw {
+            success: false,
+            message: "Failed to get feed",
+            error: error.message
+        }
+    }
 }
 
 const getTrending = function (session, walletAddress, start, size) {

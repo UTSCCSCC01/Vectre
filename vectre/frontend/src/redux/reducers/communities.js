@@ -1,12 +1,15 @@
 import {
+    STORE_BANNED_USERS,
     STORE_COMMUNITY,
-    STORE_ROLES_LOGGED_IN_USER,
-    STORE_TRENDING_COMMUNITIES
+    STORE_MODERATORS,
+    STORE_ROLES_LOGGED_IN_USER
 } from "../constants/communities";
 
 const initialState = {
     community: {},
-    loggedInUserRoles: []
+    loggedInUserRoles: [],
+    bannedUsers: [],
+    moderators: []
 }
 
 const communities = (state = initialState, action) => {
@@ -20,6 +23,16 @@ const communities = (state = initialState, action) => {
             return {
                 ...state,
                 loggedInUserRoles: action.roles
+            }
+        case STORE_BANNED_USERS:
+            return {
+                ...state,
+                bannedUsers: action.bannedUsers
+            }
+        case STORE_MODERATORS:
+            return {
+                ...state,
+                moderators: action.moderators
             }
         default:
             return state
