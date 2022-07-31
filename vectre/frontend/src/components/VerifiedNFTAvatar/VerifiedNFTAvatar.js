@@ -11,7 +11,8 @@ export const VERIFIED_AVATAR_TYPES = {
     POST: "post",
     NAVBAR: "navbar",
     SEARCH: "search",
-    FOLLOW: "follow"
+    FOLLOW: "follow",
+    TRENDING: "trending"
 }
 
 const VerifiedNFTAvatar = ({
@@ -38,12 +39,16 @@ const VerifiedNFTAvatar = ({
             nonNFTBorderWidth = '3px';
             break;
         case VERIFIED_AVATAR_TYPES.SEARCH:
-            boxSize = '115px';
-            shadowsBorderWidth = '3px';
-            nonNFTBorderWidth = '5px';
+            boxSize = '68px';
+            shadowsBorderWidth = '2px';
+            nonNFTBorderWidth = '0px';
             break;
         case VERIFIED_AVATAR_TYPES.FOLLOW:
             boxSize = '48px';
+            shadowsBorderWidth = '1.5px';
+            break;
+        case VERIFIED_AVATAR_TYPES.TRENDING:
+            boxSize = '60px';
             shadowsBorderWidth = '1.5px';
             break;
         default:

@@ -8,7 +8,7 @@ import {
 
 import { getBannerOrDefault, formatWalletAddress } from "../../../../utils/Utils";
 import React, { useState } from "react";
-import VerifiedNFTAvatar from "../../../VerifiedNFTAvatar/VerifiedNFTAvatar";
+import VerifiedNFTAvatar, { VERIFIED_AVATAR_TYPES } from "../../../VerifiedNFTAvatar/VerifiedNFTAvatar";
 
 const ProfileUserDetailsTopComponent = ({
     props
@@ -26,7 +26,7 @@ const ProfileUserDetailsTopComponent = ({
                     left={'50%'}
                     marginLeft={'-60px'}
                     zIndex={'2'}>
-                    <VerifiedNFTAvatar data={props.user} type={'profile'} />
+                    <VerifiedNFTAvatar data={props.user} type={VERIFIED_AVATAR_TYPES.PROFILE} />
                 </Box>
                 <Box
                     border={'12px solid white'}

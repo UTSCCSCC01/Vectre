@@ -1,12 +1,12 @@
 import {
     Flex,
-    Image,
     Link,
     Text
 } from "@chakra-ui/react"
-import { getAvatarOrDefault } from "../../utils/Utils";
+import VerifiedNFTAvatar from "../VerifiedNFTAvatar/VerifiedNFTAvatar";
 
 const EntityCard = ({
+    iconType,
     key,
     iconBoxSize = "68px",
     bg = "white",
@@ -31,12 +31,7 @@ const EntityCard = ({
                     flexDirection={'row'}
                     alignItems={"center"}
                     gap={'15px'}>
-                    <Image
-                        src={getAvatarOrDefault(data.profilePic)}
-                        fit={'cover'}
-                        overflow={'hidden'}
-                        borderRadius={'full'}
-                        boxSize={iconBoxSize} />
+                    <VerifiedNFTAvatar type={iconType} data={data} />
                     <Flex
                         flexDirection={'column'}
                         gap={'1px'}>
