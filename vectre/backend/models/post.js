@@ -290,9 +290,8 @@ const getPostsByUser = function (session, walletAddress, profileWalletAddress) {
                 postRecord.alreadyLiked = record.get('likes').low > 0;
                 postRecord.community = record.get('com.communityID') ? String(record.get('com.communityID')) : null
                 if (postRecord.repostPostID) {
-                    if (!record.get('repost')) {
-                        postRecord.repostPostID = "removed"
-                    } else {
+                    if (!record.get('repost')) postRecord.repostPostID = "removed"
+                    else {
                         postRecord.repostPost = new Post(record.get('repost'))
                         postRecord.repostPost.author = new User(record.get('repostAuthor'))
                     }
@@ -826,8 +825,11 @@ const search = function (session, searchVal, walletAddress, start, size, sortTyp
                 post.community = record.get('communityID') ? String(record.get('communityID')) : null
                 post.alreadyLiked = record.get('likes').low > 0
                 if (post.repostPostID) {
-                    post.repostPost = new Post(record.get('repost'))
-                    post.repostPost.author = new User(record.get('repostAuthor'))
+                    if (!record.get('repost')) post.repostPostID = "removed"
+                    else {
+                        post.repostPost = new Post(record.get('repost'))
+                        post.repostPost.author = new User(record.get('repostAuthor'))
+                    }
                 }
 
                 posts.push(post)
@@ -838,6 +840,7 @@ const search = function (session, searchVal, walletAddress, start, size, sortTyp
             }
         })
         .catch((error) => {
+            console.log(error)
             throw {
                 success: false,
                 message: "Failed to search posts",
