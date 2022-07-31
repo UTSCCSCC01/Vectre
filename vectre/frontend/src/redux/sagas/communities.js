@@ -219,7 +219,7 @@ function* unbanMember(action) {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }
     } catch (error) {
-        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to ban member"))
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to unban member"))
         console.log(error)
     }
 }
