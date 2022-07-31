@@ -596,8 +596,6 @@ const getNFT = async (session, walletAddress) => { // Gets all NFTs of a User us
                     walletAddress: walletAddress
                 })
             }
-
-            console.log(asset_list)
             return {
                 success: true,
                 nft: asset_list,
