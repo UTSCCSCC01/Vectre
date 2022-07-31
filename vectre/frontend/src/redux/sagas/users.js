@@ -102,8 +102,7 @@ function* getNFT(action) {
         const response = yield call(getRequest, BASE_API_URL + USERS.GET_NFT.replace("{walletAddress}", action.walletAddress)), responseData = response[1]
         if (responseData.success) {
             yield put(storeNFT(responseData.nft))
-        }
-        else {
+        } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }
     } catch (error) {

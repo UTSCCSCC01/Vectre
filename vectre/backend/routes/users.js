@@ -53,7 +53,7 @@ router.get('/search/:searchVal', storeWalletAddressFromToken, (req, res) => {
 
 // GET /users/{walletAddress}/nft
 router.get('/:walletAddress/nft', (req, res) => {
-    User.getNFT(req.params.walletAddress)
+    User.getNFT(dbUtils.getSession(req), req.params.walletAddress)
         .then((result) => res.send(result))
         .catch((error) => res.send(error))
 })
@@ -134,12 +134,9 @@ router.put('/:walletAddress/update', authenticateToken, (req, res) => {
             if (req.body.profilePicTokenID) {
                 tokenID = req.body.profilePicTokenID;
                 profilePicLink = req.body.profilePicImageLink;
-            }
-            else {
-                if (req.body.profilePicImageData) {
-                    const img1 = await upload(req.body.profilePicImageData);
-                    profilePicLink = img1.data.link;
-                }
+            } else if (req.body.profilePicImageData) { // No tokenID provided
+                const img1 = await upload(req.body.profilePicImageData);
+                profilePicLink = img1.data.link;
             }
             if (req.body.bannerImageData) {
                 const img2 = await upload(req.body.bannerImageData);

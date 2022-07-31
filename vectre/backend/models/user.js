@@ -346,7 +346,7 @@ const updateUser = function (session, walletAddress, filter, newUser) {
         })
 }
 
-const updateProfile = function (session, walletAddress, newProf, profilePicLink, bannerLink, tokenID) {
+const updateProfile = function (session, walletAddress, newProf, profilePicLink, bannerLink, tokenID=null) {
     /**
      * Update the user profile of the wallet owner using newProf object.
      *
@@ -367,7 +367,7 @@ const updateProfile = function (session, walletAddress, newProf, profilePicLink,
                 return { success: false, message: "Username already exists." }
             } else {
                 let profileFilter = ["name", "username", "bio"]
-                if (tokenID != "") {
+                if (tokenID !== null) {
                     newProf.profilePicTokenID = tokenID;
                     profileFilter.push("profilePicTokenID")
                 }
@@ -551,18 +551,23 @@ const unfollowUser = (session, walletAddress, walletAddressToUnfollow) => {
     }
 }
 
-const getNFT = (walletAddress) => { // Gets all NFTs of a User using OpenSea API.
-    return fetch(`https://testnets-api.opensea.io/api/v1/assets?owner=${walletAddress}&order_direction=desc&offset=0&limit=20&include_orders=false`)
-        .then(res => {
-            if (res.status !== 200) {
-                throw {
-                    success: false,
-                    message: "Failed to retrieve NFTs"
-                }
+const getNFT = async (session, walletAddress) => { // Gets all NFTs of a User using OpenSea API.
+    const getQuery = `MATCH (u:User {walletAddress: $walletAddress}) RETURN u.profilePicTokenID as tokenID`
+    const getTokenID = await session.run(getQuery, {
+        walletAddress: walletAddress
+    })
+    const tokenIDAvatar = parseInt(getTokenID.records[0].get('tokenID'))
+
+    try {
+        const openseaRes = await fetch(`https://testnets-api.opensea.io/api/v1/assets?owner=${walletAddress}&order_direction=desc&offset=0&limit=20&include_orders=false`)
+        if (openseaRes.status !== 200) {
+            throw {
+                success: false,
+                message: "Failed to retrieve NFTs"
             }
-            return res.json()
-        })
-        .then(json => {
+        } else {
+            const json = await openseaRes.json()
+            console.log(json)
             if (_.isEmpty(json.assets)) {
                 return { // User has no NFTs
                     success: true,
@@ -571,7 +576,7 @@ const getNFT = (walletAddress) => { // Gets all NFTs of a User using OpenSea API
                 }
             }
 
-            var asset_list = [];
+            var asset_list = [], nftExists = false;;
             for (let i = 0; i < json.assets.length; i++) {
                 var jsonObj = {
                     tokenID: json.assets[i].id,
@@ -580,20 +585,33 @@ const getNFT = (walletAddress) => { // Gets all NFTs of a User using OpenSea API
                     contractAddress: json.assets[i].asset_contract.address,
                 }
                 asset_list.push(jsonObj);
+
+                // Validate user still current owner of the NFT set as Profile Picture:
+                if (tokenIDAvatar && tokenIDAvatar === json.assets[i].id) nftExists = true;
             }
 
+            if (!nftExists) {
+                const setQuery = `MATCH (u:User {walletAddress: $walletAddress}) SET u.profilePicTokenID = NULL RETURN u`
+                await session.run(setQuery, {
+                    walletAddress: walletAddress
+                })
+            }
+
+            console.log(asset_list)
             return {
                 success: true,
                 nft: asset_list,
-                message: `Successfully retrieved user's NFTs`
+                message: `Successfully retrieved user's NFTs`,
             }
-        }).catch((error) => {
-            throw {
-                success: false,
-                message: "Failed to get user's NFTs",
-                error: error.message
-            }
-        })
+        }
+    } catch (error) {
+        console.log(error)
+        throw {
+            success: false,
+            message: "Failed to get user's NFTs",
+            error: error.message
+        }
+    }
 }
 
 const getFunds = (walletAddress) => { // Gets the wallet funds of a User using Etherscan API.
