@@ -551,92 +551,67 @@ const unfollowUser = (session, walletAddress, walletAddressToUnfollow) => {
     }
 }
 
-const getNFT = (session, walletAddress) => { // Gets all NFTs of a User using OpenSea API.
+const getNFT = async (session, walletAddress) => { // Gets all NFTs of a User using OpenSea API.
     const getQuery = `MATCH (u:User {walletAddress: $walletAddress}) RETURN u.profilePicTokenID as tokenID`
-    const setQuery = `MATCH (u:User {walletAddress: $walletAddress}) SET u.profilePicTokenID = null RETURN u`
-    var nftExists = false;
-
-    session.run(setQuery, {
+    const getTokenID = await session.run(getQuery, {
         walletAddress: walletAddress
     })
-        .then((results) => {
-        })
-        .catch((error) => {
+    const tokenIDAvatar = parseInt(getTokenID.records[0].get('tokenID'))
+
+    try {
+        const openseaRes = await fetch(`https://testnets-api.opensea.io/api/v1/assets?owner=${walletAddress}&order_direction=desc&offset=0&limit=20&include_orders=false`)
+        if (openseaRes.status !== 200) {
             throw {
                 success: false,
-                message: "Failed to find user's avatar NFT tokenID.",
-                error: error.message
+                message: "Failed to retrieve NFTs"
             }
-        })
-
-    return session.run(getQuery, {
-        walletAddress: walletAddress
-    })
-        .then((results) => {
-            var tokenIDAvatar = parseInt(results.records[0].get('tokenID'));
-
-            return fetch(`https://testnets-api.opensea.io/api/v1/assets?owner=${walletAddress}&order_direction=desc&offset=0&limit=20&include_orders=false`)
-                .then(res => {
-                    if (res.status !== 200) {
-                        throw {
-                            success: false,
-                            message: "Failed to retrieve NFTs"
-                        }
-                    }
-                    return res.json()
-                })
-                .then(json => {
-                    if (_.isEmpty(json.assets)) {
-                        return { // User has no NFTs
-                            success: true,
-                            nft: [],
-                            message: "User has no NFTs"
-                        }
-                    }
-
-                    var asset_list = [];
-                    for (let i = 0; i < json.assets.length; i++) {
-                        var jsonObj = {
-                            tokenID: json.assets[i].id,
-                            name: json.assets[i].asset_contract.name, //change 'asset_contract.name' -> 'name' once OpenSea Mainnet API is received.
-                            imageURL: json.assets[i].image_url,
-                            contractAddress: json.assets[i].asset_contract.address,
-                        }
-                        asset_list.push(jsonObj);
-
-                        // Validate user still current owner of the NFT set as Profile Picture:
-                        if (tokenIDAvatar) {
-                            if (tokenIDAvatar === json.assets[i].id) {
-                                nftExists = true;
-                            }
-                        }
-                    }
-
-                    if (nftExists) {
-                        // Run setQuery
-                    }
-
-                    return {
-                        success: true,
-                        nft: asset_list,
-                        message: `Successfully retrieved user's NFTs`,
-                    }
-                }).catch((error) => {
-                    throw {
-                        success: false,
-                        message: "Failed to get user's NFTs",
-                        error: error.message
-                    }
-                })
-
-        })
-        .catch((error) => {
-            throw {
-                success: false,
-                message: "Failed to find user's avatar NFT tokenID.",
-                error: error.message
+        } else {
+            const json = await openseaRes.json()
+            console.log(json)
+            if (_.isEmpty(json.assets)) {
+                return { // User has no NFTs
+                    success: true,
+                    nft: [],
+                    message: "User has no NFTs"
+                }
             }
-        })
+
+            var asset_list = [], nftExists = false;;
+            for (let i = 0; i < json.assets.length; i++) {
+                var jsonObj = {
+                    tokenID: json.assets[i].id,
+                    name: json.assets[i].asset_contract.name, //change 'asset_contract.name' -> 'name' once OpenSea Mainnet API is received.
+                    imageURL: json.assets[i].image_url,
+                    contractAddress: json.assets[i].asset_contract.address,
+                }
+                asset_list.push(jsonObj);
+
+                // Validate user still current owner of the NFT set as Profile Picture:
+                if (tokenIDAvatar && tokenIDAvatar === json.assets[i].id) nftExists = true;
+            }
+
+            if (!nftExists) {
+                const setQuery = `MATCH (u:User {walletAddress: $walletAddress}) SET u.profilePicTokenID = NULL RETURN u`
+                await session.run(setQuery, {
+                    walletAddress: walletAddress
+                })
+            }
+
+            console.log(asset_list)
+            return {
+                success: true,
+                nft: asset_list,
+                message: `Successfully retrieved user's NFTs`,
+            }
+        }
+    } catch (error) {
+        console.log(error)
+        throw {
+            success: false,
+            message: "Failed to get user's NFTs",
+            error: error.message
+        }
+    }
 }
 
 const getFunds = (walletAddress) => { // Gets the wallet funds of a User using Etherscan API.
