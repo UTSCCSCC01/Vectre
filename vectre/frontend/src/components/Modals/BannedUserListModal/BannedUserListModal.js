@@ -8,6 +8,7 @@ import ToggleHollowButton from "../../Buttons/ToggleHollowButton/ToggleHollowBut
 import EntityCard from "../../EntityCard/EntityCard";
 import EntityListModal from "../EntityListModal/EntityListModal"
 import { GENERIC_WARNING_TYPE } from '../GenericWarningModal/GenericWarningModal';
+import Blank from "../../Blank/Blank";
 
 const BannedUserListModal = ({
     isOpen,
@@ -32,24 +33,28 @@ const BannedUserListModal = ({
                 icon={GENERIC_WARNING_TYPE.BAN.icon}
                 isOpen={isOpen}
                 onClose={onClose}>
-                {bannedUsers && bannedUsers.map((user, i) =>
-                    <EntityCard
-                        key={i}
-                        iconBoxSize={'40px'}
-                        bg={"none"}
-                        primaryText={cutText(user.name, 23)}
-                        secondaryText={"@" + cutText(user.username, 28)}
-                        href={"/user/" + user.walletAddress}
-                        data={user} >
-                        <ToggleHollowButton
-                            borderAccent={"rgba(255, 89, 89, 0.8)"}
-                            accent={'rgba(255, 89, 89, 1)'}
-                            onText={'Unban'}
-                            offText={'Ban'}
-                            isOn={user.alreadyBanned}
-                            onClick={() => handleBanClick(user)} />
-                    </EntityCard>
-                )}
+                {
+                    bannedUsers && bannedUsers.length !== 0 ?
+                        bannedUsers.map((user, i) =>
+                            <div key={i}>
+                                <EntityCard
+                                    iconBoxSize={'40px'}
+                                    bg={"none"}
+                                    primaryText={cutText(user.name, 23)}
+                                    secondaryText={"@" + cutText(user.username, 28)}
+                                    href={"/user/" + user.walletAddress}
+                                    data={user} >
+                                    <ToggleHollowButton
+                                        borderAccent={"rgba(255, 89, 89, 0.8)"}
+                                        accent={'rgba(255, 89, 89, 1)'}
+                                        onText={'Unban'}
+                                        offText={'Ban'}
+                                        isOn={user.alreadyBanned}
+                                        onClick={() => handleBanClick(user)} />
+                                </EntityCard>
+                            </div>
+                        ) : <Blank />
+                }
             </EntityListModal>
         </>
     );

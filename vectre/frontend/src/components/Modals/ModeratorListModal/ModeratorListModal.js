@@ -8,6 +8,7 @@ import ToggleHollowButton from "../../Buttons/ToggleHollowButton/ToggleHollowBut
 import EntityCard from "../../EntityCard/EntityCard";
 import EntityListModal from "../EntityListModal/EntityListModal"
 import VerifiedIcon from '../../../assets/icons/verified-icon.svg';
+import Blank from "../../Blank/Blank";
 
 const ModeratorListModal = ({
     isOpen,
@@ -29,23 +30,27 @@ const ModeratorListModal = ({
                 iconSRC={VerifiedIcon}
                 isOpen={isOpen}
                 onClose={onClose}>
-                {moderators && moderators.map((user, i) =>
-                    <EntityCard
-                        key={i}
-                        iconBoxSize={'40px'}
-                        bg={"none"}
-                        primaryText={cutText(user.name, 23)}
-                        secondaryText={"@" + cutText(user.username, 28)}
-                        href={"/user/" + user.walletAddress}
-                        data={user} >
-                        <ToggleHollowButton
-                            borderAccent={"rgba(246, 133, 27, 0.71)"}
-                            accent={'rgba(246, 133, 27, 0.71)'}
-                            onText={'Moderator'}
-                            offText={''}
-                            isOn={true} />
-                    </EntityCard>
-                )}
+                {
+                    moderators && moderators.length !== 0 ?
+                        moderators.map((user, i) =>
+                            <div key={i}>
+                                <EntityCard
+                                    iconBoxSize={'40px'}
+                                    bg={"none"}
+                                    primaryText={cutText(user.name, 23)}
+                                    secondaryText={"@" + cutText(user.username, 28)}
+                                    href={"/user/" + user.walletAddress}
+                                    data={user} >
+                                    <ToggleHollowButton
+                                        borderAccent={"rgba(246, 133, 27, 0.71)"}
+                                        accent={'rgba(246, 133, 27, 0.71)'}
+                                        onText={'Moderator'}
+                                        offText={''}
+                                        isOn={true} />
+                                </EntityCard>
+                            </div>
+                        ) : <Blank />
+                }
             </EntityListModal>
         </>
     );

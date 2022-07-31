@@ -24,7 +24,7 @@ export const GENERIC_WARNING_TYPE = {
     BAN: {
         name: "Ban",
         title: "Ban User",
-        text: "Note that this cannot be undone, and the user's post will be removed from the community, from the timeline of any accounts that follow it, and from all Vectre search results.",
+        text: "Banning a user will prevent them from posting or commenting in this community. Furthermore, their previous posts in this community will be permanently removed.",
         color: "rgba(255, 89, 89, 1)",
         icon: <Icon as={IoBan} color={'rgba(255, 89, 89, 1)'} />
     },
