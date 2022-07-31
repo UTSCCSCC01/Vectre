@@ -567,7 +567,6 @@ const getNFT = async (session, walletAddress) => { // Gets all NFTs of a User us
             }
         } else {
             const json = await openseaRes.json()
-            console.log(json)
             if (_.isEmpty(json.assets)) {
                 return { // User has no NFTs
                     success: true,
