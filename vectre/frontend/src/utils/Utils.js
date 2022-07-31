@@ -16,12 +16,32 @@ export const formatLikes = (num) => {
     return num.toString();
 };
 
+// assumes num is a valid number and item is a singlular noun
+export const formatNumberItemString = (num, item) => {
+    var newItem = formatLikes(num) + " " + item;
+    if (num === undefined) {
+        return "0";
+    }
+    if (num !== 1) {
+        newItem += "s"
+    }
+    return newItem;
+};
+
 // assumes walletAddress is valid
 export const formatWalletAddress = (walletAddress) => {
     if (walletAddress === undefined) return "Not a valid wallet address"
     else if (walletAddress.length < 10) return walletAddress
 
     return walletAddress.slice(0, 4) + "..." + walletAddress.slice(-4);
+};
+
+// assumes walletAddress is valid
+export const cutText = (text, maxLength) => {
+    if (text === undefined || text.length < maxLength)
+        return text
+
+    return text.slice(0, maxLength) + "..."
 };
 
 // assumes isoString is valid
@@ -52,4 +72,12 @@ export const getBase64 = (file, callback) => {
     reader.onerror = function (error) {
         console.log('Error: ', error);
     };
+}
+
+export const getBase64Async = (file) => {
+    return new Promise(resolve => {
+        getBase64(file, (result) => {
+            resolve(result);
+        })
+    })
 }

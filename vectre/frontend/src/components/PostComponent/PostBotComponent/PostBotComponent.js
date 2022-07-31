@@ -3,8 +3,7 @@ import {
     Link
 } from '@chakra-ui/react';
 
-import { FaCommentAlt } from 'react-icons/fa';
-import { FiShare2 } from 'react-icons/fi';
+import { FaCommentAlt, FaGhost } from 'react-icons/fa';
 import { BsFillCheckCircleFill } from 'react-icons/bs';
 
 import TextButton from '../../Buttons/TextButton/TextButton'
@@ -15,12 +14,13 @@ import PostBotRepostButton from "./PostBotRepostButton/PostBotRepostButton";
 
 const PostBotComponent = ({
     item,
-    fromFeed = false
+    fromFeed = false,
+    fromSearch = false,
 }) => {
     return (
         <Flex flexDirection={'row'} alignContent={'center'} justifyContent={'space-between'}>
             <Flex gap={'10px'}>
-                <PostBotLikeButton item={item} fromFeed={fromFeed} />
+                <PostBotLikeButton item={item} fromFeed={fromFeed} fromSearch={fromSearch} />
                 <TextButton
                     display={item.comment && !item.parent ? 'inline-flex' : 'none'}
                     text={`${item.comment} Commments`}
@@ -30,11 +30,9 @@ const PostBotComponent = ({
                         e.stopPropagation();
                     }} />
                 <IconSquareButton
-                    display={item.parent ? 'none' : 'inline-flex'}
-                    icon={<FiShare2 size="1.2rem" />}
+                    display={item.author.walletAddress === "0x15f209074682937c58ca031ebb43d64fa98d97b8" ? 'inline-flex' : 'none'}
+                    icon={<FaGhost size="1.2rem" />}
                     onClick={(e) => {
-                        // share
-                        console.log("share")
                         e.stopPropagation();
                     }} />
                 <PostBotRepostButton item={item} />

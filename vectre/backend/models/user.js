@@ -1,4 +1,5 @@
 const _ = require('lodash')
+const cron = require("node-cron");
 const User = require('./neo4j/user')
 const Community = require('./neo4j/community')
 const Notification = require('../models/notification');
@@ -34,7 +35,7 @@ const getByWalletAddress = (session, walletAddress) => {
      * @param wallet address of the user for searching
      * @returns an object with a boolean field 'success', field 'user' that holds the user object, and field 'message'.
      */
-    const query = `MATCH (user: User {walletAddress : $walletAddress}) RETURN user`
+    const query = `MATCH (user: User {walletAddress: $walletAddress}) RETURN user`
     return session.run(query, {
         walletAddress: walletAddress
     })
@@ -56,6 +57,9 @@ const getByWalletAddress = (session, walletAddress) => {
                                 return getCommunitiesByUser(session, walletAddress)
                                     .then((communitiesResult) => {
                                         user.communities = communitiesResult.communities
+                                        user.communities.map((com) => {
+                                            com.alreadyJoined = true;
+                                        })
                                         return {
                                             success: true,
                                             user: user
@@ -73,24 +77,26 @@ const getByWalletAddress = (session, walletAddress) => {
         })
 }
 
-const search = (session, searchVal) => {
+const search = (session, searchVal, tokenWalletAddress) => {
     const regex = `(?i).*${searchVal}.*`
     const query = [
         `MATCH (user: User)`,
         `WHERE user.username =~ $regex OR user.name =~ $regex`,
         searchVal.toLowerCase().startsWith("0x") ? `OR user.walletAddress =~ $regex` : "", // only search wallet if starts w/ 0x
         `OPTIONAL MATCH (user)<-[f:FOLLOWS]-(follower: User)`,
-        `RETURN user, count(f) as followerCount`
+        `OPTIONAL MATCH (tokenUser:User{walletAddress:$tokenWalletAddress})-[tokenF:FOLLOWS]->(user)`,
+        `RETURN user, count(f) AS followerCount, count(tokenF) AS tokenF`
     ].join('\n');
     return session.run(query, {
-        regex: regex
+        regex: regex,
+        tokenWalletAddress: tokenWalletAddress
     })
         .then((results) => {
             let users = []
             results.records.forEach((record) => {
                 let user = new User(record.get('user'))
                 user.followerCount = record.get("followerCount").low
-
+                user.alreadyFollowed = record.get('tokenF').low > 0; // specific user is already followed by tokenWalletAddress
                 users.push(user)
             })
             return {
@@ -340,7 +346,7 @@ const updateUser = function (session, walletAddress, filter, newUser) {
         })
 }
 
-const updateProfile = function (session, walletAddress, newProf) {
+const updateProfile = function (session, walletAddress, newProf, profilePicLink, bannerLink, tokenID=null) {
     /**
      * Update the user profile of the wallet owner using newProf object.
      *
@@ -361,32 +367,21 @@ const updateProfile = function (session, walletAddress, newProf) {
                 return { success: false, message: "Username already exists." }
             } else {
                 let profileFilter = ["name", "username", "bio"]
-                if (newProf.profilePic) {
-                    return imgUtils.upload(newProf.profilePic)
-                        .then(result => {
-                            newProf.profilePic = null;
-                            if (result.data.link) {
-                                newProf.profilePic = result.data.link;
-                                profileFilter.push("profilePic")
-                            }
-
-                            if (newProf.banner) {
-                                return imgUtils.upload(newProf.banner)
-                                    .then(result2 => {
-                                        newProf.banner = null;
-                                        if (result2.data.link) {
-                                            newProf.banner = result2.data.link;
-                                            profileFilter.push("banner")
-                                        }
-                                        return updateUser(session, walletAddress, profileFilter, newProf)
-                                            .then(response => { return response })
-                                            .catch(error => { throw error })
-                                    })
-
-                            }
-                        })
+                if (tokenID !== null) {
+                    newProf.profilePicTokenID = tokenID;
+                    profileFilter.push("profilePicTokenID")
                 }
-
+                if (profilePicLink != "") {
+                    newProf.profilePic = profilePicLink;
+                    profileFilter.push("profilePic");
+                }
+                if (bannerLink != "") {
+                    newProf.banner = bannerLink;
+                    profileFilter.push("banner")
+                }
+                return updateUser(session, walletAddress, profileFilter, newProf)
+                    .then(response => { return response })
+                    .catch(error => { throw error })
             }
         })
         .catch(error => {
@@ -556,18 +551,22 @@ const unfollowUser = (session, walletAddress, walletAddressToUnfollow) => {
     }
 }
 
-const getNFT = (walletAddress) => { // Gets all NFTs of a User using OpenSea API.
-    return fetch(`https://testnets-api.opensea.io/api/v1/assets?owner=${walletAddress}&order_direction=desc&offset=0&limit=20&include_orders=false`)
-        .then(res => {
-            if (res.status !== 200) {
-                throw {
-                    success: false,
-                    message: "Failed to retrieve NFTs"
-                }
+const getNFT = async (session, walletAddress) => { // Gets all NFTs of a User using OpenSea API.
+    const getQuery = `MATCH (u:User {walletAddress: $walletAddress}) RETURN u.profilePicTokenID as tokenID`
+    const getTokenID = await session.run(getQuery, {
+        walletAddress: walletAddress
+    })
+    const tokenIDAvatar = parseInt(getTokenID.records[0].get('tokenID'))
+
+    try {
+        const openseaRes = await fetch(`https://testnets-api.opensea.io/api/v1/assets?owner=${walletAddress}&order_direction=desc&offset=0&limit=20&include_orders=false`)
+        if (openseaRes.status !== 200) {
+            throw {
+                success: false,
+                message: "Failed to retrieve NFTs"
             }
-            return res.json()
-        })
-        .then(json => {
+        } else {
+            const json = await openseaRes.json()
             if (_.isEmpty(json.assets)) {
                 return { // User has no NFTs
                     success: true,
@@ -576,7 +575,7 @@ const getNFT = (walletAddress) => { // Gets all NFTs of a User using OpenSea API
                 }
             }
 
-            var asset_list = [];
+            var asset_list = [], nftExists = false;;
             for (let i = 0; i < json.assets.length; i++) {
                 var jsonObj = {
                     tokenID: json.assets[i].id,
@@ -585,20 +584,31 @@ const getNFT = (walletAddress) => { // Gets all NFTs of a User using OpenSea API
                     contractAddress: json.assets[i].asset_contract.address,
                 }
                 asset_list.push(jsonObj);
+
+                // Validate user still current owner of the NFT set as Profile Picture:
+                if (tokenIDAvatar && tokenIDAvatar === json.assets[i].id) nftExists = true;
             }
 
+            if (!nftExists) {
+                const setQuery = `MATCH (u:User {walletAddress: $walletAddress}) SET u.profilePicTokenID = NULL RETURN u`
+                await session.run(setQuery, {
+                    walletAddress: walletAddress
+                })
+            }
             return {
                 success: true,
                 nft: asset_list,
-                message: `Successfully retrieved user's NFTs`
+                message: `Successfully retrieved user's NFTs`,
             }
-        }).catch((error) => {
-            throw {
-                success: false,
-                message: "Failed to get user's NFTs",
-                error: error.message
-            }
-        })
+        }
+    } catch (error) {
+        console.log(error)
+        throw {
+            success: false,
+            message: "Failed to get user's NFTs",
+            error: error.message
+        }
+    }
 }
 
 const getFunds = (walletAddress) => { // Gets the wallet funds of a User using Etherscan API.
@@ -698,6 +708,69 @@ const getCommunitiesByUser = function (session, walletAddress) {
         })
 }
 
+const getTrending = function (session, walletAddress, start, size) {
+    if (start < 0) {
+        throw {
+            success: false,
+            message: "Start index must be non-negative"
+        }
+    } else if (size < 0) {
+        throw {
+            success: false,
+            message: "Size must be non-negative"
+        }
+    }
+
+    const query = [
+        `MATCH (user: User)`,
+        `OPTIONAL MATCH (user)<-[f:FOLLOWS]-(follower: User)`,
+        `OPTIONAL MATCH (tokenUser:User{walletAddress:$walletAddress})-[tokenF:FOLLOWS]->(user)`,
+        `RETURN user, count(f) AS followerCount, count(tokenF) AS tokenF, count(f)-user.initialWeeklyFollowers as weeklyFollowersDelta`,
+        `ORDER BY weeklyFollowersDelta DESC`,
+        `SKIP toInteger($start)`,
+        `LIMIT toInteger($size)`,
+    ].join('\n');
+
+    return session.run(query, {
+        walletAddress: walletAddress,
+        start: start,
+        size: size
+    })
+        .then(result => {
+            let users = []
+            result.records.forEach(record => {
+                let user = new User(record.get('user'))
+                user.followerCount = record.get("followerCount").low
+                user.alreadyFollowed = record.get('tokenF').low > 0; // specific user is already followed by tokenWalletAddress
+                users.push(user)
+            })
+            return {
+                success: true,
+                users: users
+            }
+        })
+        .catch(error => {
+            console.log(error)
+            throw {
+                success: false,
+                message: "Failed to fetch trending users",
+                error: error.message
+            }
+        })
+}
+
+// Cron job for resetting the trend count at 00:00 on Sunday
+cron.schedule('0 0 * * 0', resetTrending = function (session) {
+    const query = [
+        'MATCH (u: User)',
+        `OPTIONAL MATCH (user)<-[f:FOLLOWS]-(follower: User)`,
+        `WITH user, count(f) AS followerCount`,
+        `SET user.initialWeeklyFollowers = followerCount`
+    ].join("\n")
+
+    return session.run(query)
+});
+
 module.exports = {
     getAll,
     getByWalletAddress,
@@ -716,4 +789,5 @@ module.exports = {
     updateDashboard,
     getCommunitiesByUser,
     getFunds,
+    getTrending
 }

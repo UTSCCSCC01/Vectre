@@ -9,6 +9,7 @@ import {
     useColorModeValue,
     useBreakpointValue,
     Container,
+    Box,
     Grid,
     GridItem
 } from '@chakra-ui/react';
@@ -21,6 +22,7 @@ import NotificationPopover from '../Notifications/NotificationPopover'
 import VectreIcon from '../Icons/VectreIcon'
 import { fundsSelector, loggedInUserSelector } from "../../redux/selectors/users";
 import { useSelector } from "react-redux";
+import VerifiedNFTAvatar, { VERIFIED_AVATAR_TYPES } from "../VerifiedNFTAvatar/VerifiedNFTAvatar";
 
 export default function NavBar() {
     const loggedInUser = useSelector(loggedInUserSelector)
@@ -124,19 +126,29 @@ export default function NavBar() {
                             </Text>
                             : null}
                         <NotificationPopover />
-                        <Link
-                            href={Object.keys(loggedInUser).length === 0 ? "/login" : `/user/${loggedInUser.walletAddress}`}
-                            _hover={{ textDecoration: "none" }}>
-                            <IconButton
-                                size={'lg'}
-                                transform={'scale(1.2)'}
-                                color={'primary.400'}
-                                isRound={'true'}
-                                bg={'white'}
-                                icon={<FaWallet size="1.4rem" />}
-                                _focus={{ outline: 0 }}>
-                            </IconButton>
-                        </Link>
+                        {
+                            Object.keys(loggedInUser).length === 0 ? (
+                                <Link
+                                    href={"/login"}
+                                    _hover={{ textDecoration: "none" }}>
+                                    <IconButton
+                                        size={'lg'}
+                                        transform={'scale(1.2)'}
+                                        color={'primary.400'}
+                                        isRound={'true'}
+                                        bg={'white'}
+                                        icon={<FaWallet size="1.4rem" />}
+                                        _focus={{ outline: 0 }}>
+                                    </IconButton>
+                                </Link>
+                            ) : (
+                                <Link
+                                    href={`/user/${loggedInUser.walletAddress}`}
+                                    _hover={{ textDecoration: "none" }}>
+                                    <VerifiedNFTAvatar data={loggedInUser} type={VERIFIED_AVATAR_TYPES.NAVBAR} />
+                                </Link>
+                            )
+                        }
                     </Stack>
                 </GridItem>
             </Grid>

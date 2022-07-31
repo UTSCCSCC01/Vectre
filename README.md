@@ -3,12 +3,12 @@
 <img width="860" alt="vectre-image" src="https://user-images.githubusercontent.com/64259077/170800123-2a4079de-9c36-4e0a-8608-2e52e82897cc.png">
 
 ## Motivation
-Vectre is an all-in-one social platform for web3 communities. 
+Vectre is an all-in-one social platform for web3 communities.
 
-Our vision is for users to connect their Metamask wallet within our platform, where they will be able to showcase their NFTs on a personal dashboard, communicate directly with holders of specific NFT collections, and leaders to foster productive community interactions with a fair set of guidelines. 
-Furthermore, Vectre ensures that the true ownership of digital assets is maintained and appropriately indicated to prevent fraud. 
+Our vision is for users to connect their Metamask wallet within our platform, where they will be able to showcase their NFTs on a personal dashboard, communicate directly with holders of specific NFT collections, and leaders to foster productive community interactions with a fair set of guidelines.
+Furthermore, Vectre ensures that the true ownership of digital assets is maintained, validated and appropriately indicated to prevent fraud.
 
-We hope that Vectre will allow web3 communities to thrive by providing a platform by which community guidelines can be set through a proposal voting system, where verified members vote to shape the direction of their community.
+We hope that Vectre will allow web3 communities, specifically NFT communities, to thrive by providing a platform by which verified members can interact with one another and call Vectre their home.
 
 ## Installation
 1. Install [Node.js v18.5.0 (npm 8.12.1)](https://nodejs.org/en/download/current/)
@@ -19,8 +19,8 @@ We hope that Vectre will allow web3 communities to thrive by providing a platfor
    cd ../frontend
    npm install
    ```
-3. Create `.env.production` and `.env.development` files in the `vectre/backend` directory, both with the following config 
-(credentials located in the Vectre Labs `#project-files` discord channel) 
+3. Create `.env.production` and `.env.development` files in the `vectre/backend` directory, both with the following config
+   (credentials located in the Vectre Labs `#project-files` discord channel)
    ```
    FRONTEND_BASE_URL=
    NEO4J_DB_URL=

@@ -11,7 +11,6 @@ import {
     storeUnreadStatus,
     getUser,
     getLoggedInUser,
-    storeSearchedUsers,
 } from "../actions/users";
 import {
     GET_LOGIN_NONCE,
@@ -27,14 +26,13 @@ import {
     GET_NFT,
     GET_FUNDS,
     UPDATE_DASHBOARD,
-    SEARCH_USERS,
 } from "../constants/users";
 import {
     BASE_API_URL,
     USERS
 } from "../constants/endpoints";
 import { TOAST_STATUSES } from "../constants/global";
-import {showLoading, showToast} from "../actions/global";
+import { showLoading, showToast } from "../actions/global";
 
 // Login
 function* getLoginNonce(action) {
@@ -98,27 +96,13 @@ function* getUsers() {
         console.log(error)
     }
 }
-function* searchUsers(action) {
-    try {
-        const response = yield call(getRequest, BASE_API_URL + USERS.SEARCH_USERS.replace("{searchVal}", action.searchVal)), responseData = response[1]
-        if (responseData.success) {
-            yield put(storeSearchedUsers(responseData.users))
-        } else {
-            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
-        }
-    } catch (error) {
-        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get users"))
-        console.log(error)
-    }
-}
 
 function* getNFT(action) {
     try {
         const response = yield call(getRequest, BASE_API_URL + USERS.GET_NFT.replace("{walletAddress}", action.walletAddress)), responseData = response[1]
         if (responseData.success) {
             yield put(storeNFT(responseData.nft))
-        }
-        else {
+        } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }
     } catch (error) {
@@ -190,6 +174,10 @@ function* followUser(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + USERS.FOLLOW_USER.replace("{walletAddress}", action.walletAddressToFollow), {}), responseData = response[1]
         if (responseData.success) {
+            if (action.callBack) {
+                action.callBack()
+                return;
+            }
             yield put(getUser(action.profileWalletAddress))
             yield put(getLoggedInUser())
             if (action.toggleFollowList) action.toggleFollowList()
@@ -206,6 +194,10 @@ function* unfollowUser(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + USERS.UNFOLLOW_USER.replace("{walletAddress}", action.walletAddressToUnfollow), {}), responseData = response[1]
         if (responseData.success) {
+            if (action.callBack) {
+                action.callBack()
+                return;
+            }
             yield put(getUser(action.profileWalletAddress))
             yield put(getLoggedInUser())
             if (action.toggleFollowList) action.toggleFollowList()
@@ -242,7 +234,6 @@ function* usersSaga() {
     yield takeLatest(GET_NFT, getNFT)
     yield takeLatest(GET_FUNDS, getFunds)
     yield takeLatest(GET_USERS, getUsers)
-    yield takeLatest(SEARCH_USERS, searchUsers)
     yield takeLatest(CREATE_USER, createUser)
     yield takeLatest(UPDATE_USER, updateUser)
     yield takeLatest(GET_NOTIFICATIONS, getNotifications)

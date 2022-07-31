@@ -1,10 +1,12 @@
 const _ = require('lodash');
-const { getRelationshipFromRole } = require('../utils/Utils');
+const cron = require('node-cron');
+const { getRoleFromRelationship, getRelationshipFromRole } = require('../utils/Utils');
 const Community = require('./neo4j/community')
 const { ROLES } = require("./neo4j/community");
 const User = require('./neo4j/user')
 const Post = require('./neo4j/post')
-const {FEED_SORT} = require("./neo4j/post");
+const { FEED_SORT } = require("./neo4j/post");
+const post = require('./post');
 
 // helper functions
 const filterBody = function (body) {
@@ -114,10 +116,9 @@ const create = function (session, ownerWalletAddress, newCommunity) {
     const query = [
         'MATCH (o: User {walletAddress: $owner})',
         'CREATE (c: Community $format)',
-        'SET c.memberCount = toInteger(1)',
+        'SET c.memberCount = toInteger(1), c.initialWeeklyMemberCount = toInteger(1)',
         'CREATE (o)-[:JOINS]->(c)',
-        'CREATE (o)-[:MODERATES]->(c)',
-        'CREATE (o)-[link: OWNS]->(c)',
+        'CREATE (o)-[link:MODERATES]->(c)',
         'RETURN link'
     ].join("\n")
 
@@ -131,7 +132,7 @@ const create = function (session, ownerWalletAddress, newCommunity) {
         instagramLink: newCommunity.instagramLink ? newCommunity.instagramLink : null,
         twitterLink: newCommunity.twitterLink ? newCommunity.twitterLink : null,
         websiteLink: newCommunity.websiteLink ? newCommunity.websiteLink : null,
-        ethLink: newCommunity.ethLink ? newCommunity.ethLink : null,
+        ethLink: newCommunity.ethLink ? newCommunity.ethLink : null
     }
 
     return session.run(query, {
@@ -220,20 +221,24 @@ const getAll = function (session) {
         })
 }
 
-const search = (session, searchVal) => {
+const search = (session, searchVal, walletAddress) => {
     const regex = `(?i).*${searchVal}.*`
     const query = [
         `MATCH (community: Community)`,
         `WHERE community.communityID =~ $regex OR community.name =~ $regex OR community.bio =~ $regex`,
-        `RETURN community`,
+        `OPTIONAL MATCH (user:User{walletAddress:$walletAddress})-[j:JOINS]->(community)`,
+        `RETURN community, count(j) AS join`,
     ].join('\n');
     return session.run(query, {
-        regex: regex
+        regex: regex,
+        walletAddress: walletAddress
     })
         .then((results) => {
             let communities = []
             results.records.forEach((record) => {
-                communities.push(new Community(record.get('community')))
+                communityRecord = new Community(record.get('community'));
+                communityRecord.alreadyJoined = record.get('join').low > 0;
+                communities.push(communityRecord)
             })
             return {
                 success: true,
@@ -270,7 +275,6 @@ const isRole = function (session, walletAddress, communityID, role) {
         .then(existence => {
             if (_.isEmpty(existence.records)) {
                 return {
-                    emptyInput: false,
                     success: false,
                     message: "User or Community does not exist."
                 }
@@ -278,7 +282,6 @@ const isRole = function (session, walletAddress, communityID, role) {
                 return session.run(queries[1], format)
                     .then(result => {
                         return {
-                            emptyInput: false,
                             success: true,
                             result: !(_.isEmpty(result.records))
                         }
@@ -305,7 +308,11 @@ const getUsersByRole = function (session, communityID, role) {
                     .then(result => {
                         let users = []
                         result.records.forEach(record => {
-                            users.push(new User(record.get('u')))
+                            let user = new User(record.get('u'));
+                            if (role === "banned") {
+                                user.alreadyBanned = true;
+                            }
+                            users.push(user)
                         })
                         let returnObject = {
                             success: true
@@ -363,98 +370,6 @@ const addMember = function (session, walletAddress, communityID) {
         })
 }
 
-const promoteMember = function (session, walletAddress, communityID) {
-    const query = [
-        'MATCH (u: User {walletAddress: $walletAddress} )',
-        'MATCH (c: Community {communityID: $communityID})',
-        'MERGE (u)-[:MODERATES]->(c)'
-    ].join("\n")
-
-    return isRole(session, walletAddress, communityID, ROLES.MEMBER.type)
-        .then(memberCheck => {
-            if (memberCheck.success) {
-                if (memberCheck.result) {
-                    return isRole(session, walletAddress, communityID, ROLES.MODERATOR.type)
-                        .then(moderatorCheck => {
-                            if (moderatorCheck.result) {
-                                // Member is already a moderator
-                                return {
-                                    success: false,
-                                    message: "User is already a Moderator of Community."
-                                }
-                            } else {
-                                // Run query to promote member.
-                                return session.run(query, {
-                                    walletAddress: walletAddress,
-                                    communityID: communityID
-                                }).then(result => {
-                                    return {
-                                        success: true,
-                                        message: "Successfully promote User to Moderator of Community"
-                                    }
-                                })
-                            }
-                        })
-                } else {
-                    return {
-                        success: false,
-                        message: "User is not a Member of Community."
-                    }
-                }
-            } else {
-                return member
-            }
-        })
-        .catch(error => {
-            throw {
-                success: false,
-                message: "Failed to promote User to Moderator of Community",
-                error: error.message
-            }
-        })
-}
-
-const demoteModerator = function (session, walletAddress, communityID) {
-    const query = [
-        'MATCH (u: User {walletAddress: $walletAddress})-[link:MODERATES]->(c: Community {communityID: $communityID})',
-        'DELETE link'
-    ].join("\n")
-
-    return isRole(session, walletAddress, communityID, ROLES.MODERATOR.type)
-        .then(moderatorCheck => {
-            if (moderatorCheck.success) {
-                if (moderatorCheck.result) {
-                    // demote the moderator
-                    return session.run(query, {
-                        walletAddress: walletAddress,
-                        communityID: communityID
-                    }).then(result => {
-                        return {
-                            success: true,
-                            message: "Successfully demoted User to Member of Community"
-                        }
-                    })
-                } else {
-                    // user is not a moderator, thus, may not be a member
-                    return {
-                        success: false,
-                        message: "User is not a Moderator of Community"
-                    }
-                }
-            } else {
-                // User or Community does not exist
-                return moderatorCheck
-            }
-        })
-        .catch(error => {
-            throw {
-                success: false,
-                message: "Failed to demote User to Member of Community",
-                error: error.message
-            }
-        })
-}
-
 const removeMember = function (session, walletAddress, communityID) {
     const queries = [
         [
@@ -484,9 +399,19 @@ const removeMember = function (session, walletAddress, communityID) {
         .then(moderatorCheck => {
             if (moderatorCheck.success) {
                 if (moderatorCheck.result) {
-                    // User is a moderator, use query 0 and 1 to remove
-                    return session.run(queries[0], format)
-                        .then(result => { return successReturn })
+                    // Check if User is the only moderator.
+                    return getUsersByRole(session, communityID, ROLES.MODERATOR.type)
+                        .then(result => {
+                            if (result.moderator.length === 1) {
+                                return {
+                                    success: false,
+                                    message: "Cannot leave community as last moderator"
+                                }
+                            }
+                            // User is not the a moderator, use query 0 tp remove.
+                            return session.run(queries[0], format)
+                                .then(result => { return successReturn })
+                        })
 
                 } else {
                     // Check if User is a member
@@ -499,7 +424,7 @@ const removeMember = function (session, walletAddress, communityID) {
 
                             } else {
                                 // User is not a Member of community
-                                return {
+                                throw {
                                     success: false,
                                     message: "User is not a Member of Community"
                                 }
@@ -529,7 +454,7 @@ const getRolesOfUsers = function (session, walletAddress, communityID) {
     const LINK_ROLES = {
         "JOINS": ROLES.MEMBER,
         "MODERATES": ROLES.MODERATOR,
-        "OWNS": ROLES.OWNER
+        "BANNED_FROM": ROLES.BANNED
     }
 
     return isRole(session, walletAddress, communityID, ROLES.MEMBER.type)
@@ -620,7 +545,7 @@ const communityCreate = function (session, ownerWalletAddress, body) {
         })
 }
 
-const communityUpdate = function (session, walletAddress, communityID, body) {
+const communityUpdate = function (session, walletAddress, communityID, body, profilePicLink, bannerLink) {
     let filtered = filterBody(body)
     return communityValidate(filtered)
         .then(validateResult => {
@@ -637,6 +562,12 @@ const communityUpdate = function (session, walletAddress, communityID, body) {
                                                 message: `Community ID ${body.communityID} has already been taken.`
                                             }
                                         } else {
+                                            if (profilePicLink != "") {
+                                                filtered.profilePic = profilePicLink;
+                                            }
+                                            if (bannerLink != "") {
+                                                filtered.banner = bannerLink;
+                                            }
                                             return update(session, communityID, filtered)
                                         }
                                     })
@@ -663,7 +594,7 @@ const communityUpdate = function (session, walletAddress, communityID, body) {
         })
 }
 
-const getCommunityFeed = function (session, communityID, walletAddress, start, size, sortType, sortOrder) {
+const getCommunityFeed = async function (session, communityID, walletAddress, start, size, sortType, sortOrder) {
     sortType = sortType.toLowerCase(), sortOrder = sortOrder.toLowerCase()
 
     if (start < 0) {
@@ -702,56 +633,137 @@ const getCommunityFeed = function (session, communityID, walletAddress, start, s
         `OPTIONAL MATCH (repostAuthor:User)`,
         `WHERE repostAuthor.walletAddress = repost.author`,
         `OPTIONAL MATCH (post)-[:POSTED_TO]->(com: Community)`,
-        `RETURN DISTINCT author, post, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID`,
+        'OPTIONAL MATCH (author)-[mod_link:MODERATES]->(com)',
+        'RETURN DISTINCT author, post, repost, repostAuthor, count(l) AS likes, count(c) AS comment, com.communityID, mod_link',
         `ORDER BY ${orderBy} ${order}`,
         `SKIP toInteger($start)`,
         `LIMIT toInteger($size)`
     ].join('\n');
 
-    return exists(session, communityID)
-        .then(idCheck => {
-            if (idCheck.result) { // Community exists
-                return session.run(query, {
-                    communityID: communityID,
-                    walletAddress: walletAddress,
-                    start: start,
-                    size: size
-                })
-                    .then((results) => {
-                        let posts = []
-                        results.records.forEach((record) => {
-                            let post = new Post(record.get("post"))
-                            post.author = new User(record.get("author"))
-                            post.comment = String(record.get("comment").low);
-                            post.community = record.get('com.communityID') ? String(record.get('com.communityID')) : null
-                            post.alreadyLiked = record.get('likes').low > 0
-                            if (post.repostPostID) {
-                                post.repostPost = new Post(record.get('repost'))
-                                post.repostPost.author = new User(record.get('repostAuthor'))
-                            }
-
-                            posts.push(post)
-                        })
-                        return {
-                            success: true,
-                            posts: posts
-                        }
-                    })
-            } else {
-                throw {
-                    success: false,
-                    message: "Community does not exist"
+    try {
+        const existsCheck = await exists(session, communityID)
+        if (existsCheck.result) { // Community exists
+            const sessionRun = await session.run(query, {
+                communityID: communityID,
+                walletAddress: walletAddress,
+                start: start,
+                size: size
+            })
+            let posts = []
+            sessionRun.records.forEach(async (record) => {
+                let post = new Post(record.get("post"))
+                post.author = new User(record.get("author"))
+                post.comment = String(record.get("comment").low);
+                post.community = record.get('com.communityID') ? String(record.get('com.communityID')) : null
+                post.alreadyLiked = record.get('likes').low > 0
+                if (post.repostPostID) {
+                    if (!record.get('repost')) post.repostPostID = "removed"
+                    else {
+                        post.repostPost = new Post(record.get('repost'))
+                        post.repostPost.author = new User(record.get('repostAuthor'))
+                    }
                 }
+                if (record.get('mod_link')) post.verified = true
+                post.author.roles = []
+                posts.push(post)
+            })
+
+            const query2 = [
+                `UNWIND $posts as post`,
+                'MATCH (user: User {walletAddress: post.author.walletAddress})-[r]->(c: Community {communityID: $communityID})',
+                'RETURN DISTINCT user.walletAddress, type(r)'
+            ].join('\n');
+
+            const sessionRun2 = await session.run(query2, {
+                communityID: communityID,
+                posts: posts
+            })
+
+            sessionRun2.records.forEach((record) => {
+                var postWalletAddress = record.get("user.walletAddress")
+                var relationship = record.get("type(r)")
+                posts.map((post) => {
+                    if (post.author.walletAddress === postWalletAddress)
+                        post.author.roles.push(getRoleFromRelationship(relationship))
+                })
+            })
+
+            return {
+                success: true,
+                posts: posts
             }
-        })
-        .catch((error) => {
+        } else {
             throw {
                 success: false,
-                message: "Failed to get feed",
+                message: "Community does not exist"
+            }
+        }
+    } catch (error) {
+        throw {
+            success: false,
+            message: "Failed to get feed",
+            error: error.message
+        }
+    }
+}
+
+const getTrending = function (session, walletAddress, start, size) {
+    if (start < 0) {
+        throw {
+            success: false,
+            message: "Start index must be non-negative"
+        }
+    } else if (size < 0) {
+        throw {
+            success: false,
+            message: "Size must be non-negative"
+        }
+    }
+
+    const query = [
+        `MATCH (community: Community)`,
+        `OPTIONAL MATCH (user:User{walletAddress:$walletAddress})-[j:JOINS]->(community)`,
+        `RETURN community, count(j) AS join, community.memberCount-community.initialWeeklyMemberCount as weeklyMemberDelta`,
+        `ORDER BY weeklyMemberDelta DESC`,
+        `SKIP toInteger($start)`,
+        `LIMIT toInteger($size)`,
+    ].join('\n');
+
+    return session.run(query, {
+        walletAddress: walletAddress,
+        start: start,
+        size: size
+    })
+        .then(result => {
+            let communities = []
+            result.records.forEach(record => {
+                let community = new Community(record.get('community'))
+                community.alreadyJoined = record.get('join').low > 0
+                communities.push(community)
+            })
+            return {
+                success: true,
+                communities: communities
+            }
+        })
+        .catch(error => {
+            throw {
+                success: false,
+                message: "Failed to fetch trending communities",
                 error: error.message
             }
-        });
+        })
 }
+
+// Cron job for resetting the trend count at 00:00 on Sunday
+cron.schedule('0 0 * * 0', resetTrending = function (session) {
+    const query = [
+        'MATCH (c: Community)',
+        'SET c.initialWeeklyMemberCount = c.memberCount',
+    ].join("\n")
+
+    return session.run(query)
+});
 
 module.exports = {
     get,
@@ -765,5 +777,6 @@ module.exports = {
     getRolesOfUsers,
     isRole,
     linkPost,
-    getCommunityFeed
+    getCommunityFeed,
+    getTrending
 }

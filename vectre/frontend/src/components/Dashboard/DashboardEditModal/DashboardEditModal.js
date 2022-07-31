@@ -148,6 +148,7 @@ function DashboardEditModal({
                                                         selectedList={selectedList}
                                                         setSelectedList={setSelectedList}
                                                         nftItem={nftItem}
+                                                        maxSelected={3}
                                                     />
                                                 </Box>
                                             )

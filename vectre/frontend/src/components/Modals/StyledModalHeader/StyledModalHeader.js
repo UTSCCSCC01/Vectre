@@ -2,20 +2,27 @@ import {
     ModalHeader,
     ModalCloseButton,
     Flex,
-    Text
+    Text,
+    Image
 } from '@chakra-ui/react'
 
 const StyledModalHeader = ({
+    iconSRC,
     headerText,
-    icon
+    icon,
+    hideClose,
+    color = 'primary.400',
+    fontSize = "28px",
+    fontWeight = 700
 }) => {
     return (
         <ModalHeader
             px={{ base: '24px', md: '64px' }}>
             <ModalCloseButton
+                display={hideClose ? 'none' : 'initial'}
                 color={'primary.400'}
-                top={4}
-                left={4}
+                top={6}
+                left={6}
                 transform={'scale(1.8)'}
                 _focus={{ outline: 0 }}
                 _hover={{ background: 'white' }}
@@ -24,14 +31,17 @@ const StyledModalHeader = ({
             <Flex
                 justifyContent={'center'}
                 alignItems={'center'}
-                color={'primary.400'}
+                color={color}
             >
                 <Text
-                    fontWeight={700}
-                    fontSize="28px"
+                    fontSize={fontSize}
+                    fontWeight={fontWeight}
                     mr="15px">
                     {headerText}
                 </Text>
+                {
+                    iconSRC && (<Image src={iconSRC} boxSize={'1.5rem'} />)
+                }
                 {icon}
             </Flex>
         </ModalHeader>
