@@ -18,7 +18,7 @@ const EntityCard = ({
     ...otherProps
 }) => {
     return (
-        <Link key={key} _hover={{ textDecoration: "none" }} href={href}>
+        <Link key={key} _focus={{ boxShadow: "none" }} _hover={{ textDecoration: "none" }} href={href}>
             <Flex
                 justifyContent={"space-between"}
                 alignItems={"center"}

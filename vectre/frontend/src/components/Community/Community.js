@@ -6,7 +6,7 @@ import {
     communitySelector,
     loggedInUserRolesSelector,
 } from "../../redux/selectors/communities";
-import { Box, Flex, Stack } from "@chakra-ui/react";
+import { Box, Flex, Stack, useDisclosure } from "@chakra-ui/react";
 import PostComponent from "../PostComponent/PostComponent";
 import TextButton from "../Buttons/TextButton/TextButton";
 import {
@@ -19,6 +19,8 @@ import { getCommunityFeed } from "../../redux/actions/feed";
 import CreatePostComponent from "../CreatePostComponent/CreatePostComponent";
 import { getCommunity, getRolesOfLoggedInUser } from "../../redux/actions/communities";
 import { BsGearWideConnected } from "react-icons/bs";
+import BannedUserListModal from "../Modals/BannedUserListModal/BannedUserListModal";
+import ModeratorListModal from "../Modals/ModeratorListModal/ModeratorListModal";
 
 
 
@@ -28,6 +30,9 @@ const Community = ({
     const dispatch = useDispatch();
     const communityData = useSelector(communitySelector)
     const loggedInUserRoles = useSelector(loggedInUserRolesSelector);
+
+    const { isOpen: isOpenBanned, onOpen: onOpenBanned, onClose: onCloseBanned } = useDisclosure();
+    const { isOpen: isOpenModerator, onOpen: onOpenModerator, onClose: onCloseModerator } = useDisclosure();
 
     useEffect(() => {
         dispatch(getRolesOfLoggedInUser(communityID));
@@ -51,12 +56,12 @@ const Community = ({
         {
             hidden: userIsModerator,
             text: "Moderator List",
-            func: () => { console.log("mod list") }
+            func: () => { onOpenModerator() }
         },
         {
             hidden: userIsModerator,
             text: "Banned Users",
-            func: () => { console.log("banned users") }
+            func: () => { onOpenBanned() }
         }
     ]
 
@@ -97,6 +102,8 @@ const Community = ({
                     )
                     : null}
             </ContentWithSideButtons>
+            <BannedUserListModal isOpen={isOpenBanned} onClose={onCloseBanned} />
+            <ModeratorListModal isOpen={isOpenModerator} onClose={onCloseModerator} />
         </>
     )
 }

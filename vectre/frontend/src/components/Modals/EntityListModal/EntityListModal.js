@@ -9,6 +9,7 @@ import StyledModalHeader from "../StyledModalHeader/StyledModalHeader"
 
 const EntityListModal = ({
     headerText,
+    iconSRC,
     icon,
     isOpen,
     onClose,
@@ -38,6 +39,7 @@ const EntityListModal = ({
                         headerText={headerText}
                         fontSize={"20px"}
                         hideClose={true}
+                        iconSRC={iconSRC}
                         icon={icon} />
                     <ModalBody
                         py={'0px'}

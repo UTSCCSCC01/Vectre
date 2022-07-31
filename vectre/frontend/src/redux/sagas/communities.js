@@ -15,11 +15,15 @@ import {
     JOIN_COMMUNITY,
     LEAVE_COMMUNITY,
     MODERATION,
+    GET_BANNED_USERS,
+    GET_MODERATORS,
 } from "../constants/communities";
 import {
     getCommunity,
     getRolesOfLoggedInUser,
+    storeBannedUsers,
     storeCommunity,
+    storeModerators,
     storeRolesOfLoggedInUser,
 } from "../actions/communities";
 
@@ -87,6 +91,43 @@ function* getRolesOfLoggedInUserSaga(action) {
         }
     } catch (error) {
         yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get roles of current user"))
+        console.log(error)
+    }
+}
+
+function* getBannedUsers(action) {
+    try {
+        const response = yield call(getRequest, BASE_API_URL + COMMUNITY.GET_BANNED_USERS.replace("{communityID}", action.communityID)), responseData = response[1]
+        if (responseData.success) {
+            if (action.callBack) {
+                action.callBack()
+                return;
+            }
+            console.log("HI im here!")
+            yield put(storeBannedUsers(responseData.banned))
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+    } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get banned users"))
+        console.log(error)
+    }
+}
+
+function* getModerators(action) {
+    try {
+        const response = yield call(getRequest, BASE_API_URL + COMMUNITY.GET_MODERATORS.replace("{communityID}", action.communityID)), responseData = response[1]
+        if (responseData.success) {
+            if (action.callBack) {
+                action.callBack()
+                return;
+            }
+            yield put(storeModerators(responseData.moderator))
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+    } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get moderators"))
         console.log(error)
     }
 }
@@ -207,6 +248,10 @@ function* communitySaga() {
     yield takeLatest(GET_COMMUNITY, getCommunitySaga)
     yield takeLatest(UPDATE_COMMUNITY, updateCommunitySaga)
     yield takeLatest(GET_ROLES_LOGGED_IN_USER, getRolesOfLoggedInUserSaga)
+
+    yield takeLatest(GET_BANNED_USERS, getBannedUsers)
+    yield takeLatest(GET_MODERATORS, getModerators)
+
     yield takeLatest(JOIN_COMMUNITY, joinCommunity)
     yield takeLatest(LEAVE_COMMUNITY, leaveCommunity)
 

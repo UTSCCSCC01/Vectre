@@ -8,6 +8,10 @@ import {
     JOIN_COMMUNITY,
     LEAVE_COMMUNITY,
     MODERATION,
+    GET_BANNED_USERS,
+    GET_MODERATORS,
+    STORE_BANNED_USERS,
+    STORE_MODERATORS,
 } from "../constants/communities";
 
 export const createCommunity = (community, redirectWindow) => ({
@@ -39,6 +43,26 @@ export const getRolesOfLoggedInUser = (communityID) => ({
 export const storeRolesOfLoggedInUser = (roles) => ({
     type: STORE_ROLES_LOGGED_IN_USER,
     roles
+})
+
+export const getBannedUsers = (communityID, callBack) => ({
+    type: GET_BANNED_USERS,
+    communityID,
+    callBack
+})
+export const getModerators = (communityID, callBack) => ({
+    type: GET_MODERATORS,
+    communityID,
+    callBack
+})
+
+export const storeBannedUsers = (bannedUsers) => ({
+    type: STORE_BANNED_USERS,
+    bannedUsers
+})
+export const storeModerators = (moderators) => ({
+    type: STORE_MODERATORS,
+    moderators
 })
 
 export const joinCommunity = (communityID, callBack) => ({
