@@ -308,7 +308,11 @@ const getUsersByRole = function (session, communityID, role) {
                     .then(result => {
                         let users = []
                         result.records.forEach(record => {
-                            users.push(new User(record.get('u')))
+                            let user = new User(record.get('u'));
+                            if (role === "banned") {
+                                user.alreadyBanned = true;
+                            }
+                            users.push(user)
                         })
                         let returnObject = {
                             success: true
