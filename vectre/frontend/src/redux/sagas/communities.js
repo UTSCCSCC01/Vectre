@@ -14,11 +14,16 @@ import {
     GET_ROLES_LOGGED_IN_USER,
     JOIN_COMMUNITY,
     LEAVE_COMMUNITY,
+    MODERATION,
+    GET_BANNED_USERS,
+    GET_MODERATORS,
 } from "../constants/communities";
 import {
     getCommunity,
     getRolesOfLoggedInUser,
+    storeBannedUsers,
     storeCommunity,
+    storeModerators,
     storeRolesOfLoggedInUser,
 } from "../actions/communities";
 
@@ -90,6 +95,42 @@ function* getRolesOfLoggedInUserSaga(action) {
     }
 }
 
+function* getBannedUsers(action) {
+    try {
+        const response = yield call(getRequest, BASE_API_URL + COMMUNITY.GET_BANNED_USERS.replace("{communityID}", action.communityID)), responseData = response[1]
+        if (responseData.success) {
+            if (action.callBack) {
+                action.callBack()
+                return;
+            }
+            yield put(storeBannedUsers(responseData.banned))
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+    } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get banned users"))
+        console.log(error)
+    }
+}
+
+function* getModerators(action) {
+    try {
+        const response = yield call(getRequest, BASE_API_URL + COMMUNITY.GET_MODERATORS.replace("{communityID}", action.communityID)), responseData = response[1]
+        if (responseData.success) {
+            if (action.callBack) {
+                action.callBack()
+                return;
+            }
+            yield put(storeModerators(responseData.moderator))
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+    } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get moderators"))
+        console.log(error)
+    }
+}
+
 function* joinCommunity(action) {
     try {
         const response = yield call(postRequest, BASE_API_URL + COMMUNITY.JOIN_COMMUNITY.replace("{communityID}", action.communityID)), responseData = response[1]
@@ -130,13 +171,93 @@ function* leaveCommunity(action) {
     }
 }
 
+// Moderation
+function* promoteMember(action) {
+    try {
+        const response = yield call(postRequest, BASE_API_URL + COMMUNITY.MODERATION.PROMOTE_MEMBER
+            .replace("{communityID}", action.communityID)
+            .replace("{walletAddress}", action.walletAddress)
+        ), responseData = response[1]
+        if (responseData.success) {
+            yield put(action.redirectWindow(`/c/${action.communityID}`))
+            yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+    } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to promote member"))
+        console.log(error)
+    }
+}
+function* banMember(action) {
+    try {
+        const response = yield call(postRequest, BASE_API_URL + COMMUNITY.MODERATION.BAN_MEMBER
+            .replace("{communityID}", action.communityID)
+            .replace("{walletAddress}", action.walletAddress)
+        ), responseData = response[1]
+        if (responseData.success) {
+            yield put(action.redirectWindow(`/c/${action.communityID}`))
+            yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+    } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to ban member"))
+        console.log(error)
+    }
+}
+function* unbanMember(action) {
+    try {
+        const response = yield call(postRequest, BASE_API_URL + COMMUNITY.MODERATION.UNBAN_MEMBER
+            .replace("{communityID}", action.communityID)
+            .replace("{walletAddress}", action.walletAddress)
+        ), responseData = response[1]
+        if (responseData.success) {
+            yield put(action.redirectWindow(`/c/${action.communityID}`))
+            yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+    } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to unban member"))
+        console.log(error)
+    }
+}
+function* deletePost(action) {
+    try {
+        const response = yield call(postRequest, BASE_API_URL + COMMUNITY.MODERATION.DELETE_POST
+            .replace("{communityID}", action.communityID)
+            .replace("{postID}", action.postID)
+        ), responseData = response[1]
+        if (responseData.success) {
+            yield put(action.redirectWindow(`/c/${action.communityID}`))
+            yield put(showToast(TOAST_STATUSES.SUCCESS, responseData.message))
+        } else {
+            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+        }
+    } catch (error) {
+        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to delete post"))
+        console.log(error)
+    }
+}
+
+
 function* communitySaga() {
     yield takeLatest(CREATE_COMMUNITY, createCommunitySaga)
     yield takeLatest(GET_COMMUNITY, getCommunitySaga)
     yield takeLatest(UPDATE_COMMUNITY, updateCommunitySaga)
     yield takeLatest(GET_ROLES_LOGGED_IN_USER, getRolesOfLoggedInUserSaga)
+
+    yield takeLatest(GET_BANNED_USERS, getBannedUsers)
+    yield takeLatest(GET_MODERATORS, getModerators)
+
     yield takeLatest(JOIN_COMMUNITY, joinCommunity)
     yield takeLatest(LEAVE_COMMUNITY, leaveCommunity)
+
+    yield takeLatest(MODERATION.PROMOTE_MEMBER, promoteMember)
+    yield takeLatest(MODERATION.BAN_MEMBER, banMember)
+    yield takeLatest(MODERATION.UNBAN_MEMBER, unbanMember)
+    yield takeLatest(MODERATION.DELETE_POST, deletePost)
 }
 
 export default communitySaga

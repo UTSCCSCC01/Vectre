@@ -9,14 +9,6 @@ import CommunityProfileEditModal from '../../Modals/CommunityProfileEditModal/Co
 
 const profileSideButtonsList = (createCommunityOnOpen) => [
     {
-        text: "Edit Profile",
-        func: () => { console.log("open edit profile modal") }
-    },
-    {
-        text: "User Settings",
-        link: "settings"
-    },
-    {
         text: "Create a Community",
         func: () => { createCommunityOnOpen() }
     }

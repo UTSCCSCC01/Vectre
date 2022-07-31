@@ -63,9 +63,11 @@ class Notification extends React.Component {
         </Flex>
         <Spacer />
         <Flex className='notif-tag'>
-            <Avatar src={getAvatarOrDefault(this.props.fromUser.profilePic)}
-              size="sm"
-              mx="15px"
+            <Avatar
+                bg={'white'}
+                src={getAvatarOrDefault(this.props.fromUser.profilePic)}
+                size="sm"
+                mx="15px"
             />
             <Box noOfLines={1} textAlign={"left"}>
               <p>

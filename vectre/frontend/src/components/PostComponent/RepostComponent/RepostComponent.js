@@ -27,7 +27,7 @@ const RepostComponent = ({
                     e.stopPropagation();
                 })}>
                 <Stack gap={'4px'}>
-                    <PostTopComponent item={item} />
+                    <PostTopComponent item={item} fromRepost={true} />
                     <PostMidComponent item={item} onOpen={onOpen} />
                 </Stack>
             </Box>

@@ -34,6 +34,7 @@ const ProfileUserDetailsTopComponent = ({
                     borderRadius={'6px'}
                     height={'215px'}>
                     <Image
+                        bg={'white'}
                         src={getBannerOrDefault(props.user.banner)}
                         fit={'cover'}
                         overflow={'hidden'}
