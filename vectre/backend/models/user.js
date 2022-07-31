@@ -346,7 +346,7 @@ const updateUser = function (session, walletAddress, filter, newUser) {
         })
 }
 
-const updateProfile = function (session, walletAddress, newProf, profilePicLink, bannerLink, tokenID) {
+const updateProfile = function (session, walletAddress, newProf, profilePicLink, bannerLink, tokenID=null) {
     /**
      * Update the user profile of the wallet owner using newProf object.
      *
@@ -367,7 +367,7 @@ const updateProfile = function (session, walletAddress, newProf, profilePicLink,
                 return { success: false, message: "Username already exists." }
             } else {
                 let profileFilter = ["name", "username", "bio"]
-                if (tokenID != "") {
+                if (tokenID !== null) {
                     newProf.profilePicTokenID = tokenID;
                     profileFilter.push("profilePicTokenID")
                 }
