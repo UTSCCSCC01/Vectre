@@ -103,7 +103,6 @@ function* getBannedUsers(action) {
                 action.callBack()
                 return;
             }
-            console.log("HI im here!")
             yield put(storeBannedUsers(responseData.banned))
         } else {
             yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))

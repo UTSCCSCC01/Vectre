@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { getBannedUsers } from "../../../redux/actions/communities";
+import { getBannedUsers, unbanMember } from "../../../redux/actions/communities";
 import { bannedUsersSelector } from "../../../redux/selectors/communities";
-import { cutText } from "../../../utils/Utils";
+import { cutText, redirectWindow } from "../../../utils/Utils";
 import ToggleHollowButton from "../../Buttons/ToggleHollowButton/ToggleHollowButton";
 import EntityCard from "../../EntityCard/EntityCard";
 import EntityListModal from "../EntityListModal/EntityListModal"
@@ -17,13 +17,12 @@ const BannedUserListModal = ({
     const { communityID } = useParams();
     const bannedUsers = useSelector(bannedUsersSelector);
 
-
     useEffect(() => {
         dispatch(getBannedUsers(communityID));
     }, []);
 
     const handleBanClick = (user) => {
-        console.log(user);
+        dispatch(unbanMember(communityID, user.walletAddress, redirectWindow))
     }
 
     return (
