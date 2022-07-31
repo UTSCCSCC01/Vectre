@@ -21,6 +21,7 @@ const BannerProfilePicWrapper = ({
                 marginLeft={'-60px'}>
                 <Image
                     border={'5px solid white'}
+                    bg={'white'}
                     src={getAvatarOrDefault(data.profilePic)}
                     fit={'cover'}
                     overflow={'hidden'}
@@ -28,6 +29,7 @@ const BannerProfilePicWrapper = ({
                     boxSize={'120px'} />
             </Box>
             <Image
+                bg={'white'}
                 src={getBannerOrDefault(data.banner)}
                 fit={'cover'}
                 overflow={'hidden'}

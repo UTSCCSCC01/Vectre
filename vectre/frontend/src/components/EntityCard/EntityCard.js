@@ -18,7 +18,7 @@ const EntityCard = ({
     ...otherProps
 }) => {
     return (
-        <Link key={key} _hover={{ textDecoration: "none" }} href={href}>
+        <Link key={key} _focus={{ boxShadow: "none" }} _hover={{ textDecoration: "none" }} href={href}>
             <Flex
                 justifyContent={"space-between"}
                 alignItems={"center"}
@@ -32,6 +32,7 @@ const EntityCard = ({
                     alignItems={"center"}
                     gap={'15px'}>
                     <Image
+                        bg={bg}
                         src={getAvatarOrDefault(data.profilePic)}
                         fit={'cover'}
                         overflow={'hidden'}

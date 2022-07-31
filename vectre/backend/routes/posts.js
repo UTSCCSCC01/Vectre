@@ -105,4 +105,11 @@ router.get('/:postID/likes', (req, res, next) => {
         .catch((error) => res.send(error))
 })
 
+// DELETE /posts/{postID}
+router.delete('/:postID', authenticateToken, (req, res, next) => {
+    Post.delete(dbUtils.getSession(req), req.walletAddress, req.params.postID)
+        .then((result) => res.send(result))
+        .catch((error) => res.send(error))
+})
+
 module.exports = router;
