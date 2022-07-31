@@ -130,11 +130,12 @@ router.put('/:walletAddress/update', authenticateToken, (req, res) => {
         (async () => {
             var profilePicLink = "";
             var bannerLink = "";
-            var tokenID = "";
+            var tokenID = null;
             if (req.body.profilePicTokenID) {
                 tokenID = req.body.profilePicTokenID;
                 profilePicLink = req.body.profilePicImageLink;
             } else if (req.body.profilePicImageData) { // No tokenID provided
+                tokenID = ""
                 const img1 = await upload(req.body.profilePicImageData);
                 profilePicLink = img1.data.link;
             }
