@@ -2,7 +2,7 @@ Final Project Presentation Marking Rubric
 =========================================
 Team Name: Vectre lab
 
-Part I - Live Presentation - 30 marks
+Live Presentation - 39 marks
 -------------------------------------
 Product Demo[10 marks]:
 -Product introduction: 0-1 marks [1=Product introduced, 0=No introduction]
@@ -26,7 +26,7 @@ Your mark: 1
 -Feature 3 presentation: 
  0-3 marks [3=Excellent, 2=Adequate, 1=Inadequate, 0=No feature]
  ==========
- Your mark: 3
+ Your mark: 2.5
  ==========
  
 Process[14 marks]:
@@ -36,13 +36,13 @@ Process[14 marks]:
  [Each missing person, minus 1 mark]
  [Note due to this year's special situation: you may or may not show your person in video. However voice participation is a mandatory minimum]
  ==========
- Your mark: 4
+ Your mark: 3.5
  ==========
 -Team communication, processes, standards, and techniques:
  0-6 marks 
  [Each element 2 marks if presented professionally, 1 mark if presented adequately, 0 otherwise]
  ==========
- Your mark: 5 Feedback: communication 
+ Your mark: 5.5  
  ==========
  -Documentation
  0-4 marks 
@@ -64,7 +64,7 @@ Technologies used and technical challenges
   Also a clear description what the team did to overcome those challenges]
   [-2 marks for each missing component, -1 mark is component not presented clearly]
  ==========
- Your mark: 4 / 6 Feedback: 2 technical challenges only 
+ Your mark: 5 / 6  
  ==========    
   
 Participation[5 marks]
@@ -75,4 +75,6 @@ Participation[5 marks]
  ==========
  Your mark: 5
  ==========  
+ 
+ Total Marks: 36.5/39
  
