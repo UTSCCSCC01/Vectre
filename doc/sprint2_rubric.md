@@ -12,7 +12,7 @@
     - 1 mark  = Meeting is documented, participants are not recorded or the majority has not participated, not enough analysis has been done
     - 0 marks = No meeting document submitted or the submitted document contains no relevant information
   
-    Your Mark: 1 -- The retrospective is the previous sprint so your file should be SR1.md in sprint2 folder
+    Your Mark: 2 
  
   - Sprint Planning meeting (sprintN.md) (max 2 marks)
     - 2 marks = Meeting and sprint goal is documented, all spikes clearly identified, team capacity recorded, participants are recorded, everyone has participated, decisions about user stories to be completed this sprint are clear, tasks breakdown is done.
@@ -22,7 +22,7 @@
 
     Your Mark: 2
 
-  Planning Meetings Total Mark: 3 / 4
+  Planning Meetings Total Mark: 4 / 4
 
 ---
 ## Daily Stand-ups (max 10 marks)
@@ -111,7 +111,7 @@
     - 1 mark  = two or more tasks were not completed as assigned
     - 0 marks = no task was completed by anyone
 
-    Your Mark: 1 -- Ex: assigned to Zhaoji but done by Henry (https://mcsapps.utm.utoronto.ca/jira/browse/VEC-52), assigned to Prachyo but done by Peter and Henry (https://mcsapps.utm.utoronto.ca/jira/browse/VEC-9)
+    Your Mark: 2
 
 
   - Is each pull request made from a separate branch for each individual task? (max 5 marks)
@@ -137,7 +137,7 @@
     - 1 mark  = at least one team member did not complete any task or did not have any task assigned
     - 0 marks = most of team members have no tasks assigned and/or completed
 
-    Your Mark: 1 -- Does Tuan Ky Pham have a different name? They didn't have any tasks assgined in S2, I think I've looked pretty throughly. Let me know if I made a mistake.
+    Your Mark: 3
 
   - Branch Naming (max 2 marks)
     - 2 marks = every team branch is named after the associated single ticket number
@@ -160,7 +160,7 @@
 
     Your Mark: 2
 
-Tracking on Jira Total Mark: 21 / 24
+Tracking on Jira Total Mark: 24 / 24
 
 ---
 ## Sprint Completion (Max 20 marks) 
@@ -242,6 +242,6 @@ Tracking on Jira Total Mark: 21 / 24
 
 ## Total Mark
 
-89 / 93
+93 / 93
 
 
