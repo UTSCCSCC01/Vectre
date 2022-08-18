@@ -121,7 +121,7 @@
     - 1 mark  = pull request for 4 or more tasks not made from own separate branch
     - 0 marks = pull request for the majority of tasks not made from own separate branch
   
-    Your Mark: 2
+    Your Mark: 5
     
   - Is the git commit message clear? (max 2 marks)
     - 2 marks = all commit message begin with the ticket number of the task followed by a short description of commit changes
@@ -136,7 +136,7 @@
     - 1 mark  = at least one team member did not complete any task or did not have any task assigned
     - 0 marks = most of team members have no tasks assigned and/or completed
 
-    Your Mark: 2
+    Your Mark: 3
 
   - Branch Naming (max 2 marks)
     - 2 marks = every team branch is named after the associated single ticket number
