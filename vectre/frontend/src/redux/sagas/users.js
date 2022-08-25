@@ -103,10 +103,10 @@ function* getNFT(action) {
         if (responseData.success) {
             yield put(storeNFT(responseData.nft))
         } else {
-            yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
+            // yield put(showToast(TOAST_STATUSES.ERROR, responseData.message))
         }
     } catch (error) {
-        yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get NFTs"))
+        // yield put(showToast(TOAST_STATUSES.ERROR, "Failed to get NFTs"))
         console.log(error)
     }
 }

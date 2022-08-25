@@ -127,7 +127,7 @@ export default function NavBar() {
                             : null}
                         <NotificationPopover />
                         {
-                            Object.keys(loggedInUser).length === 0 ? (
+                            Object.keys(loggedInUser).length <= 1 ? (
                                 <Link
                                     href={"/login"}
                                     _hover={{ textDecoration: "none" }}>
